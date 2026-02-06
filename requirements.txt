@@ -1,0 +1,26 @@
+# Data Analysis
+pandas
+numpy
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Automation
+requests
+schedule
+
+# AI / Agents
+openai
+anthropic
+langchain
+
+# Jupyter
+jupyter
+ipykernel
+
+# Utilities
+python-dotenv
+pyyaml
+tqdm

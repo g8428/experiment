@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Environment
+.env
+.env.*
+*.local
+
+# Data (large files)
+data/raw/*.csv
+data/raw/*.xlsx
+data/raw/*.json
+data/raw/*.parquet
+data/processed/*.csv
+data/processed/*.xlsx
+data/processed/*.json
+data/processed/*.parquet
+!data/**/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# Secrets
+*.key
+*.pem
+credentials.*
