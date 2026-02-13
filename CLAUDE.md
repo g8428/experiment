@@ -41,14 +41,20 @@ pip install -r requirements.txt   # Install dependencies
 ## 프로젝트: 랍스터 주식회사
 
 AI Agent Teams로 운영되는 가상 기업 프로젝트.
-상세 내용은 `lobster-corp/LOBSTER.md` 참고.
+상세 내용은 `랍스터주식회사/회사규칙.md` 참고.
 
 ### 빠른 시작
 ```bash
 # 인사팀장 spawn
-"lobster-corp/org/hr-chief.md 기반으로
-랍스터 인사팀장 spawn해줘"
+"랍스터주식회사/조직도/인사팀장.md 읽고
+인사팀장 spawn해줘"
 
 # CEO 지시
 "이번 주 AI 자동화 사업 아이템 조사해"
 ```
+
+### Slack 채널
+- #랍스터본부 — 전체 공지, 중요 결정사항
+- #인사팀장실 — 사장님 ↔ 인사팀장 소통
+- #실무팀 — 사원들 협업 및 진행상황 공유
+- #성과보고 — 주간/월간 성과 보고 전용
