@@ -46,3 +46,4 @@ logs/
 *.key
 *.pem
 credentials.*
+.mcp.json
