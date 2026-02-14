@@ -45,12 +45,11 @@ AI Agent Teams로 운영되는 가상 기업 프로젝트.
 
 ### 빠른 시작
 ```bash
-# 인사팀장 spawn
-"랍스터주식회사/조직도/인사팀장.md 읽고
-인사팀장 spawn해줘"
+# Slack Auto Commander 실행 (BOSS 메시지 자동 감지 → 에이전트 자동 spawn)
+python 랍스터주식회사/slack_commander.py
 
-# CEO 지시
-"이번 주 AI 자동화 사업 아이템 조사해"
+# 실행 후 Slack 아무 채널에 메시지를 보내면
+# 인사팀장 + 과장1이 자동 spawn되어 업무 처리
 ```
 
 ### Slack 채널
