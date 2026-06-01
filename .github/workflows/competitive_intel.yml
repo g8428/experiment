@@ -2,11 +2,8 @@ name: 경쟁사 인텔리전스 에이전트
 
 on:
   schedule:
-    # 평일(월~금) 오전 8:30 KST = UTC 전날 23:30
-    # (월요일 KST = 일요일 UTC → cron 요일 0-4)
+    # 평일 오전 8:30 KST = UTC 전날 23:30
     - cron: '30 23 * * 0-4'
-
-  # 수동 실행 (테스트용)
   workflow_dispatch:
 
 jobs:
@@ -30,14 +27,17 @@ jobs:
             apify-client \
             anthropic \
             gspread \
-            google-auth
+            google-auth \
+            requests
 
       - name: 에이전트 실행
         env:
-          APIFY_API_TOKEN:    ${{ secrets.APIFY_API_TOKEN }}
-          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          SPREADSHEET_ID:     ${{ secrets.SPREADSHEET_ID }}
-          GMAIL_ADDRESS:      ${{ secrets.GMAIL_ADDRESS }}
-          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          APIFY_API_TOKEN:      ${{ secrets.APIFY_API_TOKEN }}
+          ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_CREDENTIALS:   ${{ secrets.GOOGLE_CREDENTIALS }}
+          SPREADSHEET_ID:       ${{ secrets.SPREADSHEET_ID }}
+          GMAIL_ADDRESS:        ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD:   ${{ secrets.GMAIL_APP_PASSWORD }}
+          NAVER_CLIENT_ID:      ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET:  ${{ secrets.NAVER_CLIENT_SECRET }}
         run: python competitive_intel_agent.py
