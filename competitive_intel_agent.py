@@ -2,7 +2,7 @@
 경쟁사 인텔리전스 에이전트
 ────────────────────────────
 - 경쟁사 인스타그램 최근 포스팅 수집
-- X(트위터) 운동복·출근복 키워드 트렌드 수집
+- 네이버 블로그·카페·뉴스 키워드 수집
 - Claude API로 남성 타겟 인사이트 분석
 - Google Sheets 저장 + Gmail 뉴스레터 발송
 
@@ -13,11 +13,14 @@
   SPREADSHEET_ID       - Sheets URL의 /d/{ID}/ 부분
   GMAIL_ADDRESS        - 받을 지메일 주소
   GMAIL_APP_PASSWORD   - 구글 앱 비밀번호 (16자리)
+  NAVER_CLIENT_ID      - 네이버 개발자센터 Client ID
+  NAVER_CLIENT_SECRET  - 네이버 개발자센터 Client Secret
 """
 
 import os
 import json
 import smtplib
+import requests
 from datetime import datetime, date
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -40,20 +43,23 @@ COMPETITORS = {
     "유니클로": "uniqlokr",
 }
 
-KEYWORDS_WORKOUT = [
-    "남성운동복", "남자운동복", "헬스복 추천",
-    "러닝복 남자", "남자 스포츠웨어", "헬스웨어 추천",
+# 네이버 블로그·카페 — 소비자 키워드
+KEYWORDS_CONSUMER = [
+    "남성운동복 추천", "남자운동복 후기",
+    "헬스복 추천 남자", "러닝복 남자 추천",
+    "남자출근복 코디", "직장인 운동복 남자",
+    "애슬레저 남성 추천",
 ]
 
-KEYWORDS_COMMUTE = [
-    "남자출근복", "직장인코디 남자", "애슬레저 남성",
-    "편한출근복 남자", "남자 데일리룩 운동",
+# 네이버 뉴스 — 업계 키워드
+KEYWORDS_NEWS = [
+    "스포츠패션 남성", "러닝 트렌드",
+    "애슬레저 시장", "남성 운동복 브랜드",
+    "스포츠웨어 트렌드",
 ]
 
-ALL_KEYWORDS = KEYWORDS_WORKOUT + KEYWORDS_COMMUTE
-
-IG_POSTS_PER_BRAND  = 5
-X_POSTS_PER_KEYWORD = 5
+IG_POSTS_PER_BRAND   = 5
+NAVER_RESULTS_EACH   = 5   # 키워드당 블로그·카페·뉴스 각 N건
 
 
 # ══════════════════════════════════════════
@@ -61,13 +67,19 @@ X_POSTS_PER_KEYWORD = 5
 # ══════════════════════════════════════════
 
 def parse_date(ts: str) -> str:
-    """Apify 타임스탬프 → YYYY-MM-DD"""
     if not ts:
         return ""
-    try:
-        return datetime.fromisoformat(ts.replace("Z", "+00:00")).strftime("%Y-%m-%d")
-    except Exception:
-        return ts[:10] if len(ts) >= 10 else ts
+    for fmt in ("%Y%m%d", "%a, %d %b %Y %H:%M:%S +0900"):
+        try:
+            return datetime.strptime(ts[:len(fmt)], fmt).strftime("%Y-%m-%d")
+        except Exception:
+            continue
+    return ts[:10] if len(ts) >= 10 else ts
+
+def clean_html(text: str) -> str:
+    """네이버 API 결과에서 HTML 태그 제거"""
+    import re
+    return re.sub(r"<[^>]+>", "", text).strip()
 
 
 # ══════════════════════════════════════════
@@ -94,12 +106,11 @@ def collect_instagram(client: ApifyClient) -> list[dict]:
         for post in item.get("latestPosts", [])[:IG_POSTS_PER_BRAND]:
             results.append({
                 "brand":     brand,
-                "platform":  "Instagram",
                 "caption":   post.get("caption", "")[:300],
                 "likes":     post.get("likesCount", 0),
                 "comments":  post.get("commentsCount", 0),
                 "hashtags":  post.get("hashtags", [])[:10],
-                "post_date": parse_date(post.get("timestamp", "")),  # 실제 게시일
+                "post_date": parse_date(post.get("timestamp", "")),
                 "url":       post.get("url", ""),
             })
 
@@ -108,37 +119,67 @@ def collect_instagram(client: ApifyClient) -> list[dict]:
 
 
 # ══════════════════════════════════════════
-# X 수집
+# 네이버 검색 API 수집
 # ══════════════════════════════════════════
 
-def collect_x(client: ApifyClient) -> list[dict]:
-    print("🐦 X 키워드 수집 중...")
+def naver_search(query: str, search_type: str, display: int = 5) -> list[dict]:
+    """
+    search_type: blog | cafearticle | news
+    """
+    url = f"https://openapi.naver.com/v1/search/{search_type}.json"
+    headers = {
+        "X-Naver-Client-Id":     os.environ["NAVER_CLIENT_ID"],
+        "X-Naver-Client-Secret": os.environ["NAVER_CLIENT_SECRET"],
+    }
+    params = {"query": query, "display": display, "sort": "date"}
+
+    res = requests.get(url, headers=headers, params=params, timeout=10)
+    res.raise_for_status()
+    return res.json().get("items", [])
+
+
+def collect_naver() -> list[dict]:
+    print("🔍 네이버 블로그·카페·뉴스 수집 중...")
     results = []
 
-    for keyword in ALL_KEYWORDS:
+    # 블로그·카페 — 소비자 키워드
+    for keyword in KEYWORDS_CONSUMER:
+        for search_type, label in [("blog", "블로그"), ("cafearticle", "카페")]:
+            try:
+                items = naver_search(keyword, search_type, NAVER_RESULTS_EACH)
+                for item in items:
+                    results.append({
+                        "source":    label,
+                        "keyword":   keyword,
+                        "category":  "소비자반응",
+                        "title":     clean_html(item.get("title", "")),
+                        "text":      clean_html(item.get("description", ""))[:300],
+                        "post_date": parse_date(
+                            item.get("postdate") or item.get("datetime", "")
+                        ),
+                        "url":       item.get("link", ""),
+                    })
+            except Exception as e:
+                print(f"  ⚠️ [{label}] '{keyword}' 실패 (스킵): {e}")
+
+    # 뉴스 — 업계 키워드
+    for keyword in KEYWORDS_NEWS:
         try:
-            run = client.actor("apify/twitter-scraper").call(
-                run_input={
-                    "searchTerms": [keyword],
-                    "maxItems":    X_POSTS_PER_KEYWORD,
-                    "lang":        "ko",
-                }
-            )
-            for item in client.dataset(run.default_dataset_id).iterate_items():
+            items = naver_search(keyword, "news", NAVER_RESULTS_EACH)
+            for item in items:
                 results.append({
+                    "source":    "뉴스",
                     "keyword":   keyword,
-                    "category":  "운동복" if keyword in KEYWORDS_WORKOUT else "출근복",
-                    "platform":  "X",
-                    "text":      item.get("text", "")[:300],
-                    "likes":     item.get("likeCount", 0),
-                    "retweets":  item.get("retweetCount", 0),
-                    "post_date": parse_date(item.get("createdAt", "")),  # 실제 게시일
-                    "url":       item.get("url", ""),
+                    "category":  "업계동향",
+                    "title":     clean_html(item.get("title", "")),
+                    "text":      clean_html(item.get("description", ""))[:300],
+                    "post_date": parse_date(item.get("pubDate", "")),
+                    "url":       item.get("originallink") or item.get("link", ""),
                 })
         except Exception as e:
-            print(f"  ⚠️ '{keyword}' 수집 실패 (스킵): {e}")
+            print(f"  ⚠️ [뉴스] '{keyword}' 실패 (스킵): {e}")
 
-    print(f"  → {len(results)}개 포스트 수집 완료")
+    print(f"  → {len(results)}건 수집 완료 (블로그+카페+뉴스)")
     return results
 
 
@@ -146,48 +187,54 @@ def collect_x(client: ApifyClient) -> list[dict]:
 # Claude 분석
 # ══════════════════════════════════════════
 
-def analyze(ig_data: list[dict], x_data: list[dict]) -> str:
+def analyze(ig_data: list[dict], naver_data: list[dict]) -> str:
     print("🤖 Claude 분석 중...")
 
-    claude = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    claude  = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    blog_cafe = [d for d in naver_data if d["source"] in ("블로그", "카페")]
+    news      = [d for d in naver_data if d["source"] == "뉴스"]
 
     prompt = f"""
 너는 남성 스포츠 패션 브랜드의 퍼포먼스 마케터야.
-오늘 수집된 경쟁사 소셜 데이터를 분석해서 이메일 뉴스레터로 보낼 브리핑을 작성해줘.
+오늘 수집된 데이터를 분석해서 이메일 뉴스레터용 브리핑을 HTML로 작성해줘.
 주 타겟은 운동과 일상을 넘나드는 20-40대 남성이야.
 
-=== 경쟁사 인스타그램 최근 포스팅 ===
+=== 경쟁사 인스타그램 ===
 {json.dumps(ig_data, ensure_ascii=False)}
 
-=== X 소비자 반응 ===
-{json.dumps(x_data[:30], ensure_ascii=False)}
+=== 네이버 블로그·카페 (소비자 반응) ===
+{json.dumps(blog_cafe[:20], ensure_ascii=False)}
 
-아래 HTML 형식으로만 작성해줘. 마크다운 쓰지 말고 HTML 태그로만.
+=== 네이버 뉴스 (업계 동향) ===
+{json.dumps(news[:10], ensure_ascii=False)}
+
+아래 HTML 형식으로만 작성해. 마크다운 쓰지 말 것.
 
 <h3>① 오늘의 핵심 인사이트</h3>
-<p><b>[인사이트 제목]</b><br>[2-3문장 설명]</p>
-(3개 작성)
+<p><b>[제목]</b><br>[2-3문장 설명]</p>
+(3개)
 
 <h3>② 경쟁사 움직임</h3>
-<p><b>[브랜드명]</b>: [한 줄 요약]</p>
-(브랜드별)
+<p><b>[브랜드]</b>: [한 줄 요약]</p>
 
-<h3>③ 남성 소비자 언어</h3>
+<h3>③ 소비자 언어 (블로그·카페)</h3>
 <p><b>운동복</b>: [실제 소비자 표현·키워드]<br>
 <b>출근복</b>: [실제 소비자 표현·키워드]</p>
 
-<h3>④ 공략 포인트</h3>
+<h3>④ 업계 동향 (뉴스)</h3>
+<p>[주목할 뉴스 2-3건, 한 줄씩]</p>
+
+<h3>⑤ 공략 포인트</h3>
 <p>[경쟁사 갭, 기회 영역 2-3문장]</p>
 
-마케터가 내일 당장 쓸 수 있는 언어로 써줘.
+마케터가 내일 당장 쓸 수 있는 언어로.
 """
 
     msg = claude.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=1500,
+        max_tokens=1800,
         messages=[{"role": "user", "content": prompt}],
     )
-
     return msg.content[0].text
 
 
@@ -195,29 +242,35 @@ def analyze(ig_data: list[dict], x_data: list[dict]) -> str:
 # Gmail 뉴스레터 발송
 # ══════════════════════════════════════════
 
-def send_newsletter(analysis: str, ig_count: int, x_count: int, today: str) -> None:
+def send_newsletter(analysis: str, ig_count: int, naver_count: int, today: str) -> None:
     print("📧 이메일 발송 중...")
 
-    gmail   = os.environ["GMAIL_ADDRESS"]
-    app_pw  = os.environ["GMAIL_APP_PASSWORD"]
+    gmail  = os.environ["GMAIL_ADDRESS"]
+    app_pw = os.environ["GMAIL_APP_PASSWORD"]
 
     html = f"""
 <!DOCTYPE html>
 <html>
-<body style="font-family:'Apple SD Gothic Neo',sans-serif;max-width:620px;margin:0 auto;padding:24px;color:#222;background:#fff;">
+<body style="font-family:'Apple SD Gothic Neo',sans-serif;max-width:620px;
+             margin:0 auto;padding:24px;color:#222;background:#fff;">
 
   <div style="border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:28px;">
-    <p style="margin:0;font-size:12px;color:#888;letter-spacing:1px;">COMPETITIVE INTELLIGENCE</p>
+    <p style="margin:0;font-size:11px;color:#888;letter-spacing:1.5px;">COMPETITIVE INTELLIGENCE</p>
     <h1 style="margin:6px 0 4px;font-size:22px;font-weight:700;">경쟁사 브리핑</h1>
-    <p style="margin:0;font-size:13px;color:#666;">{today} &nbsp;·&nbsp; Instagram {ig_count}건 &nbsp;·&nbsp; X {x_count}건</p>
+    <p style="margin:0;font-size:13px;color:#666;">
+      {today} &nbsp;·&nbsp;
+      Instagram {ig_count}건 &nbsp;·&nbsp;
+      네이버 블로그·카페·뉴스 {naver_count}건
+    </p>
   </div>
 
-  <div style="font-size:15px;line-height:1.8;">
+  <div style="font-size:15px;line-height:1.85;">
     {analysis}
   </div>
 
-  <div style="margin-top:36px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#aaa;">
-    자동 발송 &nbsp;·&nbsp; g8428/experiment &nbsp;·&nbsp; {today}
+  <div style="margin-top:36px;padding-top:16px;border-top:1px solid #eee;
+              font-size:11px;color:#bbb;">
+    자동 발송 · g8428/experiment · {today}
   </div>
 
 </body>
@@ -225,9 +278,9 @@ def send_newsletter(analysis: str, ig_count: int, x_count: int, today: str) -> N
 """
 
     msg = MIMEMultipart("alternative")
-    msg["Subject"]  = f"📊 경쟁사 브리핑 {today}"
-    msg["From"]     = gmail
-    msg["To"]       = gmail
+    msg["Subject"] = f"📊 경쟁사 브리핑 {today}"
+    msg["From"]    = gmail
+    msg["To"]      = gmail
     msg.attach(MIMEText(html, "html", "utf-8"))
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
@@ -241,12 +294,12 @@ def send_newsletter(analysis: str, ig_count: int, x_count: int, today: str) -> N
 # Google Sheets 저장
 # ══════════════════════════════════════════
 
-def update_sheets(ig_data: list[dict], x_data: list[dict], analysis: str, today: str) -> None:
+def update_sheets(ig_data: list[dict], naver_data: list[dict],
+                  analysis: str, today: str) -> None:
     print("📊 Sheets 업데이트 중...")
 
-    creds_info = json.loads(os.environ["GOOGLE_CREDENTIALS"])
     creds = Credentials.from_service_account_info(
-        creds_info,
+        json.loads(os.environ["GOOGLE_CREDENTIALS"]),
         scopes=[
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/drive",
@@ -255,57 +308,44 @@ def update_sheets(ig_data: list[dict], x_data: list[dict], analysis: str, today:
     gc = gspread.authorize(creds)
     sh = gc.open_by_key(os.environ["SPREADSHEET_ID"])
 
-    # 시트 1: 오늘 브리핑
+    # 오늘 브리핑
     try:
-        ws_brief = sh.worksheet("📌 오늘 브리핑")
+        ws_b = sh.worksheet("📌 오늘 브리핑")
     except gspread.WorksheetNotFound:
-        ws_brief = sh.add_worksheet("📌 오늘 브리핑", rows=100, cols=2)
-
-    ws_brief.clear()
-    ws_brief.update("A1", [
+        ws_b = sh.add_worksheet("📌 오늘 브리핑", rows=100, cols=2)
+    ws_b.clear()
+    ws_b.update("A1", [
         ["📅 수집일", today],
-        ["📦 수집량", f"Instagram {len(ig_data)}건 | X {len(x_data)}건"],
+        ["📦 수집량", f"Instagram {len(ig_data)}건 | 네이버 {len(naver_data)}건"],
         [""],
         ["🤖 AI 분석", ""],
         [analysis, ""],
     ])
 
-    # 시트 2: 인스타 로그 (게시일 기준)
+    # 인스타 로그
     try:
         ws_ig = sh.worksheet("📸 인스타 로그")
     except gspread.WorksheetNotFound:
         ws_ig = sh.add_worksheet("📸 인스타 로그", rows=2000, cols=8)
         ws_ig.append_row(["게시일", "수집일", "브랜드", "캡션", "좋아요", "댓글", "해시태그", "URL"])
-
     for p in ig_data:
         ws_ig.append_row([
-            p["post_date"],   # 실제 게시일
-            today,            # 수집일
-            p["brand"],
-            p["caption"],
-            p["likes"],
-            p["comments"],
+            p["post_date"], today, p["brand"], p["caption"],
+            p["likes"], p["comments"],
             " ".join(f"#{h}" for h in p["hashtags"][:5]),
             p["url"],
         ])
 
-    # 시트 3: X 트렌드 로그
+    # 네이버 로그
     try:
-        ws_x = sh.worksheet("🐦 X 트렌드")
+        ws_n = sh.worksheet("🔍 네이버 로그")
     except gspread.WorksheetNotFound:
-        ws_x = sh.add_worksheet("🐦 X 트렌드", rows=2000, cols=8)
-        ws_x.append_row(["게시일", "수집일", "카테고리", "키워드", "내용", "좋아요", "리트윗", "URL"])
-
-    for p in x_data:
-        ws_x.append_row([
-            p["post_date"],   # 실제 게시일
-            today,            # 수집일
-            p["category"],
-            p["keyword"],
-            p["text"],
-            p["likes"],
-            p["retweets"],
-            p["url"],
+        ws_n = sh.add_worksheet("🔍 네이버 로그", rows=2000, cols=7)
+        ws_n.append_row(["게시일", "수집일", "출처", "카테고리", "키워드", "제목", "내용", "URL"])
+    for p in naver_data:
+        ws_n.append_row([
+            p["post_date"], today, p["source"], p["category"],
+            p["keyword"], p["title"], p["text"], p["url"],
         ])
 
     print("  → 업데이트 완료")
@@ -319,14 +359,14 @@ def main():
     today = date.today().strftime("%Y-%m-%d")
     print(f"\n🚀 경쟁사 인텔리전스 에이전트 [{datetime.now().strftime('%Y-%m-%d %H:%M')}]\n")
 
-    client = ApifyClient(os.environ["APIFY_API_TOKEN"])
+    apify  = ApifyClient(os.environ["APIFY_API_TOKEN"])
 
-    ig_data  = collect_instagram(client)
-    x_data   = collect_x(client)
-    analysis = analyze(ig_data, x_data)
+    ig_data    = collect_instagram(apify)
+    naver_data = collect_naver()
+    analysis   = analyze(ig_data, naver_data)
 
-    update_sheets(ig_data, x_data, analysis, today)
-    send_newsletter(analysis, len(ig_data), len(x_data), today)
+    update_sheets(ig_data, naver_data, analysis, today)
+    send_newsletter(analysis, len(ig_data), len(naver_data), today)
 
     print("\n✅ 완료\n")
 
