@@ -80,7 +80,7 @@ def collect_instagram(client: ApifyClient) -> list[dict]:
     handle_to_brand = {v: k for k, v in COMPETITORS.items()}
     results = []
 
-    for item in client.dataset(run["defaultDatasetId"]).iterate_items():
+    for item in client.dataset(run.default_dataset_id).iterate_items():
         username = item.get("username", "")
         brand = handle_to_brand.get(username, username)
 
@@ -118,7 +118,7 @@ def collect_x(client: ApifyClient) -> list[dict]:
                 }
             )
 
-            for item in client.dataset(run["defaultDatasetId"]).iterate_items():
+            for item in client.dataset(run.default_dataset_id).iterate_items():
                 results.append({
                     "keyword":   keyword,
                     "category":  "운동복" if keyword in KEYWORDS_WORKOUT else "출근복",
