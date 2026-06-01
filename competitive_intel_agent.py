@@ -322,31 +322,39 @@ def update_sheets(ig_data: list[dict], naver_data: list[dict],
         [analysis, ""],
     ])
 
-    # 인스타 로그
+    # 인스타 로그 — 한 번에 배치 전송
     try:
         ws_ig = sh.worksheet("📸 인스타 로그")
     except gspread.WorksheetNotFound:
         ws_ig = sh.add_worksheet("📸 인스타 로그", rows=2000, cols=8)
         ws_ig.append_row(["게시일", "수집일", "브랜드", "캡션", "좋아요", "댓글", "해시태그", "URL"])
-    for p in ig_data:
-        ws_ig.append_row([
+    ig_rows = [
+        [
             p["post_date"], today, p["brand"], p["caption"],
             p["likes"], p["comments"],
             " ".join(f"#{h}" for h in p["hashtags"][:5]),
             p["url"],
-        ])
+        ]
+        for p in ig_data
+    ]
+    if ig_rows:
+        ws_ig.append_rows(ig_rows)
 
-    # 네이버 로그
+    # 네이버 로그 — 한 번에 배치 전송
     try:
         ws_n = sh.worksheet("🔍 네이버 로그")
     except gspread.WorksheetNotFound:
-        ws_n = sh.add_worksheet("🔍 네이버 로그", rows=2000, cols=7)
+        ws_n = sh.add_worksheet("🔍 네이버 로그", rows=2000, cols=8)
         ws_n.append_row(["게시일", "수집일", "출처", "카테고리", "키워드", "제목", "내용", "URL"])
-    for p in naver_data:
-        ws_n.append_row([
+    naver_rows = [
+        [
             p["post_date"], today, p["source"], p["category"],
             p["keyword"], p["title"], p["text"], p["url"],
-        ])
+        ]
+        for p in naver_data
+    ]
+    if naver_rows:
+        ws_n.append_rows(naver_rows)
 
     print("  → 업데이트 완료")
 
