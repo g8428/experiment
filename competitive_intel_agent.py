@@ -43,7 +43,6 @@ COMPETITORS = {
     "유니클로": "uniqlokr",
 }
 
-# 네이버 블로그·카페 — 소비자 키워드
 KEYWORDS_CONSUMER = [
     "남성운동복 추천", "남자운동복 후기",
     "헬스복 추천 남자", "러닝복 남자 추천",
@@ -51,15 +50,14 @@ KEYWORDS_CONSUMER = [
     "애슬레저 남성 추천",
 ]
 
-# 네이버 뉴스 — 업계 키워드
 KEYWORDS_NEWS = [
     "스포츠패션 남성", "러닝 트렌드",
     "애슬레저 시장", "남성 운동복 브랜드",
     "스포츠웨어 트렌드",
 ]
 
-IG_POSTS_PER_BRAND   = 5
-NAVER_RESULTS_EACH   = 5   # 키워드당 블로그·카페·뉴스 각 N건
+IG_POSTS_PER_BRAND  = 5
+NAVER_RESULTS_EACH  = 5
 
 
 # ══════════════════════════════════════════
@@ -77,7 +75,6 @@ def parse_date(ts: str) -> str:
     return ts[:10] if len(ts) >= 10 else ts
 
 def clean_html(text: str) -> str:
-    """네이버 API 결과에서 HTML 태그 제거"""
     import re
     return re.sub(r"<[^>]+>", "", text).strip()
 
@@ -123,16 +120,12 @@ def collect_instagram(client: ApifyClient) -> list[dict]:
 # ══════════════════════════════════════════
 
 def naver_search(query: str, search_type: str, display: int = 5) -> list[dict]:
-    """
-    search_type: blog | cafearticle | news
-    """
     url = f"https://openapi.naver.com/v1/search/{search_type}.json"
     headers = {
         "X-Naver-Client-Id":     os.environ["NAVER_CLIENT_ID"],
         "X-Naver-Client-Secret": os.environ["NAVER_CLIENT_SECRET"],
     }
     params = {"query": query, "display": display, "sort": "date"}
-
     res = requests.get(url, headers=headers, params=params, timeout=10)
     res.raise_for_status()
     return res.json().get("items", [])
@@ -142,7 +135,6 @@ def collect_naver() -> list[dict]:
     print("🔍 네이버 블로그·카페·뉴스 수집 중...")
     results = []
 
-    # 블로그·카페 — 소비자 키워드
     for keyword in KEYWORDS_CONSUMER:
         for search_type, label in [("blog", "블로그"), ("cafearticle", "카페")]:
             try:
@@ -154,15 +146,12 @@ def collect_naver() -> list[dict]:
                         "category":  "소비자반응",
                         "title":     clean_html(item.get("title", "")),
                         "text":      clean_html(item.get("description", ""))[:300],
-                        "post_date": parse_date(
-                            item.get("postdate") or item.get("datetime", "")
-                        ),
+                        "post_date": parse_date(item.get("postdate") or item.get("datetime", "")),
                         "url":       item.get("link", ""),
                     })
             except Exception as e:
                 print(f"  ⚠️ [{label}] '{keyword}' 실패 (스킵): {e}")
 
-    # 뉴스 — 업계 키워드
     for keyword in KEYWORDS_NEWS:
         try:
             items = naver_search(keyword, "news", NAVER_RESULTS_EACH)
@@ -190,7 +179,7 @@ def collect_naver() -> list[dict]:
 def analyze(ig_data: list[dict], naver_data: list[dict]) -> str:
     print("🤖 Claude 분석 중...")
 
-    claude  = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    claude    = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     blog_cafe = [d for d in naver_data if d["source"] in ("블로그", "카페")]
     news      = [d for d in naver_data if d["source"] == "뉴스"]
 
@@ -208,10 +197,10 @@ def analyze(ig_data: list[dict], naver_data: list[dict]) -> str:
 === 네이버 뉴스 (업계 동향) ===
 {json.dumps(news[:10], ensure_ascii=False)}
 
-아래 HTML 형식으로만 작성해. 마크다운 쓰지 말 것.
+아래 HTML 형식으로만 작성해. 마크다운이나 코드펜스 절대 쓰지 말 것. HTML 태그만.
 
 <h3>① 오늘의 핵심 인사이트</h3>
-<p><b>[제목]</b><br>[2-3문장 설명]</p>
+<p><b>[제목]</b><br>[2-3문장]</p>
 (3개)
 
 <h3>② 경쟁사 움직임</h3>
@@ -227,7 +216,7 @@ def analyze(ig_data: list[dict], naver_data: list[dict]) -> str:
 <h3>⑤ 공략 포인트</h3>
 <p>[경쟁사 갭, 기회 영역 2-3문장]</p>
 
-마케터가 내일 당장 쓸 수 있는 언어로.
+각 섹션 간결하게. 마케터가 내일 당장 쓸 수 있는 언어로.
 """
 
     msg = claude.messages.create(
@@ -235,20 +224,36 @@ def analyze(ig_data: list[dict], naver_data: list[dict]) -> str:
         max_tokens=4000,
         messages=[{"role": "user", "content": prompt}],
     )
+
     result = msg.content[0].text
-    # 코드펜스 제거
     result = result.replace("```html", "").replace("```", "").strip()
     return result
+
 
 # ══════════════════════════════════════════
 # Gmail 뉴스레터 발송
 # ══════════════════════════════════════════
 
-def send_newsletter(analysis: str, ig_count: int, naver_count: int, today: str) -> None:
+def send_newsletter(analysis: str, ig_data: list[dict],
+                    naver_data: list[dict], today: str) -> None:
     print("📧 이메일 발송 중...")
 
     gmail  = os.environ["GMAIL_ADDRESS"]
     app_pw = os.environ["GMAIL_APP_PASSWORD"]
+
+    # 경쟁사 인스타 링크
+    ig_links = "".join(
+        f'<li><a href="{p["url"]}" style="color:#0066cc;text-decoration:none;">'
+        f'{p["brand"]} ({p["post_date"]})</a></li>'
+        for p in ig_data if p.get("url")
+    )
+
+    # 네이버 상위 15건 링크
+    naver_links = "".join(
+        f'<li><a href="{p["url"]}" style="color:#0066cc;text-decoration:none;">'
+        f'[{p["source"]}] {p["title"][:45]}</a></li>'
+        for p in naver_data[:15] if p.get("url")
+    )
 
     html = f"""
 <!DOCTYPE html>
@@ -261,8 +266,8 @@ def send_newsletter(analysis: str, ig_count: int, naver_count: int, today: str) 
     <h1 style="margin:6px 0 4px;font-size:22px;font-weight:700;">경쟁사 브리핑</h1>
     <p style="margin:0;font-size:13px;color:#666;">
       {today} &nbsp;·&nbsp;
-      Instagram {ig_count}건 &nbsp;·&nbsp;
-      네이버 블로그·카페·뉴스 {naver_count}건
+      Instagram {len(ig_data)}건 &nbsp;·&nbsp;
+      네이버 블로그·카페·뉴스 {len(naver_data)}건
     </p>
   </div>
 
@@ -270,7 +275,20 @@ def send_newsletter(analysis: str, ig_count: int, naver_count: int, today: str) 
     {analysis}
   </div>
 
-  <div style="margin-top:36px;padding-top:16px;border-top:1px solid #eee;
+  <div style="margin-top:32px;padding-top:20px;border-top:1px solid #eee;">
+    <p style="font-size:12px;font-weight:700;color:#555;margin:0 0 8px;">
+      📎 경쟁사 인스타그램</p>
+    <ul style="font-size:12px;line-height:2;padding-left:16px;margin:0 0 16px;">
+      {ig_links}
+    </ul>
+    <p style="font-size:12px;font-weight:700;color:#555;margin:0 0 8px;">
+      📰 참고 블로그·카페·뉴스</p>
+    <ul style="font-size:12px;line-height:2;padding-left:16px;margin:0;">
+      {naver_links}
+    </ul>
+  </div>
+
+  <div style="margin-top:28px;padding-top:16px;border-top:1px solid #eee;
               font-size:11px;color:#bbb;">
     자동 발송 · g8428/experiment · {today}
   </div>
@@ -324,7 +342,7 @@ def update_sheets(ig_data: list[dict], naver_data: list[dict],
         [analysis, ""],
     ])
 
-    # 인스타 로그 — 한 번에 배치 전송
+    # 인스타 로그 — 배치 전송
     try:
         ws_ig = sh.worksheet("📸 인스타 로그")
     except gspread.WorksheetNotFound:
@@ -342,7 +360,7 @@ def update_sheets(ig_data: list[dict], naver_data: list[dict],
     if ig_rows:
         ws_ig.append_rows(ig_rows)
 
-    # 네이버 로그 — 한 번에 배치 전송
+    # 네이버 로그 — 배치 전송
     try:
         ws_n = sh.worksheet("🔍 네이버 로그")
     except gspread.WorksheetNotFound:
@@ -369,14 +387,14 @@ def main():
     today = date.today().strftime("%Y-%m-%d")
     print(f"\n🚀 경쟁사 인텔리전스 에이전트 [{datetime.now().strftime('%Y-%m-%d %H:%M')}]\n")
 
-    apify  = ApifyClient(os.environ["APIFY_API_TOKEN"])
+    apify = ApifyClient(os.environ["APIFY_API_TOKEN"])
 
     ig_data    = collect_instagram(apify)
     naver_data = collect_naver()
     analysis   = analyze(ig_data, naver_data)
 
     update_sheets(ig_data, naver_data, analysis, today)
-    send_newsletter(analysis, len(ig_data), len(naver_data), today)
+    send_newsletter(analysis, ig_data, naver_data, today)
 
     print("\n✅ 완료\n")
 
