@@ -232,11 +232,13 @@ def analyze(ig_data: list[dict], naver_data: list[dict]) -> str:
 
     msg = claude.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=1800,
+        max_tokens=4000,
         messages=[{"role": "user", "content": prompt}],
     )
-    return msg.content[0].text
-
+    result = msg.content[0].text
+    # 코드펜스 제거
+    result = result.replace("```html", "").replace("```", "").strip()
+    return result
 
 # ══════════════════════════════════════════
 # Gmail 뉴스레터 발송
