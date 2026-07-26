@@ -1,0 +1,31 @@
+{
+  "max_monthly_price_krw": 20000,
+  "price_basis": "정상가 (프로모션 종료 후 가격) 기준, 프로모션 특가 기간 가격이 아님",
+  "contract_types_accepted": ["평생 유지 가능", "7개월 등 단기 갈아타기용 특판"],
+  "data": {
+    "options": [
+      { "type": "구간형", "min_gb": 10, "daily_extra_gb": 2 },
+      { "type": "대용량형", "min_gb": 40 }
+    ]
+  },
+  "call_minutes_requirement": null,
+  "penalty": {
+    "prefer": "위약금 없음 또는 짧은 조건",
+    "exclude_if": "장기(예: 120일 이상) 위약금/할인반환금 조건이 있는 경우 원칙적으로 제외, 애매하면 후보로 표시하고 조건 명시"
+  },
+  "required_features": ["테더링/핫스팟 가능", "로밍 가능"],
+  "notification": {
+    "channel": "slack_dm",
+    "slack_user_id": "U0AEWE72USG"
+  },
+  "schedule": {
+    "frequency": "daily",
+    "task_name": "mvno-plan-daily-monitor"
+  },
+  "sources": [
+    "https://www.clien.net/service/board/jirum",
+    "https://www.moyoplan.com/plans",
+    "https://www.mvnohub.kr/product/products.do",
+    "뽐뿌 통신 게시판"
+  ]
+}
