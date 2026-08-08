@@ -18,6 +18,9 @@ env/
 *.swp
 *.swo
 
+# 옵시디언 개인 노트 볼트 — 개인 메모라 레포에 커밋하지 않는다
+vault/
+
 # Claude Code local state는 무시하되, 서브에이전트 정의(.claude/agents/)는 레포에 커밋해서
 # 어떤 컴퓨터에서 Claude Code를 켜도 동일한 하위 에이전트를 쓸 수 있게 한다. (AGENTS.md 참고)
 .claude/*
