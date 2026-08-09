@@ -1,0 +1,35 @@
+{
+  "date": "2026-08-09",
+  "source": "클리앙 알뜰구매 게시판 - 2026년 8월 알뜰폰 요금제 추천",
+  "source_url": "https://www.clien.net/service/board/jirum/19239313",
+  "condition_fully_met": [],
+  "reference_candidates": [
+    {
+      "carrier_network": "SKT망",
+      "mvno": "A모바일",
+      "plan": "A 5G 스마트 15GB/300분",
+      "price_promo": "990원 x 7개월",
+      "price_regular": 18480,
+      "data": "15GB (5G)",
+      "tethering": "15GB 가능",
+      "roaming": "언급 없음",
+      "penalty": "명시된 위약금 없음",
+      "missing_conditions": ["데이터 조건(10GB+일2GB 또는 40GB 이상) 미충족", "로밍 여부 불명"],
+      "url": "https://amobile.co.kr/plan/79156"
+    },
+    {
+      "carrier_network": "U+망",
+      "mvno": "A모바일",
+      "plan": "A 갓성비 20GB/100분",
+      "price_promo": "10원 x 7개월",
+      "price_regular": 19800,
+      "data": "기본10GB+추가10GB(월단위, 총 20GB)",
+      "tethering": "언급 없음",
+      "roaming": "언급 없음",
+      "penalty": "명시된 위약금 없음",
+      "missing_conditions": ["데이터가 월단위 합산이라 조건 미충족", "테더링/로밍 불명"],
+      "url": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"
+    }
+  ],
+  "slack_message_link": "https://w1770953060-i3f711804.slack.com/archives/D0AEBCNV92T/p1786234277018589"
+}
