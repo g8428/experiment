@@ -1,0 +1,36 @@
+{
+  "date": "2026-08-20",
+  "sources": [
+    "https://www.clien.net/service/board/jirum/19239313"
+  ],
+  "matched_recommendations": [],
+  "reference_candidates": [
+    {
+      "carrier_network": "SKT",
+      "mvno": "A모바일",
+      "plan": "A 5G 스마트 15GB/300분",
+      "price_promo": "990원 x 7개월",
+      "price_regular": "18480원",
+      "data": "15GB",
+      "penalty": "명시된 조건 없음",
+      "tethering": "가능 (15GB)",
+      "roaming": "언급 없음",
+      "link": "https://amobile.co.kr/plan/79156",
+      "gap": "일2GB추가/40GB+ 데이터 조건 미충족, 로밍 미확인"
+    },
+    {
+      "carrier_network": "SKT",
+      "mvno": "고고모바일",
+      "plan": "고고 LTE 200분/10GB (모요)",
+      "price_promo": "10원 x 7개월",
+      "price_regular": "18700원",
+      "data": "10GB",
+      "penalty": "명시된 조건 없음, eSIM 미지원",
+      "tethering": "언급 없음",
+      "roaming": "언급 없음",
+      "link": "https://www.moyoplan.com/plans/36197",
+      "gap": "일2GB추가/40GB+ 데이터 조건 미충족, 테더링/로밍 미확인"
+    }
+  ],
+  "slack_sent": true
+}

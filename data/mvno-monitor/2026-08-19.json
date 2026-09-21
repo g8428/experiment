@@ -1,0 +1,32 @@
+{
+  "date": "2026-08-19",
+  "source": "https://www.clien.net/service/board/jirum/19239313",
+  "matched_full_criteria": [],
+  "reference_candidates": [
+    {
+      "carrier": "A모바일 (LGU+망)",
+      "plan": "A 갓성비 20GB(기본10+월추가10)/100분",
+      "price_promo": "10원 x 7개월",
+      "price_normal": "19,800원",
+      "data": "기본 10GB + 매월 추가 10GB (총 20GB)",
+      "penalty": "언급 없음",
+      "tethering": "언급 없음",
+      "roaming": "언급 없음",
+      "unmet_conditions": ["일 단위 추가 아닌 월 단위 추가라 데이터 조건과 불일치", "테더링/로밍 확인 필요"],
+      "link": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"
+    },
+    {
+      "carrier": "고고모바일 (SKT망)",
+      "plan": "고고 LTE 200분/10GB_모요",
+      "price_promo": "10원 x 7개월",
+      "price_normal": "18,700원",
+      "data": "10GB (소진 후 종량과금)",
+      "penalty": "없음 (번호이동 수수료 800원)",
+      "tethering": "언급 없음, eSIM 미지원",
+      "roaming": "언급 없음",
+      "unmet_conditions": ["데이터 조건 미충족 (일 2GB 추가 아님, 40GB 미만)"],
+      "link": "https://www.moyoplan.com/plans/36197"
+    }
+  ],
+  "slack_sent": true
+}
