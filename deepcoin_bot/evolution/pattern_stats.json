@@ -1,0 +1,195 @@
+{
+  "generated_at": "2026-09-21 23:09",
+  "total_patterns": 25,
+  "patterns": [
+    {
+      "key": "london+BOS+OB재터치+OB2+FVG0+sweep",
+      "trades": 3,
+      "wins": 1,
+      "win_rate": 0.3333,
+      "pnl": 3.08
+    },
+    {
+      "key": "london+없음+OB재터치+OB3+FVG0+sweep",
+      "trades": 3,
+      "wins": 1,
+      "win_rate": 0.3333,
+      "pnl": 5.4
+    },
+    {
+      "key": "london+없음+OB재터치+OB2+FVG0+sweep",
+      "trades": 3,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -8.5
+    },
+    {
+      "key": "newyork+없음+OB재터치+OB3+FVG0+sweep",
+      "trades": 2,
+      "wins": 1,
+      "win_rate": 0.5,
+      "pnl": 3.48
+    },
+    {
+      "key": "newyork+BOS+OB재터치+OB3+FVG1+sweep",
+      "trades": 2,
+      "wins": 1,
+      "win_rate": 0.5,
+      "pnl": 9.2
+    },
+    {
+      "key": "newyork+BOS+OB재터치+OB1+FVG0+sweep",
+      "trades": 1,
+      "wins": 1,
+      "win_rate": 1.0,
+      "pnl": 11.98
+    },
+    {
+      "key": "london+없음+OB재터치+OB3+FVG2+sweep",
+      "trades": 1,
+      "wins": 1,
+      "win_rate": 1.0,
+      "pnl": 13.27
+    },
+    {
+      "key": "london+BOS+FVG진입+OB2+FVG3+no_sweep",
+      "trades": 1,
+      "wins": 1,
+      "win_rate": 1.0,
+      "pnl": 8.29
+    },
+    {
+      "key": "london+BOS+FVG진입+OB3+FVG2+no_sweep",
+      "trades": 1,
+      "wins": 1,
+      "win_rate": 1.0,
+      "pnl": 11.77
+    },
+    {
+      "key": "london+없음+OB재터치+OB2+FVG1+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -2.86
+    },
+    {
+      "key": "london+없음+FVG진입+OB2+FVG2+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -3.96
+    },
+    {
+      "key": "london+BOS+OB재터치+OB1+FVG1+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -3.46
+    },
+    {
+      "key": "london+BOS+FVG진입+OB3+FVG1+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -1.91
+    },
+    {
+      "key": "newyork+ChoCh+OB재터치+OB2+FVG4+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -4.61
+    },
+    {
+      "key": "newyork+없음+OB재터치+OB2+FVG1+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -2.51
+    },
+    {
+      "key": "newyork+없음+FVG진입+OB2+FVG3+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -3.98
+    },
+    {
+      "key": "london+BOS+OB재터치+OB3+FVG1+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -2.3
+    },
+    {
+      "key": "newyork+BOS+OB재터치+OB3+FVG0+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -3.13
+    },
+    {
+      "key": "london+BOS+OB재터치+OB3+FVG4+no_sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -1.33
+    },
+    {
+      "key": "newyork+BOS+FVG진입+OB3+FVG3+no_sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -2.89
+    },
+    {
+      "key": "newyork+BOS+OB재터치+OB3+FVG2+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -3.06
+    },
+    {
+      "key": "london+없음+FVG진입+OB3+FVG2+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -4.06
+    },
+    {
+      "key": "london+없음+OB재터치+OB3+FVG3+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -2.85
+    },
+    {
+      "key": "newyork+BOS+FVG진입+OB3+FVG1+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -4.83
+    },
+    {
+      "key": "newyork+BOS+OB재터치+OB2+FVG0+sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -4.17
+    }
+  ],
+  "pending_updates": [
+    {
+      "pattern": "london+없음+OB재터치+OB2+FVG0+sweep",
+      "action": "watch",
+      "reason": "win_rate=0% (3trades, PnL -8.50%) -> 5거래 채울때까지 모니터링",
+      "priority": "medium"
+    }
+  ],
+  "summary": {
+    "total_trades": 33,
+    "patterns_with_5plus": 0,
+    "high_win_patterns": 0,
+    "low_win_patterns": 0
+  }
+}
