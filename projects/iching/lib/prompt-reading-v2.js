@@ -88,9 +88,9 @@ function getGongmang(dayGanji) {
   const branchIdx = JIJI.indexOf(dayGanji[1]);
   if (stemIdx < 0 || branchIdx < 0) return ['', ''];
   // 순의 시작 지지
-  const순Start = (branchIdx - stemIdx + 12) % 12;
-  const gm1 = JIJI[(순Start + 10) % 12];
-  const gm2 = JIJI[(순Start + 11) % 12];
+  const sunStart = (branchIdx - stemIdx + 12) % 12;
+  const gm1 = JIJI[(sunStart + 10) % 12];
+  const gm2 = JIJI[(sunStart + 11) % 12];
   return [gm1, gm2];
 }
 
