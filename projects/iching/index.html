@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>周易占 · 주역점</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0a0806;--ink2:#141009;--ink3:#1e170e;--text:#f0e0c0;--muted:#9a8462;--dim:#5a4e3a;--gold:#c49a2a;--goldl:#e8c86a;--goldd:rgba(196,154,42,0.2);--red:#c0392b;--bdr:rgba(196,154,42,0.18);--bdrh:rgba(196,154,42,0.4);--tr:0.45s cubic-bezier(0.4,0,0.2,1);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100vh;background:var(--ink);font-family:'Noto Serif KR','Noto Serif SC',serif;color:var(--text);overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(196,154,42,0.04),transparent 60%),radial-gradient(ellipse 60% 80% at 80% 90%,rgba(122,26,26,0.05),transparent 60%);pointer-events:none;}
+.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem 1rem 5rem;overflow-y:auto;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity var(--tr),transform var(--tr);}
+.screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
+.screen.exit{opacity:0;transform:translateY(-18px);}
+.inner{width:100%;max-width:620px;margin:0 auto;}
+.stepbar{display:flex;gap:6px;justify-content:center;margin-bottom:1.8rem;}
+.step{width:30px;height:3px;background:var(--bdr);border-radius:2px;transition:background .3s;}
+.step.done{background:var(--gold);}
+.step.cur{background:var(--goldl);}
+.orn{display:flex;align-items:center;gap:10px;color:var(--gold);font-size:11px;letter-spacing:.2em;margin:.8rem 0;}
+.orn::before,.orn::after{content:'';flex:1;height:.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.stitle{font-size:1.1rem;font-weight:400;letter-spacing:.18em;color:var(--gold);text-align:center;margin-bottom:.3rem;}
+.ssub{font-size:.8rem;color:var(--dim);letter-spacing:.1em;text-align:center;margin-bottom:1.2rem;}
+.btn{padding:.85rem 2.4rem;border:.5px solid var(--gold);background:transparent;color:var(--goldl);font-family:inherit;font-size:.88rem;letter-spacing:.18em;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.btn::before{content:'';position:absolute;inset:0;background:var(--gold);opacity:0;transition:opacity .3s;}
+.btn:hover{color:var(--ink);}
+.btn:hover::before{opacity:1;}
+.btn span{position:relative;z-index:1;}
+.btns{display:flex;border:.5px solid var(--bdrh);background:transparent;}
+.btns .btn-s{flex:1;padding:.6rem 1.4rem;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:.8rem;letter-spacing:.12em;cursor:pointer;transition:all .25s;}
+.btns .btn-s:hover{color:var(--text);background:rgba(196,154,42,.06);}
+.btns .btn-s+.btn-s{border-left:.5px solid var(--bdrh);}
+.btn-ghost{background:none;border:none;color:var(--dim);font-family:inherit;font-size:.76rem;cursor:pointer;letter-spacing:.1em;padding:.4rem .6rem;transition:color .2s;}
+.btn-ghost:hover{color:var(--muted);}
+.brow{display:flex;gap:.8rem;justify-content:flex-end;margin-top:1.2rem;}
+.inp{width:100%;padding:.8rem 1rem;background:rgba(255,255,255,.02);border:.5px solid var(--bdr);color:var(--text);font-family:inherit;font-size:.9rem;line-height:1.8;resize:none;outline:none;transition:border-color .3s;letter-spacing:.04em;}
+.inp:focus{border-color:var(--bdrh);}
+.inp::placeholder{color:var(--dim);}
+input.inp{resize:none;}
+
+/* S0 */
+#s0{justify-content:center;text-align:center;}
+.logo{font-size:clamp(2.4rem,8vw,4.2rem);font-weight:300;letter-spacing:.3em;color:var(--goldl);font-family:'Noto Serif SC',serif;text-shadow:0 0 40px rgba(232,200,106,.12);}
+.trigs{display:flex;gap:1.2rem;justify-content:center;font-size:1.5rem;color:var(--gold);opacity:.4;animation:bth 4s ease-in-out infinite;margin:1rem 0;}
+@keyframes bth{0%,100%{opacity:.28;}50%{opacity:.58;}}
+.intro-p{max-width:380px;font-size:.85rem;color:var(--muted);line-height:2;letter-spacing:.05em;margin:0 auto 2rem;}
+
+/* S2 throw */
+.ptrak{width:100%;height:1px;background:var(--bdr);margin-bottom:1.5rem;position:relative;overflow:visible;}
+.pfill{height:100%;background:var(--gold);transition:width .4s ease;}
+.pfill::after{content:'';position:absolute;right:-3px;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--goldl);box-shadow:0 0 8px var(--gold);}
+.trows{display:flex;flex-direction:column;gap:.5rem;}
+.trow{display:flex;align-items:center;gap:.8rem;padding:.6rem .9rem;border:.5px solid var(--bdr);background:rgba(255,255,255,.01);transition:border-color .3s;}
+.trow.done{background:rgba(196,154,42,.03);}
+.trow.ar{border-color:var(--bdrh);}
+.ylbl{font-size:.72rem;color:var(--dim);letter-spacing:.1em;width:52px;flex-shrink:0;}
+.cwrap{display:flex;gap:5px;flex-shrink:0;}
+.cn{width:26px;height:26px;border-radius:50%;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;background:var(--ink3);color:var(--dim);cursor:pointer;transition:all .2s;user-select:none;}
+.cn:hover{border-color:var(--bdrh);color:var(--muted);}
+.cn.fl{animation:flip .6s ease-out;}
+.cn.yang{background:rgba(196,154,42,.12);border-color:var(--gold);color:var(--goldl);}
+.cn.yin{background:rgba(30,50,80,.2);border-color:#3a6090;color:#7ab0d8;}
+.cn.locked{cursor:default;}
+.cn.locked:hover{border-color:inherit;}
+@keyframes flip{0%{transform:rotateY(0);}50%{transform:rotateY(360deg) scale(1.1);}100%{transform:rotateY(720deg);}}
+.lpv{flex:1;display:flex;align-items:center;gap:6px;}
+.ly{height:6px;width:78px;background:var(--gold);border-radius:1px;}
+.ln{height:6px;width:33px;background:#3a6090;border-radius:1px;}
+.lchg{outline:1.5px solid var(--red);outline-offset:2px;}
+.ltyp{font-size:10px;color:var(--dim);letter-spacing:.07em;min-width:78px;}
+.ltyp.c{color:var(--red);}
+.tbtn{flex-shrink:0;padding:.28rem .8rem;border:.5px solid var(--bdrh);background:transparent;color:var(--muted);font-family:inherit;font-size:.72rem;cursor:pointer;transition:all .22s;letter-spacing:.1em;}
+.tbtn:hover{border-color:var(--gold);color:var(--goldl);}
+.tbtn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* gua display */
+.gwrap{display:flex;align-items:flex-start;gap:2rem;justify-content:center;flex-wrap:wrap;margin:1rem 0;}
+.gblk{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.glines{display:flex;flex-direction:column;gap:6px;}
+.gy{height:9px;width:86px;background:var(--gold);border-radius:1.5px;}
+.gnw{display:flex;gap:8px;}
+.gn{height:9px;width:36px;background:#3a6090;border-radius:1.5px;}
+.gchg{box-shadow:0 0 0 2px var(--red);border-radius:2px;}
+.gdiv{height:.5px;background:var(--gold);opacity:.22;margin:3px 0;}
+.gname{font-size:1rem;color:var(--goldl);letter-spacing:.12em;margin-top:4px;}
+.gsub{font-size:.72rem;color:var(--dim);letter-spacing:.08em;}
+.garw{font-size:1.3rem;color:var(--dim);align-self:center;padding-top:1.2rem;}
+.chgi{font-size:.78rem;color:var(--dim);text-align:center;margin-bottom:.5rem;}
+.chgi span{color:var(--red);}
+
+/* S3 questions */
+.q5lst{display:flex;flex-direction:column;gap:1rem;margin-top:1rem;}
+.q5it{display:flex;flex-direction:column;gap:.4rem;}
+.q5lb{font-size:.8rem;color:var(--goldl);letter-spacing:.1em;line-height:1.5;}
+.q5in{width:100%;padding:.7rem .9rem;background:rgba(255,255,255,.02);border:.5px solid var(--bdr);color:var(--text);font-family:inherit;font-size:.88rem;line-height:1.7;outline:none;resize:none;transition:border-color .3s;letter-spacing:.04em;}
+.q5in:focus{border-color:var(--bdrh);}
+.q5in::placeholder{color:var(--dim);}
+.aibox{border:.5px solid var(--bdr);padding:1.2rem;background:rgba(196,154,42,.02);}
+.aild{font-size:.8rem;color:var(--dim);letter-spacing:.12em;animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+/* S4 reading */
+#s4{justify-content:flex-start;padding-top:1.8rem;}
+.rhero{text-align:center;margin-bottom:1.5rem;}
+.rhtl{font-size:1.1rem;color:var(--goldl);letter-spacing:.15em;margin-bottom:.3rem;}
+.rhsb{font-size:.76rem;color:var(--dim);}
+.scard{border:.5px solid var(--bdr);background:rgba(255,255,255,.012);padding:1.6rem 1.8rem;margin-bottom:1rem;position:relative;}
+.scard::before{content:'';position:absolute;left:0;top:.6rem;bottom:.6rem;width:2px;background:var(--gold);opacity:.35;}
+.stag{font-size:.66rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem;display:block;}
+.stit{font-size:1.02rem;font-weight:500;line-height:1.5;margin-bottom:1rem;color:var(--text);}
+.sbody{font-size:.88rem;line-height:2.1;color:var(--muted);letter-spacing:.04em;}
+.sbody p{margin-bottom:1rem;}
+.sbody p:last-child{margin-bottom:0;}
+.sbody strong{color:var(--text);font-weight:500;}
+.ccard{border:.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.04);padding:1.6rem 1.8rem;margin-bottom:1rem;text-align:center;}
+.ccard .sbody{font-size:.9rem;line-height:2.1;margin-bottom:1.2rem;}
+.wnr{font-size:1.05rem;color:var(--goldl);font-weight:500;letter-spacing:.06em;border-top:.5px solid var(--bdr);padding-top:1rem;margin-top:.5rem;}
+.ldful{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;padding:4rem 1rem;min-height:300px;}
+.ldgl{font-size:2.5rem;color:var(--gold);animation:spin 8s linear infinite;opacity:.5;}
+@keyframes spin{100%{transform:rotate(360deg);}}
+.ldmsg{font-size:.8rem;color:var(--dim);letter-spacing:.15em;}
+.ldsb{font-size:.7rem;color:var(--dim);opacity:.6;letter-spacing:.1em;}
+
+/* API */
+.apnl{position:fixed;bottom:1.2rem;right:1.2rem;z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;}
+.atog{font-size:.68rem;color:var(--dim);letter-spacing:.1em;cursor:pointer;background:none;border:.5px solid var(--bdr);padding:.28rem .65rem;font-family:inherit;transition:all .2s;}
+.atog:hover{color:var(--muted);border-color:var(--bdrh);}
+.abox{display:none;background:var(--ink2);border:.5px solid var(--bdr);padding:.7rem;flex-direction:column;gap:.4rem;width:270px;}
+.abox.open{display:flex;}
+.abox label{font-size:.68rem;color:var(--dim);letter-spacing:.1em;}
+.ain{background:var(--ink3);border:.5px solid var(--bdr);color:var(--muted);font-family:monospace;font-size:.72rem;padding:.38rem .55rem;outline:none;transition:border-color .2s;width:100%;}
+.ain:focus{border-color:var(--bdrh);}
+.asav{padding:.3rem .75rem;background:var(--goldd);border:.5px solid var(--gold);color:var(--goldl);font-family:inherit;font-size:.7rem;cursor:pointer;letter-spacing:.1em;align-self:flex-end;transition:background .2s;}
+.asav:hover{background:rgba(196,154,42,.3);}
+.ast{font-size:.68rem;letter-spacing:.1em;}
+.ast.ok{color:#5a9;}
+.ast.no{color:var(--dim);}
+
+.mbtn{flex:1;padding:.55rem 0;border:.5px solid var(--bdr);background:transparent;color:var(--muted);font-family:inherit;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
+.mbtn:hover{border-color:var(--bdrh);color:var(--text);}
+.mbtn.sel.yang{background:rgba(196,154,42,.15);border-color:var(--gold);color:var(--goldl);}
+.mbtn.sel.yin{background:rgba(30,50,80,.25);border-color:#3a6090;color:#7ab0d8;}
+.mcn{width:36px;height:36px;border-radius:50%;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:var(--ink3);color:var(--dim);}
+.mcn.yang{background:rgba(196,154,42,.15);border-color:var(--gold);color:var(--goldl);}
+.mcn.yin{background:rgba(30,50,80,.25);border-color:#3a6090;color:#7ab0d8;}
+#coinModal.open{display:flex;}
+
+
+/* ── 하단 탭 ── */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;height:56px;background:var(--ink2);border-top:.5px solid var(--bdr);}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--dim);font-size:.68rem;letter-spacing:.1em;transition:color .2s;border:none;background:none;font-family:inherit;}
+.tab-item.active{color:var(--gold);}
+.tab-item .tab-ico{font-size:1.1rem;line-height:1;}
+/* 스크린 하단 패딩 (탭바 높이만큼) */
+.screen{padding-bottom:7rem !important;}
+
+/* ── 보관함 탭 ── */
+#tab-archive{justify-content:flex-start;padding-top:3rem;}
+.archive-empty{text-align:center;padding:4rem 1rem;color:var(--dim);font-size:.88rem;line-height:2;}
+.archive-list{display:flex;flex-direction:column;gap:.7rem;width:100%;max-width:620px;margin:0 auto;}
+.archive-item{border:.5px solid var(--bdr);padding:1.1rem 1.3rem;cursor:pointer;transition:border-color .2s;background:rgba(255,255,255,.01);}
+.archive-item:hover{border-color:var(--bdrh);}
+.arch-date{font-size:.7rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem;}
+.arch-gua{font-size:.95rem;color:var(--goldl);letter-spacing:.1em;margin-bottom:.25rem;}
+.arch-q{font-size:.78rem;color:var(--muted);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.arch-del{float:right;background:none;border:none;color:var(--dim);cursor:pointer;font-size:.8rem;padding:.2rem .4rem;}
+.arch-del:hover{color:var(--red);}
+
+/* ── 로딩 풀팝업 ── */
+#loadingOverlay{display:none;position:fixed;inset:0;z-index:300;background:var(--ink);flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+#loadingOverlay.show{display:flex;}
+.lo-sym{font-size:4rem;color:var(--gold);opacity:.6;animation:spin 6s linear infinite;}
+.lo-title{font-size:1.3rem;font-weight:300;letter-spacing:.3em;color:var(--goldl);font-family:'Noto Serif SC',serif;}
+.lo-sub{font-size:.8rem;color:var(--muted);letter-spacing:.18em;animation:pulse 2s ease-in-out infinite;}
+.lo-secs{font-size:.72rem;color:var(--dim);letter-spacing:.12em;}
+
+/* ── S4 버튼 ── */
+.s4btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;}
+.lock-btn{padding:.65rem 1.4rem;border:.5px solid var(--bdrh);background:transparent;color:var(--muted);font-family:inherit;font-size:.8rem;letter-spacing:.12em;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:.4rem;}
+.lock-btn:hover{border-color:var(--gold);color:var(--goldl);}
+.lock-icon{font-size:.75rem;opacity:.6;}
+
+</style>
+<script type="module" src="/lib/prompt-reading-v2.js"></script>
+</head>
+<body>
+
+<!-- S0 인트로 -->
+<div class="screen active" id="s0">
+  <div style="font-family:'Noto Serif SC',serif;font-size:2.8rem;color:var(--gold);opacity:.06;position:absolute;top:4%;left:4%;writing-mode:vertical-rl;line-height:1.2;pointer-events:none">周易六十四卦</div>
+  <div class="trigs">☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷</div>
+  <h1 class="logo">周易占</h1>
+  <p style="font-size:.88rem;color:var(--muted);letter-spacing:.22em;margin:.4rem 0 1.5rem">주역점 · 육효투전법</p>
+  <div class="orn"><span>卦</span></div>
+  <p class="intro-p">동전 셋을 여섯 번 던져 하늘의 뜻을 묻는다.<br>괘상이 뽑히면 몇 가지 질문을 드립니다. 그 대답이 더 깊은 점사의 바탕이 됩니다.<br>그 대답 위에서 비로소 진짜 점사가 펼쳐진다.</p>
+  <button class="btn" onclick="goTo('s1')"><span>점괘 보기</span></button>
+  <div style="margin-top:2.5rem;display:flex;gap:1.5rem;justify-content:center;font-size:.68rem;color:var(--dim);letter-spacing:.14em">
+    <span>왕필 주역주</span><span style="color:var(--bdr)">·</span><span>정이천 역전</span><span style="color:var(--bdr)">·</span><span>주희 주역본의</span>
+  </div>
+</div>
+
+<!-- S1 고민 입력 -->
+<div class="screen" id="s1">
+  <div class="inner">
+    <div class="stepbar" id="sb1"></div>
+    <p class="stitle">무엇을 묻고자 하는가</p>
+    <p class="ssub">먼저 이름을 알려주세요. 더 깊이 읽을 수 있습니다.</p>
+    <div class="orn"><span>問</span></div>
+    <input class="inp" id="nameIn" placeholder="이름 (예: 재영)" maxlength="10" style="margin-bottom:.8rem">
+    <textarea class="inp" id="qIn" rows="5" placeholder="지금 마음에 걸리는 것을 솔직하게 적어주세요.&#10;구체적일수록 점괘의 해석이 깊어집니다.&#10;&#10;예: 올해 안에 이직을 해야 할지 고민입니다. 지금 회사가 안정적이긴 한데 성장이 없어서 답답하고, 새로운 곳에서 도전해보고 싶은데 두렵기도 해요."></textarea>
+    <p style="font-size:.72rem;color:var(--dim);text-align:right;margin-top:.4rem">비워두면 일반 운세로 해석됩니다</p>
+    <div class="brow">
+      <button class="btn-ghost" onclick="goTo('s0')">← 뒤로</button>
+      <button class="btn" onclick="startThrow()"><span>동전을 던진다 →</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S2 투전 -->
+<div class="screen" id="s2">
+  <div class="inner">
+    <div class="stepbar" id="sb2"></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.8rem">
+      <div><p class="stitle" style="text-align:left;margin:0">투전 · 投錢</p><p class="ssub" style="text-align:left;margin:0">동전 셋을 여섯 번 던진다</p></div>
+      <span style="font-size:.76rem;color:var(--dim)" id="tcnt">0 / 6효</span>
+    </div>
+    <div class="ptrak"><div class="pfill" id="tprog" style="width:0%"></div></div>
+    <div class="trows" id="trows"></div>
+    <div style="display:flex;gap:.7rem;justify-content:flex-end;margin-top:1rem">
+      <button class="btn-ghost" onclick="goTo('s1')">← 다시 묻기</button>
+      <button class="btns" id="autoBtn" style="border:.5px solid var(--bdrh)" onclick="autoAll()">
+        <span class="btn-s">전체 자동 투전</span>
+      </button>
+    </div>
+    <!-- 6효 완료 후 괘상 결과 -->
+    <div id="hexResult" style="display:none;margin-top:1.5rem">
+      <div class="orn"><span>卦</span></div>
+      <p class="stitle" style="margin-bottom:.3rem" id="hexTitle"></p>
+      <p class="ssub" id="hexSub"></p>
+      <div class="gwrap" id="s2gua"></div>
+      <p class="chgi" id="s2chgi"></p>
+      <div style="margin-top:.5rem;padding:.9rem 1rem;background:rgba(196,154,42,0.04);border:.5px solid var(--bdr)">
+        <p style="font-size:.82rem;color:var(--muted);line-height:1.9" id="hexDesc"></p>
+      </div>
+      <!-- 해석 카드 -->
+      <div id="hexInterpret" style="margin-top:.8rem"></div>
+      <div class="brow" style="margin-top:1.2rem">
+        <button class="btn-ghost" onclick="resetThrow()">← 다시 던지기</button>
+        <button class="btn" onclick="proceedToQ5()"><span>질문에 답하기 →</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 추가 질문 -->
+<div class="screen" id="s3">
+  <div class="inner">
+    <div class="stepbar" id="sb3"></div>
+    <div class="gwrap" id="s3gua"></div>
+    <p class="chgi" id="s3chgi"></p>
+    <div class="orn"><span>問</span></div>
+    <p class="stitle">더 깊이 읽기 위한 질문</p>
+    <p class="ssub" id="s3sub">몇 가지 여쭤볼게요</p>
+    <div id="q5area">
+      <div class="aibox"><p class="aild" id="q5ld">✦ 준비하는 중...</p></div>
+    </div>
+    <div class="brow" id="s3btns" style="display:none">
+      <button class="btn-ghost" onclick="goTo('s2')">← 괘상 보기</button>
+      <button class="btn" onclick="submitAnswers()"><span>답변 완료, 점사 받기 →</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S4 점사 -->
+<div class="screen" id="s4">
+  <div class="inner">
+    <div class="stepbar" id="sb4"></div>
+    <div class="rhero">
+      <p class="rhtl" id="rdtl"></p>
+      <p class="rhsb" id="rdsb"></p>
+    </div>
+    <div class="gwrap" id="s4gua"></div>
+    <p class="chgi" id="s4chgi"></p>
+    <div class="orn"><span>占</span></div>
+    <div id="rdarea">
+      <div class="ldful">
+        <div class="ldgl">☯</div>
+        <p class="ldmsg">점사를 풀어내는 중...</p>
+        <p class="ldsb" id="ldsb"></p>
+      </div>
+    </div>
+    <div class="s4btns" id="s4btns" style="display:none">
+      <button class="btn-ghost" onclick="restart()">처음부터 다시</button>
+      <button class="lock-btn" onclick="goBackToQ5()">✎ 답변 수정 후 재해석</button>
+    </div>
+  </div>
+</div>
+
+<!-- 점괘 탭: 보관함 항목 읽기 전용 뷰 -->
+<div class="screen" id="tab-reading" style="justify-content:flex-start;padding-top:2rem">
+  <div class="inner">
+    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1.2rem">
+      <button class="btn-ghost" onclick="switchTab('arc')" style="padding:.3rem 0">← 보관함</button>
+    </div>
+    <div class="rhero">
+      <p class="rhtl" id="tr-title"></p>
+      <p class="rhsb" id="tr-date"></p>
+    </div>
+    <div class="orn"><span>占</span></div>
+    <div id="tr-area"></div>
+  </div>
+</div>
+
+<!-- 보관함 탭 화면 -->
+<div class="screen" id="tab-archive">
+  <div class="inner" style="padding-top:1rem">
+    <p class="stitle" style="margin-bottom:.3rem">보관함</p>
+    <p class="ssub" style="margin-bottom:1.5rem">저장된 점사</p>
+    <div id="archiveList" class="archive-list"></div>
+  </div>
+</div>
+
+<!-- 점사 로딩 풀팝업 -->
+<div id="loadingOverlay">
+  <div class="lo-sym">☯</div>
+  <p class="lo-title">運命을 점치는 중</p>
+  <p class="lo-sub" id="loSub">하늘의 뜻을 읽고 있습니다</p>
+  <p class="lo-secs" id="loSecs"></p>
+</div>
+
+<!-- 하단 탭바 -->
+<div class="tab-bar">
+  <button class="tab-item active" id="tabHome" onclick="switchTab('home')">
+    <span class="tab-ico">☰</span><span>홈</span>
+  </button>
+  <button class="tab-item" id="tabGua" onclick="switchTab('gua')">
+    <span class="tab-ico">☲</span><span>점괘</span>
+  </button>
+  <button class="tab-item" id="tabArc" onclick="switchTab('arc')">
+    <span class="tab-ico">☷</span><span>보관함</span>
+  </button>
+</div>
+
+<!-- API 패널 -->
+<div class="apnl">
+  <button class="atog" onclick="togApi()">⚙ API</button>
+  <div class="abox" id="abox">
+    <label>Anthropic API Key</label>
+    <input type="password" class="ain" id="ain" placeholder="sk-ant-...">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="ast" id="ast">미설정</span>
+      <button class="asav" onclick="saveKey()">저장</button>
+    </div>
+    <p style="font-size:.65rem;color:var(--dim);line-height:1.5">API 키 설정 시 깊은 점사 제공</p>
+  </div>
+</div>
+
+<script>
+/* ─────────────────── DATA ─────────────────── */
+const TRIG_MAP = {
+  '양양양':{n:'건(乾)',nat:'天'},'양음음':{n:'진(震)',nat:'雷'},
+  '음양양':{n:'손(巽)',nat:'風'},'음양음':{n:'감(坎)',nat:'水'},
+  '양음양':{n:'이(離)',nat:'火'},'음음양':{n:'간(艮)',nat:'山'},
+  '양양음':{n:'태(兌)',nat:'澤'},'음음음':{n:'곤(坤)',nat:'地'},
+};
+const GUA = {
+  '양양양':{'양양양':{n:'중천건',no:1},'양양음':{n:'천택리',no:10},'양음양':{n:'천화동인',no:13},'양음음':{n:'천뢰무망',no:25},'음양양':{n:'천풍구',no:44},'음양음':{n:'천수송',no:6},'음음양':{n:'천산둔',no:33},'음음음':{n:'천지비',no:12}},
+  '양양음':{'양양양':{n:'택천쾌',no:43},'양양음':{n:'중택태',no:58},'양음양':{n:'택화혁',no:49},'양음음':{n:'택뢰수',no:17},'음양양':{n:'택풍대과',no:28},'음양음':{n:'택수곤',no:47},'음음양':{n:'택산함',no:31},'음음음':{n:'택지췌',no:45}},
+  '양음양':{'양양양':{n:'화천대유',no:14},'양양음':{n:'화택규',no:38},'양음양':{n:'중화이',no:30},'양음음':{n:'화뢰서합',no:21},'음양양':{n:'화풍정',no:50},'음양음':{n:'화수미제',no:64},'음음양':{n:'화산려',no:56},'음음음':{n:'화지진',no:35}},
+  '양음음':{'양양양':{n:'뢰천대장',no:34},'양양음':{n:'뢰택귀매',no:54},'양음양':{n:'뢰화풍',no:55},'양음음':{n:'중뢰진',no:51},'음양양':{n:'뢰풍항',no:32},'음양음':{n:'뢰수해',no:40},'음음양':{n:'뢰산소과',no:62},'음음음':{n:'뢰지예',no:16}},
+  '음양양':{'양양양':{n:'풍천소축',no:9},'양양음':{n:'풍택중부',no:61},'양음양':{n:'풍화가인',no:37},'양음음':{n:'풍뢰익',no:42},'음양양':{n:'중풍손',no:57},'음양음':{n:'풍수환',no:59},'음음양':{n:'풍산점',no:53},'음음음':{n:'풍지관',no:20}},
+  '음양음':{'양양양':{n:'수천수',no:5},'양양음':{n:'수택절',no:60},'양음양':{n:'수화기제',no:63},'양음음':{n:'수뢰둔',no:3},'음양양':{n:'수풍정',no:48},'음양음':{n:'중수감',no:29},'음음양':{n:'수산건',no:39},'음음음':{n:'수지비',no:8}},
+  '음음양':{'양양양':{n:'산천대축',no:26},'양양음':{n:'산택손',no:41},'양음양':{n:'산화비',no:22},'양음음':{n:'산뢰이',no:27},'음양양':{n:'산풍고',no:18},'음양음':{n:'산수몽',no:4},'음음양':{n:'중산간',no:52},'음음음':{n:'산지박',no:23}},
+  '음음음':{'양양양':{n:'지천태',no:11},'양양음':{n:'지택임',no:19},'양음양':{n:'지화명이',no:36},'양음음':{n:'지뢰복',no:24},'음양양':{n:'지풍승',no:46},'음양음':{n:'지수사',no:7},'음음양':{n:'지산겸',no:15},'음음음':{n:'중지곤',no:2}},
+};
+const GD = {
+  1:{gs:'乾, 元亨利貞',k:'크게 형통하고 바르게 함이 이롭다.',dt:'하늘의 운행은 굳세고 쉬지 않는다.',dst:'天行健, 君子以自强不息 — 스스로 힘써 쉬지 않는다.',v:'하늘처럼 강건하게 움직이는 시절. 쉬지 않는 자만이 높이 오를 수 있다.',p:'잠룡이 때를 기다리다 하늘을 날아오르는 괘입니다. 지금 당신은 그 여정 어딘가에 있어요. 잠룡의 자리라면 실력을 숨기고 쌓을 때고, 비룡의 자리라면 마음껏 펼칠 때입니다. 다만 항룡의 경고도 기억하세요. 가장 높이 올랐을 때 이미 내려올 준비를 해야 합니다.',hy:["잠룡이니 쓰지 말라. 때가 오지 않았다.", "밭에 나타난 용이니 대인을 봄이 이롭다. 세상에 나설 때가 왔다.", "종일 힘쓰고 저녁에도 경계하면 위태로우나 허물없다.", "연못에서 뛰어오를 수도 있으니 허물없다. 결단의 기로.", "하늘을 나는 용이니 대인을 봄이 이롭다. 왕성한 절정의 자리.", "너무 높이 오른 용은 후회가 있다. 극에 달하면 내려온다."]},
+  2:{gs:'坤, 元亨利牝馬之貞',k:'암말처럼 유순하게 따르면 크게 형통하다.',dt:'하늘을 받들어 때를 맞추어 운행한다.',dst:'地勢坤, 君子以厚德載物 — 두터운 덕으로 만물을 실어 나른다.',v:'땅처럼 수용하는 시절. 유순함이 진짜 강함이다.',p:'나서지 않아도 모든 것이 이루어지는 때입니다. 땅은 씨앗을 고르지 않고 전부 품어 기르죠. 지금 당신에게 필요한 것은 강하게 밀기가 아니라 넓게 받아들이는 힘이에요. 먼저 가려 하지 말고, 흐름 뒤에서 받쳐주세요. 그것이 오히려 더 크게 이루는 길입니다.',hy:["서리를 밟으면 굳은 얼음이 온다. 작은 징조를 놓치지 말라.", "곧고 방정하고 크니 익히지 않아도 이롭지 않음이 없다.", "빛을 감추고 바름을 지켜라. 공을 주장하지 않아도 끝이 있다.", "자루를 묶어라. 침묵이 최선인 때.", "황색 치마니 크게 길하다. 중도를 지키는 겸손한 리더십.", "음이 극에 달해 양과 충돌한다. 마지막까지 유순함을 잃지 말라."]},
+  3:{gs:'屯, 元亨利貞, 勿用有攸往',k:'크게 형통하나 나아가지 말라. 제후를 세워라.',dt:'강유가 처음 만나 어려움이 생긴 것.',dst:'雲雷屯, 君子以經綸 — 경륜을 세운다.',v:'씨앗이 땅을 뚫으려는 험난한 시작. 생명력은 충만하다.',p:'새로운 시작의 진통이 있는 때입니다. 식물이 땅을 뚫고 나오려면 반드시 저항이 있어요. 지금 겪는 어려움은 실패의 신호가 아니라 성장의 증거입니다. 혼자 힘으로 밀기보다 손을 빌리고, 작게 시작해 기초부터 다지세요.',hy:["반석처럼 머뭇거리니 바르게 머무름이 이롭다. 제후를 세우면 이롭다.", "어렵고 돌아가는 듯하나 10년이면 이루어진다. 서두르지 말라.", "사냥꾼 없이 사슴을 쫓으면 숲속으로 들어갈 뿐. 나아가면 부끄럽다.", "도움을 구하러 나아가면 길하다. 겸손히 도움을 청할 때.", "은택을 베푸는 데 막힘이 있다. 작은 일에는 길하나 큰일은 흉하다.", "끝까지 나아가지 못한 한. 피눈물을 흘린다."]},
+  4:{gs:'蒙, 亨',k:'내가 어린아이를 찾는 것이 아니라 어린아이가 나를 찾는다.',dt:'몽매함을 깨우치는 것이 몽이다.',dst:'山下出泉, 蒙. 君子以果行育德 — 과감한 행동으로 덕을 기른다.',v:'배움의 시절. 진심으로 구하면 반드시 가르쳐준다.',p:'배움이 먼저인 시절입니다. 모른다는 것을 인정하는 것에서 진짜 시작이 열립니다. 지금은 답을 내놓으려 하기보다 질문을 잘 하는 것이 더 중요해요. 진심으로 구하면 가르침이 오고, 아는 척하면 기회를 잃습니다.',hy:["몽매함을 일깨움. 규율과 훈육이 필요하다. 바르게 쓰면 이롭다.", "몽매함을 포용하면 길하다. 너그러움으로 이끌어라.", "여자를 취하지 말라. 돈 있는 사람을 보고 따르지 말라.", "어리석음에 갇혀 부끄럽다. 스스로 배우지 않는 상태.", "어린아이처럼 순수하게 배우니 길하다. 겸손한 학습자.", "몽매함을 쳐서 깨우침. 도적이 되는 것은 이롭지 않고 도적을 막는 것이 이롭다."]},
+  5:{gs:'需, 有孚, 光亨',k:'믿음이 있으면 빛나고 형통하다.',dt:'험난함 앞에서 강함이 멈추는 것이 수다.',dst:'雲上於天, 需. 君子以飮食宴樂 — 기다리는 동안 여유를 유지하라.',v:'기다림의 시절. 여유롭게 때를 기다리는 것이 지혜다.',p:'비는 반드시 내립니다. 지금 구름이 아무리 가득 차 있어도 때가 되면 쏟아져요. 문제는 기다림이 아니라 기다리는 방법입니다. 불안하게 재촉하지 말고, 술과 음식처럼 여유롭게 이 시간을 즐기세요. 억지로 당기는 손이 오히려 때를 늦춥니다.',hy:["교외에서 기다리니 아직 멀리서 기다려라. 항상하면 허물없다.", "모래사장에서 기다리니 작은 말이 있으나 마침내 길하다.", "진흙에서 기다리니 도적이 이른다. 너무 가까이 가면 위험.", "피 속에서 기다리니 굴에서 나와라.", "술과 음식으로 기다리니 길하다. 여유롭게 때를 기다리는 최선.", "청하지 않은 손님 셋이 온다. 공경하면 끝내 길하다."]},
+  6:{gs:'訟, 中吉, 終凶',k:'믿음이 있으나 막히고 두렵다. 중간에는 길하나 끝에는 흉하다.',dt:'하늘과 물이 반대로 가는 것이 송이다.',dst:'天與水違行, 訟. 君子以作事謀始 — 일을 시작할 때 잘 도모하라.',v:'갈등의 시절. 처음부터 분쟁의 씨앗을 없애는 것이 최선.',p:'싸움은 시작 전에 끝내야 합니다. 일단 다툼이 시작되면 이겨도 남는 게 없어요. 지금 갈등의 씨앗이 보인다면 싹부터 없애는 것이 최선이고, 이미 벌어졌다면 중간에 멈추는 것이 낫습니다. 끝까지 밀어붙이면 반드시 후회가 남아요.',hy:["일을 오래 끌지 않으면 마침내 길하다. 작은 말이 있으나 끝내 길하다.", "다툼에서 이기지 못해 돌아간다. 고을 사람 300호가 재앙 없다.", "옛 덕을 먹고 사니 위태로우나 마침내 길하다.", "다툼에서 이기지 못해 돌아와 명을 따르니 길하다.", "소송에서 크게 길하다. 공정한 심판자의 자리.", "큰 띠를 받아도 하루에 세 번 빼앗긴다. 다툼으로 얻은 것은 오래가지 않는다."]},
+  7:{gs:'師, 貞, 丈人吉',k:'바르고 어른다운 사람이면 길하다.',dt:'험난함 속에서 순응하며 움직이는 것이 사다.',dst:'地中有水, 師. 君子以容民畜衆 — 백성을 포용하고 대중을 기른다.',v:'조직의 시절. 명분 없는 싸움은 반드시 진다.',p:'이기는 것보다 싸울 이유가 중요한 때입니다. 명분이 없는 전쟁은 이겨도 무너집니다. 사람을 이끄는 자리라면 적임자에게 역할을 주고, 규율로 움직이게 하세요. 소인을 가까이 두면 이기는 싸움도 결국 무너집니다.',hy:["군대는 규율로 출정해야 하니 그렇지 않으면 흉하다.", "군의 중심에 있으니 길하다. 왕이 세 번 명을 내린다.", "능력 없는 자가 지휘하면 흉하다.", "퇴각도 전략이다. 허물없다.", "사냥에서 날짐승 있으면 말해서 이롭다. 적임자에게 맡겨라.", "큰 공 후에 소인을 등용하지 말라. 나라를 열고 집을 이어주되 소인은 쓰지 말라."]},
+  8:{gs:'比, 吉',k:'친밀함이니 길하다. 늦게 오는 자는 흉하다.',dt:'물이 땅 위에 있듯 친밀함이 있으면 어디에나 닿는다.',dst:'地上有水, 比. 先王以建萬國, 親諸侯 — 나라를 세우고 제후를 친히 했다.',v:'연대의 시절. 때를 놓치지 말고 믿을 수 있는 사람과 함께하라.',p:'함께해야 할 때입니다. 하지만 타이밍이 있어요. 늦게 오는 자는 자리를 잃습니다. 믿을 수 있는 사람과 연대하되, 어울릴 사람을 가리세요. 아무하고나 손잡는 것은 연대가 아니라 표류입니다.',hy:["진실한 믿음으로 가까이하니 길하다. 다른 마음이 있으면 허물없다.", "안에서부터 친하니 바르고 길하다.", "어울릴 사람이 아닌 이와 친하다. 관계를 가려라.", "밖에서 친함이 바르고 길하다.", "너그러운 리더십으로 함께하니 길하다. 세 방향 사냥에서 앞을 열어두다.", "머리 없이 친하니 흉하다. 중심 없는 관계는 무너진다."]},
+  9:{gs:'小畜, 亨. 密雲不雨',k:'형통하나 빽빽한 구름이 비를 내리지 않는다.',dt:'유(柔)가 강(剛)을 잠시 붙잡는 것이 소축이다.',dst:'風行天上, 小畜. 君子以懿文德 — 문덕을 아름답게 한다.',v:'축적의 시절. 아직 때가 무르익지 않았다. 더 쌓아라.',p:'힘이 약한 쪽이 강한 쪽을 잠시 붙잡고 있는 형국입니다. 억지로 무언가를 이루려는 시도는 불화만 낳아요. 지금은 문덕을 닦고, 내실을 조용히 쌓는 것이 전부입니다. 구름이 충분히 모여야 비가 내리는 법이에요.',hy:["제 길로 돌아오니 어찌 허물이 있겠는가. 길하다.", "이끌려 돌아오니 길하다.", "수레 바퀴살이 빠진다. 억지로 막으면 불화.", "믿음이 있으면 두려움이 사라지고 허물없다.", "믿음으로 이어지니 이웃과 함께 부유해진다.", "비가 내리고 멈춰 쉬는 때. 더 나아가면 흉하다."]},
+  10:{gs:'履虎尾, 不咥人, 亨',k:'호랑이 꼬리를 밟았으나 물리지 않으니 형통하다.',dt:'조심스럽게 예를 갖추어 나아가는 것이 리다.',dst:'上天下澤, 履. 君子以辨上下 — 위아래를 분별하라.',v:'조심스러운 행보의 시절. 예의와 분별로 위험을 헤쳐나간다.',p:'호랑이 꼬리를 밟고도 물리지 않는 것은 조심스러운 예절 덕분입니다. 강한 상대와 마주하는 자리예요. 예의와 분별이 지금 당신의 가장 강한 무기입니다. 능력 밖의 일을 욕심내면 반드시 물립니다.',hy:["소박하게 가니 허물없다.", "길이 평탄하니 은거하는 사람이 바르면 길하다.", "무리하면 흉하다. 애꾸눈이 보려 하고 절름발이가 밟으려 한다.", "호랑이 꼬리를 밟아 두려워하나 마침내 길하다. 조심하면 된다.", "결단하며 나아가니 바르나 위태롭다.", "발자취를 돌아보고 상서로움을 살피니 크게 길하다."]},
+  11:{gs:'泰, 小往大來, 吉亨',k:'작은 것이 가고 큰 것이 오니 길하고 형통하다.',dt:'하늘과 땅이 교류하여 만물이 통한다.',dst:'天地交, 泰. 后以財成天地之道 — 천지의 도를 이룬다.',v:'대화합의 시절. 하늘과 땅이 교류하는 절정. 경계를 잊지 말라.',p:'하늘과 땅이 활짝 열린 대화합의 절정입니다. 지금 함께 나아가면 크게 이루어요. 그러나 가득 찬 것은 반드시 기울기 시작합니다. 전성기를 누리면서도 이미 다음을 준비하는 사람이 이 괘를 제대로 사는 거예요.',hy:["띠풀을 뽑으면 동류가 함께 뽑히니 동지와 함께 나아가면 길하다.", "거칠음을 포용하고 중도를 지켜라. 멀리 있는 것도 버리지 않는다.", "전성기에 경계하라. 기울어짐이 반드시 온다. 바름을 지키면 허물없다.", "가볍게 내려오니 이웃과 믿음으로 함께한다.", "겸손하게 대처하니 크게 길하다.", "성이 해자로 무너진다. 나아가면 흉하다. 전성기는 끝난다."]},
+  12:{gs:'否之匪人, 大往小來',k:'비색함이니 큰 것이 가고 작은 것이 온다.',dt:'하늘과 땅이 교류하지 않아 만물이 통하지 않는다.',dst:'天地不交, 否. 君子以儉德辟難 — 검소한 덕으로 어려움을 피하라.',v:'막힘의 시절. 억지로 밀지 말고 때를 기다려라.',p:'막혀있는 시절입니다. 밀어도 안 열리고, 소리쳐도 들리지 않아요. 이럴 때 억지로 뚫으려 하면 더 깊이 막힐 뿐입니다. 지금 할 수 있는 가장 현명한 일은 검소하게 내실을 다지며 조용히 때가 바뀌기를 기다리는 것이에요.',hy:["물러나도 동지와 함께하니 바르면 길하다.", "소인은 복종해 길하고 대인은 막혀도 형통하다.", "부끄러움을 싸안고 있다. 소인이 자리를 차지한 상태.", "명이 있으면 허물없다.", "비색함을 그치게 하니 대인이 길하다. 위기의식을 잊지 말라.", "비색함이 기울어진다. 먼저 막히고 뒤에 기쁨이 온다."]},
+  13:{gs:'同人于野, 亨',k:'들판에서 사람들과 함께하니 형통하다.',dt:'문명으로써 강건하게 나아가는 것이 동인이다.',dst:'天與火, 同人. 君子以類族辨物 — 무리를 분류하고 사물을 분별한다.',v:'연대의 시절. 편협한 울타리를 벗어나 넓게 함께하라.',p:'좁은 울타리 안에서만 뭉치면 결국 부끄러움이 됩니다. 들판에서 넓게 함께해야 크게 통해요. 지금 당신이 맺고 있는 연대가 얼마나 넓은지 돌아보세요. 편협한 집단은 가까울수록 세상과 멀어집니다.',hy:["문에서 사람들과 함께하니 허물없다.", "같은 종족끼리만 함께하니 부끄럽다. 편협한 연대.", "3년이 지나도 못 일어난다. 의심이 걸림돌.", "담을 올라갔으나 공격하지 못하니 길하다. 물러서는 것이 지혜.", "먼저 울다 나중에 웃는다. 큰 노력 끝에 만남.", "교외에서 함께하니 후회없다."]},
+  14:{gs:'大有, 元亨',k:'크게 소유하니 크게 형통하다.',dt:'유(柔)가 존위를 얻고 크고 중정하여 위아래가 응한다.',dst:'火在天上, 大有. 君子以遏惡揚善 — 악을 막고 선을 드러낸다.',v:'풍요의 시절. 넘치지 않는 절제와 선한 쓰임이 지속을 만든다.',p:'태양이 높이 떠서 사방을 비추는 풍요의 절정입니다. 지금 가진 것이 많은 만큼 책임도 큽니다. 악을 막고 선을 드러내는 것이 이 괘를 올바르게 사는 방법이에요. 절제하지 않으면 넘침이 화가 됩니다.',hy:["해로움과 교류하지 않으니 어렵더라도 허물없다.", "큰 수레에 실으니 충분한 역량. 가도 허물없다.", "공이 천자에게 잔치를 올린다. 소인은 감당 못한다.", "지나치게 성하지 않으니 허물없다. 절제.", "믿음으로 교류하고 위엄이 있으니 길하다.", "하늘의 도움을 받으니 길하고 이롭지 않음이 없다."]},
+  15:{gs:'謙, 亨, 君子有終',k:'겸손하니 형통하고 군자는 마침이 있다.',dt:'하늘의 도는 가득 찬 것을 덜어 겸손한 곳에 더한다.',dst:'地中有山, 謙. 君子以裒多益寡 — 많은 데서 덜어 적은 데 더한다.',v:'겸손의 시절. 낮추는 것이 오히려 높아지는 길이다.',p:'낮은 산이 땅 아래에 있는 형상입니다. 높은 것이 스스로를 낮추는 겸손의 힘이 지금 가장 강한 때예요. 하늘도 가득 찬 것을 덜어 낮은 곳에 더합니다. 내려갈수록 오히려 올라오는 것이 이 시절의 역설이에요.',hy:["겸손하고 또 겸손한 군자니 큰 강을 건너도 길하다.", "겸손함이 알려지니 바르고 길하다.", "수고롭되 겸손한 군자니 마침내 길하다.", "겸손함을 발휘하니 이롭지 않음이 없다.", "부유하지 않아도 이웃과 함께하며 잘못을 바로잡는다.", "겸손함이 알려지니 잘못을 바로잡기 위한 행동은 이롭다."]},
+  16:{gs:'豫, 利建侯行師',k:'기쁨이니 제후를 세우고 군사를 일으킴이 이롭다.',dt:'강이 응하고 뜻이 행해지는 것이 예다.',dst:'雷出地奮, 豫. 先王以作樂崇德 — 음악을 만들고 덕을 높였다.',v:'출발의 시절. 에너지가 넘치는 순간. 자만만 하지 않으면 크게 나아간다.',p:'우레가 땅에서 솟구치는 출발의 에너지입니다. 움직이면 크게 나아갈 수 있는 때예요. 한 가지만 조심하면 돼요. 기쁨에 취해 자만하지 않는 것. 에너지가 넘칠수록 방향이 중요합니다.',hy:["기쁨을 자랑하면 흉하다.", "돌처럼 굳건하니 하루도 못 되어 바르면 길하다. 빠른 판단.", "위를 쳐다보며 즐기면 후회. 머뭇거려도 후회.", "기쁨의 근원이 되니 크게 얻는다. 의심하지 마라.", "바르나 병들어 있으면서도 죽지는 않는다. 위태로운 안정.", "어둠 속에서 기쁨이 완성되나 변하면 허물없다."]},
+  17:{gs:'隨, 元亨利貞',k:'따르니 크게 형통하고 바르면 이롭다.',dt:'강이 와서 유 아래에 있으니 동하여 기뻐한다.',dst:'澤中有雷, 隨. 君子以嚮晦入宴息 — 저녁이 되면 들어가 쉰다.',v:'순응의 시절. 시세에 맞게 따르되 바름을 잃지 말라.',p:'무엇을 따르느냐가 이 시절의 전부입니다. 시세의 흐름에 순응하는 것 자체는 지혜지만, 욕심이나 편안함을 따르면 길을 잃어요. 밤이 되면 들어가 쉬듯 때를 알고 따르는 것, 그게 수괘의 진짜 가르침입니다.',hy:["직책이 바뀌어도 바르면 길하다. 문을 나가면 교류가 있다.", "작은 자에게 얽매이면 대인을 잃는다. 무엇을 따를지 선택하라.", "대인을 따르면 작은 자를 잃는다. 바르게 머무름이 이롭다.", "따름에 얻음이 있으나 믿음으로 밝히면 허물없다.", "아름다움에 믿음을 두니 길하다.", "묶고 또 묶는다. 굳은 따름."]},
+  18:{gs:'蠱, 元亨, 利涉大川',k:'크게 형통하고 큰 강을 건넘이 이롭다.',dt:'폐단이 생긴 것은 개혁의 기회다.',dst:'山下有風, 蠱. 君子以振民育德 — 백성을 진작시키고 덕을 기른다.',v:'개혁의 시절. 오래된 폐단을 바로잡으면 크게 형통한다.',p:'오래 쌓인 폐단을 바로잡을 기회입니다. 문제를 직시하고 고치면 크게 형통해요. 다만 너무 급하거나 너무 느려도 절반밖에 못 이룹니다. 시작 전에 신중히 도모하고, 끝까지 매듭짓는 것이 핵심이에요.',hy:["아버지의 폐단을 바로잡으니 허물없다. 위태로우나 마침내 길하다.", "어머니의 폐단을 바로잡되 너무 강경하게 하지 말라.", "작은 후회는 있어도 큰 허물없다.", "폐단을 너무 느슨하게 처리하면 부끄러움을 본다.", "아버지의 폐단을 바로잡아 명예를 얻는다.", "왕후를 섬기지 않고 그 일을 높이 여긴다. 은거의 고결함."]},
+  19:{gs:'臨, 元亨利貞',k:'크게 형통하나 8월이 되면 흉함이 있다.',dt:'강이 점차 성장하여 기쁨으로 순응한다.',dst:'澤上有地, 臨. 君子以敎思无窮 — 끊임없이 가르치고 한없이 포용한다.',v:'나아가는 시절. 전성기에 이미 쇠함을 준비하라.',p:'위에서 아래로 임하며 성장하는 시절입니다. 포용하고 가르치면 더 크게 이루어요. 하지만 8월의 경고를 잊지 마세요. 전성기는 반드시 끝납니다. 한창 잘 나갈 때 이미 다음을 준비해야 해요.',hy:["감응하여 임하니 바르면 길하다.", "감응하여 임하니 길하고 이롭지 않음이 없다.", "달콤하게만 임하면 이롭지 않다. 근심하면 허물없다.", "지극히 임하니 허물없다.", "지혜롭게 임하니 대군의 마땅함이요 길하다.", "돈독하게 임하니 길하고 허물없다."]},
+  20:{gs:'觀, 盥而不薦, 有孚顒若',k:'경건하고 믿음이 있어 우러러본다.',dt:'관찰하고 살펴보는 것이 관이다.',dst:'風行地上, 觀. 先王以省方觀民設敎 — 백성을 관찰해 교화를 세웠다.',v:'관찰의 시절. 행동보다 먼저 냉정하게 살펴보는 것이 지혜다.',p:'지금은 행동보다 관찰이 먼저인 때입니다. 바람이 땅 위를 두루 살피듯 전체 그림을 보세요. 어린아이처럼 표면만 보지 말고, 멀리 높이 바라보며 판단해야 합니다. 잘못된 관찰이 잘못된 행동보다 더 위험해요.',hy:["어린아이처럼 보니 소인은 허물없으나 군자에게는 부끄럽다.", "엿보듯 보니 여자에게는 바르고 이롭다.", "내 삶을 관찰하여 진퇴를 결정하라.", "나라의 빛을 보니 왕의 손님이 됨이 이롭다.", "내 삶을 관찰하니 군자면 허물없다.", "그의 삶을 관찰하니 군자면 허물없다."]},
+  21:{gs:'噬嗑, 亨, 利用獄',k:'씹어 합하니 형통하고 형옥을 씀이 이롭다.',dt:'위아래 턱 사이의 장애를 씹어 깨뜨린다.',dst:'雷電, 噬嗑. 先王以明罰勅法 — 형벌을 밝히고 법을 다스렸다.',v:'결단의 시절. 걸림돌을 과감히 씹어 없애야 형통한다.',p:'가운데 있는 장애물을 씹어 없애야 합니다. 걸림돌을 그냥 두면 아무것도 합쳐지지 않아요. 우물쭈물하거나 끝까지 외면하면 더 큰 대가를 치릅니다. 과감하게 치워야 형통해요.',hy:["발에 형구를 채운다. 초기의 경계.", "살을 씹어 코를 가린다. 허물없다.", "말린 고기를 씹다 독을 만난다. 작은 부끄러움이나 허물없다.", "뼈 붙은 고기를 씹어 금화살을 얻는다. 어렵게 바르면 길하다.", "말린 고기를 씹어 황금을 얻는다. 바르나 위태로워도 허물없다.", "목에 형구를 차고 귀를 가린다. 끝까지 듣지 않아 흉하다."]},
+  22:{gs:'賁, 亨. 小利有攸往',k:'꾸밈이니 형통하다. 작은 일에 나아감이 이롭다.',dt:'문채로 꾸미는 것이 비다. 본질은 소박함에 있다.',dst:'山下有火, 賁. 君子以明庶政 — 여러 정사를 밝힌다.',v:'꾸밈의 시절. 겉을 아름답게 하되 본질의 소박함을 잃지 말라.',p:'꾸밈의 시절이지만 꾸밈 자체가 목적이 되면 안 됩니다. 겉을 아름답게 하는 것은 좋지만, 소박함이라는 본질을 잃으면 빈껍데기가 돼요. 작은 일에서 아름답게 빛나는 것이 지금 당신에게 맞는 자리입니다.',hy:["발을 꾸미고 수레를 버리고 걷는다. 소박한 시작.", "수염을 꾸민다. 의존적인 꾸밈.", "꾸미고 윤택하니 오래도록 바르면 길하다.", "흰 것을 꾸민다. 도적이 아니라 혼인을 구한다.", "소박한 예물이다. 부끄러우나 마침내 길하다.", "흰색으로 꾸미니 꾸밈이 없는 꾸밈. 허물없다."]},
+  23:{gs:'剝, 不利有攸往',k:'깎임이니 나아감이 이롭지 않다.',dt:'소인이 무성하여 군자가 소멸하려 한다.',dst:'山附地上, 剝. 上以厚下安宅 — 아래를 두텁게 해 거처를 안정시킨다.',v:'쇠락의 시절. 나아가지 말고 때가 돌아오기를 기다려라.',p:'산이 땅으로 깎여 내려가는 시절입니다. 지금은 억지로 나아가면 더 빠르게 무너져요. 멈추고 아래를 단단히 하며 기다리는 것이 유일한 길입니다. 큰 과일은 아직 남아 있어요. 서두르지 마세요.',hy:["침상 다리부터 깎인다. 바름이 없어 흉하다.", "침상 테두리가 깎인다. 흉하다.", "깎이지만 허물없다. 악에 동조하지 않는다.", "침상이 살갗까지 깎인다. 흉하다.", "꿰어진 물고기처럼 왕의 총애를 받으니 이롭다.", "군자는 수레를 얻고 소인은 집을 잃는다. 큰 과일은 남아있다."]},
+  24:{gs:'復, 亨. 七日來復',k:'돌아오니 형통하다. 7일이면 돌아온다.',dt:'복에서 천지의 마음을 보도다.',dst:'雷在地中, 復. 先王以至日閉關 — 동지에는 관문을 닫고 쉰다.',v:'회복의 시절. 하나의 양기가 돌아오는 순간.',p:'하나의 양기가 돌아오는 회복의 첫 순간입니다. 멀리 가지 않고 제때 돌아오는 것이 가장 길해요. 7일이면 돌아온다는 것은, 때가 되면 반드시 기회가 온다는 뜻이기도 합니다. 지금 이 작은 씨앗을 소중히 하세요.',hy:["멀리 가지 않아 돌아오니 크게 길하다.", "아름답게 돌아오니 길하다.", "자주 돌아오니 위태로우나 허물없다.", "가운데 길에서 홀로 돌아온다.", "돈독하게 돌아오니 후회없다.", "미혹되어 돌아오지 못하면 흉하다."]},
+  25:{gs:'无妄, 元亨利貞',k:'망령됨이 없으니 크게 형통하고 바르면 이롭다.',dt:'강이 외에서 와서 주인이 된다.',dst:'天下雷行, 物與无妄 — 때에 맞추어 만물을 길렀다.',v:'순수의 시절. 꾸밈 없이 자연에 순응하면 형통하다.',p:'꾸밈 없이 자연스럽게 흐르는 시절입니다. 억지로 기획하고 계산하면 오히려 뜻하지 않은 재앙이 찾아와요. 지금은 흐름에 맡기고, 자연스럽게 오는 것을 받아들이는 것이 가장 현명합니다.',hy:["망령됨 없이 가니 길하다.", "밭 갈지 않고 거두는 자연스러운 결실.", "뜻하지 않은 재앙. 행인의 득이 마을 사람의 재앙이 된다.", "바를 수 있으면 허물없다.", "뜻밖의 병이니 약을 쓰지 않아도 기쁨이 있다.", "망령됨 없이 행해도 재앙이 있다. 때가 아니다."]},
+  26:{gs:'大畜, 利貞, 不家食吉',k:'크게 쌓으니 바르면 이롭다.',dt:'강이 굳게 지키는 것이 대축이다.',dst:'天在山中, 大畜. 君子以多識前言往行 — 옛말과 옛 행적을 많이 알아 덕을 쌓는다.',v:'큰 축적의 시절. 멈추고 쌓아라. 준비가 완성되면 반드시 대통한다.',p:'하늘의 힘을 산이 단단히 붙잡아 쌓아두는 형상입니다. 지금은 나가는 것보다 쌓는 것이 훨씬 더 큰 일이에요. 옛 지혜를 배우고 덕을 쌓다 보면, 때가 되었을 때 막힘 없이 크게 통합니다. 하늘 길은 준비된 자에게 열립니다.',hy:["위태로움이 있으니 그침이 이롭다.", "수레 바퀴축이 빠진다. 억지로 나아가지 마라.", "준마를 달리니 어렵게 바르면 이롭다.", "어린 소에 뿔막이를 씌우니 미연에 방지하라.", "거세한 돼지의 이빨이니 근본을 다스려라.", "하늘 길에 오르니 형통하다. 축적이 완성된 대통의 때."]},
+  27:{gs:'頤, 貞吉',k:'바르면 길하다. 기르는 것을 관찰하고 스스로 먹을 것을 구하라.',dt:'기름과 양육이 이다.',dst:'山下有雷, 頤. 君子以愼言語, 節飮食 — 말을 삼가고 음식을 절제한다.',v:'양육의 시절. 무엇을 기르고 무엇으로 양육받는지 신중히 살펴라.',p:'무엇을 먹이고 무엇으로 먹히는지를 살피는 괘입니다. 지금 당신이 기르고 있는 것, 양육받고 있는 것이 무엇인지 돌아보세요. 탐욕을 좇으면 흉하고, 스스로 실력으로 먹을 것을 구하면 길합니다.',hy:["신령한 거북을 버리고 내 먹을 것을 탐내니 흉하다.", "위를 거슬러 구하니 흉하다.", "기름을 거스르니 10년간 쓸 수 없다.", "위에서 아래로 기르니 길하다.", "경상을 거슬러도 바르게 머물면 길하나 큰일은 못한다.", "기름의 근원이 되니 위태로우나 길하다."]},
+  28:{gs:'大過, 棟橈. 利有攸往',k:'크게 지나침이니 대들보가 휜다.',dt:'큰 것이 지나치면 반드시 굽는다.',dst:'澤滅木, 大過. 君子以獨立不懼 — 홀로 서서 두려워하지 않는다.',v:'극단의 시절. 대들보가 휜 상황이다. 과감히 결단하되 중심을 잃지 말라.',p:'대들보가 양 끝으로 휜 극단의 상황입니다. 지금은 위기예요. 홀로 서서 두려워하지 않는 결단이 필요합니다. 무너지기 전에 과감하게 손을 써야 하고, 머뭇거리다 부러지면 돌이키기 어렵습니다.',hy:["흰 띠풀로 깔개를 쓰니 지극한 조심성.", "늙은 버드나무에 움이 트니 새로운 시작.", "대들보가 휘니 흉하다.", "대들보가 높으니 길하다.", "늙은 버드나무에 꽃이 피나 오래가지 않는다.", "깊이 건너다 정수리가 잠긴다. 흉하나 허물은 없다."]},
+  29:{gs:'習坎, 有孚, 維心亨',k:'거듭된 험난이나 믿음이 있으면 마음이 형통하다.',dt:'물은 흐르되 험한 곳을 지나도 믿음을 잃지 않는다.',dst:'水荐至, 習坎. 君子以常德行 — 덕행을 항상 하고 가르치는 일을 익힌다.',v:'거듭된 험난의 시절. 믿음과 항상함으로 험한 곳을 통과하라.',p:'구덩이가 겹쳐 있는 험난함입니다. 물은 아무리 험한 곳을 만나도 멈추지 않고 흘러요. 지금 당신도 그래야 합니다. 믿음을 잃지 않고 계속 나아가면 반드시 빠져나옵니다. 억지로 막힌 것을 뚫으려 하지 말고 흐르세요.',hy:["구덩이 속으로 들어가니 흉하다.", "험난함이 있으나 작은 것을 구하면 얻는다.", "앞뒤로 험난하니 쓰지 말라.", "소박한 예물로 믿음을 나누니 마침내 허물없다.", "구덩이가 차지 않아도 평정에 이르면 허물없다.", "단단히 묶여 3년이 지나도 나오지 못한다. 흉하다."]},
+  30:{gs:'離, 利貞, 亨. 畜牝牛, 吉',k:'걸림이니 바르면 이롭고 형통하다.',dt:'해와 달이 하늘에 걸리고 백곡이 땅에 걸린다.',dst:'明兩作, 離. 大人以繼明照于四方 — 밝음을 이어 사방을 비춘다.',v:'걸림의 시절. 밝음이 겹치는 문명의 때. 중도를 잃지 말라.',p:'빛은 스스로 타오를 수 없습니다. 반드시 무언가에 걸려야 빛날 수 있어요. 지금은 어디에 걸릴 것인지, 무엇에 기댈 것인지가 핵심입니다. 유순하게 의지하고 중도를 지키면 오래 밝게 빛납니다.',hy:["발걸음이 뒤섞이니 공경하면 허물없다.", "황색으로 걸리니 크게 길하다.", "기우는 해처럼 현재를 즐겨라.", "갑자기 닥쳐 불타고 죽고 버려진다. 과격한 행동의 말로.", "눈물을 흘리고 근심하며 탄식하니 길하다. 진심 어린 반성.", "수괴를 잡으니 허물없다."]},
+  31:{gs:'咸, 亨, 利貞, 取女吉',k:'감응하니 형통하고 바르면 이롭다.',dt:'천지가 감응하여 만물이 생겨난다.',dst:'山上有澤, 咸. 君子以虛受人 — 비워서 사람을 받아들인다.',v:'감응의 시절. 마음을 비워서 상대에게 진심으로 닿아야 한다.',p:'마음을 비워야 진짜 감응이 일어납니다. 말이나 몸짓으로 하는 감응은 오래가지 않아요. 지금 상대에게 닿고 싶다면, 전략보다 진심이 먼저입니다. 빈 그릇이어야 채울 수 있어요.',hy:["엄지발가락에서 감응한다. 처음 미미한 감응.", "장딴지에서 감응하니 흉하고 머물면 길하다.", "넓적다리에서 감응하여 따르려 하니 나아가면 부끄럽다.", "바르면 길하고 후회가 사라진다. 오락가락하면 얽매인다.", "등에서 감응하니 후회없다. 사사로운 욕심 없는 감응.", "광대뼈와 볼과 혀에서 감응한다. 말로만 하는 감응."]},
+  32:{gs:'恒, 亨, 无咎, 利貞',k:'항상하니 형통하고 허물없고 바르면 이롭다.',dt:'항은 오래됨이다.',dst:'雷風, 恒. 君子以立不易方 — 서서 방향을 바꾸지 않는다.',v:'항상함의 시절. 방향을 바꾸지 않고 흔들리지 않으면 반드시 이룬다.',p:'오래도록 흔들리지 않는 것이 이 괘의 핵심입니다. 방향을 바꾸지 않고 꾸준히 나아가면 반드시 이루어요. 다만 항상함이 없이 자리만 지키고 있으면 아무것도 얻지 못합니다. 움직이는 항상함이 필요해요.',hy:["처음부터 너무 깊이 파고들면 흉하다.", "후회가 사라진다.", "덕에 항상함이 없으면 수치를 당한다.", "사냥해도 짐승이 없다. 제자리가 아닌 곳에서는 얻지 못한다.", "덕에 항상하니 바르다.", "흔들리는 항상함이니 흉하다."]},
+  33:{gs:'遯, 亨. 小利貞',k:'물러나니 형통하다.',dt:'물러나는 것이 바로 올바른 행동이다.',dst:'天下有山, 遯. 君子以遠小人, 不惡而嚴 — 소인을 멀리하되 미워하지 않고 엄하게 한다.',v:'현명한 후퇴의 시절. 때로는 물러남이 가장 강한 전진이다.',p:'아름답게 물러나는 것이 이 시절의 지혜입니다. 물러남이 패배가 아니에요. 때로는 물러남이 더 강한 전진이고, 잘 물러날수록 더 자유로워집니다. 소인에게 얽매이지 말고 우아하게 뒤로 빠지세요.',hy:["꼬리에서 물러나니 위태롭다. 나아가지 말라.", "누런 소가죽으로 묶으니 아무도 빠져나가지 못한다.", "얽매여 물러나니 위태롭다.", "좋게 물러나니 군자는 길하고 소인은 그렇지 않다.", "아름답게 물러나니 바르고 길하다.", "넉넉하게 물러나니 이롭지 않음이 없다. 가장 자유로운 은퇴."]},
+  34:{gs:'大壯, 利貞',k:'크게 강하니 바르면 이롭다.',dt:'강이 움직이는 것이 대장이다.',dst:'雷在天上, 大壯. 君子以非禮弗履 — 예가 아니면 행하지 않는다.',v:'강성의 시절. 힘이 절정에 달했다. 올바른 방향으로만 써야 한다.',p:'힘이 절정에 달한 시절입니다. 강함 자체는 문제가 아니지만, 힘으로만 밀면 울타리에 걸려요. 지금 당신에게 필요한 것은 더 큰 힘이 아니라 더 나은 방향입니다. 예가 아니면 행하지 않는 절제가 강함을 완성해요.',hy:["발에서 강하나 나아가면 흉하다.", "바르면 길하다.", "숫양이 울타리에 뿔을 들이박아 걸린다.", "바르면 길하고 후회가 사라진다.", "강함을 버리고 유연해져라.", "나아가지도 물러서지도 못한다. 어렵게 하면 길하다."]},
+  35:{gs:'晉, 康侯用錫馬蕃庶',k:'나아감이니 왕에게 말을 하사받는다.',dt:'밝음이 땅 위로 나오는 것이 진이다.',dst:'明出地上, 晉. 君子以自昭明德 — 스스로 밝은 덕을 드러낸다.',v:'진진의 시절. 태양이 솟아오르듯 밝게 드러나며 나아간다.',p:'태양이 솟아오르듯 밝게 드러날 때입니다. 지금은 숨기지 말고 나서야 해요. 능력을 스스로 드러내야 인정받습니다. 다만 탐욕스럽게 욕심을 부리면 오히려 무너지니, 밝게 나아가되 분수를 알아야 합니다.',hy:["나아갔다 꺾이는 듯하나 바르면 길하다.", "나아가되 근심하듯 하니 큰 복을 받는다.", "여럿의 신뢰를 얻으니 후회가 사라진다.", "다람쥐처럼 나아가니 위태롭다.", "후회가 사라지고 득실에 연연하지 않으니 가면 길하다.", "뿔로써 나아가니 자기 고을을 치는 데 씀이 이롭다."]},
+  36:{gs:'明夷, 利艱貞',k:'밝음이 상해입으니 어렵게 바름을 지키는 것이 이롭다.',dt:'안으로는 문명하고 밖으로는 유순하여 큰 어려움을 건넌다.',dst:'明入地中, 明夷. 君子以莅衆, 用晦而明 — 어두운 듯 하되 밝다.',v:'어두운 시절. 빛을 감추고 내실을 다지면 반드시 때가 온다.',p:'빛을 감춰야 할 어두운 시절입니다. 무언가를 드러내고 싶어도 지금은 때가 아니에요. 기자가 감옥에서도 지혜를 잃지 않았듯, 어두운 시절에 내실을 다지는 사람이 빛이 돌아왔을 때 먼저 일어납니다.',hy:["나는 새가 날개를 드리운다. 군자가 떠나 사흘 굶는다.", "왼쪽 넓적다리에 상처를 입으나 강한 말로 구하면 길하다.", "남쪽을 사냥하여 수괴를 잡는다. 너무 급히 하지 말라.", "왼쪽 배 속으로 들어가 핵심을 얻어 나온다.", "기자의 명이처럼 빛을 감추어 바름을 지켜라.", "처음엔 하늘에 오르나 나중엔 땅에 묻힌다."]},
+  37:{gs:'家人, 利女貞',k:'가인이니 여자의 바름이 이롭다.',dt:'여자는 안에 바르고 남자는 밖에 바른 것이 가인.',dst:'風自火出, 家人. 君子以言有物而行有恒 — 말에 실질이 있고 행동에 항상함이 있다.',v:'집안의 시절. 가까운 곳부터 바르게 하면 밖도 따라온다.',p:'가장 가까운 곳부터 바르게 하는 시절입니다. 말에 실질이 있고 행동에 일관성이 있어야 해요. 가정이나 가장 가까운 관계가 흔들리면 바깥은 더 크게 흔들립니다. 안이 바로서야 밖이 따라와요.',hy:["집안을 잘 단속하면 후회가 사라진다.", "이루려 하지 않고 안에서 음식을 주관하니 바르고 길하다.", "집안이 엄격하면 길하고 너무 느슨하면 부끄럽다.", "집안을 넉넉하게 하니 크게 길하다.", "왕이 집안에 이르니 근심하지 않아도 길하다.", "믿음이 있고 위엄이 있으니 마침내 길하다."]},
+  38:{gs:'睽, 小事吉',k:'어긋남이니 작은 일에 길하다.',dt:'불은 위로 가고 물은 아래로 가니 어긋난다.',dst:'上火下澤, 睽. 君子以同而異 — 같으면서도 다름을 인정한다.',v:'어긋남의 시절. 작은 일부터 풀어가되 다름을 인정하라.',p:'어긋나 있는 시절입니다. 큰일을 추진하려 하지 말고, 작은 것부터 하나씩 풀어가세요. 다름을 인정하면 작은 교차점이 생기고, 그 교차점이 결국 만남을 만듭니다. 극단적 의심은 없는 도적도 만들어냅니다.',hy:["후회가 사라진다. 말을 잃어도 쫓지 않으면 스스로 돌아온다.", "골목에서 주인을 만나니 허물없다.", "처음은 없고 끝은 있다.", "외로움 속에 좋은 사람을 만나 믿음으로 교류하니 허물없다.", "후회가 사라지고 종족이 함께한다. 가면 무슨 허물이 있겠는가.", "극단적 의심은 환상을 만든다. 비를 만나면 길하다."]},
+  39:{gs:'蹇, 利西南. 利見大人',k:'어려움이니 서남이 이롭다. 대인을 봄이 이롭다.',dt:'앞은 험난하고 뒤는 막혀있다.',dst:'山上有水, 蹇. 君子以反身修德 — 자신을 돌이켜 덕을 닦는다.',v:'어려움의 시절. 나아가지 말고 자신을 돌아보며 도움을 구하라.',p:'앞도 막히고 뒤도 막힌 절름발이의 형국입니다. 억지로 나아가면 더 깊이 빠져요. 지금 가장 현명한 일은 멈추고 자신을 돌아보는 것입니다. 도움을 구하고, 덕을 닦다 보면 막혔던 길이 열립니다.',hy:["가면 어렵고 오면 명예롭다. 물러서라.", "신하가 어려움을 거듭 당함은 자기 때문이 아니다.", "가면 어렵고 돌아오면 된다.", "가면 어렵고 돌아오면 연대한다.", "큰 어려움에 동지가 온다.", "가면 어렵고 돌아오면 크니 길하다. 대인을 봄이 이롭다."]},
+  40:{gs:'解, 利西南',k:'풀림이니 갈 곳이 있으면 일찍 가면 길하다.',dt:'우레와 비가 일어나 막힌 것이 풀린다.',dst:'雷雨作, 解. 君子以赦過宥罪 — 허물을 용서하고 죄를 관대하게 처리한다.',v:'해방의 시절. 막혔던 것이 풀린다. 용서하고 단호히 나아가라.',p:'막혔던 것이 한꺼번에 풀리는 해방의 시절입니다. 갈 곳이 있다면 지금 바로 움직이세요. 머뭇거리면 기회가 다시 막힙니다. 허물은 용서하고, 걸림돌은 단호히 치우고, 풀린 에너지를 바른 방향으로 써야 해요.',hy:["허물없다. 아직 조용히 있어라.", "사냥에서 여우 셋을 잡고 황금 화살을 얻으니 길하다.", "짊어지고 또 수레를 타니 도적을 불러들인다.", "소인을 놓아주어야 군자가 온다.", "군자가 풀어줌이 있으니 길하다.", "높은 담 위의 매를 쏘아 잡으니 이롭지 않음이 없다."]},
+  41:{gs:'損, 有孚, 元吉',k:'덜어냄에 믿음이 있으면 크게 길하다.',dt:'아래를 덜어 위에 더하는 것이 손이다.',dst:'山下有澤, 損. 君子以懲忿窒慾 — 분노를 경계하고 욕심을 막는다.',v:'절제의 시절. 욕심을 덜어내야 오히려 더 얻는다.',p:'욕심과 분노를 덜어내면 오히려 더 얻는 시절입니다. 소박한 진심이 화려한 형식보다 훨씬 크게 통해요. 분노를 경계하고 욕심을 막는 것, 그것이 이 시절에 가장 크게 이루는 방법입니다.',hy:["일을 마치고 빨리 가면 허물없다. 적절히 덜어라.", "바름이 이롭고 나아가면 흉하다. 덜지 않고 더하라.", "셋이 가면 하나를 덜고 혼자 가면 친구를 얻는다.", "병을 덜어내어 빨리 기쁨이 오니 허물없다.", "열 친구의 거북을 더해주어도 거절 못하니 크게 길하다.", "덜지 않고 더하니 허물없고 길하다."]},
+  42:{gs:'益, 利有攸往, 利涉大川',k:'더함이니 나아감이 이롭다.',dt:'위를 덜어 아래에 더하니 백성의 기쁨이 끝이 없다.',dst:'風雷, 益. 君子以見善則遷, 有過則改 — 선을 보면 옮겨가고 허물이 있으면 고친다.',v:'성장의 시절. 선을 보면 옮겨가고 허물이 있으면 고쳐라.',p:'위에서 아래로 더해주는 나눔의 시절입니다. 선을 보면 주저하지 말고 옮겨가고, 허물이 있으면 빨리 고치세요. 유연하게 변하고 나누는 것이 지금 당신에게 가장 강한 힘입니다. 지금 나아가면 이롭습니다.',hy:["큰 일을 하는 데 쓰이니 크게 길하다.", "하늘이 더해주니 오래도록 바르면 길하다.", "어려운 일에 더함을 쓰면 허물없다.", "중도를 따르니 공이 따른다. 큰 변화에 이롭다.", "믿음으로 은혜를 베푸는 마음이니 크게 길하다.", "더해주는 이가 없고 오히려 공격받는다. 항상함이 없으면 흉하다."]},
+  43:{gs:'夬, 揚于王庭. 利有攸往',k:'왕의 조정에서 선포한다.',dt:'강이 유를 결단하는 것이 쾌.',dst:'澤上于天, 夬. 君子以施祿及下 — 녹을 베풀어 아래에 미치게 한다.',v:'결단의 시절. 강하게 선포하되 무력보다 명분으로 밀어붙여라.',p:'소인을 결단해 제거해야 할 때입니다. 그러나 폭력이 아니라 명분으로 해야 해요. 조정에서 선포하듯 당당하고 공개적으로 밀어붙여야 합니다. 속으로만 알고 입 밖으로 내지 못하면 결국 흉합니다.',hy:["앞발에서 강하나 나아가 이기지 못하면 허물이 된다.", "경계하며 부르짖으니 밤에 군사가 있어도 근심하지 않는다.", "광대뼈에서 강하니 흉하다. 군자는 결단한다.", "엉덩이에 살이 없어 걷기 어렵다. 이끌리면 후회가 사라진다.", "비름 나물처럼 결단하니 중도를 행하면 허물없다.", "부르짖을 수 없으니 마침내 흉하다."]},
+  44:{gs:'姤, 女壯, 勿用取女',k:'만남이니 여자가 강하다. 유혹적이나 지속성이 없다.',dt:'유(柔)가 처음 와서 강(剛)에 만나는 것이 구.',dst:'天下有風, 姤. 后以施命誥四方 — 명을 내려 사방에 알린다.',v:'만남의 시절. 달콤한 유혹을 경계하고 중심을 지켜라.',p:'달콤한 유혹이 스며드는 시절입니다. 좋은 기회처럼 보이는 것이 실은 오래가지 않을 수 있어요. 중심을 잃지 않는 것, 그것이 이 시절에서 살아남는 방법입니다. 빠르게 빠지면 빠르게 잃어요.',hy:["금 쐐기에 묶으니 바르면 길하다. 나아가면 흉하다.", "꾸러미에 물고기가 있으니 허물없다.", "걷기 어려우나 크게 허물없다.", "꾸러미에 물고기가 없으니 흉함이 일어난다.", "빛을 감추고 있으면 하늘의 은혜가 온다.", "뿔에서 만나니 부끄러우나 허물없다."]},
+  45:{gs:'萃, 亨. 王假有廟',k:'모임이니 형통하다.',dt:'유가 중을 얻어 윗것에 응하는 것이 췌.',dst:'澤上於地, 萃. 君子以除戎器, 戒不虞 — 무기를 정비하여 뜻밖의 일에 대비한다.',v:'취합의 시절. 뜻을 같이하는 이들이 모이니 크게 이룰 수 있다.',p:'뜻을 같이하는 이들이 모이는 시절입니다. 대인을 만나 함께하면 크게 이룰 수 있어요. 다만 모임에는 반드시 뜻밖의 일도 따릅니다. 무기를 정비하듯 예상치 못한 상황에 대한 대비도 게을리하지 마세요.',hy:["믿음이 끝까지 가지 않으면 혼란이 온다. 바름을 구하면 후회가 사라진다.", "이끌리면 길하고 허물없다. 소박한 믿음이면 된다.", "모이는 듯 탄식하니 이로울 바 없다.", "크게 길하고 허물없다.", "오래도록 바르면 후회가 사라진다.", "탄식하며 눈물 콧물을 흘리나 허물없다."]},
+  46:{gs:'升, 元亨. 南征吉',k:'올라가니 크게 형통하다.',dt:'유가 때를 얻어 순응하고 올라가는 것이 승.',dst:'地中生木, 升. 君子以順德, 積小以高大 — 작은 것을 쌓아 크고 높게 한다.',v:'상승의 시절. 땅 속에서 나무가 자라듯 착실히 한 단계씩 올라간다.',p:'땅 속에서 나무가 자라듯 꾸준히 위로 오르는 시절입니다. 한 번에 크게 도약하려 하지 말고, 작은 것을 착실하게 쌓아가세요. 그렇게 가다 보면 어느 순간 높은 곳에 서 있게 됩니다.',hy:["진실로 올라가니 크게 길하다.", "믿음으로 소박한 제사를 드리니 허물없다.", "빈 고을로 올라간다. 장애 없이 순탄하게 오른다.", "왕이 기산에서 제사를 드리니 길하고 허물없다.", "바르면 길하고 계단을 오른다.", "어둡게 올라가니 쉬지 않는 바름이 이롭다."]},
+  47:{gs:'困, 亨, 貞, 大人吉',k:'곤궁하나 형통하고 바르면 대인은 길하다.',dt:'어려움 속에서도 뜻을 잃지 않는 것이 군자다.',dst:'澤无水, 困. 君子以致命遂志 — 목숨을 내걸고 뜻을 이룬다.',v:'곤궁의 시절. 뜻을 잃지 않으면 반드시 빠져나온다.',p:'못에 물이 없는 곤궁의 시절입니다. 말해도 믿어주지 않고, 움직여도 막히는 때예요. 하지만 뜻을 잃지 않으면 반드시 빠져나옵니다. 섣불리 나아가지 말고, 이 시간에 자신을 더 깊이 만들어 두세요.',hy:["그루터기에 걸려 어두운 골짜기에 들어가 3년간 보이지 않는다.", "술과 음식에 곤하나 붉은 인끈이 온다. 제사는 이롭고 나아가면 흉하다.", "돌에 막히고 가시에 걸린다. 집에 가도 아내를 못 보니 흉하다.", "천천히 오나 금 수레에 막힌다. 부끄러우나 마침이 있다.", "극한 곤궁. 천천히 풀리니 제사가 이롭다.", "덩굴에 얽혀있다. 후회하면 움직임이 길하다."]},
+  48:{gs:'井, 改邑不改井',k:'마을은 바뀌어도 우물은 바뀌지 않는다.',dt:'나무로 물을 끌어올리는 것이 정이다.',dst:'木上有水, 井. 君子以勞民勸相 — 백성을 위해 일하고 서로 돕도록 권한다.',v:'근원의 시절. 변하지 않는 본질적 가치가 세상을 먹인다.',p:'우물은 자리를 옮기지 않습니다. 변하지 않는 본질적 가치가 세상을 먹이는 시절이에요. 두레박이 짧으면 맑은 물이 있어도 마시지 못합니다. 역량을 키우고, 아낌없이 베풀수록 더 풍요로워지는 시절이에요.',hy:["진흙 우물은 마시지 못한다. 오래된 우물엔 새도 없다.", "우물 골짜기에서 붕어를 쏜다. 역량을 낭비하는 상태.", "우물을 쳐내도 아무도 마시지 않으니 마음이 아프다.", "우물을 수리하니 허물없다.", "맑고 차가운 샘물을 마신다. 최고의 우물.", "우물을 길어 덮지 않으니 아낌없이 베풀어라."]},
+  49:{gs:'革, 巳日乃孚, 元亨利貞',k:'변혁이니 날이 지나서야 믿어준다.',dt:'물과 불이 서로 이기는 것이 혁.',dst:'澤中有火, 革. 君子以治曆明時 — 역법을 정비하고 때를 밝힌다.',v:'변혁의 시절. 때를 잘 보아 하늘의 뜻에 맞게 변혁하라.',p:'변혁의 시절이지만 타이밍이 전부입니다. 조급하게 바꾸면 아무도 믿어주지 않아요. 때를 기다렸다가 움직이면 크게 형통하고, 준비 없이 바꾸면 오히려 더 크게 흔들립니다.',hy:["누런 소가죽으로 단단히 묶는다. 아직 변혁의 때가 아니다.", "때가 되어 변혁하니 나아가면 길하고 허물없다.", "세 번 말해도 믿어주면 변혁한다.", "후회가 사라지고 믿음이 있으면 명을 고쳐 길하다.", "대인이 호랑이처럼 변한다. 길하다.", "군자는 표범처럼 변하고 소인은 얼굴만 바꾼다."]},
+  50:{gs:'鼎, 元吉, 亨',k:'솥이니 크게 길하고 형통하다.',dt:'나무로 불을 때어 음식을 익힘이 정.',dst:'木上有火, 鼎. 君子以正位凝命 — 자리를 바르게 하고 명을 굳힌다.',v:'새 질서의 시절. 자리를 바르게 하고 명을 굳혀라.',p:'새로운 질서를 세우는 솥의 시절입니다. 자리를 바르게 하고, 역할을 분명히 하면 크게 길해요. 역량이 없는 사람이 큰 자리를 차지하면 솥발이 부러집니다. 지금 당신이 맡은 자리가 맞는 자리인지 돌아보세요.',hy:["솥발이 뒤집혀 찌꺼기를 쏟아내니 이롭다. 새로 시작하라.", "솥에 음식이 가득하다.", "솥귀가 바뀌어 움직임이 막힌다. 비가 내리면 마침내 길하다.", "솥발이 부러져 내용물을 엎는다. 역량 없는 자가 큰 일을 맡으면 흉하다.", "솥의 황금 귀에 금 고리. 바르면 이롭다.", "솥의 옥 고리니 크게 길하고 이롭지 않음이 없다."]},
+  51:{gs:'震, 亨. 後笑言啞啞',k:'진동하니 형통하다. 처음엔 두렵지만 뒤에는 웃는다.',dt:'우레가 겹쳐 반복되니 놀라움이 거듭된다.',dst:'洊雷, 震. 君子以恐懼修省 — 두려워하고 경계하며 자신을 닦고 살핀다.',v:'충격의 시절. 두려움이 지나면 웃음이 온다. 경계하며 기다려라.',p:'충격과 진동의 시절입니다. 처음에는 두렵지만 뒤에는 웃음이 옵니다. 두려워하고 경계하며 자신을 돌아보면, 이 충격이 오히려 당신을 성장시킵니다. 멀리 가지 않고 제자리를 지키세요.',hy:["처음엔 두렵지만 나중에 웃으니 길하다.", "우레가 위태롭게 오니 재물을 잃는다. 쫓지 않아도 7일이면 얻는다.", "두렵고 두렵지만 움직이면 재앙없다.", "우레가 진흙 속으로 빠진다. 힘이 막힌 상태.", "오고 가는 우레에 위태로우나 큰 손실 없이 일이 있다.", "두려워 사방을 두리번거린다. 나아가면 흉하다."]},
+  52:{gs:'艮其背, 不獲其身, 无咎',k:'등에서 그치니 몸을 얻지 못하나 허물없다.',dt:'때에 맞게 그치는 것이 간이다.',dst:'兼山, 艮. 君子以思不出其位 — 생각이 자기 자리를 벗어나지 않는다.',v:'그침의 시절. 멈출 때를 아는 것이 가장 큰 지혜다.',p:'멈출 때를 아는 것이 가장 큰 지혜인 시절입니다. 등에서 그치듯, 욕심이 시작되기 전에 멈추는 것이 핵심이에요. 자기 자리를 벗어난 생각이 모든 화의 시작입니다. 지금은 움직이기보다 서 있는 것이 더 강합니다.',hy:["발에서 그치니 허물없고 오래도록 바름이 이롭다.", "장딴지에서 그치니 마음이 유쾌하지 않다.", "허리에서 그치니 마음이 타오른다. 과도한 자제의 고통.", "몸에서 그치니 허물없다.", "턱에서 그치니 말에 순서가 있다. 후회가 사라진다.", "돈독하게 그치니 길하다."]},
+  53:{gs:'漸, 女歸吉, 利貞',k:'점진이니 여자가 시집가면 길하다. 단계를 밟아 나아가라.',dt:'나무가 산 위에서 자라듯 점진적으로 나아간다.',dst:'山上有木, 漸. 君子以居賢德善俗 — 현덕에 머물러 풍속을 선하게 한다.',v:'점진의 시절. 성급하지 않고 차례차례 나아가면 반드시 도달한다.',p:'기러기가 단계를 밟아 나아가는 시절입니다. 성급하게 뛰어넘으려 하지 마세요. 순서를 지키고 차례차례 나아가면 반드시 목적지에 닿아요. 서두르다 정도를 잃으면 그동안 쌓은 것이 무너집니다.',hy:["기러기가 물가로 나아간다. 처음이라 위태로우나 허물없다.", "기러기가 반석으로 나아간다. 음식이 즐거우니 길하다.", "뭍으로 가는 기러기. 정도를 잃으면 흉하다.", "나무로 나아가는 기러기. 평평한 가지를 얻으면 허물없다.", "언덕으로 나아가는 기러기. 3년의 기다림 끝에 길하다.", "높이 나는 기러기의 깃털이 의식에 쓰인다. 세상을 초월한 완성."]},
+  54:{gs:'歸妹, 征凶, 无攸利',k:'귀매니 나아가면 흉하고 이로울 바 없다.',dt:'우레와 못이 만나 움직임이 기쁨이 된다.',dst:'澤上有雷, 歸妹. 君子以永終知敝 — 끝을 오래 지속하고 폐단을 안다.',v:'부적절한 시절. 서두르지 말고 분수와 때를 알라.',p:'때가 맞지 않는 시작의 시절입니다. 원하는 것이 있어도 지금 서두르면 실속 없는 결합이 돼요. 분수를 알고 때를 기다리면 반드시 제때가 옵니다. 아직은 조용히 준비할 시간이에요.',hy:["잉첩으로 시집가니 분수를 알면 길하다.", "눈이 어두워도 볼 수 있다. 은거하는 사람의 바름이 이롭다.", "기다리다 결국 잉첩으로 돌아온다.", "시집이 늦어진다. 때를 기다리면 온다.", "왕의 딸도 겸손하게 시집가니 길하다.", "실속 없는 결합. 광주리도 비어있고 양도 피가 없다."]},
+  55:{gs:'豐, 亨. 勿憂, 宜日中',k:'풍성하니 형통하다. 해가 중천에 있을 때처럼 하라.',dt:'풍성함은 크게 성한 것이다.',dst:'雷電皆至, 豐. 君子以折獄致刑 — 송사를 결단하고 형을 집행한다.',v:'절정의 시절. 경계를 잃지 말고 빛을 나누어라.',p:'풍요와 절정의 시절입니다. 해가 중천에 있을 때처럼 마음껏 발휘하세요. 하지만 집을 크게 키우면서 안을 비워두면 결국 고립이 와요. 지금 얻은 것을 혼자 쌓지 말고, 빛을 나누어야 오래갑니다.',hy:["짝을 만나니 열흘이 지나도 허물없다. 나아가면 숭상받는다.", "차일이 드리워져 낮에 북두성이 보인다. 믿음으로 밝히면 길하다.", "낮에 작은 별이 보인다. 오른팔이 꺾여도 허물없다.", "어둠 속에서도 동등한 주인을 만나면 길하다.", "빛남이 오니 경사와 명예가 있어 길하다.", "집을 크게 키우나 안은 텅 비어있다. 고립의 흉함."]},
+  56:{gs:'旅, 小亨, 旅貞吉',k:'나그네니 작게 형통하다. 나그네로서 바르면 길하다.',dt:'산 위에 불이 타는 것이 려다.',dst:'山上有火, 旅. 君子以明愼用刑 — 형벌을 밝히고 신중히 쓴다.',v:'나그네의 시절. 겸손하게 분수 이상을 욕심내지 말라.',p:'나그네의 시절입니다. 오래 머물 수 없는 자리예요. 겸손하게 임시 자리를 지키고, 분수 이상을 탐내지 마세요. 자잘하게 따지다 큰 것을 잃는 것이 이 시절에서 가장 흔한 실수입니다.',hy:["나그네가 너무 자잘하게 구니 재앙을 자초한다.", "여관에 들어 재물을 품으니 동복의 믿음을 얻는다.", "여관이 불타고 동복을 잃으니 위태롭다.", "여행지에서 도끼를 얻으나 마음이 유쾌하지 않다.", "꿩을 한 화살로 잡아 마침내 명예를 얻는다.", "새가 둥지를 태운다. 먼저 웃고 나중에 운다. 흉하다."]},
+  57:{gs:'巽, 小亨, 利有攸往',k:'손이니 작게 형통하다. 대인을 봄이 이롭다.',dt:'순종하여 명을 따르는 것이 손이다.',dst:'隨風, 巽. 君子以申命行事 — 명을 거듭 내려 일을 행한다.',v:'유순함의 시절. 부드럽게 침투하듯 서서히 이루어 나가라.',p:'바람처럼 부드럽게 스며드는 시절입니다. 강하게 치고 나가기보다 유순하게 침투하듯 접근해야 해요. 지금은 밀기보다 스미는 방법이 훨씬 멀리 갑니다. 과도한 공손함도 힘을 잃게 하니 주의하세요.',hy:["나아갔다 물러났다 하니 결단하라.", "침상 아래에서 손순히 하니 길하다.", "지나치게 공손하면 부끄럽다.", "후회가 사라지고 사냥에서 세 가지를 얻는다.", "바르면 길하고 후회가 사라진다. 시작은 없어도 끝이 있다.", "침상 아래에서 지나치게 공손하여 재물을 잃는다."]},
+  58:{gs:'兌, 亨, 利貞',k:'기쁨이니 형통하고 바르면 이롭다.',dt:'기쁨이란 바른 것이니 하늘에 순응하고 사람에게 응한다.',dst:'麗澤, 兌. 君子以朋友講習 — 벗과 함께 배우고 익힌다.',v:'기쁨의 시절. 함께 즐기되 아첨과 거짓 기쁨을 경계하라.',p:'기쁨이 흐르는 시절입니다. 함께 즐기고 함께 배우면 그 기쁨이 배가 돼요. 다만 달콤한 말과 아첨에 빠지면 진짜 기쁨이 사라집니다. 바른 기쁨은 오래가고, 가짜 기쁨은 빨리 텅 빕니다.',hy:["화합하여 기뻐하니 길하다.", "믿음으로 기뻐하니 길하고 후회가 사라진다.", "아첨하며 기쁘게 하니 흉하다.", "기쁨을 저울질하며 편치 않으나 경계하면 기쁨이 있다.", "박탈하는 자를 믿으니 위태롭다.", "이끌리어 기뻐한다. 타인에 의존하는 기쁨."]},
+  59:{gs:'渙, 亨. 利涉大川, 利貞',k:'흩어짐이니 형통하다.',dt:'바람이 물 위를 흩어놓는 것이 환이다.',dst:'風行水上, 渙. 先王以享于帝立廟 — 하늘에 제사 드리고 사당을 세웠다.',v:'해산의 시절. 고착된 것을 흩어 새로운 구심점을 만들어라.',p:'고착된 것을 흩어 새로운 구심점을 만들 때입니다. 지금 뭉쳐 있는 것들을 과감하게 풀어야 해요. 흩어진 뒤에는 반드시 다시 모이는 구심점이 필요합니다. 흩기만 하고 모으지 않으면 혼란이 옵니다.',hy:["강한 말로 구하니 길하다. 초기에 빨리 대처하라.", "안정된 곳으로 달려가니 후회가 사라진다.", "몸을 흩어 희생하니 후회없다.", "무리를 흩어 새로운 구심점을 만드니 크게 길하다.", "왕이 큰 호령을 내려 흩어진 것을 모은다. 허물없다.", "피를 떨쳐내고 멀리 나가니 허물없다."]},
+  60:{gs:'節, 亨. 苦節不可貞',k:'절제하니 형통하다. 고통스러운 절제는 오래 지속할 수 없다.',dt:'못 위에 물이 있으니 절이다.',dst:'澤上有水, 節. 君子以制數度, 議德行 — 수와 법도를 제정하고 덕행을 의논한다.',v:'절제의 시절. 자연스러운 절도를 지켜야 오래 형통한다.',p:'넘치지 않도록 절제하는 시절입니다. 자연스러운 절도는 형통하고, 억지로 참는 절제는 오래가지 않아요. 즐겁게 절제하는 것이 핵심입니다. 규칙은 모두가 지속할 수 있을 때 의미가 있어요.',hy:["문을 나서지 않으니 허물없다. 절제의 시작.", "대문을 나서지 않으니 흉하다. 때가 되면 나서야 한다.", "절제하지 않으면 탄식한다. 스스로 자초한 결과.", "편안하게 절제하니 형통하다.", "달콤하게 절제하니 길하고 나아가면 숭상받는다.", "쓰라린 절제니 바르나 흉하다. 후회는 없다."]},
+  61:{gs:'中孚, 豚魚吉, 利涉大川',k:'중심의 믿음이니 돼지와 물고기에게도 길하다.',dt:'믿음이 만물을 변화시킨다.',dst:'澤上有風, 中孚. 君子以議獄緩死 — 형사 사건을 신중히 심의한다.',v:'믿음의 시절. 중심의 진심은 어디까지든 전해진다.',p:'진심은 어디까지든 전해집니다. 돼지와 물고기에게도 닿는다고 했어요. 겉으로 만들어낸 신뢰는 반드시 무너지고, 중심의 진심은 예상치 못한 곳에서 열매를 맺습니다. 지금 당신의 마음 깊은 곳을 보세요.',hy:["삼가면 길하나 다른 마음이 있으면 편치 않다.", "그늘에서 우는 학에게 새끼가 화답한다. 진심은 멀리 전해진다.", "적을 만나 북 치다 그치고 울다 노래한다.", "달이 거의 찼다. 짝을 잃어도 허물없다.", "믿음으로 이어지니 허물없다.", "닭 울음이 하늘에 오른다. 진실 없이 명성만 높으면 흉하다."]},
+  62:{gs:'小過, 亨, 利貞. 宜下不宜上',k:'작게 지나침이니 형통하고 내려와야 길하다.',dt:'작은 것이 지나침이 소과다.',dst:'山上有雷, 小過. 君子以行過乎恭 — 공손함이 지나치고, 슬픔이 지나치고, 검소함이 지나친다.',v:'작은 것의 시절. 큰일보다 작은 일에 충실하라.',p:'작은 것의 시절입니다. 큰일보다 작은 일에 충실하고, 높이 날기보다 내려와야 길해요. 지금은 대단한 것을 해내려 하기보다 눈앞의 작은 것을 정성껏 하는 것이 더 크게 이루는 길입니다.',hy:["나는 새처럼 높이 가면 흉하다.", "할아버지를 지나 할머니를 만난다. 허물없다.", "지나치게 방어하지 않으면 따르는 자가 해친다.", "지나치지 않고 만나니 허물없다.", "빽빽한 구름이 비를 내리지 않는다. 굴 속의 것을 잡는다.", "만나지 못하고 지나치니 흉하다."]},
+  63:{gs:'旣濟, 亨, 小利貞. 初吉終亂',k:'이미 건넜으니 형통하다. 처음은 길하나 마침에는 어지럽다.',dt:'강유가 바르고 위치가 각각 맞다.',dst:'水在火上, 旣濟. 君子以思患而豫防之 — 환난을 생각하여 미리 방비한다.',v:'완성의 시절. 방심하면 다시 빠진다. 경계가 영속의 비결이다.',p:'이미 건넌 완성의 시절이지만, 처음의 긴장을 잃는 순간 다시 빠집니다. 다 이루었다는 생각이 가장 위험해요. 환난을 미리 생각하고 방비하는 것, 그것이 완성을 지속시키는 유일한 방법입니다.',hy:["수레바퀴를 끌고 꼬리를 적시나 허물없다. 처음부터 신중하라.", "여자가 덮개를 잃어도 쫓지 않으면 7일에 얻는다.", "3년의 싸움 끝에 이긴다. 소인을 쓰지 말라.", "해진 옷을 꿰맨다. 종일 경계하라.", "성대한 제사보다 소박한 진심이 복을 받는다.", "머리까지 적시니 위태롭다. 완성 후 방심하면 다시 빠진다."]},
+  64:{gs:'未濟, 亨. 小狐汔濟, 濡其尾',k:'아직 건너지 못했으나 형통하다. 작은 여우가 꼬리를 적시니 이로울 바 없다.',dt:'유가 중을 얻었기 때문에 형통하다.',dst:'火在水上, 未濟. 君子以愼辨物居方 — 신중하게 사물을 분별하여 자리를 정한다.',v:'미완성의 시절. 끝이 곧 시작이다. 방심하지 않으면 반드시 건넌다.',p:'강을 거의 다 건넜지만 아직 끝이 아닙니다. 마지막 순간의 방심이 가장 위험해요. 다 된 것 같아도 섣부르게 서두르면 꼬리를 적십니다. 신중하게 자리를 잡고, 끝까지 조심하면 반드시 건넙니다.',hy:["꼬리를 적시니 부끄럽다. 아직 때가 아니다.", "수레바퀴를 끌고 가니 바르면 길하다.", "아직 건너지 못했는데 나아가면 흉하다. 큰 뜻만 이롭다.", "바르면 길하고 후회가 사라진다. 3년의 노력이 큰 나라에서 상을 받는다.", "바르면 길하고 후회없다. 군자의 빛이 있으면 길하다.", "술 마시며 믿음을 지키면 허물없다. 머리까지 적시면 믿음을 잃는다."]},
+};
+
+/* ─────────────────── STATE ─────────────────── */
+const S={name:'',q:'',throws:[],benGua:null,jiGua:null,chg:[],q5:[],a5:[],apiKey:localStorage.getItem('ich_k')||'',_tm:null};
+
+/* ─────────────────── NAV ─────────────────── */
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.classList.add('exit');});
+  setTimeout(()=>{
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('exit'));
+    document.getElementById('tab-archive').classList.remove('active');
+    document.getElementById('tab-reading').classList.remove('active');
+    document.getElementById('tabHome').classList.add('active');
+    document.getElementById('tabGua').classList.remove('active');
+    document.getElementById('tabArc').classList.remove('active');
+    const el=document.getElementById(id);
+    el.classList.add('active');
+    el.scrollTop=0;window.scrollTo(0,0);
+    stepBar(id);
+    S._lastScreen=id;
+  },350);
+}
+function stepBar(sid){
+  const ord=['s1','s2','s3','s4'];
+  const ci=ord.indexOf(sid);
+  ['sb1','sb2','sb3','sb4'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.innerHTML=ord.map((_,j)=>`<div class="step ${j<ci?'done':j===ci?'cur':''}"></div>`).join('');
+  });
+}
+const rand=()=>Math.random()<.5?3:2;
+function lookupGua(nats){const lo=nats.slice(0,3).join('');const hi=nats.slice(3,6).join('');return GUA[hi]?.[lo]||null;}
+function getNats(){return S.throws.map(t=>t.sum===9||t.sum===7?'양':'음');}
+function getChgNats(){return getNats().map((n,i)=>S.chg.includes(i)?(n==='양'?'음':'양'):n);}
+function calcGuas(){
+  const nats=getNats();
+  S.chg=S.throws.map((t,i)=>t.sum===6||t.sum===9?i:-1).filter(i=>i!==-1);
+  S.benGua=lookupGua(nats);
+  S.jiGua=S.chg.length>0?lookupGua(getChgNats()):null;
+}
+
+/* ─────────────────── GUA RENDER ─────────────────── */
+function renderGua(cid,iid){
+  const nats=getNats(),chgd=getChgNats();
+  const ben=S.benGua,ji=S.jiGua;
+  function lines(ns,mk){
+    let h='<div class="glines">';
+    h+='<div style="font-size:9px;color:var(--gold);letter-spacing:.15em;text-align:center;opacity:.65;margin-bottom:2px">상괘</div>';
+    for(let i=5;i>=3;i--){
+      const m=mk&&mk.includes(i);
+      if(ns[i]==='양')h+=`<div class="gy ${m?'gchg':''}"></div>`;
+      else h+=`<div class="gnw"><div class="gn ${m?'gchg':''}"></div><div class="gn ${m?'gchg':''}"></div></div>`;
+    }
+    h+='<div class="gdiv"></div>';
+    for(let i=2;i>=0;i--){
+      const m=mk&&mk.includes(i);
+      if(ns[i]==='양')h+=`<div class="gy ${m?'gchg':''}"></div>`;
+      else h+=`<div class="gnw"><div class="gn ${m?'gchg':''}"></div><div class="gn ${m?'gchg':''}"></div></div>`;
+    }
+    h+='<div style="font-size:9px;color:var(--dim);letter-spacing:.15em;text-align:center;margin-top:2px">하괘</div>';
+    return h+'</div>';
+  }
+  let html=`<div class="gblk">${lines(nats,S.chg)}<p class="gname">${ben?ben.n:'?'}</p><p class="gsub">${ben&&ben.no!=null?ben.no+'번':''}</p></div>`;
+  if(ji&&S.chg.length>0)html+=`<div class="garw">→</div><div class="gblk">${lines(chgd,null)}<p class="gname">${ji.n}</p><p class="gsub">${ji&&ji.no!=null?ji.no+'번':''}</p></div>`;
+  document.getElementById(cid).innerHTML=html;
+  const iel=document.getElementById(iid);
+  if(S.chg.length>0)iel.innerHTML=`변효: <span>${S.chg.map(i=>i+1+'효').join(' · ')}</span>`;
+  else iel.textContent='변효 없음';
+}
+
+/* ─────────────────── S1→S2 ─────────────────── */
+function startThrow(){
+  S.name=document.getElementById('nameIn').value.trim();
+  S.q=document.getElementById('qIn').value.trim();
+  S.throws=[];S.benGua=null;S.jiGua=null;S.chg=[];
+  S.manualCoins=Array(6).fill(null).map(()=>[null,null,null]);
+  initRows();goTo('s2');
+}
+function initRows(){
+  const lbs=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  const c=document.getElementById('trows');c.innerHTML='';
+  for(let i=0;i<6;i++)c.innerHTML+=`<div class="trow" id="tr${i}">
+    <span class="ylbl">${lbs[i]}</span>
+    <div class="cwrap" id="cw${i}">
+      <div class="cn" id="c${i}0">?</div>
+      <div class="cn" id="c${i}1">?</div>
+      <div class="cn" id="c${i}2">?</div>
+    </div>
+    <div class="lpv" id="lp${i}"><div style="width:78px;height:6px;background:var(--bdr);border-radius:1px;opacity:.3"></div></div>
+    <span class="ltyp" id="lt${i}">미투전</span>
+    <button class="tbtn" id="tb${i}" onclick="throwYao(${i})">${i===0?'▶ 던지기':'던지기'}</button>
+    <button class="tbtn" id="mb${i}" onclick="openModal(${i})" style="border-color:var(--bdr);color:var(--dim)">입력</button>
+  </div>`;
+  document.getElementById('tprog').style.width='0%';
+  document.getElementById('tcnt').textContent='0 / 6효';
+  document.getElementById('autoBtn').disabled=false;
+  document.getElementById('hexResult').style.display='none';
+}
+
+// 모달 상태
+const M={rowIdx:-1,coins:[null,null,null]};
+
+function openModal(rowIdx){
+  if(S.throws[rowIdx])return;
+  M.rowIdx=rowIdx;
+  M.coins=[null,null,null];
+  const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  document.getElementById('modalYaoLabel').textContent=LABELS[rowIdx];
+  [0,1,2].forEach(j=>{
+    ['y','n'].forEach(t=>{document.getElementById('mb'+j+t).className='mbtn';});
+    const disp=document.getElementById('mdisp'+j);
+    disp.textContent='?';disp.className='mcn';
+  });
+  document.getElementById('modalSum').textContent='—';
+  document.getElementById('modalSumLabel').textContent='';
+  const btn=document.getElementById('modalConfirm');
+  btn.style.opacity='.4';btn.style.cursor='not-allowed';
+  btn.style.color='var(--muted)';btn.style.borderColor='var(--bdr)';
+  document.getElementById('coinModal').style.display='flex';
+}
+
+function setModalCoin(coinIdx,val){
+  M.coins[coinIdx]=val;
+  const isYang=val===3;
+  // 버튼 스타일
+  ['y','n'].forEach(t=>{
+    const btn=document.getElementById('mb'+coinIdx+t);
+    btn.className='mbtn';
+  });
+  const selBtn=document.getElementById('mb'+coinIdx+(isYang?'y':'n'));
+  selBtn.className='mbtn sel '+(isYang?'yang':'yin');
+  // 디스플레이 동전
+  const disp=document.getElementById('mdisp'+coinIdx);
+  disp.textContent=isYang?'앞':'뒤';
+  disp.className='mcn '+(isYang?'yang':'yin');
+  // 합계 업데이트
+  const filled=M.coins.filter(v=>v!==null);
+  if(filled.length===3){
+    const sum=M.coins.reduce((a,b)=>a+b,0);
+    document.getElementById('modalSum').textContent=sum;
+    const labels={6:'노음(→양) 변효',7:'소양(양)',8:'소음(음)',9:'노양(→음) 변효'};
+    document.getElementById('modalSumLabel').textContent=labels[sum]||'';
+    const btn=document.getElementById('modalConfirm');
+    btn.style.opacity='1';btn.style.cursor='pointer';
+    btn.style.color='var(--goldl)';btn.style.borderColor='var(--gold)';
+  }
+}
+
+function confirmModal(){
+  if(M.coins.some(v=>v===null))return;
+  closeModal();
+  const sum=M.coins.reduce((a,b)=>a+b,0);
+  const idx=M.rowIdx;
+  S.throws[idx]={coins:[...M.coins],sum};
+  S.manualCoins[idx]=[...M.coins];
+  // 코인 시각 업데이트
+  M.coins.forEach((v,j)=>{
+    const el=document.getElementById('c'+idx+j);
+    el.textContent=v===3?'앞':'뒤';
+    el.className='cn locked '+(v===3?'yang':'yin');
+  });
+  // cwrap onclick 제거
+  const row=document.getElementById('tr'+idx);
+  const cwrap=row.querySelector('.cwrap');
+  if(cwrap)cwrap.onclick=null;
+  // 던지기/입력 버튼 둘 다 비활성화
+  const mbtn=document.getElementById('mb'+idx);
+  if(mbtn){mbtn.disabled=true;mbtn.textContent='완료';}
+  renderRow(idx,sum);
+}
+
+function closeModal(){
+  document.getElementById('coinModal').style.display='none';
+}
+
+function throwYao(idx){
+  if(S.throws[idx])return;
+  const cs=[rand(),rand(),rand()],sum=cs.reduce((a,b)=>a+b,0);
+  S.throws[idx]={coins:cs,sum};
+  [0,1,2].forEach((j,d)=>{
+    setTimeout(()=>{
+      const el=document.getElementById('c'+idx+j);
+      el.classList.add('fl');
+      setTimeout(()=>{
+        el.classList.remove('fl');
+        el.textContent=cs[j]===3?'앞':'뒤';
+        el.className='cn locked '+(cs[j]===3?'yang':'yin');
+        el.onclick=null;
+        S.manualCoins[idx][j]=cs[j];
+      },520);
+    },d*80);
+  });
+  setTimeout(()=>renderRow(idx,sum),700);
+}
+function renderRow(idx,sum){
+  const isY=sum===9||sum===7,isC=sum===6||sum===9;
+  document.getElementById('tr'+idx).classList.add('done');
+  if(isC)document.getElementById('tr'+idx).classList.add('ar');
+  const lp=document.getElementById('lp'+idx);
+  if(isY)lp.innerHTML=`<div class="ly ${isC?'lchg':''}"></div>`;
+  else lp.innerHTML=`<div class="ln ${isC?'lchg':''}"></div><div class="ln ${isC?'lchg':''}"></div>`;
+  const lt=document.getElementById('lt'+idx);
+  lt.textContent={6:'노음(→양) 변효',7:'소양(양)',8:'소음(음)',9:'노양(→음) 변효'}[sum];
+  if(isC)lt.classList.add('c');
+  document.getElementById('tb'+idx).disabled=true;
+  document.getElementById('tb'+idx).textContent='완료';
+  const mbtn2=document.getElementById('mb'+idx);
+  if(mbtn2){mbtn2.disabled=true;}
+  const done=S.throws.filter(Boolean).length;
+  document.getElementById('tprog').style.width=(done/6*100)+'%';
+  document.getElementById('tcnt').textContent=`${done} / 6효`;
+  const nxt=[0,1,2,3,4,5].find(i=>!S.throws[i]);
+  if(nxt!==undefined)document.getElementById('tb'+nxt).textContent='▶ 던지기';
+  if(done===6)setTimeout(showHexResult,600);
+}
+function autoAll(){
+  document.getElementById('autoBtn').disabled=true;
+  let i=0;
+  const iv=setInterval(()=>{if(!S.throws[i])throwYao(i);i++;if(i>=6)clearInterval(iv);},200);
+}
+
+/* ── S2 괘상 결과 표시 ── */
+function showHexResult(){
+  calcGuas();
+  const ben=S.benGua?GD[S.benGua.no]:null;
+  const ji=S.jiGua?GD[S.jiGua.no]:null;
+  document.getElementById('hexTitle').textContent=S.benGua?(S.jiGua?`${S.benGua.n} → ${S.jiGua.n}`:S.benGua.n):'';
+  document.getElementById('hexSub').textContent=S.chg.length>0?`변효 ${S.chg.map(i=>i+1+'효').join('·')} · ${S.benGua?.no||'??'}번 괘`:`변효 없음 · ${S.benGua?.no||'??'}번 괘`;
+  renderGua('s2gua','s2chgi');
+  document.getElementById('hexDesc').textContent=ben?`${ben.k} ${ben.v}`:'';
+  // 해석 카드 렌더링
+  document.getElementById('hexInterpret').innerHTML=buildLocalCards(ben,ji,S.chg);
+  const hr=document.getElementById('hexResult');
+  hr.style.display='block';
+  setTimeout(()=>hr.scrollIntoView({behavior:'smooth',block:'start'}),150);
+}
+function resetThrow(){
+  S.throws=[];S.benGua=null;S.jiGua=null;S.chg=[];
+  S.manualCoins=Array(6).fill(null).map(()=>[null,null,null]);
+  initRows();
+  document.getElementById('s2').scrollTop=0;
+}
+
+/* ── S2→S3 이동 + 질문 생성 ── */
+async function proceedToQ5(){
+  renderGua('s3gua','s3chgi');
+  document.getElementById('s3sub').textContent='몇 가지 여쭤볼게요';
+  document.getElementById('q5area').innerHTML=`<div class="aibox"><p class="aild">✦ 준비하는 중...</p></div>`;
+  document.getElementById('s3btns').style.display='none';
+  goTo('s3');
+  const ben=S.benGua?GD[S.benGua.no]:null;
+  const ji=S.jiGua?GD[S.jiGua.no]:null;
+  await generateQ5(ben,ji);
+}
+
+/* ─────────────────── 질문 생성 ─────────────────── */
+async function generateQ5(ben,ji){
+  const defaultQ = S.q ? [
+    `"${S.q.slice(0,25)}${S.q.length>25?'...':''}" — 이 고민이 처음 생긴 건 어떤 계기였나요?`,
+    '이 상황에서 가장 원하는 결과는 무엇인가요? 구체적으로 어떤 모습이기를 바라나요?',
+    '앞으로 나아가는 데 가장 크게 가로막고 있는 것은 무엇인가요? 외부 상황인가요, 내 마음인가요?',
+    '이 고민에 대해 요즘 가장 자주 드는 생각이나 감정이 있다면요?',
+    '이 일이 잘 풀렸을 때, 6개월 뒤 어떤 모습이기를 원하나요?',
+  ] : [
+    '요즘 가장 크게 마음에 걸리는 것은 무엇인가요?',
+    '그 고민에 대해 지금 가장 자주 드는 생각이나 감정은 무엇인가요?',
+    '앞으로 나아가는 데 가장 크게 가로막고 있는 것은 무엇인가요?',
+    '지금 정말 원하는 방향은 어디인가요? 어떤 모습으로 살고 싶으세요?',
+    '6개월 뒤 어떤 모습이기를 원하나요?',
+  ];
+
+  if(!S.apiKey){ S.q5=defaultQ; renderQ5(); return; }
+
+  const bStr=ben?`${S.benGua.n}(${S.benGua.no}번) — ${ben.v}`:'?';
+  const jStr=ji?`${S.jiGua.n}(${S.jiGua.no}번) — ${ji.v}`:'없음';
+  const hasQ=!!(S.q&&S.q.trim());
+
+  const prompt=`당신은 상담사입니다. 아래 상황을 보고 5가지 질문을 만들어주세요.
+
+중요: 질문은 반드시 일상적인 말투로 써야 합니다.
+- 괘 이름, 한자, 주역 용어(효, 괘, 형세, 활로 등) 절대 사용 금지
+- 뽑힌 괘의 분위기와 메시지를 참고하되, 괘를 언급하지 않고 그 상황에 맞게 표현
+- 예: "기다림의 시절이니..." → "지금 참고 기다리는 게 있다면" 처럼 자연스럽게
+- 친구에게 묻는 것처럼, 따뜻하고 구체적으로
+
+${hasQ?`[고민]\n"${S.q}"\n\n이 고민을 중심으로 질문을 만들어주세요.`:`[고민 없음 — 괘의 메시지를 바탕으로 일상적인 질문으로 구성해주세요]`}
+
+[괘의 핵심 메시지 — 직접 언급하지 말고 분위기만 참고]
+본괘: ${bStr}
+지괘: ${jStr}
+변효: ${S.chg.length>0?S.chg.map(i=>i+1+'효').join(', '):'없음'}
+
+[질문 5가지 틀]
+1. 이 상황이 시작된 배경이나 계기
+2. 지금 진짜 원하는 결과 (구체적으로)
+3. 앞을 막고 있는 것 (외부 상황 or 내 마음)
+4. 요즘 자주 드는 감정이나 생각
+5. 앞으로 어떤 모습이기를 바라는지
+
+반드시 JSON만 반환. 마크다운 없이.
+{"questions":["질문1","질문2","질문3","질문4","질문5"]}`;
+
+  try{
+    const ctrl=new AbortController();
+    const to=setTimeout(()=>ctrl.abort(),25000);
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',signal:ctrl.signal,
+      headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:prompt}]})
+    });
+    clearTimeout(to);
+    const data=await res.json();
+    if(!res.ok)throw new Error(data?.error?.message||res.status);
+    const raw=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||'{}');
+    S.q5=parsed.questions||[];
+    if(S.q5.length<3)throw new Error('질문 부족');
+  }catch(e){
+    console.error('질문 생성 실패:',e.message);
+    S.q5=defaultQ;
+  }
+  renderQ5();
+}
+
+function renderQ5(){
+  let html='<div class="q5lst">';
+  S.q5.forEach((q,i)=>{
+    html+=`<div class="q5it"><label class="q5lb">${i+1}. ${q}</label><textarea class="q5in" id="a${i}" rows="2" placeholder="자유롭게 적어주세요 (짧아도 괜찮아요)"></textarea></div>`;
+  });
+  html+='</div>';
+  document.getElementById('q5area').innerHTML=html;
+  document.getElementById('s3btns').style.display='flex';
+}
+
+/* ─────────────────── S3→S4: 최종 점사 ─────────────────── */
+function submitAnswers(){
+  S.a5=S.q5.map((_,i)=>(document.getElementById(`a${i}`)?.value||'').trim());
+  const ben=S.benGua?GD[S.benGua.no]:null;
+  const ji=S.jiGua?GD[S.jiGua.no]:null;
+  document.getElementById('rdtl').textContent=S.benGua?(S.jiGua?`${S.benGua.n} → ${S.jiGua.n}`:S.benGua.n):'점사';
+  document.getElementById('rdsb').textContent=S.name?`${S.name}님의 점괘`:'점괘 해석';
+  renderGua('s4gua','s4chgi');
+  document.getElementById('rdarea').innerHTML='';
+  document.getElementById('s4btns').style.display='none';
+  goTo('s4');
+  setTimeout(()=>generateReading(ben,ji),600);
+}
+
+async function generateReading(ben,ji,retryCount=0){
+  if(retryCount===0)showLoading();
+  const buildFn=window.buildReadingPrompt;
+  if(!buildFn){hideLoading();renderFallback(ben,ji,'프롬프트 빌더 로딩 실패 — 새로고침 후 다시 시도해주세요');return;}
+  const prompt=buildFn(ben,ji,S);
+
+  try{
+    const ctrl=new AbortController();
+    const to=setTimeout(()=>ctrl.abort(),65000);
+    const res=await fetch('/api/reading',{
+      method:'POST',signal:ctrl.signal,
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt,model:'claude-haiku-4-5-20251001',max_tokens:4000})
+    });
+    clearTimeout(to);
+    const data=await res.json();
+    // 429 또는 529 (과부하) → 최대 3회 재시도
+    if((res.status===429||res.status===529)&&retryCount<3){
+      hideLoading();
+      const wait=(retryCount+1)*4000;
+      document.getElementById('loSub').textContent=`잠시 후 다시 시도합니다... (${retryCount+1}/3)`;
+      document.getElementById('loadingOverlay').classList.add('show');
+      await new Promise(r=>setTimeout(r,wait));
+      return generateReading(ben,ji,retryCount+1);
+    }
+    if(!res.ok)throw new Error(data?.error?.message||res.status);
+    const raw=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
+    const result=JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||'{}');
+    hideLoading();
+    const rdHtml=buildReadingHtmlV2(result,ben,ji);
+    document.getElementById('rdarea').innerHTML=rdHtml;
+    document.getElementById('s4btns').style.display='flex';
+    saveToArchive(rdHtml);
+  }catch(e){
+    // 네트워크 에러(fetch 실패)도 최대 3회 재시도
+    if(retryCount<3){
+      const wait=(retryCount+1)*4000;
+      document.getElementById('loSub').textContent=`잠시 후 다시 시도합니다... (${retryCount+1}/3)`;
+      document.getElementById('loadingOverlay').classList.add('show');
+      await new Promise(r=>setTimeout(r,wait));
+      return generateReading(ben,ji,retryCount+1);
+    }
+    hideLoading();
+    console.error('점사 실패:',e.message);
+    renderFallback(ben,ji,e.message);
+  }
+}
+
+function aiBlock(tag,title,text){
+  if(!text||!text.trim())return '';
+  const ps=text.split(/\n+/).filter(p=>p.trim())
+    .map(p=>`<p>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</p>`).join('');
+  return `<div style="margin:.6rem 0 0;padding:1rem 1.2rem 1rem 1.4rem;border-left:2px solid var(--gold);background:rgba(196,154,42,.05)">
+    <p style="font-size:.68rem;color:var(--gold);letter-spacing:.18em;margin-bottom:.5rem">✦ ${tag||'해석'}</p>
+    ${title?`<p style="font-size:.92rem;font-weight:500;color:var(--text);margin-bottom:.6rem">${title}</p>`:''}
+    <div class="sbody" style="font-size:.86rem">${ps}</div>
+  </div>`;
+}
+
+// tag 키워드 또는 인덱스로 섹션 찾기
+function getAi(sections,keyword,idx){
+  if(!sections)return null;
+  const byTag=sections.find(s=>s&&s.tag&&s.tag.includes(keyword)&&s.content&&s.content.trim());
+  if(byTag)return byTag;
+  if(idx!=null&&sections[idx]&&sections[idx].content&&sections[idx].content.trim())return sections[idx];
+  return null;
+}
+
+function buildReadingHtml(r,ben,ji){
+  if(!r||!r.sections){renderFallback(ben,ji,'파싱 오류');return;}
+  const secs=r.sections||[];
+  let html='';
+  const name=S.name||'당신';
+  const benName=S.benGua?.n||'';
+  const jiName=S.jiGua?.n||'';
+  const chg=S.chg;
+  const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+
+  // ① 형세
+  const aiXS=getAi(secs,'형세',0);
+  html+=`<div class="scard">
+    <span class="stag">형세 · 形勢</span>
+    <h2 class="stit">지금 ${name}이 서 있는 자리</h2>
+    <div class="sbody">
+      <p>오늘 뽑힌 괘는 <strong>${benName}${S.benGua?.no?'('+S.benGua.no+'번)':''}</strong>입니다.</p>
+      <p>${ben.v}</p>
+      ${S.q?`<p>지금 마음에 두고 있는 것과 이 괘를 함께 놓고 보면, 지금은 무턱대고 밀어붙이기보다는 괘가 가리키는 방향을 먼저 읽는 것이 중요한 시절입니다.</p>`:''}
+      ${jiName?`<p>변효가 있어 상황이 움직이고 있습니다. <strong>${benName}</strong>에서 <strong>${jiName}</strong>으로 흘러가는 흐름 위에 서 있어요.</p>`:'<p>변효가 없습니다. 지금 이 자리의 괘기(卦氣)가 그대로 당신의 현재입니다.</p>'}
+    </div>
+    ${aiBlock('해석',aiXS?.title,aiXS?.content)}
+  </div>`;
+
+  // ② 본괘
+  const aiBen=getAi(secs,'본괘',1);
+  html+=`<div class="scard">
+    <span class="stag">본괘 · ${benName}</span>
+    <h2 class="stit">${benName}이 전하는 말</h2>
+    <div class="sbody">
+      <p><strong>${ben.gs}</strong></p>
+      <p>${ben.k}</p>
+      ${ben.p?`<p style="margin-top:.6rem">${ben.p}</p>`:''}
+      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${ben.dst}</p>
+    </div>
+    ${aiBlock('해석',aiBen?.title,aiBen?.content)}
+  </div>`;
+
+  // ③ 변효
+  if(chg&&chg.length>0){
+    const chgText=chg.map(i=>LABELS[i]).join(', ');
+    const pace=chg.length>=5?'빠른 전환의 시절입니다. 이미 대세가 기울기 시작했어요.'
+      :chg.length>=3?'중간 속도로 변화가 진행 중입니다. 급하지 않지만 멈춰 있지도 않아요.'
+      :chg.length===2?'두 곳에서 동시에 움직임이 있습니다. 변화의 방향을 잘 읽어야 할 때예요.'
+      :'변화의 포인트가 하나로 집중되어 있습니다. 이 효 하나가 지금의 핵심이에요.';
+    let hyosaParts='';
+    chg.forEach(idx=>{
+      const hyosa=ben.hy?.[idx];
+      if(hyosa)hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
+        <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
+        <p style="font-size:.86rem;color:var(--text);line-height:1.8">${hyosa}</p>
+      </div>`;
+    });
+    const aiChg=getAi(secs,'변효',2);
+    html+=`<div class="scard">
+      <span class="stag">변효 · 變爻</span>
+      <h2 class="stit">지금 움직이고 있는 것들</h2>
+      <div class="sbody">
+        <p><strong>${chgText}</strong>가 변하고 있습니다. 변효는 지금 이 순간 삶 속에서 실제로 작동 중인 힘입니다.</p>
+      </div>
+      ${aiBlock('변효 풀이',aiChg?.title,aiChg?.content)}
+      <div class="sbody" style="margin-top:.8rem;border-top:.5px solid var(--bdr);padding-top:.8rem">
+        <p style="font-size:.75rem;color:var(--dim);letter-spacing:.1em;margin-bottom:.6rem">효사 원문</p>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">${pace}</p>
+        ${hyosaParts}
+        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--muted)">이 변효들을 통해 <strong style="color:var(--text)">${jiName}</strong>괘로 넘어가고 있습니다.</p>`:''}
+      </div>
+    </div>`;
+  }
+
+  // ④ 지괘
+  if(ji&&chg&&chg.length>0){
+    const aiJi=getAi(secs,'흐름',3)||getAi(secs,'지괘',3)||getAi(secs,'앞으로',3);
+    html+=`<div class="scard">
+      <span class="stag">지괘 · ${jiName}</span>
+      <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
+      <div class="sbody">
+        <p>지금 이 상황은 <strong>${jiName}${S.jiGua?.no?'('+S.jiGua.no+'번)':''}</strong>을 향해 나아가고 있습니다.</p>
+        <p>${ji.v}</p>
+        ${ji.p?`<p style="margin-top:.4rem">${ji.p}</p>`:''}
+        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${ji.dst}</p>
+      </div>
+      ${aiBlock('흐름 해석',aiJi?.title,aiJi?.content)}
+    </div>`;
+  }
+
+  // ⑤ 점사 요약 + 조언
+  const aiAdv=getAi(secs,'조언',4);
+  html+=`<div class="scard">
+    <span class="stag">점사 · 占辭</span>
+    <h2 class="stit">형세 · 활로 · 경계</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);margin-top:.5rem">
+      <div style="background:var(--ink2);padding:1rem;text-align:center">
+        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">形勢 · 형세</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${ben.v}</p>
+      </div>
+      <div style="background:var(--ink2);padding:1rem;text-align:center">
+        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?ji.k:ben.k}</p>
+      </div>
+      <div style="background:var(--ink2);padding:1rem;text-align:center">
+        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>0&&ji)?jiName+'을 향해 가는 길에서 바름을 잃지 말라.':benName+'의 경계를 잊지 말라.'}</p>
+      </div>
+    </div>
+    ${aiBlock('조언',aiAdv?.title,aiAdv?.content)}
+  </div>`;
+
+  // ⑥ 총평
+  if(r.closing||r.encouragement){
+    const cps=(r.closing||'').split(/\n+/).filter(p=>p.trim())
+      .map(p=>`<p>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</p>`).join('');
+    html+=`<div class="ccard"><span class="stag" style="display:block;margin-bottom:.5rem">總評</span><div class="sbody">${cps}</div>${r.encouragement?`<p class="wnr">${r.encouragement}</p>`:''}</div>`;
+  }
+
+  return html;
+}
+
+function renderReading(r,ben,ji){
+  const html=buildReadingHtml(r,ben,ji);
+  document.getElementById('rdarea').innerHTML=html;
+  document.getElementById('s4btns').style.display='flex';
+  saveToArchive(html);
+}
+
+/* HTML만 반환 — S2 괘상 미리보기용 (AI 없이) */
+function buildLocalCards(ben,ji,chg){
+  if(!ben)return '';
+  // renderReading과 동일한 구조, AI 없이
+  const dummy={sections:[],closing:null,encouragement:null};
+  // 임시로 rdarea 교체 없이 HTML만 추출
+  const name=S.name||'당신';
+  const benName=S.benGua?.n||'';
+  const jiName=S.jiGua?.n||'';
+  const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  let html='';
+
+  html+=`<div class="scard">
+    <span class="stag">형세 · 形勢</span>
+    <h2 class="stit">지금 ${name}이 서 있는 자리</h2>
+    <div class="sbody">
+      <p>오늘 뽑힌 괘는 <strong>${benName}${S.benGua?.no?'('+S.benGua.no+'번)':''}</strong>입니다.</p>
+      <p>${ben.v}</p>
+      ${S.q?`<p>지금 마음에 두고 있는 것과 이 괘를 함께 놓고 보면, 지금은 무턱대고 밀어붙이기보다는 괘가 가리키는 방향을 먼저 읽는 것이 중요한 시절입니다.</p>`:''}
+      ${jiName?`<p>변효가 있어 상황이 움직이고 있습니다. <strong>${benName}</strong>에서 <strong>${jiName}</strong>으로 흘러가는 흐름 위에 서 있어요.</p>`:'<p>변효가 없습니다. 지금 이 자리의 괘기(卦氣)가 그대로 당신의 현재입니다.</p>'}
+    </div>
+  </div>`;
+
+  html+=`<div class="scard">
+    <span class="stag">본괘 · ${benName}</span>
+    <h2 class="stit">${benName}이 전하는 말</h2>
+    <div class="sbody">
+      <p><strong>${ben.gs}</strong></p>
+      <p>${ben.k}</p>
+      ${ben.p?`<p style="margin-top:.6rem">${ben.p}</p>`:''}
+      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${ben.dst}</p>
+    </div>
+  </div>`;
+
+  if(chg&&chg.length>0){
+    const chgText=chg.map(i=>LABELS[i]).join(', ');
+    const pace=chg.length>=5?'빠른 전환의 시절입니다.'
+      :chg.length>=3?'중간 속도로 변화가 진행 중입니다.'
+      :chg.length===2?'두 곳에서 동시에 움직임이 있습니다.'
+      :'변화의 포인트가 하나로 집중되어 있습니다.';
+    let hyosaParts='';
+    chg.forEach(idx=>{
+      const hyosa=ben.hy?.[idx];
+      if(hyosa)hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
+        <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
+        <p style="font-size:.86rem;color:var(--text);line-height:1.8">${hyosa}</p>
+      </div>`;
+    });
+    html+=`<div class="scard">
+      <span class="stag">변효 · 變爻</span>
+      <h2 class="stit">지금 움직이고 있는 것들</h2>
+      <div class="sbody">
+        <p><strong>${chgText}</strong>가 변하고 있습니다.</p>
+        <p>${pace}</p>
+        ${hyosaParts}
+        ${jiName?`<p style="margin-top:.8rem">이 변효들을 통해 <strong>${jiName}</strong>괘로 넘어가고 있습니다.</p>`:''}
+      </div>
+    </div>`;
+  }
+
+  if(ji&&chg&&chg.length>0){
+    html+=`<div class="scard">
+      <span class="stag">지괘 · ${jiName}</span>
+      <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
+      <div class="sbody">
+        <p>지금 이 상황은 <strong>${jiName}${S.jiGua?.no?'('+S.jiGua.no+'번)':''}</strong>을 향해 나아가고 있습니다.</p>
+        <p>${ji.v}</p>
+        ${ji.p?`<p style="margin-top:.4rem">${ji.p}</p>`:''}
+        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${ji.dst}</p>
+      </div>
+    </div>`;
+  }
+
+  html+=`<div class="scard">
+    <span class="stag">점사 · 占辭</span>
+    <h2 class="stit">형세 · 활로 · 경계</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);margin-top:.5rem">
+      <div style="background:var(--ink2);padding:1rem;text-align:center">
+        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">形勢 · 형세</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${ben.v}</p>
+      </div>
+      <div style="background:var(--ink2);padding:1rem;text-align:center">
+        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?ji.k:ben.k}</p>
+      </div>
+      <div style="background:var(--ink2);padding:1rem;text-align:center">
+        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>0&&ji)?jiName+'을 향해 가는 길에서 바름을 잃지 말라.':benName+'의 경계를 잊지 말라.'}</p>
+      </div>
+    </div>
+  </div>`;
+  return html;
+}
+
+function buildReadingHtmlV2(r,ben,ji){
+  if(!r||!r.sections||!r.sections.length){
+    // 구조가 다산역 v2 포맷이 아니면 구버전 렌더러로 폴백
+    return buildReadingHtml(r,ben,ji)||'';
+  }
+  const name=S.name||'당신';
+  const benName=S.benGua?.n||'';
+  const jiName=S.jiGua?.n||'';
+  let html='';
+
+  // 헤드라인
+  if(r.headline){
+    html+=`<div class="ccard" style="margin-bottom:1.2rem">
+      <p style="font-size:.66rem;color:var(--gold);letter-spacing:.2em;margin-bottom:.5rem">✦ 총평</p>
+      <h2 style="font-size:1.05rem;font-weight:500;color:var(--text);line-height:1.6">${r.headline}</h2>
+    </div>`;
+  }
+
+  // 섹션 렌더링
+  const TAG_STYLES={
+    '지금 서 있는 자리':'지금 서 있는 자리 · 현황',
+    '이 점괘의 심장':'이 점괘의 심장 · 핵심 변효',
+    '방향':'방향 · 귀결',
+    '시기':'시기 · 타이밍',
+    '조심할 것':'조심할 것 · 경계',
+    '마무리':'마무리',
+  };
+
+  r.sections.forEach(sec=>{
+    if(!sec||!sec.content||!sec.content.trim())return;
+    const tagLabel=TAG_STYLES[sec.tag]||sec.tag||'해석';
+    const isFinal=sec.tag==='마무리';
+    const ps=sec.content.split(/\n+/).filter(p=>p.trim())
+      .map(p=>`<p>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/"([^"]+)"/g,'<span style="color:var(--goldl)">"$1"</span>')}</p>`).join('');
+    if(isFinal){
+      html+=`<div class="ccard"><span class="stag" style="display:block;margin-bottom:.5rem">마무리</span><div class="sbody">${ps}</div>${r.closing_line?`<p class="wnr">${r.closing_line}</p>`:''}</div>`;
+    }else{
+      html+=`<div class="scard">
+        <span class="stag">${tagLabel}</span>
+        ${sec.title?`<h2 class="stit">${sec.title}</h2>`:''}
+        <div class="sbody">${ps}</div>
+      </div>`;
+    }
+  });
+
+  // closing_line이 마무리 섹션에 없으면 단독으로 표시
+  if(r.closing_line&&(!r.sections.some(s=>s.tag==='마무리'&&s.content))){
+    html+=`<div class="ccard"><p class="wnr">${r.closing_line}</p></div>`;
+  }
+  return html;
+}
+
+function renderFallback(ben,ji,err){
+  const name=S.name||'당신';
+  let html='';
+  if(err){
+    const isCredit=err.toString().includes('credit')||err.toString().includes('400');
+    const msg=isCredit?'크레딧 부족 — console.anthropic.com에서 충전 후 다시 시도해주세요':'연결에 문제가 있어요 — 잠시 후 다시 시도해주세요';
+    html+=`<div class="scard"><span class="stag">알림</span><div class="sbody"><p style="color:var(--dim);font-size:.8rem">${msg}</p></div></div>`;
+  }
+  if(!ben){document.getElementById('rdarea').innerHTML='<p style="text-align:center;color:var(--dim);padding:3rem">괘를 읽지 못했습니다</p>';return;}
+
+  html+=buildLocalCards(ben,ji,S.chg);
+  html+=`<div class="ccard">
+    <span class="stag" style="display:block;margin-bottom:.5rem">總評</span>
+    <div class="sbody">
+      <p>위는 주역 원문을 바탕으로 한 기본 점사입니다.</p>
+      <p>API 키를 설정하고 질문에 답하면 ${name}의 고민을 직접 반영한 더 깊은 해석을 받으실 수 있습니다.</p>
+    </div>
+    <p class="wnr">지금 이 순간도, 답은 이미 당신 안에 있어요.</p>
+  </div>`;
+
+  document.getElementById('rdarea').innerHTML=html;
+  document.getElementById('s4btns').style.display='flex';
+}
+
+/* ─── 로딩 오버레이 ─── */
+function showLoading(){
+  let secs=0;
+  clearInterval(S._tm);
+  S._tm=setInterval(()=>{
+    secs++;
+    const el=document.getElementById('loSecs');
+    if(el)el.textContent=secs+'초째 읽는 중...';
+  },1000);
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading(){
+  clearInterval(S._tm);
+  document.getElementById('loadingOverlay').classList.remove('show');
+  document.getElementById('loSecs').textContent='';
+}
+
+/* ─── 답변 수정 재해석 ─── */
+function goBackToQ5(){
+  // 기존 질문·답변 유지한 채 S3으로 복귀
+  renderGua('s3gua','s3chgi');
+  document.getElementById('s3sub').textContent='답변을 수정하고 다시 점사를 받아보세요';
+  // 질문 폼 다시 렌더링 (기존 답변 채워 넣기)
+  let html='<div class="q5lst">';
+  S.q5.forEach((q,i)=>{
+    const prevAns=S.a5[i]||'';
+    html+=`<div class="q5it"><label class="q5lb">${i+1}. ${q}</label><textarea class="q5in" id="a${i}" rows="2" placeholder="자유롭게 적어주세요 (짧아도 괜찮아요)">${prevAns}</textarea></div>`;
+  });
+  html+='</div>';
+  document.getElementById('q5area').innerHTML=html;
+  document.getElementById('s3btns').style.display='flex';
+  goTo('s3');
+}
+
+/* ─── 보관함 저장/로드 ─── */
+function saveToArchive(html){
+  const records=JSON.parse(localStorage.getItem('ich_arc')||'[]');
+  const now=new Date();
+  const dateStr=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+  const guaStr=S.benGua?(S.jiGua?`${S.benGua.n} → ${S.jiGua.n}`:S.benGua.n):'';
+  records.unshift({id:Date.now(),date:dateStr,gua:guaStr,q:S.q||'',html});
+  if(records.length>30)records.pop(); // 최대 30개
+  localStorage.setItem('ich_arc',JSON.stringify(records));
+}
+function renderArchive(){
+  const records=JSON.parse(localStorage.getItem('ich_arc')||'[]');
+  const container=document.getElementById('archiveList');
+  if(records.length===0){
+    container.innerHTML='<div class="archive-empty"><p>아직 저장된 점사가 없어요.</p><p style="margin-top:.5rem;font-size:.78rem">점사를 받으면 자동으로 여기에 저장됩니다.</p></div>';
+    return;
+  }
+  container.innerHTML=records.map(r=>`
+    <div class="archive-item" onclick="viewArchive(${r.id})">
+      <button class="arch-del" onclick="event.stopPropagation();deleteArchive(${r.id})">✕</button>
+      <p class="arch-date">${r.date}</p>
+      <p class="arch-gua">${r.gua}</p>
+      ${r.q?`<p class="arch-q">"${r.q}"</p>`:'<p class="arch-q" style="color:var(--dim)">일반 운세</p>'}
+    </div>`).join('');
+}
+function viewArchive(id){
+  const records=JSON.parse(localStorage.getItem('ich_arc')||'[]');
+  const r=records.find(x=>x.id===id);
+  if(!r)return;
+  // 점괘 탭(tab-reading)에 읽기 전용으로 표시
+  document.getElementById('tr-title').textContent=r.gua;
+  document.getElementById('tr-date').textContent=r.date;
+  document.getElementById('tr-area').innerHTML=r.html;
+  switchTab('gua'); // 점괘 탭 활성화
+}
+function deleteArchive(id){
+  let records=JSON.parse(localStorage.getItem('ich_arc')||'[]');
+  records=records.filter(r=>r.id!==id);
+  localStorage.setItem('ich_arc',JSON.stringify(records));
+  renderArchive();
+}
+
+/* ─── 탭 전환 ─── */
+function switchTab(tab){
+  const homeScreens=['s0','s1','s2','s3','s4'];
+  const allExtra=['tab-archive','tab-reading'];
+  const allTabBtns=['tabHome','tabGua','tabArc'];
+  homeScreens.forEach(id=>document.getElementById(id).classList.remove('active'));
+  allExtra.forEach(id=>document.getElementById(id).classList.remove('active'));
+  allTabBtns.forEach(id=>document.getElementById(id).classList.remove('active'));
+
+  if(tab==='arc'){
+    document.getElementById('tab-archive').classList.add('active');
+    document.getElementById('tabArc').classList.add('active');
+    renderArchive();
+  } else if(tab==='gua'){
+    document.getElementById('tab-reading').classList.add('active');
+    document.getElementById('tabGua').classList.add('active');
+    document.getElementById('tab-reading').scrollTop=0;
+  } else {
+    // home
+    const last=S._lastScreen||'s0';
+    document.getElementById(last).classList.add('active');
+    document.getElementById('tabHome').classList.add('active');
+  }
+}
+
+function restart(){
+  Object.assign(S,{name:'',q:'',throws:[],benGua:null,jiGua:null,chg:[],q5:[],a5:[]});
+  clearInterval(S._tm);
+  document.getElementById('nameIn').value='';
+  document.getElementById('qIn').value='';
+  switchTab('home');
+  goTo('s0');
+}
+
+/* ─────────────────── API ─────────────────── */
+function togApi(){const b=document.getElementById('abox');b.classList.toggle('open');if(b.classList.contains('open'))document.getElementById('ain').value=S.apiKey;}
+function saveKey(){
+  const k=document.getElementById('ain').value.trim();
+  S.apiKey=k;
+  if(k){localStorage.setItem('ich_k',k);setAst('ok','API 키 저장됨');}
+  else{localStorage.removeItem('ich_k');setAst('no','미설정');}
+  togApi();
+}
+function setAst(cls,msg){const el=document.getElementById('ast');el.textContent=msg;el.className='ast '+cls;}
+if(S.apiKey)setAst('ok','연결됨');
+</script>
+
+<!-- 동전 수동 입력 모달 -->
+<div id="coinModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,8,6,.85);align-items:center;justify-content:center;padding:1rem">
+  <div style="background:var(--ink2);border:.5px solid var(--bdrh);padding:1.6rem 1.8rem;width:100%;max-width:360px">
+    <p style="font-size:.72rem;color:var(--gold);letter-spacing:.18em;margin-bottom:.4rem" id="modalYaoLabel"></p>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem">실제로 던진 결과를 선택해주세요</p>
+    <div style="display:flex;gap:.8rem;margin-bottom:1.4rem" id="modalCoins">
+      <div style="flex:1" id="mc0"><p style="font-size:.7rem;color:var(--dim);text-align:center;margin-bottom:.4rem">첫 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb0y" onclick="setModalCoin(0,3)">앞</button><button class="mbtn" id="mb0n" onclick="setModalCoin(0,2)">뒤</button></div></div>
+      <div style="flex:1" id="mc1"><p style="font-size:.7rem;color:var(--dim);text-align:center;margin-bottom:.4rem">두 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb1y" onclick="setModalCoin(1,3)">앞</button><button class="mbtn" id="mb1n" onclick="setModalCoin(1,2)">뒤</button></div></div>
+      <div style="flex:1" id="mc2"><p style="font-size:.7rem;color:var(--dim);text-align:center;margin-bottom:.4rem">세 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb2y" onclick="setModalCoin(2,3)">앞</button><button class="mbtn" id="mb2n" onclick="setModalCoin(2,2)">뒤</button></div></div>
+    </div>
+    <div style="display:flex;gap:.6rem;margin-bottom:.8rem;padding:.7rem;background:rgba(196,154,42,.04);border:.5px solid var(--bdr);justify-content:center;align-items:center;gap:1rem">
+      <div class="mcn" id="mdisp0">?</div>
+      <div class="mcn" id="mdisp1">?</div>
+      <div class="mcn" id="mdisp2">?</div>
+    </div>
+    <div style="font-size:.76rem;color:var(--muted);text-align:center;margin-bottom:1rem">합: <span id="modalSum" style="color:var(--goldl);font-weight:500">—</span> <span id="modalSumLabel" style="color:var(--dim)"></span></div>
+    <div style="display:flex;gap:.6rem">
+      <button class="btn-ghost" style="flex:1;text-align:center;padding:.6rem" onclick="closeModal()">취소</button>
+      <button id="modalConfirm" style="flex:2;padding:.7rem;border:.5px solid var(--bdrh);background:transparent;color:var(--muted);font-family:inherit;font-size:.82rem;letter-spacing:.1em;cursor:not-allowed;opacity:.4" onclick="confirmModal()">확인</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

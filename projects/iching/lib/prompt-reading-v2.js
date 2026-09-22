@@ -333,3 +333,8 @@ ${qap}
   "closing_line": "이 점괘의 핵심 한 줄 메시지. 짧고 진하게. 의문문이나 명령형도 가능."
 }`;
 }
+
+// 브라우저 전역 노출 (index.html에서 window.buildReadingPrompt로 접근)
+if (typeof window !== 'undefined') {
+  window.buildReadingPrompt = buildReadingPrompt;
+}
