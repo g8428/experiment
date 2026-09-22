@@ -48,8 +48,8 @@ def main():
     parser.add_argument("--bar",      type=str, default="15m")
     parser.add_argument("--days",     type=int, default=30)
     parser.add_argument("--balance",  type=float, default=1000.0)
-    parser.add_argument("--risk",     type=float, default=1.0, help="리스크 %")
-    parser.add_argument("--leverage", type=int, default=10)
+    parser.add_argument("--risk",     type=float, default=10.0, help="리스크 % (기본 10%)")
+    parser.add_argument("--leverage", type=int, default=20)
     parser.add_argument("--json",     action="store_true", help="JSON 출력")
     args = parser.parse_args()
 
