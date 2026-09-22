@@ -19,12 +19,12 @@ def _cache_path(sym, bar, date_str):
     return os.path.join(CACHE_DIR, f"{safe_sym}_{bar}_{date_str}.json")
 
 
-def _fetch_page(sym, bar, before_ms=None, limit=300):
-    """단일 페이지 캔들 fetch. before_ms 이전 데이터 반환."""
+def _fetch_page(sym, bar, after_ms=None, limit=300):
+    """단일 페이지 캔들 fetch. after_ms 이전(오래된) 데이터 반환."""
     b = bar.upper() if bar.endswith("h") else bar
     url = f"{API_BASE}?instId={sym}&bar={b}&limit={limit}"
-    if before_ms:
-        url += f"&before={before_ms}"
+    if after_ms:
+        url += f"&after={after_ms}"
     req = urllib.request.Request(url, headers={"Content-Type": "application/json"})
     resp = json.loads(urllib.request.urlopen(req, timeout=10).read())
     raw  = resp.get("data", resp) if isinstance(resp, dict) else resp
@@ -39,24 +39,22 @@ def _fetch_page(sym, bar, before_ms=None, limit=300):
 
 def fetch_range(sym, bar, start_ms, end_ms):
     """특정 기간 캔들 데이터 반환 (ms timestamp). 페이지네이션으로 전체 수집."""
-    all_kl   = []
-    before   = end_ms
-    seen_ts  = set()
+    all_kl  = []
+    after   = end_ms
+    seen_ts = set()
 
     while True:
-        page = _fetch_page(sym, bar, before_ms=before)
+        page = _fetch_page(sym, bar, after_ms=after)
         if not page:
             break
         new = [k for k in page if k["t"] >= start_ms and k["t"] not in seen_ts]
-        if not new:
-            break
         for k in new:
             seen_ts.add(k["t"])
         all_kl.extend(new)
         oldest = min(k["t"] for k in page)
-        if oldest <= start_ms:
+        if oldest <= start_ms or not new:
             break
-        before = oldest
+        after = oldest
         time.sleep(0.2)
 
     all_kl.sort(key=lambda x: x["t"])

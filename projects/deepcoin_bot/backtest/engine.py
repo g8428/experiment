@@ -4,8 +4,9 @@ engine.py — 백테스팅 엔진
 """
 
 
-def run_backtest(strategy, kl_all, h1_all=None, d1_all=None,
-                 initial_balance=1000.0, risk_pct=1.0, leverage=10):
+def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
+                 initial_balance=1000.0, risk_pct=1.0, leverage=10,
+                 use_weights=True, sym=""):
     """
     백테스팅 엔진
     - 각 캔들 시점에서 strategy.signal() 호출
@@ -18,9 +19,12 @@ def run_backtest(strategy, kl_all, h1_all=None, d1_all=None,
     equity_curve = [balance]
     open_pos     = None   # {"direction", "entry", "sl", "tp1", "tp2", "size", "pattern_key", "reason", "open_idx"}
 
+    from weights import get_weight
+
     # MTF 슬라이싱용 타임스탬프 인덱스 빌드
     h1_ts_map = {k["t"]: i for i, k in enumerate(h1_all)} if h1_all else {}
     d1_ts_map = {k["t"]: i for i, k in enumerate(d1_all)} if d1_all else {}
+    m5_ts_map = {k["t"]: i for i, k in enumerate(m5_all)} if m5_all else {}
 
     def _slice_mtf(ts_map, all_kl, current_t, window=50):
         """current_t 이전 캔들들 슬라이스"""
@@ -104,14 +108,20 @@ def run_backtest(strategy, kl_all, h1_all=None, d1_all=None,
         if open_pos is None:
             h1_win = _slice_mtf(h1_ts_map, h1_all, current["t"])
             d1_win = _slice_mtf(d1_ts_map, d1_all, current["t"])
+            m5_win = _slice_mtf(m5_ts_map, m5_all, current["t"], window=20)
 
-            sig = strategy.signal(kl_window, h1_kl=h1_win, d1_kl=d1_win)
+            sig = strategy.signal(kl_window, h1_kl=h1_win, d1_kl=d1_win, m5_kl=m5_win)
             if sig:
                 sl_dist_pct = abs(price - sig.sl) / price
+                # SL 거리 최소 0.3% 보장 (degenerate sizing 방지)
+                sl_dist_pct = max(sl_dist_pct, 0.003)
                 if sl_dist_pct > 0:
-                    # 포지션 크기: balance의 risk_pct%를 sl_distance에 맞춰 조정
-                    risk_amount = balance * (risk_pct / 100)
-                    size = risk_amount / sl_dist_pct
+                    # 가중치 기반 포지션 크기 조정
+                    wkey = f"{sig.pattern_key}_{sym.split('-')[0]}" if sym else sig.pattern_key
+                    weight = get_weight(wkey) if use_weights else 1.0
+                    # 리스크 = balance * risk_pct% (레버리지 포함 실제 손실 기준)
+                    risk_amount = balance * (risk_pct / 100) * weight
+                    size = min(risk_amount / (sl_dist_pct * leverage), balance)  # 레버리지 보정, 잔고 초과 금지
                     open_pos = {
                         "direction":   sig.direction,
                         "entry":       price,

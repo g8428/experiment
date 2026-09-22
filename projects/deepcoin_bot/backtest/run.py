@@ -17,6 +17,7 @@ from data_fetcher import fetch_historical
 from strategy import STRATEGIES
 from engine import run_backtest
 from metrics import calc_metrics
+from weights import update_weights, print_weights
 
 
 def _print_summary(name, result):
@@ -59,8 +60,10 @@ def main():
         sys.exit(1)
     print(f"캔들 {len(kl)}개 수집 완료.")
 
-    # 1h 데이터 (킬존 전략 등에서 사용)
     h1_kl = fetch_historical(args.sym, "1H", args.days)
+    m5_kl = fetch_historical(args.sym, "5m", args.days)
+    d1_kl = fetch_historical(args.sym, "1D", args.days + 60)  # 일봉 EMA50 계산용 여유 확보
+    print(f"1H={len(h1_kl)}개 / 5m={len(m5_kl)}개 / 1D={len(d1_kl)}개")
 
     names = list(STRATEGIES.keys()) if args.all else [args.strategy]
     if not args.all and not args.strategy:
@@ -74,11 +77,14 @@ def main():
             print(f"알 수 없는 전략: {name}. 선택 가능: {list(STRATEGIES.keys())}")
             continue
         result = run_backtest(
-            strat, kl, h1_all=h1_kl,
+            strat, kl, h1_all=h1_kl, d1_all=d1_kl, m5_all=m5_kl,
             initial_balance=args.balance,
             risk_pct=args.risk,
             leverage=args.leverage,
+            sym=args.sym,
         )
+        # 가중치 업데이트
+        update_weights(result["trades"], sym=args.sym)
         results[name] = result
         if not args.json:
             _print_summary(name, result)

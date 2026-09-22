@@ -137,6 +137,103 @@ def get_ndog(kl_1h):
     }
 
 
+def get_htf_trend(h1_kl, ema_period=20):
+    """1H 타임프레임 추세 방향 판별
+    EMA20 위치 + 스윙 구조(HH+HL / LH+LL) 두 가지 일치 시 확정
+    반환: "bullish" | "bearish" | "neutral"
+    """
+    if not h1_kl or len(h1_kl) < ema_period + 5:
+        return "neutral"
+
+    closes = [k["c"] for k in h1_kl]
+    ema = closes[0]
+    k_f = 2 / (ema_period + 1)
+    for c in closes[1:]:
+        ema = c * k_f + ema * (1 - k_f)
+    ema_bias = "bullish" if closes[-1] > ema else "bearish"
+
+    highs, lows = find_swings(h1_kl, n=3)
+    swing_bias = "neutral"
+    if len(highs) >= 2 and len(lows) >= 2:
+        if highs[-1]["p"] > highs[-2]["p"] and lows[-1]["p"] > lows[-2]["p"]:
+            swing_bias = "bullish"
+        elif highs[-1]["p"] < highs[-2]["p"] and lows[-1]["p"] < lows[-2]["p"]:
+            swing_bias = "bearish"
+
+    if swing_bias != "neutral" and swing_bias == ema_bias:
+        return swing_bias
+    if swing_bias != "neutral":
+        return swing_bias
+    return ema_bias
+
+
+def get_market_regime(d1_kl, fast=20, slow=50):
+    """일봉 기반 시장 국면 감지
+    반환: "bull" | "bear" | "ranging"
+    - bull: EMA20 > EMA50 & 가격 > EMA20 (명확 상승장)
+    - bear: EMA20 < EMA50 & 가격 < EMA20 (명확 하락장)
+    - ranging: 그 외 (횡보 / 전환 구간)
+    """
+    if not d1_kl or len(d1_kl) < slow + 5:
+        return "ranging"
+
+    closes = [k["c"] for k in d1_kl]
+
+    def ema(closes, period):
+        k = 2 / (period + 1)
+        e = closes[0]
+        for c in closes[1:]:
+            e = c * k + e * (1 - k)
+        return e
+
+    ema_fast = ema(closes, fast)
+    ema_slow = ema(closes, slow)
+    price = closes[-1]
+
+    if price > ema_fast and ema_fast > ema_slow:
+        return "bull"
+    if price < ema_fast and ema_fast < ema_slow:
+        return "bear"
+    return "ranging"
+
+
+def get_confluence_score(kl, h1_kl, direction, sig):
+    """ICT 컨플루언스 점수 (0~5)
+    direction: "long" | "short"
+    sig: get_ict_signal() 결과 dict
+    """
+    score = 0
+    price = kl[-1]["c"] if kl else 0
+
+    pd_zone = sig.get("premium_discount")
+    if direction == "long" and pd_zone and pd_zone["zone"] == "discount":
+        score += 1
+    elif direction == "short" and pd_zone and pd_zone["zone"] == "premium":
+        score += 1
+
+    if sig.get("ict_confirmation"):
+        score += 1
+
+    bos_dir = sig.get("bos_direction") or (sig.get("bos") or {}).get("direction")
+    want = "bullish" if direction == "long" else "bearish"
+    if bos_dir == want:
+        score += 1
+
+    bull_bb = sig.get("bull_breakers", [])
+    bear_bb = sig.get("bear_breakers", [])
+    if direction == "long" and any(b["bot"] * 0.999 <= price <= b["top"] * 1.001 for b in bull_bb):
+        score += 1
+    elif direction == "short" and any(b["bot"] * 0.999 <= price <= b["top"] * 1.001 for b in bear_bb):
+        score += 1
+
+    from datetime import datetime, timezone
+    last_t = datetime.fromtimestamp(kl[-1]["t"] / 1000, tz=timezone.utc)
+    if get_kill_zone(last_t) in ("london", "newyork"):
+        score += 1
+
+    return score
+
+
 def get_ict_signal(kl, h1_kl=None, d1_kl=None):
     """ICT 종합 시그널 — get_smc_signal() 확장
     반환: smc_signal dict + {
