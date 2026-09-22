@@ -1,0 +1,17 @@
+{
+  "name": "iching",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'static site, no build step'",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "stripe": "^14.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^39.0.0"
+  }
+}
