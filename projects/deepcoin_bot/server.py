@@ -435,6 +435,13 @@ def _rec(mode, action, price, ind, reason, pnl=None, tp_px=None, sl_px=None, sig
             if pnl > 0: _pattern_stats[pk]["wins"] += 1
             _pattern_stats[pk]["total_pnl"] = round(
                 _pattern_stats[pk]["total_pnl"] + pnl, 4)
+            # ── 실거래 학습 루프: 패턴 가중치 즉시 동기화 ──────────
+            try:
+                _get_weight.__module__  # weights 로드 확인
+                from weights import sync_live_stats as _sync_w
+                _sync_w(_pattern_stats)
+            except Exception:
+                pass
     save_daily_log(day)
     _persist_save()
 
@@ -1054,6 +1061,23 @@ def _run_claude_bot(mode, gen=0):
             "daily": _dst(_kst_day(), claude_mode),
         })
         _persist_save()
+
+        # ── 날짜 전환 감지 → 자동 review + STRATEGY.md 업데이트 ───
+        _new_day = _kst_day()
+        if not hasattr(_run_claude_bot, "_last_review_day"):
+            _run_claude_bot._last_review_day = _new_day
+        if _new_day != _run_claude_bot._last_review_day:
+            _run_claude_bot._last_review_day = _new_day
+            try:
+                import subprocess as _sp
+                _rp = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "evolution", "review_trades.py")
+                _sp.Popen([__import__("sys").executable, _rp],
+                          cwd=os.path.dirname(os.path.abspath(__file__)))
+                print(f"[daily-review] {_new_day} 자동 review 실행")
+            except Exception as _re:
+                print(f"[daily-review] 오류: {_re}")
+
         time.sleep(30)
     _claude_st["running"] = False
 

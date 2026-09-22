@@ -82,6 +82,48 @@ def update_weights(trades: list, sym: str = ""):
     return data
 
 
+def sync_live_stats(pattern_stats: dict, sym: str = ""):
+    """서버 실거래 _pattern_stats를 pattern_weights.json에 반영.
+    pattern_stats: {key: {"trades": int, "wins": int, "total_pnl": float}}
+    서버가 거래 청산할 때마다 호출 — 실거래 학습 루프의 핵심.
+    """
+    if not pattern_stats:
+        return _load()
+    data = _load()
+
+    for key, s in pattern_stats.items():
+        full_key = f"{key}_{sym.split('-')[0]}" if sym else key
+        live_total = s.get("trades", 0)
+        live_wins  = s.get("wins",   0)
+        if live_total == 0:
+            continue
+
+        prev = data.get(full_key, {"wins": 0, "total": 0, "weight": 1.0})
+        # 실거래 누적값은 이미 합산이므로 max로 선택 (이전 백테스트 값과 충돌 방지)
+        cum_total = max(prev.get("total", 0), live_total)
+        cum_wins  = max(prev.get("wins",  0), live_wins)
+        cum_wr    = cum_wins / cum_total if cum_total > 0 else 0.0
+
+        if cum_total >= MIN_TRADES:
+            if   cum_wr >= 0.80: weight = 2.0
+            elif cum_wr >= 0.60: weight = 1.5
+            elif cum_wr >= 0.45: weight = 1.0
+            elif cum_wr >= 0.30: weight = 0.5
+            else:                weight = 0.25
+        else:
+            weight = prev.get("weight", 1.0)
+
+        data[full_key] = {
+            "wins":     cum_wins,
+            "total":    cum_total,
+            "win_rate": round(cum_wr * 100, 1),
+            "weight":   weight,
+        }
+
+    _save(data)
+    return data
+
+
 def print_weights():
     data = _load()
     if not data:

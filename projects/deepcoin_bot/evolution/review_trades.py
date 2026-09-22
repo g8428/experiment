@@ -137,10 +137,65 @@ def print_summary(stats: list, pending: list):
     print()
 
 
+def auto_update_strategy(pending: list, strategy_path: Path) -> bool:
+    """pending_updates를 STRATEGY.md 섹션 2에 자동 반영.
+    강화 패턴 → 2-1에 추가 / 제한 패턴 → 2-3에 추가.
+    버전 번호 +0.1, 진화 이력에 날짜 기록.
+    반환: 변경 있으면 True
+    """
+    if not pending or not strategy_path.exists():
+        return False
+
+    text = strategy_path.read_text(encoding="utf-8")
+    today = datetime.now().strftime("%Y-%m-%d")
+    changes = []
+
+    for u in pending:
+        pat   = u["pattern"]
+        action = u["action"]
+        wr_str = u["reason"].split("win_rate=")[1].split(" ")[0] if "win_rate=" in u["reason"] else "?"
+
+        if action == "strengthen":
+            marker = "### 2-1. 높은 확률 진입 조건 ✅"
+            insert = f"\n**패턴**: `{pat}` (승률 {wr_str} 자동 강화)\n- 진입 허용 — 가중치 증가 적용\n"
+            if pat not in text and marker in text:
+                text = text.replace(marker, marker + insert)
+                changes.append(f"강화: {pat} ({wr_str})")
+
+        elif action in ("restrict", "watch"):
+            marker = "### 2-3. 금지 조건 ❌"
+            insert = f"\n**패턴**: `{pat}` (승률 {wr_str} 자동 제한)\n- **액션**: 진입 금지 또는 50% 축소\n"
+            if pat not in text and marker in text:
+                text = text.replace(marker, marker + insert)
+                changes.append(f"제한: {pat} ({wr_str})")
+
+    if not changes:
+        return False
+
+    # 버전 번호 증가
+    text = re.sub(
+        r"(\*\*버전\*\*: v)(\d+\.\d+)",
+        lambda m: m.group(1) + f"{float(m.group(2)) + 0.1:.1f}",
+        text
+    )
+    # 최종 업데이트 날짜 갱신
+    text = re.sub(r"(\*\*최종 업데이트\*\*: )[\d-]+", rf"\g<1>{today}", text)
+
+    # 진화 이력 추가
+    summary = " / ".join(changes)
+    hist_row = f"| v? | {today} | {summary} | 자동 진화 (review_trades.py) |\n"
+    text = text.replace("| v1.0 ", hist_row + "| v1.0 ")
+
+    strategy_path.write_text(text, encoding="utf-8")
+    print(f"[STRATEGY.md] 자동 업데이트 완료: {summary}")
+    return True
+
+
 def main():
     base = Path(__file__).parent.parent
     log_dir = base / "trade_logs" / "daily"
     out_path = Path(__file__).parent / "pattern_stats.json"
+    strategy_path = base / "STRATEGY.md"
 
     if not log_dir.exists():
         print(f"[error] trade_logs 디렉토리 없음: {log_dir}")
@@ -169,9 +224,13 @@ def main():
     print_summary(stats, pending)
     print(f"[저장] {out_path}")
 
+    # 조건 충족 패턴 자동으로 STRATEGY.md 반영
     if pending:
-        print("\n>>> CLAUDE: pending_updates를 STRATEGY.md 섹션 2에 반영하고")
-        print("    버전 올리기 + 진화 이력 추가 후 커밋하세요.\n")
+        updated = auto_update_strategy(pending, strategy_path)
+        if updated:
+            print(f"[자동진화] STRATEGY.md 업데이트 완료 — git commit 권장\n")
+        else:
+            print("\n>>> pending_updates 있으나 이미 반영됨 or 마커 없음\n")
 
 
 if __name__ == "__main__":
