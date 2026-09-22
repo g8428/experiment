@@ -779,8 +779,8 @@ def _run_claude_bot(mode, gen=0):
                 except Exception:
                     pass
                 _alt = get_best_signal(kl, _kl_1h,
-                                       asian_high=_asian_h,
-                                       asian_low=_asian_l,
+                                       asian_high=asian_rng["high"] if asian_rng else None,
+                                       asian_low=asian_rng["low"] if asian_rng else None,
                                        tuning=_t_json)
                 if _alt and _alt.get("signal"):
                     # 추가 전략 시그널을 SMC 시그널 형식으로 변환
