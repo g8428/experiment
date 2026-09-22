@@ -1,0 +1,11 @@
+import urllib.request, json, sys
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+r = urllib.request.urlopen("http://localhost:5000/api/claude/status", timeout=5)
+d = json.loads(r.read())
+print(f"running  : {d['running']}")
+print(f"mode     : {d['mode']}")
+print(f"position : {d['position']}")
+print(f"price    : {d['price']}")
+print(f"can_trade: {d['can_trade']}")
+print(f"watch    : {d['watch_msg']}")
+print(f"daily    : {d['daily']}")

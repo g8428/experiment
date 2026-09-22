@@ -1,0 +1,28 @@
+{
+  "leverage": 6,
+  "size_pct": 15,
+  "cooldown": 3600,
+  "max_daily_trades": 2,
+  "daily_profit_stop": 8.0,
+  "daily_loss_stop": 2.5,
+  "max_daily_losses": 2,
+  "rsi_long_max": 60,
+  "rsi_short_min": 40,
+  "rr_min": 2.5,
+  "sl_cap_pct": 2.0,
+  "tp_min_pct": 5.0,
+  "enabled_strategies": [
+    "smc"
+  ],
+  "active_symbols": [
+    "BTC-USDT-SWAP"
+  ],
+  "ema_cross_tp_atr": 3.0,
+  "ema_cross_sl_atr": 1.2,
+  "bb_rev_tp_atr": 2.5,
+  "bb_rev_sl_atr": 1.0,
+  "asian_break_tp_atr": 4.0,
+  "asian_break_sl_atr": 1.5,
+  "version": 10,
+  "last_tuned": "2026-06-10 00:05 KST"
+}

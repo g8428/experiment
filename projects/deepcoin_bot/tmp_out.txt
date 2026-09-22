@@ -1,0 +1,352 @@
+Total lines: 1198
+600                 _smc_event_log = sorted(_smc_event_log, key=lambda x: x["time_ms"])[-100:]
+601             s_sig   = smc.get("signal")      # "long" | "short" | None
+602             s_sl    = smc.get("sl")
+603             s_tp    = smc.get("tp1")
+604             s_tp2   = smc.get("tp2")
+605             smc_rsn = smc.get("reason", "")
+606             rsi     = ind.get("rsi", 50)
+607             bb_u    = ind.get("bb_upper", price)
+608             bb_l    = ind.get("bb_lower", price)
+609             bb_m    = ind.get("bb_mid",   price)
+610             ema9    = ind.get("ema9",  price)
+611             ema21   = ind.get("ema21", price)
+612 
+613             smc_info = (f"SMC:{s_sig or '없음'} BOS:{smc.get('bos_dir','?')} "
+614                         f"OB=b{smc.get('bull_ob_count',0)}/d{smc.get('bear_ob_count',0)} "
+615                         f"FVG=b{smc.get('bull_fvg_count',0)}/d{smc.get('bear_fvg_count',0)}")
+616 
+617             # ── 직전 SL 레벨 재진입 차단 (같은 OB에서 반복 손절 방지) ──
+618             _same_sl = (_last_fail_sl > 0 and s_sl and
+619                         abs(s_sl - _last_fail_sl) / max(_last_fail_sl, 1) < 0.002)
+620 
+621             # ── 진입 조건 체크 (SMC 주, RSI/EMA 보조 필터) ──
+622             if not ok:
+623                 _claude_st["watch_msg"] = f"일 한도: {stop_msg}"
+624             elif kz not in ("london", "newyork"):
+625                 _claude_st["watch_msg"] = (f"킬존 외 진입 대기 [{kz_name}]{asian_tag} | {smc_info}")
+626             elif not s_sig:
+627                 _claude_st["watch_msg"] = f"SMC시그널 없음 [{kz_name}]{asian_tag} — {smc_info}"
+628             elif _same_sl:
+629                 _claude_st["watch_msg"] = f"직전 손절 구조 재진입 차단 SL≈${_last_fail_sl:,.0f} | {smc_info}"
+630             elif s_sig == "long" and rsi > 68:
+631                 _claude_st["watch_msg"] = f"RSI과매수({rsi:.1f}) 롱 스킵 | {smc_info}"
+632             elif s_sig == "short" and rsi < 32:
+633                 _claude_st["watch_msg"] = f"RSI과매도({rsi:.1f}) 숏 스킵 | {smc_info}"
+634             elif s_sig == "long" and ema9 < ema21:
+635                 _claude_st["watch_msg"] = f"15m EMA역배열 롱 스킵 (EMA9={ema9:.0f}<EMA21={ema21:.0f}) | {smc_info}"
+636             elif s_sig == "short" and ema9 > ema21:
+637                 _claude_st["watch_msg"] = f"15m EMA정배열 숏 스킵 (EMA9={ema9:.0f}>EMA21={ema21:.0f}) | {smc_info}"
+638             elif cooldown_left > 0:
+639                 _claude_st["watch_msg"] = f"쿨다운 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초 | {smc_info}"
+640             else:
+641                 # ── 진입 실행 ────────────────────────────────────
+642                 sig = s_sig  # SMC가 방향 결정
+643                 _TP_CAP  = 0.100; _SL_CAP  = 0.015
+644                 _TP_MIN  = 0.012   # 최소 TP 1.2% (RR 확보용)
+645                 _SL_MIN  = max(atr / price * 0.8, 0.003)   # 최소 SL: ATR×0.8 또는 0.3% 중 큰 값
+646 
+647                 # tp2 업그레이드: tp1보다 유리하고 price 대비 2% 이내면 tp1 대신 사용
+648                 _s_tp = s_tp
+649                 if _s_tp and s_tp2:
+650                     if sig == "long" and s_tp2 > _s_tp:
+651                         if 0 < (s_tp2 - price) / price <= 0.02:
+652                             _s_tp = s_tp2
+653                     elif sig == "short" and s_tp2 < _s_tp:
+654                         if 0 < (price - s_tp2) / price <= 0.02:
+655                             _s_tp = s_tp2
+656 
+657                 # SL/TP: SMC 구조적 레벨 우선 → 없으면 ATR 기반
+658                 if s_sl and _s_tp:
+659                     if sig == "long":
+660                         _tp_dist = min((_s_tp - price) / price, _TP_CAP) if _s_tp > price else atr / price * 2.0
+661                         raw_sl   = (price - s_sl) / price if s_sl < price else atr / price * 0.8
+662                         _sl_dist = min(max(raw_sl, _SL_MIN), _SL_CAP)
+663                     else:
+664                         _tp_dist = min((price - _s_tp) / price, _TP_CAP) if _s_tp < price else atr / price * 2.0
+665                         raw_sl   = (s_sl - price) / price if s_sl > price else atr / price * 0.8
+666                         _sl_dist = min(max(raw_sl, _SL_MIN), _SL_CAP)
+667                     smc_tag = "[SMC-OB/FVG]"
+668                 else:
+669                     _tp_dist = min(atr / price * 2.0, _TP_CAP)
+670                     _sl_dist = min(max(atr / price * 0.8, _SL_MIN), _SL_CAP)
+671                     smc_tag = "[ATR폴백]"
+672 
+673                 # 최소 TP 강제 (1.2% 이상)
+674                 _tp_dist = max(_tp_dist, _TP_MIN)
+675 
+676                 # 손익비 불량 (RR < 1.5) 이면 진입 안 함
+677                 if _tp_dist < _sl_dist * 1.5:
+678                     _claude_st["watch_msg"] = (
+679                         f"손익비 불량 스킵 {smc_tag} TP={_tp_dist*100:.2f}% SL={_sl_dist*100:.2f}%"
+680                     )
+681                     time.sleep(30); continue
+682                 if sig == "long":
+683                     tp_px = round(price * (1 + _tp_dist), 1)
+684                     sl_px = round(price * (1 - _sl_dist), 1)
+685                 else:
+686                     tp_px = round(price * (1 - _tp_dist), 1)
+687                     sl_px = round(price * (1 + _sl_dist), 1)
+688 
+689                 # ── SMC 컨텍스트 빌드 (패턴 학습용) ─────────────────
+690                 _poi_type = None
+691                 if "OB재터치" in smc_rsn: _poi_type = "OB재터치"
+692                 elif "FVG진입" in smc_rsn: _poi_type = "FVG진입"
+693                 _ob_cnt  = smc.get("bull_ob_count" if sig=="long" else "bear_ob_count", 0)
+694                 _fvg_cnt = smc.get("bull_fvg_count" if sig=="long" else "bear_fvg_count", 0)
+695                 _bos_t   = smc.get("bos_type") or "없음"
+696                 _has_sw  = smc.get("sweep", False)
+697                 _rr_val  = round(_tp_dist / _sl_dist, 2) if _sl_dist else 0
+698                 _pat_key = (f"{kz or 'no_kz'}+{_bos_t}+{_poi_type or 'no_poi'}"
+699                             f"+OB{_ob_cnt}+FVG{_fvg_cnt}+{'sweep' if _has_sw else 'no_sweep'}")
+700                 _smc_ctx = {
+701                     "kill_zone":   kz,
+702                     "bos_type":    _bos_t,
+703                     "poi_type":    _poi_type,
+704                     "ob_count":    _ob_cnt,
+705                     "fvg_count":   _fvg_cnt,
+706                     "sweep":       _has_sw,
+707                     "strong_high": smc.get("strong_high"),
+708                     "weak_high":   smc.get("weak_high"),
+709                     "strong_low":  smc.get("strong_low"),
+710                     "weak_low":    smc.get("weak_low"),
+711                     "rr":          _rr_val,
+712                     "pattern_key": _pat_key,
+713                 }
+714                 # 패턴 신뢰도 경고 (승률 < 30%, 3회 이상)
+715                 _pk_stat = _pattern_stats.get(_pat_key, {})
+716                 _pk_tr   = _pk_stat.get("trades", 0)
+717                 _pk_wr   = (_pk_stat.get("wins", 0) / _pk_tr * 100) if _pk_tr >= 3 else None
+718                 _pat_warn = f"[패턴경고:{_pk_wr:.0f}%WR/{_pk_tr}회] " if (_pk_wr is not None and _pk_wr < 30) else ""
+719 
+720                 conf_tags = (f"RSI={rsi:.1f} EMA={'정' if ema9>=ema21 else '역'} "
+721                              f"BB={'하단권' if price<=bb_m else '상단권'}")
+722                 sw_tag = ""
+723                 if smc.get("strong_high"): sw_tag += f" StrongH=${smc['strong_high']:,.0f}"
+724                 if smc.get("weak_low"):    sw_tag += f" WeakL=${smc['weak_low']:,.0f}"
+725                 if smc.get("strong_low"):  sw_tag += f" StrongL=${smc['strong_low']:,.0f}"
+726                 if smc.get("weak_high"):   sw_tag += f" WeakH=${smc['weak_high']:,.0f}"
+727                 # 최근 SMC 이벤트 요약 (진입 근거)
+728                 recent_ev = (_smc_event_log[-5:] if _smc_event_log else [])
+729                 ev_summary = " | ".join(
+730                     f"[{e['label']}]{e['type']}{'↑' if e['direction']=='bullish' else '↓'}@${e['level']}"
+731                     for e in recent_ev
+732                 ) if recent_ev else "이벤트없음"
+733                 reason = (f"{_pat_warn}SMC{sig.upper()} {smc_tag} {smc_rsn[:50]} "
+734                           f"| {conf_tags}{sw_tag} "
+735                           f"| [{kz_name}]{asian_tag} "
+736                           f"| 근거: {ev_summary} "
+737                           f"[TP:${tp_px:,.0f} SL:${sl_px:,.0f} RR={_rr_val:.1f}]")
+738 
+739                 if mode == "real":
+740                     _lev_now = _claude_cfg.get("leverage", 10)
+741                     _set_leverage(_lev_now)
+742                     side  = "buy" if sig == "long" else "sell"
+743                     _sz   = _calc_sz(price, _claude_cfg["size_pct"], _lev_now)
+744                     ord_r = _place_order(side, sig, _sz, tp_px=tp_px, sl_px=sl_px)
+745                     if ord_r.get("code") not in ("0", 0):
+746                         reason += f" [주문실패:{ord_r.get('msg','')}]"
+747                         tp_px = None; sl_px = None
+748                         _claude_st["watch_msg"] = reason
+749                         time.sleep(60)   # 주문 실패 후 1분 대기 (즉시 재시도 방지)
+750                     else:
+751                         pos = sig; entry = price
+752                         _pos_opened_at = time.time()
+753                 else:
+754                     pos = sig; entry = price
+755                     _pos_opened_at = time.time()
+756 
+757                 if pos:
+758                     _entry_ctx = _smc_ctx   # 청산 시 패턴 학습에 사용
+759                     _rec(claude_mode, f"ENTER_{sig.upper()}", price, ind, reason,
+760                          tp_px=tp_px, sl_px=sl_px, signal_src="Claude", smc_ctx=_smc_ctx)
+761                     _claude_st["watch_msg"] = reason
+762 
+763         elif pos:
+764             _lev = _claude_cfg.get("leverage", 10)
+765             # ── Real 모드: DeepCoin 실제 포지션 확인 (진입 후 90초 유예) ──
+766             if mode == "real" and time.time() - _pos_opened_at > 90:
+767                 try:
+768                     _pr = _dc_request("GET", "/deepcoin/account/positions?instId=BTC-USDT-SWAP&instType=SWAP")
+769                     if _pr.get("code") in ("0", 0):
+770                         _dc_positions = _pr.get("data") or []
+771                         _dc_has_pos = any(
+772                             int(float(p.get("pos", 0) or 0)) > 0 and p.get("posSide") == pos
+773                             for p in _dc_positions
+774                         )
+775                         if not _dc_has_pos:
+776                             # DeepCoin에 포지션 없음 → 외부 청산 (서버사이드 TP/SL)
+777                             raw_pct = ((price - entry) / entry * 100 if pos == "long"
+778                                        else (entry - price) / entry * 100)
+779                             lev_pct = round(raw_pct * _lev, 4)
+780                             if tp_px and ((pos == "long" and price >= tp_px * 0.998) or
+781                                           (pos == "short" and price <= tp_px * 1.002)):
+782                                 action = f"CLOSE_{pos.upper()}"
+783                                 reason = f"DC서버TP ${tp_px:,.0f} 체결확인 {lev_pct:+.2f}% ({_lev}x)"
+784                                 _last_fail_sl = 0.0
+785                             else:
+786                                 action = "SL_HIT"
+787                                 reason = f"DC서버SL 청산확인 (진입 ${entry:,.0f} → ${price:,.0f}) {lev_pct:+.2f}% ({_lev}x)"
+788                                 _last_fail_sl = sl_px or 0.0
+789                             _rec(claude_mode, action, price, ind, reason,
+790                                  pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx)
+791                             sess_pnl += lev_pct; sess_tr += 1
+792                             pos = None; entry = 0.0; tp_px = None; sl_px = None
+793                             _pos_opened_at = 0.0; _entry_ctx = None
+794                             _last_close = time.time()
+795                             _claude_st["last_close"] = _last_close
+796                             print(f"[DC동기화] 외부 청산: {action} {lev_pct:+.2f}%")
+797                 except Exception as _sync_err:
+798                     print(f"[DC동기화] 오류: {_sync_err}")
+799 
+800             # ── 로컬 TP/SL 체크 (pos가 아직 있으면 실행) ──────────────
+801             if pos:
+802                 raw_pct = ((price - entry) / entry * 100 if pos == "long"
+803                            else (entry - price) / entry * 100)
+804                 lev_pct  = round(raw_pct * _lev, 4)
+805                 close_reason = None
+806 
+807                 # SL
+808                 if sl_px and ((pos == "long"  and price <= sl_px) or
+809                               (pos == "short" and price >= sl_px)):
+810                     close_reason = f"SL ${sl_px:,.0f} 터치 {lev_pct:+.2f}% ({_lev}x)"
+811                     action = "SL_HIT"
+812 
+813                 # TP
+814                 elif tp_px and ((pos == "long"  and price >= tp_px) or
+815                                 (pos == "short" and price <= tp_px)):
+816                     close_reason = f"TP ${tp_px:,.0f} 달성 {lev_pct:+.2f}% ({_lev}x)"
+817                     action = f"CLOSE_{pos.upper()}"
+818 
+819                 if close_reason:
+820                     _close_order(pos, mode, _claude_cfg["size_pct"])
+821                     _rec(claude_mode, action, price, ind, close_reason,
+822                          pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx)
+823                     sess_pnl += lev_pct; sess_tr += 1
+824                     if action == "SL_HIT":
+825                         _last_fail_sl = sl_px
+826                     else:
+827                         _last_fail_sl = 0.0
+828                     pos = None; entry = 0.0; tp_px = None; sl_px = None
+829                     _pos_opened_at = 0.0; _entry_ctx = None
+830                     _last_close = time.time()
+831                     _claude_st["last_close"] = _last_close
+832                 else:
+833                     _claude_st["watch_msg"] = (
+834                         f"홀딩 {pos.upper()} @ ${entry:,.0f} "
+835                         f"| 현재 ${price:,.0f} ({lev_pct:+.2f}%, {_lev}x) "
+836                         f"| TP ${tp_px:,.0f} SL ${sl_px:,.0f}"
+837                     )
+838 
+839         _claude_st.update({
+840             "position": pos, "price": round(price, 2),
+841             "entry": round(entry, 2) if pos else None,
+842             "tp_px": tp_px, "sl_px": sl_px,
+843             "pnl": round(sess_pnl, 2), "trades": sess_tr,
+844             "indicators": ind, "can_trade": ok, "stop_msg": stop_msg,
+845             "daily": _dst(_kst_day(), claude_mode),
+846         })
+847         _persist_save()
+848         time.sleep(30)
+849     _claude_st["running"] = False
+850 
+851 
+852 # ── HTTP 핸들러 ───────────────────────────────────────────────────
+853 class Handler(BaseHTTPRequestHandler):
+854     def log_message(self, *a): pass
+855     def _j(self, d, st=200):
+856         b = json.dumps(d, ensure_ascii=False).encode()
+857         self.send_response(st)
+858         self.send_header("Content-Type","application/json; charset=utf-8")
+859         self.send_header("Content-Length", len(b))
+860         self.send_header("Access-Control-Allow-Origin", "*")
+861         self.end_headers()
+862         try: self.wfile.write(b)
+863         except (ConnectionAbortedError, BrokenPipeError, ConnectionResetError): pass
+864     def _h(self, html):
+865         b = html.encode(); self.send_response(200)
+866         self.send_header("Content-Type","text/html; charset=utf-8")
+867         self.send_header("Content-Length", len(b))
+868         self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+869         self.send_header("Pragma", "no-cache")
+870         self.end_headers(); self.wfile.write(b)
+871     def _body(self):
+872         n = int(self.headers.get("Content-Length", 0))
+873         return json.loads(self.rfile.read(n)) if n else {}
+874     def do_OPTIONS(self):
+875         self.send_response(200)
+876         for h,v in [("Access-Control-Allow-Origin","*"),
+877                     ("Access-Control-Allow-Methods","GET,POST,OPTIONS"),
+878                     ("Access-Control-Allow-Headers","Content-Type")]:
+879             self.send_header(h, v)
+880         self.end_headers()
+881 
+882     def do_GET(self):
+883         try:
+884             self._do_GET()
+885         except Exception as e:
+886             try: self._j({"error": str(e)}, 500)
+887             except Exception: pass
+888 
+889     def _do_GET(self):
+890         p  = urlparse(self.path).path
+891         qs = parse_qs(urlparse(self.path).query)
+892         if p in ("/", "/index.html"):
+893             idx = os.path.join(os.path.dirname(os.path.abspath(__file__)),"index.html")
+894             with open(idx, encoding="utf-8") as f: self._h(f.read())
+895         elif p == "/api/status":
+896             sig = load_signal(); ak = _e("DEEPCOIN_API_KEY","")
+897             self._j({"api_key_set":bool(ak and ak!="your_api_key_here"),
+898                 "claude_running":_claude_st["running"],
+899                 "signal":sig, "time":time.strftime("%Y-%m-%d %H:%M:%S"),
+900                 "config":_cfg})
+901         elif p == "/api/claude/status":   self._j(_claude_st)
+902         elif p == "/api/claude/config":   self._j(_claude_cfg)
+903         elif p == "/api/ticker":
+904             try:
+905                 import urllib.request
+906                 sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+907                 url = (f"https://api.deepcoin.com/deepcoin/market/tickers"
+908                        f"?instId={sym}&instType=SWAP")
+909                 r = urllib.request.urlopen(
+910                     urllib.request.Request(url, headers={"Content-Type":"application/json"}),
+911                     timeout=3)
+912                 resp = json.loads(r.read())
+913                 d = (resp.get("data") or [{}])[0]
+914                 last   = float(d.get("last") or 0)
+915                 open24 = float(d.get("open24h") or last or 1)
+916                 chg = round((last - open24) / open24 * 100, 2) if open24 else 0
+917                 self._j({"last": last, "change": chg})
+918             except:
+919                 import random
+920                 self._j({"last":round(68800+random.gauss(0,100),2),
+921                          "change":-2.1,"sim":True})
+922 
+923         elif p == "/api/klines":
+924             bar = qs.get("interval",["15m"])[0]
+925             lim = int(qs.get("limit",["100"])[0])
+926             sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+927             kl  = _klines(sym, bar, lim)
+928             if not kl:
+929                 import random; sig = load_signal()
+930                 bp = float(sig.get("btc_price",68800)) if sig else 68800.0
+931                 price = bp; kl = []; now = int(time.time()*1000)
+932                 ims = {"1m":60000,"5m":300000,"15m":900000,
+933                        "1h":3600000,"1H":3600000,"4H":14400000}.get(bar,900000)
+934                 for i in range(lim):
+935                     o=price; h=o+abs(random.gauss(0,300)); l=o-abs(random.gauss(0,300))
+936                     c=l+random.random()*(h-l); price=c
+937                     kl.append({"t":now-(lim-i)*ims,"o":round(o,2),"h":round(h,2),
+938                                 "l":round(l,2),"c":round(c,2),
+939                                 "v":round(random.uniform(5,80),2),"sim":True})
+940             self._j(kl)
+941 
+942         elif p == "/api/indicators":
+943             bar = qs.get("interval",["15m"])[0]
+944             kl  = _klines(bar=bar, n=80)
+945             # API 미응답 시 /api/klines와 같은 시뮬 폴백
+946             if not kl:
+947                 import random; sig = load_signal()
+948                 bp = float(sig.get("btc_price", 68800)) if sig else 68800.0
+949                 price_sim = bp; now = int(time.time()*1000)
+950                 ims = {"1m":60000,"5m":300000,"15m":900000,"1h":3600000,

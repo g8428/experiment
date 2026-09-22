@@ -1,0 +1,643 @@
+=== TOTAL LINES: 642 ===
+1: """Deepcoin Bot v2 - 실제 RSI+EMA 시그널 | 거래로그 | 일별수익"""
+2: import os, json, time, threading
+3: from http.server import HTTPServer, BaseHTTPRequestHandler
+4: from socketserver import ThreadingMixIn
+5: from urllib.parse import urlparse, parse_qs
+6: from datetime import datetime, timezone, timedelta
+7: 
+8: class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
+9:     daemon_threads = True
+10: 
+11: # ── 환경변수 ───────────────────────────────────────────────────────
+12: _env = {}
+13: _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+14: if os.path.exists(_env_path):
+15:     with open(_env_path, encoding="utf-8") as f:
+16:         for ln in f:
+17:             ln = ln.strip()
+18:             if ln and not ln.startswith("#") and "=" in ln:
+19:                 k, v = ln.split("=", 1); _env[k.strip()] = v.strip()
+20: 
+21: def _e(k, d=""): return _env.get(k, os.environ.get(k, d))
+22: 
+23: SIGNAL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+24:                            "market_reports", "latest_signal.json")
+25: def load_signal():
+26:     if os.path.exists(SIGNAL_PATH):
+27:         with open(SIGNAL_PATH, encoding="utf-8") as f: return json.load(f)
+28:     return None
+29: # ── 딥코인 인증 모듈 ─────────────────────────────────────────────
+30: import hmac, hashlib, base64
+31: 
+32: DC_BASE = "https://api.deepcoin.com"
+33: 
+34: def _dc_auth(method, path, body_str=""):
+35:     """딥코인 인증 헤더 생성"""
+36:     ts  = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.") +           f"{datetime.now(timezone.utc).microsecond//1000:03d}Z"
+37:     raw = ts + method.upper() + path + (body_str or "")
+38:     sk  = _e("DEEPCOIN_SECRET_KEY", "").encode()
+39:     sig = base64.b64encode(
+40:               hmac.new(sk, raw.encode(), hashlib.sha256).digest()
+41:           ).decode()
+42:     headers = {
+43:         "Content-Type":        "application/json",
+44:         "DC-ACCESS-KEY":       _e("DEEPCOIN_API_KEY", ""),
+45:         "DC-ACCESS-SIGN":      sig,
+46:         "DC-ACCESS-TIMESTAMP": ts,
+47:         "DC-ACCESS-PASSPHRASE": _e("DEEPCOIN_PASSPHRASE", ""),
+48:     }
+49:     return headers
+50: 
+51: def _dc_request(method, path, body=None):
+52:     """딥코인 인증 요청"""
+53:     import urllib.request as ur
+54:     body_str = json.dumps(body) if body else ""
+55:     headers  = _dc_auth(method, path, body_str)
+56:     url = DC_BASE + path
+57:     req = ur.Request(url,
+58:         data=body_str.encode() if body_str else None,
+59:         headers=headers, method=method.upper())
+60:     try:
+61:         r = ur.urlopen(req, timeout=8)
+62:         return json.loads(r.read())
+63:     except ur.HTTPError as e:
+64:         return {"code": str(e.code), "msg": e.read().decode(), "data": None}
+65:     except Exception as e:
+66:         return {"code": "err", "msg": str(e), "data": None}
+67: 
+68: 
+69: 
+70: LOGS_DIR   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "trade_logs", "daily")
+71: _BASE      = os.path.dirname(os.path.abspath(__file__))
+72: _PERSIST   = os.path.join(_BASE, "trade_logs", "persist.json")
+73: os.makedirs(LOGS_DIR, exist_ok=True)
+74: 
+75: # ── 전역 상태 ──────────────────────────────────────────────────────
+76: _grid_st  = {"running":False,"profit":0.0,"trades":0,"price":0}
+77: _mom_st   = {"running":False,"position":None,"pnl":0.0,"trades":0,
+78:              "mode":"sim","indicators":{},"can_trade":True,"stop_msg":"",
+79:              "price":0,"entry":None,"daily":{},"watch_msg":"대기 중"}
+80: _grid_thr = None
+81: _mom_thr  = None
+82: _logs     = []
+83: _daily    = {}
+84: 
+85: def _persist_load():
+86:     global _logs, _daily
+87:     if os.path.exists(_PERSIST):
+88:         try:
+89:             with open(_PERSIST, encoding="utf-8") as f:
+90:                 d = json.load(f)
+91:             _logs  = d.get("logs",  [])[-500:]
+92:             _daily = d.get("daily", {})
+93:             # 봇 상태 복원
+94:             ms = d.get("mom_state", {})
+95:             if ms.get("pos"):
+96:                 _mom_st["position"] = ms["pos"]
+97:                 _mom_st["entry"]    = ms.get("entry", 0.0)
+98:                 _mom_st["pnl"]      = ms.get("sess_pnl", 0.0)
+99:                 _mom_st["trades"]   = ms.get("sess_tr", 0)
+100:                 _mom_st["mode"]     = ms.get("mode", "sim")
+101:                 _mom_st["watch_msg"] = f"[재시작 복원] {ms['pos'].upper()} @ ${ms.get('entry',0):,.0f}"
+102:             print(f"[persist] 로드: 거래 {len(_logs)}건, 일별 {len(_daily)}일"
+103:                   + (f", 포지션 복원={ms.get('pos')}" if ms.get("pos") else ""))
+104:         except Exception as e:
+105:             print(f"[persist] 로드 실패: {e}")
+106: 
+107: def _persist_save():
+108:     try:
+109:         ms = {
+110:             "pos":      _mom_st.get("position"),
+111:             "entry":    _mom_st.get("entry") or 0.0,
+112:             "sess_pnl": _mom_st.get("pnl") or 0.0,
+113:             "sess_tr":  _mom_st.get("trades") or 0,
+114:             "mode":     _mom_st.get("mode", "sim"),
+115:         }
+116:         with open(_PERSIST, "w", encoding="utf-8") as f:
+117:             json.dump({"logs": _logs[-500:], "daily": _daily,
+118:                        "mom_state": ms}, f, ensure_ascii=False)
+119:     except Exception as e:
+120:         print(f"[persist] 저장 실패: {e}")
+121: _cfg = {
+122:     "size_pct": 10.0,
+123:     "max_daily_trades": 5,
+124:     "daily_profit_stop": 10.0,
+125:     "daily_loss_stop": 3.0,
+126:     "sl_pct": 1.5,
+127:     "tp_pct": 2.5,
+128:     "leverage": 10,
+129: }
+130: 
+131: # ── 보조지표 계산 ──────────────────────────────────────────────────
+132: def _ema(cl, n):
+133:     if len(cl) < n: return cl[-1] if cl else 0.0
+134:     k = 2.0/(n+1); e = sum(cl[:n])/n
+135:     for p in cl[n:]: e = p*k + e*(1-k)
+136:     return e
+137: 
+138: def _rsi(cl, n=14):
+139:     if len(cl) < n+1: return 50.0
+140:     d = [cl[i]-cl[i-1] for i in range(1,len(cl))]
+141:     g = sum(max(x,0) for x in d[-n:])/n
+142:     l = sum(max(-x,0) for x in d[-n:])/n
+143:     return round(100.0 if l==0 else 100-100/(1+g/l), 2)
+144: 
+145: # ── 딥코인 klines (30초 캐시) ─────────────────────────────────────
+146: _kl_cache = {}   # key: (sym,bar,n) -> {"ts": float, "data": [...]}
+147: _kl_lock  = threading.Lock()
+148: 
+149: def _klines(sym="BTC-USDT-SWAP", bar="15m", n=80):
+150:     key = (sym, bar, n)
+151:     with _kl_lock:
+152:         c = _kl_cache.get(key)
+153:         if c and time.time() - c["ts"] < 30:
+154:             return c["data"]
+155:     try:
+156:         import urllib.request
+157:         b = bar.upper() if bar.endswith("h") else bar
+158:         url = (f"https://api.deepcoin.com/deepcoin/market/candles"
+159:                f"?instId={sym}&bar={b}&limit={n}")
+160:         r = urllib.request.urlopen(
+161:             urllib.request.Request(url, headers={"Content-Type":"application/json"}),
+162:             timeout=8)
+163:         resp = json.loads(r.read())
+164:         raw  = resp.get("data", resp) if isinstance(resp, dict) else resp
+165:         kl   = [{"t":int(k[0]),"o":float(k[1]),"h":float(k[2]),
+166:                  "l":float(k[3]),"c":float(k[4]),"v":float(k[5])} for k in raw]
+167:         kl.sort(key=lambda x: x["t"])
+168:         with _kl_lock:
+169:             _kl_cache[key] = {"ts": time.time(), "data": kl}
+170:         return kl
+171:     except:
+172:         with _kl_lock:
+173:             return _kl_cache.get(key, {}).get("data", [])
+174: 
+175: def _ind(kl):
+176:     if len(kl) < 22: return {}
+177:     cl = [k["c"] for k in kl]
+178:     return {"ema9":round(_ema(cl,9),2), "ema21":round(_ema(cl,21),2),
+179:             "rsi":_rsi(cl,14), "price":cl[-1]}
+180: 
+181: # ── 시그널 생성 ───────────────────────────────────────────────────
+182: def _sig(ind, pos):
+183:     if not ind: return None, "데이터 부족"
+184:     e9, e21, rsi = ind["ema9"], ind["ema21"], ind["rsi"]
+185:     if pos is None:
+186:         # 롱: EMA 상승배열 + RSI 45~65 (과매수 직전까지만)
+187:         if e9 > e21 and 45 < rsi < 65:
+188:             return "long",  f"EMA9({e9:.0f})>EMA21({e21:.0f}) RSI={rsi:.1f} 롱진입"
+189:         # 숏: EMA 하락배열 + RSI 35~55 (과매도 직전까지만)
+190:         if e9 < e21 and 35 < rsi < 55:
+191:             return "short", f"EMA9({e9:.0f})<EMA21({e21:.0f}) RSI={rsi:.1f} 숏진입"
+192:         return None, f"E9={e9:.0f} E21={e21:.0f} RSI={rsi:.1f} 관망"
+193:     # 롱 청산: EMA 역전 OR RSI 과매수(70) 돌파
+194:     if pos == "long"  and (e9 < e21 or rsi > 70):
+195:         return "close", f"EMA역전/과매수 RSI={rsi:.1f} 롱청산"
+196:     # 숏 청산: EMA 역전 OR RSI 과매도(30) 이탈 (30 아래면 반등 위험)
+197:     if pos == "short" and (e9 > e21 or rsi < 30):
+198:         return "close", f"EMA역전/과매도 RSI={rsi:.1f} 숏청산"
+199:     return None, f"홀딩 RSI={rsi:.1f}"
+200: 
+201: # ── KST 날짜 / 일별 통계 ──────────────────────────────────────────
+202: def _kst_day():
+203:     kst = datetime.now(timezone(timedelta(hours=9)))
+204:     if kst.hour < 9: kst -= timedelta(days=1)
+205:     return kst.strftime("%Y-%m-%d")
+206: 
+207: def _dst(day, mode):
+208:     return _daily.get(day, {}).get(
+209:         mode, {"pnl_pct":0.0,"trades":0,"wins":0,"losses":0})
+210: 
+211: def _can_trade(mode):
+212:     st = _dst(_kst_day(), mode)
+213:     if mode == "real" and st["trades"] >= _cfg["max_daily_trades"]:
+214:         return False, f"일 최대 {_cfg['max_daily_trades']}회 도달"
+215:     if st["pnl_pct"] >=  _cfg["daily_profit_stop"]:
+216:         return False, f"일 수익 +{_cfg['daily_profit_stop']:.0f}% 도달"
+217:     if st["pnl_pct"] <= -_cfg["daily_loss_stop"]:
+218:         return False, f"일 손실 -{_cfg['daily_loss_stop']:.0f}% 도달"
+219:     return True, ""
+220: 
+221: def _rec(mode, action, price, ind, reason, pnl=None):
+222:     day = _kst_day()
+223:     ts  = datetime.now(timezone(timedelta(hours=9))).strftime("%m-%d %H:%M")
+224:     _logs.append({"ts":ts,"day":day,"mode":mode,"action":action,
+225:         "price":price,"e9":ind.get("ema9"),"e21":ind.get("ema21"),
+226:         "rsi":ind.get("rsi"),"reason":reason,"pnl":pnl})
+227:     if len(_logs) > 500: _logs.pop(0)
+228:     if pnl is not None:
+229:         _daily.setdefault(day, {}).setdefault(
+230:             mode, {"pnl_pct":0.0,"trades":0,"wins":0,"losses":0})
+231:         s = _daily[day][mode]
+232:         s["pnl_pct"] = round(s["pnl_pct"] + pnl, 4)
+233:         s["trades"] += 1
+234:         if pnl > 0: s["wins"]  += 1
+235:         else:       s["losses"] += 1
+236:     save_daily_log(day)
+237:     _persist_save()
+238: 
+239: 
+240: # ── 일별 .md 로그 저장 ────────────────────────────────────────────
+241: def _pnl_str(v, d=2):
+242:     if v is None: return "-"
+243:     return f"{'+'if v>0 else ''}{v:.{d}f}%"
+244: 
+245: def _win_rate(w, l):
+246:     return f"{round(w/(w+l)*100)}%" if (w+l)>0 else "-"
+247: 
+248: def save_daily_log(day):
+249:     day_logs = [l for l in _logs if l["day"] == day]
+250:     ss = _dst(day, "sim"); rs = _dst(day, "real")
+251: 
+252:     lines = [
+253:         f"# 거래 일지 — {day} (KST)", "",
+254:         "## 📊 일별 성과", "",
+255:         "| 구분 | PnL | 거래 | 승/패 | 승률 |",
+256:         "|------|-----|------|-------|------|",
+257:         f"| 시뮬 | {_pnl_str(ss['pnl_pct'])} | {ss['trades']}회 "
+258:         f"| {ss['wins']}승 {ss['losses']}패 | {_win_rate(ss['wins'],ss['losses'])} |",
+259:         f"| 실제 | {_pnl_str(rs['pnl_pct'])} | {rs['trades']}회 "
+260:         f"| {rs['wins']}승 {rs['losses']}패 | {_win_rate(rs['wins'],rs['losses'])} |",
+261:         "",
+262:         f"> 일 한도: 수익 +{_cfg['daily_profit_stop']:.0f}% | "
+263:         f"손실 -{_cfg['daily_loss_stop']:.0f}% | 실제 최대 {_cfg['max_daily_trades']}회",
+264:         "", "---", "",
+265:         "## 📋 거래 로그", "",
+266:         "| 시간 | 모드 | 액션 | 가격 | EMA9 | EMA21 | RSI | 이유 | PnL |",
+267:         "|------|------|------|------|------|-------|-----|------|-----|",
+268:     ]
+269:     for l in day_logs:
+270:         lines.append(
+271:             f"| {l['ts']} | {l['mode']} | {l['action']} "
+272:             f"| ${l['price']:,.0f} "
+273:             f"| {l['e9'] or '-'} | {l['e21'] or '-'} | {l['rsi'] or '-'} "
+274:             f"| {l['reason']} | {_pnl_str(l['pnl'])} |"
+275:         )
+276:     if not day_logs:
+277:         lines.append("| - | - | 거래 없음 | - | - | - | - | - | - |")
+278: 
+279:     # ── 총평 자동 생성 ─────────────────────────────────────────────
+280:     tot_tr  = ss['trades'] + rs['trades']
+281:     tot_pnl = round(ss['pnl_pct'] + rs['pnl_pct'], 4)
+282:     wins    = ss['wins']   + rs['wins']
+283:     losses  = ss['losses'] + rs['losses']
+284:     wr      = round(wins/(wins+losses)*100) if (wins+losses)>0 else 0
+285: 
+286:     lines += ["", "---", "", "## 📝 총평", ""]
+287:     if tot_tr == 0:
+288:         lines.append("거래 없음 — 시그널 조건 미충족 또는 봇 미실행.")
+289:     else:
+290:         lines.append(f"**총 거래:** {tot_tr}회 | **승률:** {wr}% | **종합 PnL:** {_pnl_str(tot_pnl)}")
+291:         lines.append("")
+292:         if day_logs:
+293:             last = day_logs[-1]
+294:             rsi = last.get('rsi') or 50
+295:             rsi_desc = ("과매수 구간 — 청산 압력 주의" if rsi > 70
+296:                         else "과매도 구간 — 반등 가능성" if rsi < 30
+297:                         else "중립 구간")
+298:             e9, e21 = last.get('e9'), last.get('e21')
+299:             ema_desc = ""
+300:             if e9 and e21:
+301:                 ema_desc = ("EMA 상승 배열 (골든크로스)" if e9 > e21
+302:                             else "EMA 하락 배열 (데드크로스)")
+303:             lines.append(f"**마지막 RSI:** {rsi:.1f} ({rsi_desc})")
+304:             if ema_desc: lines.append(f"**EMA 배열:** {ema_desc}")
+305:         lines.append("")
+306:         if tot_pnl > 1:
+307:             lines.append("전략 유효. EMA 방향성 + RSI 필터 작동 양호.")
+308:         elif tot_pnl < -1:
+309:             lines.append("손실 구간. 변동성 확대 또는 횡보장 가능성 — SL 폭 재검토 권장.")
+310:         else:
+311:             lines.append("소폭 변동. 추세 불명확 구간 — 포지션 비중 축소 고려.")
+312: 
+313:     path = os.path.join(LOGS_DIR, f"{day}_trades.md")
+314:     with open(path, "w", encoding="utf-8") as f:
+315:         f.write("\n".join(lines))
+316:     return path
+317: 
+318: # ── 그리드 시뮬 ───────────────────────────────────────────────────
+319: def _run_grid(upper, lower, count, amount, dry_run):
+320:     import random
+321:     global _grid_st
+322:     _grid_st["running"] = True
+323:     step = (upper-lower)/count; price = (upper+lower)/2
+324:     profit = 0.0; trades = 0
+325:     while _grid_st["running"]:
+326:         price += random.gauss(0, step*0.3)
+327:         price  = max(lower*0.95, min(upper*1.05, price))
+328:         for i in range(count):
+329:             gp = lower + i*step
+330:             if abs(price-gp) < step*0.1:
+331:                 profit += step/gp*amount*0.998; trades += 1
+332:         _grid_st.update({"profit":round(profit,4),"trades":trades,"price":round(price,2)})
+333:         time.sleep(3)
+334:     _grid_st["running"] = False
+335: 
+336: # ── 모멘텀 봇 (실제 RSI+EMA, 시뮬/실제 공통) ─────────────────────
+337: def _run_mom(sl_pct, tp_pct, mode):
+338:     global _mom_st
+339:     # 재시작 시 이전 포지션 상태 복원
+340:     prev_pos   = _mom_st.get("position")
+341:     prev_entry = _mom_st.get("entry") or 0.0
+342:     prev_pnl   = _mom_st.get("pnl") or 0.0
+343:     prev_tr    = _mom_st.get("trades") or 0
+344:     _mom_st.update({"running":True,"mode":mode,"stop_msg":"",
+345:                     "position":prev_pos,"entry":prev_entry,
+346:                     "pnl":prev_pnl,"trades":prev_tr})
+347:     pos = prev_pos; entry = prev_entry
+348:     sess_pnl = prev_pnl; sess_tr = prev_tr
+349:     _last_close = 0.0  # 마지막 청산 시각 (쿨다운용)
+350:     while _mom_st["running"]:
+351:         kl    = _klines(n=60)
+352:         if not kl: time.sleep(15); continue
+353:         ind   = _ind(kl)
+354:         price = ind.get("price", 0)
+355:         ok, stop_msg = _can_trade(mode)
+356: 
+357:         # 쿨다운: 청산 후 30분(1800초) 대기
+358:         cooldown_left = max(0, _last_close + 1800 - time.time())
+359:         if pos is None and cooldown_left > 0:
+360:             _mom_st["watch_msg"] = f"쿨다운 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초 남음"
+361:         if pos is None and ok and cooldown_left == 0:
+362:             sig, reason = _sig(ind, None)
+363:             _mom_st["watch_msg"] = reason  # 관망 이유 항상 표시
+364:             if sig in ("long", "short"):
+365:                 pos = sig; entry = price
+366:                 if mode == "real":
+367:                     side = "buy" if sig == "long" else "sell"
+368:                     # 레버리지 설정 (long/short 양방향)
+369:                     lev = str(int(_cfg["leverage"]))
+370:                     for ps in ("long", "short"):
+371:                         _dc_request("POST", "/deepcoin/account/set-leverage", {
+372:                             "instId": "BTC-USDT-SWAP",
+373:                             "lever": lev,
+374:                             "mgnMode": "isolated",
+375:                             "mrgPosition": "split",
+376:                             "posSide": ps,
+377:                         })
+378:                     # TP/SL 가격 계산
+379:                     if sig == "long":
+380:                         tp_px = round(price * (1 + tp_pct / 100), 1)
+381:                         sl_px = round(price * (1 - sl_pct / 100), 1)
+382:                     else:
+383:                         tp_px = round(price * (1 - tp_pct / 100), 1)
+384:                         sl_px = round(price * (1 + sl_pct / 100), 1)
+385:                     ord_r = _dc_request("POST", "/deepcoin/trade/order", {
+386:                         "instId":       "BTC-USDT-SWAP",
+387:                         "tdMode":       "isolated",
+388:                         "mrgPosition":  "split",
+389:                         "side":         side,
+390:                         "posSide":      sig,
+391:                         "ordType":      "market",
+392:                         "sz":           str(max(1, int(_cfg["size_pct"]))),
+393:                         "tpTriggerPx":  str(tp_px),
+394:                         "tpOrdPx":      "-1",
+395:                         "slTriggerPx":  str(sl_px),
+396:                         "slOrdPx":      "-1",
+397:                     })
+398:                     if ord_r.get("code") not in ("0", 0):
+399:                         reason += f" [주문실패:{ord_r.get('msg','')}]"
+400:                     else:
+401:                         reason += f" [TP:{tp_px} SL:{sl_px}]"
+402:                 _rec(mode, f"ENTER_{sig.upper()}", price, ind, reason)
+403:         elif pos:
+404:             pct = ((price-entry)/entry*100 if pos=="long"
+405:                    else (entry-price)/entry*100)
+406:             def _close_order(cur_pos):
+407:                 if mode == "real":
+408:                     close_side = "sell" if cur_pos == "long" else "buy"
+409:                     _dc_request("POST", "/deepcoin/trade/order", {
+410:                         "instId":      "BTC-USDT-SWAP",
+411:                         "tdMode":      "isolated",
+412:                         "mrgPosition": "split",
+413:                         "side":        close_side,
+414:                         "posSide":     cur_pos,
+415:                         "ordType":     "market",
+416:                         "sz":          str(max(1, int(_cfg["size_pct"]))),
+417:                         "reduceOnly":  True,
+418:                     })
+419:             if pct <= -sl_pct:
+420:                 _close_order(pos)
+421:                 _rec(mode,"SL_HIT",price,ind,f"손절 {pct:.2f}%",pnl=round(pct,4))
+422:                 sess_pnl+=pct; sess_tr+=1; pos=None; entry=0.0; _last_close=time.time()
+423:             elif pct >= tp_pct:
+424:                 _close_order(pos)
+425:                 _rec(mode,f"CLOSE_{pos.upper()}",price,ind,
+426:                      f"익절 +{pct:.2f}%",pnl=round(pct,4))
+427:                 sess_pnl+=pct; sess_tr+=1; pos=None; entry=0.0; _last_close=time.time()
+428:             else:
+429:                 csig, creason = _sig(ind, pos)
+430:                 if csig == "close":
+431:                     _close_order(pos)
+432:                     _rec(mode,f"CLOSE_{pos.upper()}",price,ind,
+433:                          creason,pnl=round(pct,4))
+434:                     sess_pnl+=pct; sess_tr+=1; pos=None; entry=0.0; _last_close=time.time()
+435: 
+436:         _mom_st.update({"position":pos,"price":round(price,2),
+437:             "entry":round(entry,2) if pos else None,
+438:             "pnl":round(sess_pnl,2),"trades":sess_tr,
+439:             "indicators":ind,"can_trade":ok,"stop_msg":stop_msg,
+440:             "daily":_dst(_kst_day(), mode)})
+441:         _persist_save()  # 매 루프마다 상태 저장
+442:         time.sleep(30)
+443:     _mom_st["running"] = False
+444: 
+445: # ── HTTP 핸들러 ───────────────────────────────────────────────────
+446: class Handler(BaseHTTPRequestHandler):
+447:     def log_message(self, *a): pass
+448:     def _j(self, d, st=200):
+449:         b = json.dumps(d, ensure_ascii=False).encode()
+450:         self.send_response(st)
+451:         self.send_header("Content-Type","application/json; charset=utf-8")
+452:         self.send_header("Content-Length", len(b))
+453:         self.send_header("Access-Control-Allow-Origin", "*")
+454:         self.end_headers(); self.wfile.write(b)
+455:     def _h(self, html):
+456:         b = html.encode(); self.send_response(200)
+457:         self.send_header("Content-Type","text/html; charset=utf-8")
+458:         self.send_header("Content-Length", len(b))
+459:         self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+460:         self.send_header("Pragma", "no-cache")
+461:         self.end_headers(); self.wfile.write(b)
+462:     def _body(self):
+463:         n = int(self.headers.get("Content-Length", 0))
+464:         return json.loads(self.rfile.read(n)) if n else {}
+465:     def do_OPTIONS(self):
+466:         self.send_response(200)
+467:         for h,v in [("Access-Control-Allow-Origin","*"),
+468:                     ("Access-Control-Allow-Methods","GET,POST,OPTIONS"),
+469:                     ("Access-Control-Allow-Headers","Content-Type")]:
+470:             self.send_header(h, v)
+471:         self.end_headers()
+472: 
+473:     def do_GET(self):
+474:         p  = urlparse(self.path).path
+475:         qs = parse_qs(urlparse(self.path).query)
+476:         if p in ("/", "/index.html"):
+477:             idx = os.path.join(os.path.dirname(os.path.abspath(__file__)),"index.html")
+478:             with open(idx, encoding="utf-8") as f: self._h(f.read())
+479:         elif p == "/api/status":
+480:             sig = load_signal(); ak = _e("DEEPCOIN_API_KEY","")
+481:             self._j({"api_key_set":bool(ak and ak!="your_api_key_here"),
+482:                 "grid_running":_grid_st["running"],
+483:                 "momentum_running":_mom_st["running"],
+484:                 "signal":sig, "time":time.strftime("%Y-%m-%d %H:%M:%S"),
+485:                 "config":_cfg})
+486:         elif p == "/api/grid/status":     self._j(_grid_st)
+487:         elif p == "/api/momentum/status": self._j(_mom_st)
+488:         elif p == "/api/ticker":
+489:             try:
+490:                 import urllib.request
+491:                 sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+492:                 url = (f"https://api.deepcoin.com/deepcoin/market/tickers"
+493:                        f"?instId={sym}&instType=SWAP")
+494:                 r = urllib.request.urlopen(
+495:                     urllib.request.Request(url, headers={"Content-Type":"application/json"}),
+496:                     timeout=3)
+497:                 resp = json.loads(r.read())
+498:                 d = (resp.get("data") or [{}])[0]
+499:                 last  = float(d.get("last") or 0)
+500:                 open24 = float(d.get("open24h") or last or 1)
+501:                 chg = round((last - open24) / open24 * 100, 2) if open24 else 0
+502:                 self._j({"last": last, "change": chg})
+503:             except:
+504:                 import random
+505:                 self._j({"last":round(68800+random.gauss(0,100),2),
+506:                          "change":-2.1,"sim":True})
+507: 
+508:         elif p == "/api/klines":
+509:             bar = qs.get("interval",["15m"])[0]
+510:             lim = int(qs.get("limit",["100"])[0])
+511:             sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+512:             kl  = _klines(sym, bar, lim)
+513:             if not kl:
+514:                 import random; sig = load_signal()
+515:                 bp = float(sig.get("btc_price",68800)) if sig else 68800.0
+516:                 price = bp; kl = []; now = int(time.time()*1000)
+517:                 ims = {"1m":60000,"5m":300000,"15m":900000,
+518:                        "1h":3600000,"1H":3600000,"4H":14400000}.get(bar,900000)
+519:                 for i in range(lim):
+520:                     o=price; h=o+abs(random.gauss(0,300)); l=o-abs(random.gauss(0,300))
+521:                     c=l+random.random()*(h-l); price=c
+522:                     kl.append({"t":now-(lim-i)*ims,"o":round(o,2),"h":round(h,2),
+523:                                 "l":round(l,2),"c":round(c,2),
+524:                                 "v":round(random.uniform(5,80),2),"sim":True})
+525:             self._j(kl)
+526: 
+527:         elif p == "/api/indicators":
+528:             bar = qs.get("interval",["15m"])[0]
+529:             kl  = _klines(bar=bar, n=80)
+530:             if len(kl) < 22:
+531:                 self._j({"ema9":[],"ema21":[],"rsi":[],"ts":[]}); return
+532:             cl = [k["c"] for k in kl]; ts = [k["t"] for k in kl]
+533:             e9s=[]; e21s=[]; rs=[]
+534:             for i in range(21, len(cl)):
+535:                 sub = cl[:i+1]
+536:                 e9s.append(round(_ema(sub,9),2))
+537:                 e21s.append(round(_ema(sub,21),2))
+538:                 rs.append(_rsi(sub,14))
+539:             self._j({"ema9":e9s,"ema21":e21s,"rsi":rs,"ts":ts[21:]})
+540: 
+541:         elif p == "/api/logs":
+542:             n = int(qs.get("n",["60"])[0])
+543:             self._j(list(reversed(_logs[-n:])))
+544:         elif p == "/api/daily":  self._j(_daily)
+545:         elif p == "/api/signal": self._j(load_signal() or {})
+546:         elif p == "/api/config": self._j(_cfg)
+547:         elif p == "/api/balance":
+548:             r = _dc_request("GET", "/deepcoin/account/balances?instType=SWAP")
+549:             if str(r.get("code")) == "0":
+550:                 assets = {a["ccy"]: {"avail": a.get("availEq") or a.get("availBal","0"),
+551:                                      "total": a.get("eq") or a.get("bal","0")}
+552:                           for a in (r.get("data") or []) if a.get("ccy")}
+553:                 self._j({"ok": True, "assets": assets})
+554:             else:
+555:                 self._j({"ok": False, "code": r.get("code"), "msg": r.get("msg")})
+556:         elif p == "/api/positions":
+557:             sym = qs.get("symbol", ["BTC-USDT-SWAP"])[0]
+558:             r = _dc_request("GET", f"/deepcoin/account/positions?instId={sym}&instType=SWAP")
+559:             if str(r.get("code")) == "0":
+560:                 self._j({"ok": True, "positions": r.get("data", [])})
+561:             else:
+562:                 self._j({"ok": False, "code": r.get("code"), "msg": r.get("msg")})
+563:         elif p == "/api/log-files":
+564:             files = sorted(os.listdir(LOGS_DIR), reverse=True) if os.path.exists(LOGS_DIR) else []
+565:             self._j([f for f in files if f.endswith(".md")])
+566:         elif p.startswith("/api/log/"):
+567:             fname = os.path.basename(p[9:])  # /api/log/2026-03-10_trades.md
+568:             fpath = os.path.join(LOGS_DIR, fname)
+569:             if os.path.exists(fpath):
+570:                 with open(fpath, encoding="utf-8") as f:
+571:                     self.send_response(200)
+572:                     b = f.read().encode()
+573:                     self.send_header("Content-Type","text/plain; charset=utf-8")
+574:                     self.send_header("Content-Length", len(b))
+575:                     self.send_header("Access-Control-Allow-Origin","*")
+576:                     self.end_headers(); self.wfile.write(b)
+577:             else: self._j({"error":"not found"},404)
+578:         else: self._j({"error":"not found"}, 404)
+579: 
+580:     def do_POST(self):
+581:         global _grid_thr, _mom_thr
+582:         p = urlparse(self.path).path; b = self._body()
+583:         if p == "/api/grid/start":
+584:             if _grid_thr and _grid_thr.is_alive():
+585:                 _grid_st["running"]=False; _grid_thr.join(2)
+586:             _grid_st.update({"running":False,"profit":0,"trades":0})
+587:             _grid_thr = threading.Thread(target=_run_grid, daemon=True, kwargs={
+588:                 "upper":float(b.get("upper",72000)),"lower":float(b.get("lower",63000)),
+589:                 "count":int(b.get("count",20)),"amount":float(b.get("amount",10)),
+590:                 "dry_run":b.get("dry_run",True)})
+591:             _grid_thr.start(); self._j({"ok":True,"msg":"그리드 시작"})
+592:         elif p == "/api/grid/stop":
+593:             _grid_st["running"]=False; self._j({"ok":True,"msg":"그리드 중지"})
+594:         elif p == "/api/momentum/start":
+595:             if _mom_thr and _mom_thr.is_alive():
+596:                 _mom_st["running"]=False; _mom_thr.join(2)
+597:             mode = b.get("mode","sim")
+598:             sl = float(b.get("sl", _cfg["sl_pct"]))
+599:             tp = float(b.get("tp", _cfg["tp_pct"]))
+600:             _mom_thr = threading.Thread(target=_run_mom, daemon=True,
+601:                 kwargs={"sl_pct":sl,"tp_pct":tp,"mode":mode})
+602:             _mom_thr.start(); self._j({"ok":True,"msg":f"모멘텀({mode}) 시작"})
+603:         elif p == "/api/momentum/stop":
+604:             _mom_st["running"]=False; self._j({"ok":True,"msg":"모멘텀 중지"})
+605:         elif p == "/api/config":
+606:             for k in ("size_pct","max_daily_trades","daily_profit_stop",
+607:                       "daily_loss_stop","sl_pct","tp_pct","leverage"):
+608:                 if k in b:
+609:                     _cfg[k] = int(b[k]) if k in ("max_daily_trades","leverage") else float(b[k])
+610:             self._j({"ok":True,"config":_cfg})
+611:         elif p == "/api/save-log":
+612:             day = b.get("day", _kst_day())
+613:             path = save_daily_log(day)
+614:             self._j({"ok":True,"day":day,"path":path})
+615:         elif p == "/api/signal/save":
+616:             from datetime import date as _date
+617:             sig = load_signal() or {}
+618:             sig.update({
+619:                 "report_date":        b.get("report_date", str(_date.today())),
+620:                 "market_condition":   b.get("market_condition", sig.get("market_condition","bearish")),
+621:                 "fear_greed_index":   b.get("fear_greed_index", sig.get("fear_greed_index",10)),
+622:                 "momentum_direction": b.get("momentum_direction", sig.get("momentum_direction","short")),
+623:                 "grid_recommended":   b.get("grid_recommended",  sig.get("grid_recommended",False)),
+624:                 "stop_loss_pct":      b.get("stop_loss_pct",     sig.get("stop_loss_pct",0.015)),
+625:                 "take_profit_pct":    b.get("take_profit_pct",   sig.get("take_profit_pct",0.025)),
+626:                 "notes":              b.get("notes",              sig.get("notes","")),
+627:             })
+628:             with open(SIGNAL_PATH, "w", encoding="utf-8") as f:
+629:                 json.dump(sig, f, ensure_ascii=False, indent=2)
+630:             self._j({"ok":True,"date":sig["report_date"],"signal":sig})
+631:         else: self._j({"error":"not found"}, 404)
+632: 
+633: if __name__ == "__main__":
+634:     _persist_load()
+635:     port = int(_e("PORT","5000"))
+636:     srv  = ThreadingHTTPServer(("0.0.0.0",port), Handler)
+637:     print(f"\n{'='*48}\n  Deepcoin Bot v2 -> http://localhost:{port}\n"
+638:           f"  Stop: Ctrl+C\n{'='*48}\n")
+639:     try: srv.serve_forever()
+640:     except KeyboardInterrupt:
+641:         _persist_save()
+642:         print("Stopped")

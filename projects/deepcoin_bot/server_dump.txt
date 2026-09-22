@@ -1,0 +1,642 @@
+"""Deepcoin Bot v2 - 실제 RSI+EMA 시그널 | 거래로그 | 일별수익"""
+import os, json, time, threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from socketserver import ThreadingMixIn
+from urllib.parse import urlparse, parse_qs
+from datetime import datetime, timezone, timedelta
+
+class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
+    daemon_threads = True
+
+# ── 환경변수 ───────────────────────────────────────────────────────
+_env = {}
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(_env_path):
+    with open(_env_path, encoding="utf-8") as f:
+        for ln in f:
+            ln = ln.strip()
+            if ln and not ln.startswith("#") and "=" in ln:
+                k, v = ln.split("=", 1); _env[k.strip()] = v.strip()
+
+def _e(k, d=""): return _env.get(k, os.environ.get(k, d))
+
+SIGNAL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "market_reports", "latest_signal.json")
+def load_signal():
+    if os.path.exists(SIGNAL_PATH):
+        with open(SIGNAL_PATH, encoding="utf-8") as f: return json.load(f)
+    return None
+# ── 딥코인 인증 모듈 ─────────────────────────────────────────────
+import hmac, hashlib, base64
+
+DC_BASE = "https://api.deepcoin.com"
+
+def _dc_auth(method, path, body_str=""):
+    """딥코인 인증 헤더 생성"""
+    ts  = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.") +           f"{datetime.now(timezone.utc).microsecond//1000:03d}Z"
+    raw = ts + method.upper() + path + (body_str or "")
+    sk  = _e("DEEPCOIN_SECRET_KEY", "").encode()
+    sig = base64.b64encode(
+              hmac.new(sk, raw.encode(), hashlib.sha256).digest()
+          ).decode()
+    headers = {
+        "Content-Type":        "application/json",
+        "DC-ACCESS-KEY":       _e("DEEPCOIN_API_KEY", ""),
+        "DC-ACCESS-SIGN":      sig,
+        "DC-ACCESS-TIMESTAMP": ts,
+        "DC-ACCESS-PASSPHRASE": _e("DEEPCOIN_PASSPHRASE", ""),
+    }
+    return headers
+
+def _dc_request(method, path, body=None):
+    """딥코인 인증 요청"""
+    import urllib.request as ur
+    body_str = json.dumps(body) if body else ""
+    headers  = _dc_auth(method, path, body_str)
+    url = DC_BASE + path
+    req = ur.Request(url,
+        data=body_str.encode() if body_str else None,
+        headers=headers, method=method.upper())
+    try:
+        r = ur.urlopen(req, timeout=8)
+        return json.loads(r.read())
+    except ur.HTTPError as e:
+        return {"code": str(e.code), "msg": e.read().decode(), "data": None}
+    except Exception as e:
+        return {"code": "err", "msg": str(e), "data": None}
+
+
+
+LOGS_DIR   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "trade_logs", "daily")
+_BASE      = os.path.dirname(os.path.abspath(__file__))
+_PERSIST   = os.path.join(_BASE, "trade_logs", "persist.json")
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+# ── 전역 상태 ──────────────────────────────────────────────────────
+_grid_st  = {"running":False,"profit":0.0,"trades":0,"price":0}
+_mom_st   = {"running":False,"position":None,"pnl":0.0,"trades":0,
+             "mode":"sim","indicators":{},"can_trade":True,"stop_msg":"",
+             "price":0,"entry":None,"daily":{},"watch_msg":"대기 중"}
+_grid_thr = None
+_mom_thr  = None
+_logs     = []
+_daily    = {}
+
+def _persist_load():
+    global _logs, _daily
+    if os.path.exists(_PERSIST):
+        try:
+            with open(_PERSIST, encoding="utf-8") as f:
+                d = json.load(f)
+            _logs  = d.get("logs",  [])[-500:]
+            _daily = d.get("daily", {})
+            # 봇 상태 복원
+            ms = d.get("mom_state", {})
+            if ms.get("pos"):
+                _mom_st["position"] = ms["pos"]
+                _mom_st["entry"]    = ms.get("entry", 0.0)
+                _mom_st["pnl"]      = ms.get("sess_pnl", 0.0)
+                _mom_st["trades"]   = ms.get("sess_tr", 0)
+                _mom_st["mode"]     = ms.get("mode", "sim")
+                _mom_st["watch_msg"] = f"[재시작 복원] {ms['pos'].upper()} @ ${ms.get('entry',0):,.0f}"
+            print(f"[persist] 로드: 거래 {len(_logs)}건, 일별 {len(_daily)}일"
+                  + (f", 포지션 복원={ms.get('pos')}" if ms.get("pos") else ""))
+        except Exception as e:
+            print(f"[persist] 로드 실패: {e}")
+
+def _persist_save():
+    try:
+        ms = {
+            "pos":      _mom_st.get("position"),
+            "entry":    _mom_st.get("entry") or 0.0,
+            "sess_pnl": _mom_st.get("pnl") or 0.0,
+            "sess_tr":  _mom_st.get("trades") or 0,
+            "mode":     _mom_st.get("mode", "sim"),
+        }
+        with open(_PERSIST, "w", encoding="utf-8") as f:
+            json.dump({"logs": _logs[-500:], "daily": _daily,
+                       "mom_state": ms}, f, ensure_ascii=False)
+    except Exception as e:
+        print(f"[persist] 저장 실패: {e}")
+_cfg = {
+    "size_pct": 10.0,
+    "max_daily_trades": 5,
+    "daily_profit_stop": 10.0,
+    "daily_loss_stop": 3.0,
+    "sl_pct": 1.5,
+    "tp_pct": 2.5,
+    "leverage": 10,
+}
+
+# ── 보조지표 계산 ──────────────────────────────────────────────────
+def _ema(cl, n):
+    if len(cl) < n: return cl[-1] if cl else 0.0
+    k = 2.0/(n+1); e = sum(cl[:n])/n
+    for p in cl[n:]: e = p*k + e*(1-k)
+    return e
+
+def _rsi(cl, n=14):
+    if len(cl) < n+1: return 50.0
+    d = [cl[i]-cl[i-1] for i in range(1,len(cl))]
+    g = sum(max(x,0) for x in d[-n:])/n
+    l = sum(max(-x,0) for x in d[-n:])/n
+    return round(100.0 if l==0 else 100-100/(1+g/l), 2)
+
+# ── 딥코인 klines (30초 캐시) ─────────────────────────────────────
+_kl_cache = {}   # key: (sym,bar,n) -> {"ts": float, "data": [...]}
+_kl_lock  = threading.Lock()
+
+def _klines(sym="BTC-USDT-SWAP", bar="15m", n=80):
+    key = (sym, bar, n)
+    with _kl_lock:
+        c = _kl_cache.get(key)
+        if c and time.time() - c["ts"] < 30:
+            return c["data"]
+    try:
+        import urllib.request
+        b = bar.upper() if bar.endswith("h") else bar
+        url = (f"https://api.deepcoin.com/deepcoin/market/candles"
+               f"?instId={sym}&bar={b}&limit={n}")
+        r = urllib.request.urlopen(
+            urllib.request.Request(url, headers={"Content-Type":"application/json"}),
+            timeout=8)
+        resp = json.loads(r.read())
+        raw  = resp.get("data", resp) if isinstance(resp, dict) else resp
+        kl   = [{"t":int(k[0]),"o":float(k[1]),"h":float(k[2]),
+                 "l":float(k[3]),"c":float(k[4]),"v":float(k[5])} for k in raw]
+        kl.sort(key=lambda x: x["t"])
+        with _kl_lock:
+            _kl_cache[key] = {"ts": time.time(), "data": kl}
+        return kl
+    except:
+        with _kl_lock:
+            return _kl_cache.get(key, {}).get("data", [])
+
+def _ind(kl):
+    if len(kl) < 22: return {}
+    cl = [k["c"] for k in kl]
+    return {"ema9":round(_ema(cl,9),2), "ema21":round(_ema(cl,21),2),
+            "rsi":_rsi(cl,14), "price":cl[-1]}
+
+# ── 시그널 생성 ───────────────────────────────────────────────────
+def _sig(ind, pos):
+    if not ind: return None, "데이터 부족"
+    e9, e21, rsi = ind["ema9"], ind["ema21"], ind["rsi"]
+    if pos is None:
+        # 롱: EMA 상승배열 + RSI 45~65 (과매수 직전까지만)
+        if e9 > e21 and 45 < rsi < 65:
+            return "long",  f"EMA9({e9:.0f})>EMA21({e21:.0f}) RSI={rsi:.1f} 롱진입"
+        # 숏: EMA 하락배열 + RSI 35~55 (과매도 직전까지만)
+        if e9 < e21 and 35 < rsi < 55:
+            return "short", f"EMA9({e9:.0f})<EMA21({e21:.0f}) RSI={rsi:.1f} 숏진입"
+        return None, f"E9={e9:.0f} E21={e21:.0f} RSI={rsi:.1f} 관망"
+    # 롱 청산: EMA 역전 OR RSI 과매수(70) 돌파
+    if pos == "long"  and (e9 < e21 or rsi > 70):
+        return "close", f"EMA역전/과매수 RSI={rsi:.1f} 롱청산"
+    # 숏 청산: EMA 역전 OR RSI 과매도(30) 이탈 (30 아래면 반등 위험)
+    if pos == "short" and (e9 > e21 or rsi < 30):
+        return "close", f"EMA역전/과매도 RSI={rsi:.1f} 숏청산"
+    return None, f"홀딩 RSI={rsi:.1f}"
+
+# ── KST 날짜 / 일별 통계 ──────────────────────────────────────────
+def _kst_day():
+    kst = datetime.now(timezone(timedelta(hours=9)))
+    if kst.hour < 9: kst -= timedelta(days=1)
+    return kst.strftime("%Y-%m-%d")
+
+def _dst(day, mode):
+    return _daily.get(day, {}).get(
+        mode, {"pnl_pct":0.0,"trades":0,"wins":0,"losses":0})
+
+def _can_trade(mode):
+    st = _dst(_kst_day(), mode)
+    if mode == "real" and st["trades"] >= _cfg["max_daily_trades"]:
+        return False, f"일 최대 {_cfg['max_daily_trades']}회 도달"
+    if st["pnl_pct"] >=  _cfg["daily_profit_stop"]:
+        return False, f"일 수익 +{_cfg['daily_profit_stop']:.0f}% 도달"
+    if st["pnl_pct"] <= -_cfg["daily_loss_stop"]:
+        return False, f"일 손실 -{_cfg['daily_loss_stop']:.0f}% 도달"
+    return True, ""
+
+def _rec(mode, action, price, ind, reason, pnl=None):
+    day = _kst_day()
+    ts  = datetime.now(timezone(timedelta(hours=9))).strftime("%m-%d %H:%M")
+    _logs.append({"ts":ts,"day":day,"mode":mode,"action":action,
+        "price":price,"e9":ind.get("ema9"),"e21":ind.get("ema21"),
+        "rsi":ind.get("rsi"),"reason":reason,"pnl":pnl})
+    if len(_logs) > 500: _logs.pop(0)
+    if pnl is not None:
+        _daily.setdefault(day, {}).setdefault(
+            mode, {"pnl_pct":0.0,"trades":0,"wins":0,"losses":0})
+        s = _daily[day][mode]
+        s["pnl_pct"] = round(s["pnl_pct"] + pnl, 4)
+        s["trades"] += 1
+        if pnl > 0: s["wins"]  += 1
+        else:       s["losses"] += 1
+    save_daily_log(day)
+    _persist_save()
+
+
+# ── 일별 .md 로그 저장 ────────────────────────────────────────────
+def _pnl_str(v, d=2):
+    if v is None: return "-"
+    return f"{'+'if v>0 else ''}{v:.{d}f}%"
+
+def _win_rate(w, l):
+    return f"{round(w/(w+l)*100)}%" if (w+l)>0 else "-"
+
+def save_daily_log(day):
+    day_logs = [l for l in _logs if l["day"] == day]
+    ss = _dst(day, "sim"); rs = _dst(day, "real")
+
+    lines = [
+        f"# 거래 일지 — {day} (KST)", "",
+        "## 📊 일별 성과", "",
+        "| 구분 | PnL | 거래 | 승/패 | 승률 |",
+        "|------|-----|------|-------|------|",
+        f"| 시뮬 | {_pnl_str(ss['pnl_pct'])} | {ss['trades']}회 "
+        f"| {ss['wins']}승 {ss['losses']}패 | {_win_rate(ss['wins'],ss['losses'])} |",
+        f"| 실제 | {_pnl_str(rs['pnl_pct'])} | {rs['trades']}회 "
+        f"| {rs['wins']}승 {rs['losses']}패 | {_win_rate(rs['wins'],rs['losses'])} |",
+        "",
+        f"> 일 한도: 수익 +{_cfg['daily_profit_stop']:.0f}% | "
+        f"손실 -{_cfg['daily_loss_stop']:.0f}% | 실제 최대 {_cfg['max_daily_trades']}회",
+        "", "---", "",
+        "## 📋 거래 로그", "",
+        "| 시간 | 모드 | 액션 | 가격 | EMA9 | EMA21 | RSI | 이유 | PnL |",
+        "|------|------|------|------|------|-------|-----|------|-----|",
+    ]
+    for l in day_logs:
+        lines.append(
+            f"| {l['ts']} | {l['mode']} | {l['action']} "
+            f"| ${l['price']:,.0f} "
+            f"| {l['e9'] or '-'} | {l['e21'] or '-'} | {l['rsi'] or '-'} "
+            f"| {l['reason']} | {_pnl_str(l['pnl'])} |"
+        )
+    if not day_logs:
+        lines.append("| - | - | 거래 없음 | - | - | - | - | - | - |")
+
+    # ── 총평 자동 생성 ─────────────────────────────────────────────
+    tot_tr  = ss['trades'] + rs['trades']
+    tot_pnl = round(ss['pnl_pct'] + rs['pnl_pct'], 4)
+    wins    = ss['wins']   + rs['wins']
+    losses  = ss['losses'] + rs['losses']
+    wr      = round(wins/(wins+losses)*100) if (wins+losses)>0 else 0
+
+    lines += ["", "---", "", "## 📝 총평", ""]
+    if tot_tr == 0:
+        lines.append("거래 없음 — 시그널 조건 미충족 또는 봇 미실행.")
+    else:
+        lines.append(f"**총 거래:** {tot_tr}회 | **승률:** {wr}% | **종합 PnL:** {_pnl_str(tot_pnl)}")
+        lines.append("")
+        if day_logs:
+            last = day_logs[-1]
+            rsi = last.get('rsi') or 50
+            rsi_desc = ("과매수 구간 — 청산 압력 주의" if rsi > 70
+                        else "과매도 구간 — 반등 가능성" if rsi < 30
+                        else "중립 구간")
+            e9, e21 = last.get('e9'), last.get('e21')
+            ema_desc = ""
+            if e9 and e21:
+                ema_desc = ("EMA 상승 배열 (골든크로스)" if e9 > e21
+                            else "EMA 하락 배열 (데드크로스)")
+            lines.append(f"**마지막 RSI:** {rsi:.1f} ({rsi_desc})")
+            if ema_desc: lines.append(f"**EMA 배열:** {ema_desc}")
+        lines.append("")
+        if tot_pnl > 1:
+            lines.append("전략 유효. EMA 방향성 + RSI 필터 작동 양호.")
+        elif tot_pnl < -1:
+            lines.append("손실 구간. 변동성 확대 또는 횡보장 가능성 — SL 폭 재검토 권장.")
+        else:
+            lines.append("소폭 변동. 추세 불명확 구간 — 포지션 비중 축소 고려.")
+
+    path = os.path.join(LOGS_DIR, f"{day}_trades.md")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    return path
+
+# ── 그리드 시뮬 ───────────────────────────────────────────────────
+def _run_grid(upper, lower, count, amount, dry_run):
+    import random
+    global _grid_st
+    _grid_st["running"] = True
+    step = (upper-lower)/count; price = (upper+lower)/2
+    profit = 0.0; trades = 0
+    while _grid_st["running"]:
+        price += random.gauss(0, step*0.3)
+        price  = max(lower*0.95, min(upper*1.05, price))
+        for i in range(count):
+            gp = lower + i*step
+            if abs(price-gp) < step*0.1:
+                profit += step/gp*amount*0.998; trades += 1
+        _grid_st.update({"profit":round(profit,4),"trades":trades,"price":round(price,2)})
+        time.sleep(3)
+    _grid_st["running"] = False
+
+# ── 모멘텀 봇 (실제 RSI+EMA, 시뮬/실제 공통) ─────────────────────
+def _run_mom(sl_pct, tp_pct, mode):
+    global _mom_st
+    # 재시작 시 이전 포지션 상태 복원
+    prev_pos   = _mom_st.get("position")
+    prev_entry = _mom_st.get("entry") or 0.0
+    prev_pnl   = _mom_st.get("pnl") or 0.0
+    prev_tr    = _mom_st.get("trades") or 0
+    _mom_st.update({"running":True,"mode":mode,"stop_msg":"",
+                    "position":prev_pos,"entry":prev_entry,
+                    "pnl":prev_pnl,"trades":prev_tr})
+    pos = prev_pos; entry = prev_entry
+    sess_pnl = prev_pnl; sess_tr = prev_tr
+    _last_close = 0.0  # 마지막 청산 시각 (쿨다운용)
+    while _mom_st["running"]:
+        kl    = _klines(n=60)
+        if not kl: time.sleep(15); continue
+        ind   = _ind(kl)
+        price = ind.get("price", 0)
+        ok, stop_msg = _can_trade(mode)
+
+        # 쿨다운: 청산 후 30분(1800초) 대기
+        cooldown_left = max(0, _last_close + 1800 - time.time())
+        if pos is None and cooldown_left > 0:
+            _mom_st["watch_msg"] = f"쿨다운 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초 남음"
+        if pos is None and ok and cooldown_left == 0:
+            sig, reason = _sig(ind, None)
+            _mom_st["watch_msg"] = reason  # 관망 이유 항상 표시
+            if sig in ("long", "short"):
+                pos = sig; entry = price
+                if mode == "real":
+                    side = "buy" if sig == "long" else "sell"
+                    # 레버리지 설정 (long/short 양방향)
+                    lev = str(int(_cfg["leverage"]))
+                    for ps in ("long", "short"):
+                        _dc_request("POST", "/deepcoin/account/set-leverage", {
+                            "instId": "BTC-USDT-SWAP",
+                            "lever": lev,
+                            "mgnMode": "isolated",
+                            "mrgPosition": "split",
+                            "posSide": ps,
+                        })
+                    # TP/SL 가격 계산
+                    if sig == "long":
+                        tp_px = round(price * (1 + tp_pct / 100), 1)
+                        sl_px = round(price * (1 - sl_pct / 100), 1)
+                    else:
+                        tp_px = round(price * (1 - tp_pct / 100), 1)
+                        sl_px = round(price * (1 + sl_pct / 100), 1)
+                    ord_r = _dc_request("POST", "/deepcoin/trade/order", {
+                        "instId":       "BTC-USDT-SWAP",
+                        "tdMode":       "isolated",
+                        "mrgPosition":  "split",
+                        "side":         side,
+                        "posSide":      sig,
+                        "ordType":      "market",
+                        "sz":           str(max(1, int(_cfg["size_pct"]))),
+                        "tpTriggerPx":  str(tp_px),
+                        "tpOrdPx":      "-1",
+                        "slTriggerPx":  str(sl_px),
+                        "slOrdPx":      "-1",
+                    })
+                    if ord_r.get("code") not in ("0", 0):
+                        reason += f" [주문실패:{ord_r.get('msg','')}]"
+                    else:
+                        reason += f" [TP:{tp_px} SL:{sl_px}]"
+                _rec(mode, f"ENTER_{sig.upper()}", price, ind, reason)
+        elif pos:
+            pct = ((price-entry)/entry*100 if pos=="long"
+                   else (entry-price)/entry*100)
+            def _close_order(cur_pos):
+                if mode == "real":
+                    close_side = "sell" if cur_pos == "long" else "buy"
+                    _dc_request("POST", "/deepcoin/trade/order", {
+                        "instId":      "BTC-USDT-SWAP",
+                        "tdMode":      "isolated",
+                        "mrgPosition": "split",
+                        "side":        close_side,
+                        "posSide":     cur_pos,
+                        "ordType":     "market",
+                        "sz":          str(max(1, int(_cfg["size_pct"]))),
+                        "reduceOnly":  True,
+                    })
+            if pct <= -sl_pct:
+                _close_order(pos)
+                _rec(mode,"SL_HIT",price,ind,f"손절 {pct:.2f}%",pnl=round(pct,4))
+                sess_pnl+=pct; sess_tr+=1; pos=None; entry=0.0; _last_close=time.time()
+            elif pct >= tp_pct:
+                _close_order(pos)
+                _rec(mode,f"CLOSE_{pos.upper()}",price,ind,
+                     f"익절 +{pct:.2f}%",pnl=round(pct,4))
+                sess_pnl+=pct; sess_tr+=1; pos=None; entry=0.0; _last_close=time.time()
+            else:
+                csig, creason = _sig(ind, pos)
+                if csig == "close":
+                    _close_order(pos)
+                    _rec(mode,f"CLOSE_{pos.upper()}",price,ind,
+                         creason,pnl=round(pct,4))
+                    sess_pnl+=pct; sess_tr+=1; pos=None; entry=0.0; _last_close=time.time()
+
+        _mom_st.update({"position":pos,"price":round(price,2),
+            "entry":round(entry,2) if pos else None,
+            "pnl":round(sess_pnl,2),"trades":sess_tr,
+            "indicators":ind,"can_trade":ok,"stop_msg":stop_msg,
+            "daily":_dst(_kst_day(), mode)})
+        _persist_save()  # 매 루프마다 상태 저장
+        time.sleep(30)
+    _mom_st["running"] = False
+
+# ── HTTP 핸들러 ───────────────────────────────────────────────────
+class Handler(BaseHTTPRequestHandler):
+    def log_message(self, *a): pass
+    def _j(self, d, st=200):
+        b = json.dumps(d, ensure_ascii=False).encode()
+        self.send_response(st)
+        self.send_header("Content-Type","application/json; charset=utf-8")
+        self.send_header("Content-Length", len(b))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers(); self.wfile.write(b)
+    def _h(self, html):
+        b = html.encode(); self.send_response(200)
+        self.send_header("Content-Type","text/html; charset=utf-8")
+        self.send_header("Content-Length", len(b))
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+        self.send_header("Pragma", "no-cache")
+        self.end_headers(); self.wfile.write(b)
+    def _body(self):
+        n = int(self.headers.get("Content-Length", 0))
+        return json.loads(self.rfile.read(n)) if n else {}
+    def do_OPTIONS(self):
+        self.send_response(200)
+        for h,v in [("Access-Control-Allow-Origin","*"),
+                    ("Access-Control-Allow-Methods","GET,POST,OPTIONS"),
+                    ("Access-Control-Allow-Headers","Content-Type")]:
+            self.send_header(h, v)
+        self.end_headers()
+
+    def do_GET(self):
+        p  = urlparse(self.path).path
+        qs = parse_qs(urlparse(self.path).query)
+        if p in ("/", "/index.html"):
+            idx = os.path.join(os.path.dirname(os.path.abspath(__file__)),"index.html")
+            with open(idx, encoding="utf-8") as f: self._h(f.read())
+        elif p == "/api/status":
+            sig = load_signal(); ak = _e("DEEPCOIN_API_KEY","")
+            self._j({"api_key_set":bool(ak and ak!="your_api_key_here"),
+                "grid_running":_grid_st["running"],
+                "momentum_running":_mom_st["running"],
+                "signal":sig, "time":time.strftime("%Y-%m-%d %H:%M:%S"),
+                "config":_cfg})
+        elif p == "/api/grid/status":     self._j(_grid_st)
+        elif p == "/api/momentum/status": self._j(_mom_st)
+        elif p == "/api/ticker":
+            try:
+                import urllib.request
+                sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+                url = (f"https://api.deepcoin.com/deepcoin/market/tickers"
+                       f"?instId={sym}&instType=SWAP")
+                r = urllib.request.urlopen(
+                    urllib.request.Request(url, headers={"Content-Type":"application/json"}),
+                    timeout=3)
+                resp = json.loads(r.read())
+                d = (resp.get("data") or [{}])[0]
+                last  = float(d.get("last") or 0)
+                open24 = float(d.get("open24h") or last or 1)
+                chg = round((last - open24) / open24 * 100, 2) if open24 else 0
+                self._j({"last": last, "change": chg})
+            except:
+                import random
+                self._j({"last":round(68800+random.gauss(0,100),2),
+                         "change":-2.1,"sim":True})
+
+        elif p == "/api/klines":
+            bar = qs.get("interval",["15m"])[0]
+            lim = int(qs.get("limit",["100"])[0])
+            sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+            kl  = _klines(sym, bar, lim)
+            if not kl:
+                import random; sig = load_signal()
+                bp = float(sig.get("btc_price",68800)) if sig else 68800.0
+                price = bp; kl = []; now = int(time.time()*1000)
+                ims = {"1m":60000,"5m":300000,"15m":900000,
+                       "1h":3600000,"1H":3600000,"4H":14400000}.get(bar,900000)
+                for i in range(lim):
+                    o=price; h=o+abs(random.gauss(0,300)); l=o-abs(random.gauss(0,300))
+                    c=l+random.random()*(h-l); price=c
+                    kl.append({"t":now-(lim-i)*ims,"o":round(o,2),"h":round(h,2),
+                                "l":round(l,2),"c":round(c,2),
+                                "v":round(random.uniform(5,80),2),"sim":True})
+            self._j(kl)
+
+        elif p == "/api/indicators":
+            bar = qs.get("interval",["15m"])[0]
+            kl  = _klines(bar=bar, n=80)
+            if len(kl) < 22:
+                self._j({"ema9":[],"ema21":[],"rsi":[],"ts":[]}); return
+            cl = [k["c"] for k in kl]; ts = [k["t"] for k in kl]
+            e9s=[]; e21s=[]; rs=[]
+            for i in range(21, len(cl)):
+                sub = cl[:i+1]
+                e9s.append(round(_ema(sub,9),2))
+                e21s.append(round(_ema(sub,21),2))
+                rs.append(_rsi(sub,14))
+            self._j({"ema9":e9s,"ema21":e21s,"rsi":rs,"ts":ts[21:]})
+
+        elif p == "/api/logs":
+            n = int(qs.get("n",["60"])[0])
+            self._j(list(reversed(_logs[-n:])))
+        elif p == "/api/daily":  self._j(_daily)
+        elif p == "/api/signal": self._j(load_signal() or {})
+        elif p == "/api/config": self._j(_cfg)
+        elif p == "/api/balance":
+            r = _dc_request("GET", "/deepcoin/account/balances?instType=SWAP")
+            if str(r.get("code")) == "0":
+                assets = {a["ccy"]: {"avail": a.get("availEq") or a.get("availBal","0"),
+                                     "total": a.get("eq") or a.get("bal","0")}
+                          for a in (r.get("data") or []) if a.get("ccy")}
+                self._j({"ok": True, "assets": assets})
+            else:
+                self._j({"ok": False, "code": r.get("code"), "msg": r.get("msg")})
+        elif p == "/api/positions":
+            sym = qs.get("symbol", ["BTC-USDT-SWAP"])[0]
+            r = _dc_request("GET", f"/deepcoin/account/positions?instId={sym}&instType=SWAP")
+            if str(r.get("code")) == "0":
+                self._j({"ok": True, "positions": r.get("data", [])})
+            else:
+                self._j({"ok": False, "code": r.get("code"), "msg": r.get("msg")})
+        elif p == "/api/log-files":
+            files = sorted(os.listdir(LOGS_DIR), reverse=True) if os.path.exists(LOGS_DIR) else []
+            self._j([f for f in files if f.endswith(".md")])
+        elif p.startswith("/api/log/"):
+            fname = os.path.basename(p[9:])  # /api/log/2026-03-10_trades.md
+            fpath = os.path.join(LOGS_DIR, fname)
+            if os.path.exists(fpath):
+                with open(fpath, encoding="utf-8") as f:
+                    self.send_response(200)
+                    b = f.read().encode()
+                    self.send_header("Content-Type","text/plain; charset=utf-8")
+                    self.send_header("Content-Length", len(b))
+                    self.send_header("Access-Control-Allow-Origin","*")
+                    self.end_headers(); self.wfile.write(b)
+            else: self._j({"error":"not found"},404)
+        else: self._j({"error":"not found"}, 404)
+
+    def do_POST(self):
+        global _grid_thr, _mom_thr
+        p = urlparse(self.path).path; b = self._body()
+        if p == "/api/grid/start":
+            if _grid_thr and _grid_thr.is_alive():
+                _grid_st["running"]=False; _grid_thr.join(2)
+            _grid_st.update({"running":False,"profit":0,"trades":0})
+            _grid_thr = threading.Thread(target=_run_grid, daemon=True, kwargs={
+                "upper":float(b.get("upper",72000)),"lower":float(b.get("lower",63000)),
+                "count":int(b.get("count",20)),"amount":float(b.get("amount",10)),
+                "dry_run":b.get("dry_run",True)})
+            _grid_thr.start(); self._j({"ok":True,"msg":"그리드 시작"})
+        elif p == "/api/grid/stop":
+            _grid_st["running"]=False; self._j({"ok":True,"msg":"그리드 중지"})
+        elif p == "/api/momentum/start":
+            if _mom_thr and _mom_thr.is_alive():
+                _mom_st["running"]=False; _mom_thr.join(2)
+            mode = b.get("mode","sim")
+            sl = float(b.get("sl", _cfg["sl_pct"]))
+            tp = float(b.get("tp", _cfg["tp_pct"]))
+            _mom_thr = threading.Thread(target=_run_mom, daemon=True,
+                kwargs={"sl_pct":sl,"tp_pct":tp,"mode":mode})
+            _mom_thr.start(); self._j({"ok":True,"msg":f"모멘텀({mode}) 시작"})
+        elif p == "/api/momentum/stop":
+            _mom_st["running"]=False; self._j({"ok":True,"msg":"모멘텀 중지"})
+        elif p == "/api/config":
+            for k in ("size_pct","max_daily_trades","daily_profit_stop",
+                      "daily_loss_stop","sl_pct","tp_pct","leverage"):
+                if k in b:
+                    _cfg[k] = int(b[k]) if k in ("max_daily_trades","leverage") else float(b[k])
+            self._j({"ok":True,"config":_cfg})
+        elif p == "/api/save-log":
+            day = b.get("day", _kst_day())
+            path = save_daily_log(day)
+            self._j({"ok":True,"day":day,"path":path})
+        elif p == "/api/signal/save":
+            from datetime import date as _date
+            sig = load_signal() or {}
+            sig.update({
+                "report_date":        b.get("report_date", str(_date.today())),
+                "market_condition":   b.get("market_condition", sig.get("market_condition","bearish")),
+                "fear_greed_index":   b.get("fear_greed_index", sig.get("fear_greed_index",10)),
+                "momentum_direction": b.get("momentum_direction", sig.get("momentum_direction","short")),
+                "grid_recommended":   b.get("grid_recommended",  sig.get("grid_recommended",False)),
+                "stop_loss_pct":      b.get("stop_loss_pct",     sig.get("stop_loss_pct",0.015)),
+                "take_profit_pct":    b.get("take_profit_pct",   sig.get("take_profit_pct",0.025)),
+                "notes":              b.get("notes",              sig.get("notes","")),
+            })
+            with open(SIGNAL_PATH, "w", encoding="utf-8") as f:
+                json.dump(sig, f, ensure_ascii=False, indent=2)
+            self._j({"ok":True,"date":sig["report_date"],"signal":sig})
+        else: self._j({"error":"not found"}, 404)
+
+if __name__ == "__main__":
+    _persist_load()
+    port = int(_e("PORT","5000"))
+    srv  = ThreadingHTTPServer(("0.0.0.0",port), Handler)
+    print(f"\n{'='*48}\n  Deepcoin Bot v2 -> http://localhost:{port}\n"
+          f"  Stop: Ctrl+C\n{'='*48}\n")
+    try: srv.serve_forever()
+    except KeyboardInterrupt:
+        _persist_save()
+        print("Stopped")
