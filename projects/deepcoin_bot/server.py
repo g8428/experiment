@@ -9,12 +9,29 @@ class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
 
 try:
-    from smc_engine import get_smc_signal, find_swings, get_kill_zone, get_asian_range
+    from ict_engine import get_ict_signal, get_htf_trend, get_market_regime
+    from smc_engine import find_swings, get_kill_zone, get_asian_range
+    get_smc_signal = get_ict_signal  # ICT가 SMC superset
     _SMC_AVAILABLE = True
 except ImportError:
-    _SMC_AVAILABLE = False
-    def get_kill_zone(*a, **kw): return None
-    def get_asian_range(*a, **kw): return None
+    try:
+        from smc_engine import get_smc_signal, find_swings, get_kill_zone, get_asian_range
+        get_ict_signal = get_smc_signal
+        _SMC_AVAILABLE = True
+    except ImportError:
+        _SMC_AVAILABLE = False
+        def get_kill_zone(*a, **kw): return None
+        def get_asian_range(*a, **kw): return None
+        def get_ict_signal(*a, **kw): return {"signal": None}
+
+import sys as _sys_w
+_sys_w.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "backtest"))
+try:
+    from weights import get_weight as _get_weight
+    _WEIGHTS_AVAILABLE = True
+except ImportError:
+    _WEIGHTS_AVAILABLE = False
+    def _get_weight(key): return 1.0
 
 # ── 환경변수 ───────────────────────────────────────────────────────
 _env = {}
@@ -145,8 +162,9 @@ _cfg = {
 
 # ── Claude 봇 설정 (메인 봇) ────────────────────────────────────
 _claude_cfg = {
-    "leverage":  10,
-    "size_pct":  40,
+    "leverage":  20,
+    "risk_pct":  10.0,  # 트레이드당 잔고 대비 리스크 % (동적 사이징 기준)
+    "size_pct":  40,    # 하위호환/시뮬 폴백용
     "cooldown":  900,   # 청산 후 쿨다운 (초)
 }
 # == 다중전략 / 자동 튜닝 ==
@@ -658,6 +676,7 @@ def _run_claude_bot(mode, gen=0):
         kl    = _klines(n=60)
         if not kl: time.sleep(15); continue
         kl_1h = _klines(bar="1H", n=25)
+        kl_1d = _klines(bar="1D", n=120)
         ind   = _ind(kl)
         price = ind.get("price", 0)
         atr   = ind.get("atr", price * 0.01)
@@ -679,8 +698,8 @@ def _run_claude_bot(mode, gen=0):
                 _claude_st["watch_msg"] = f"{_shared_bot} 봇 {_shared_pos.upper()} 홀딩 중 — 대기"
                 time.sleep(30); continue
 
-            # ── 실시간 SMC (주 시그널) ────────────────────────────
-            smc     = get_smc_signal(kl, swing_n=3, h1_kl=kl_1h) if _SMC_AVAILABLE else {"signal": None}
+            # ── 실시간 ICT/SMC (주 시그널) ───────────────────────
+            smc     = get_ict_signal(kl, h1_kl=kl_1h, d1_kl=kl_1d) if _SMC_AVAILABLE else {"signal": None}
             # 이벤트 로그 업데이트 (최근 이벤트만 추가)
             if _SMC_AVAILABLE:
                 global _smc_event_log
@@ -879,10 +898,17 @@ def _run_claude_bot(mode, gen=0):
                           f"[TP:${tp_px:,.0f} SL:${sl_px:,.0f} RR={_rr_val:.1f}]")
 
                 if mode == "real":
-                    _lev_now = _claude_cfg.get("leverage", 10)
+                    _lev_now  = _claude_cfg.get("leverage", 20)
+                    _risk_pct = _claude_cfg.get("risk_pct", 10.0)
+                    # 동적 사이징: risk_pct % / (SL거리 × 레버리지) → 증거금 비율
+                    _dyn_size = min(80.0, _risk_pct / (_sl_dist * _lev_now)) if _sl_dist > 0 else _claude_cfg.get("size_pct", 40)
+                    # 적응형 가중치 적용 (백테스트 승률 기반)
+                    _wt = _get_weight(_pat_key) if _WEIGHTS_AVAILABLE else 1.0
+                    _dyn_size = min(80.0, _dyn_size * _wt)
                     _set_leverage(_lev_now)
                     side  = "buy" if sig == "long" else "sell"
-                    _sz   = _calc_sz(price, _claude_cfg["size_pct"], _lev_now)
+                    _sz   = _calc_sz(price, _dyn_size, _lev_now)
+                    print(f"[사이징] 리스크{_risk_pct}% SL={_sl_dist*100:.2f}% 레버리지={_lev_now}x 가중치={_wt:.2f} → {_dyn_size:.1f}% 증거금")
                     ord_r = _place_order(side, sig, _sz, tp_px=tp_px, sl_px=sl_px)
                     if ord_r.get("code") not in ("0", 0):
                         reason += f" [주문실패:{ord_r.get('msg','')}]"
@@ -1151,7 +1177,8 @@ class Handler(BaseHTTPRequestHandler):
             kl_1h = _klines(bar="1H", n=25)
             ind   = _ind(kl) if kl else {}
             sd    = load_signal() or {}
-            smc   = get_smc_signal(kl, swing_n=3, h1_kl=kl_1h) if (_SMC_AVAILABLE and kl) else {"signal": None}
+            kl_1d = _klines(bar="1D", n=120)
+            smc   = get_ict_signal(kl, h1_kl=kl_1h, d1_kl=kl_1d) if (_SMC_AVAILABLE and kl) else {"signal": None}
 
             price  = ind.get("price", 0)
             rsi    = ind.get("rsi", 50)
