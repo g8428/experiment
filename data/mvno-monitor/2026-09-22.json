@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-22",
+  "match_found": false,
+  "summary": "조건(월정상가 2만원 이하 + 데이터 40GB↑ 또는 10GB+일2GB추가 + 위약금 짧음 + 테더링/로밍 명시) 100% 충족 요금제 없음",
+  "reference_candidates": [
+    {
+      "carrier_network": "U+망",
+      "provider": "A모바일",
+      "plan_name": "A 갓성비 20GB/100분(기본10GB+추가10GB)",
+      "price_promo": "10원 x 7개월",
+      "price_regular": 19800,
+      "data": "기본10GB+추가10GB (총20GB, 매일충전 아님)",
+      "data_condition_met": false,
+      "penalty": "명시된 장기약정 없음",
+      "tethering": "언급 없음",
+      "roaming": "언급 없음",
+      "link": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020",
+      "source": "clien.net/service/board/jirum/19256696"
+    },
+    {
+      "carrier_network": "KT망",
+      "provider": "프리티",
+      "plan_name": "더든든한500분20G",
+      "price_promo": null,
+      "price_regular": 4400,
+      "price_note": "평생요금제 (클리앙 댓글 정보, 공식페이지 미검증)",
+      "data": "20GB / 통화 500분 / 문자 100건",
+      "data_condition_met": false,
+      "penalty": "정보 없음",
+      "tethering": "언급 없음",
+      "roaming": "언급 없음",
+      "link": "https://www.freet.co.kr/plan/ratePlan/detail?svcCd=FTDP213",
+      "source": "clien.net comment #152304307"
+    }
+  ],
+  "sources_checked": [
+    "clien.net/service/board/jirum/19256696",
+    "moyoplan.com",
+    "web search: 뽐뿌 통신 알뜰폰 특가 2026년 9월"
+  ],
+  "slack_message_link": "https://w1770953060-i3f711804.slack.com/archives/D0AEBCNV92T/p1790035467050139"
+}
