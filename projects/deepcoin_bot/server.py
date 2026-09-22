@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
 """Deepcoin Bot v4 - Claude SMC 메인봇 | 거래로그 | 일별수익"""
-import os, json, time, threading
+import os, json, time, threading, sys
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 from urllib.parse import urlparse, parse_qs
@@ -616,6 +621,21 @@ def _close_order(pos_side, mode, sz):
         "reduceOnly": True,
     })
 
+def _d1_regime_blocks(sig, kl_1d):
+    """D1 레짐이 시그널 방향을 막는지 확인. True면 스킵."""
+    if not kl_1d or not _SMC_AVAILABLE:
+        return False
+    try:
+        regime = get_market_regime(kl_1d)
+        if sig == "short" and regime == "bull":
+            return True
+        if sig == "long" and regime == "bear":
+            return True
+    except Exception:
+        pass
+    return False
+
+
 # ── Claude 메인 봇 ────────────────────────────────────────────────
 def _run_claude_bot(mode, gen=0):
     """
@@ -677,6 +697,7 @@ def _run_claude_bot(mode, gen=0):
         if not kl: time.sleep(15); continue
         kl_1h = _klines(bar="1H", n=25)
         kl_1d = _klines(bar="1D", n=120)
+        kl_5m = _klines(bar="5m", n=20)
         ind   = _ind(kl)
         price = ind.get("price", 0)
         atr   = ind.get("atr", price * 0.01)
@@ -796,9 +817,29 @@ def _run_claude_bot(mode, gen=0):
                 _claude_st["watch_msg"] = f"15m EMA역배열 롱 스킵 (EMA9={ema9:.0f}<EMA21={ema21:.0f}) | {smc_info}"
             elif s_sig == "short" and ema9 > ema21:
                 _claude_st["watch_msg"] = f"15m EMA정배열 숏 스킵 (EMA9={ema9:.0f}>EMA21={ema21:.0f}) | {smc_info}"
+            elif s_sig and _d1_regime_blocks(s_sig, kl_1d):
+                _regime_now = get_market_regime(kl_1d) if (kl_1d and _SMC_AVAILABLE) else "ranging"
+                _claude_st["watch_msg"] = f"D1레짐({_regime_now}) 역방향 스킵 [{s_sig}] | {smc_info}"
             elif cooldown_left > 0:
                 _claude_st["watch_msg"] = f"쿨다운 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초 | {smc_info}"
             else:
+                # ── 5m 진입 타이밍 확인 ───────────────────────────
+                _5m_ok = True
+                if kl_5m and len(kl_5m) >= 10:
+                    _5m_cl   = [k["c"] for k in kl_5m]
+                    _5m_e9   = _ema(_5m_cl, 9)
+                    _5m_e21  = _ema(_5m_cl, 21)
+                    _5m_bull = kl_5m[-1]["c"] > kl_5m[-1]["o"] and _5m_e9 > _5m_e21
+                    _5m_bear = kl_5m[-1]["c"] < kl_5m[-1]["o"] and _5m_e9 < _5m_e21
+                    if s_sig == "long"  and not _5m_bull:
+                        _claude_st["watch_msg"] = f"5m 롱 미확인 (5mEMA9={_5m_e9:.0f} EMA21={_5m_e21:.0f}) | {smc_info}"
+                        _5m_ok = False
+                    elif s_sig == "short" and not _5m_bear:
+                        _claude_st["watch_msg"] = f"5m 숏 미확인 (5mEMA9={_5m_e9:.0f} EMA21={_5m_e21:.0f}) | {smc_info}"
+                        _5m_ok = False
+                if not _5m_ok:
+                    time.sleep(30); continue
+
                 # ── 진입 실행 ────────────────────────────────────
                 sig = s_sig  # SMC가 방향 결정
                 _TP_CAP  = 0.100; _SL_CAP  = 0.015
