@@ -1,0 +1,77 @@
+{
+  "keyword_cn": "迷你洗衣机 内衣",
+  "keyword_kr": "미니 속옷세탁기",
+  "result_count": 15,
+  "price_range_cny": {
+    "min": null,
+    "max": null
+  },
+  "price_range_krw": {
+    "min": null,
+    "max": null
+  },
+  "moq_samples": [],
+  "lead_time_samples": [],
+  "top_results": [
+    {
+      "title": "How to use Remote Desktop | Microsoft Support",
+      "url": "https://support.microsoft.com/en-us/windows/experience/connectivity-networking/how-to-use-remote-desktop",
+      "body": "Windows 11 Windows 10 Summary Use Remote Desktop on your Windows, Android, or iOS device to connect to a Windows PC from …",
+      "price": {
+        "min": null,
+        "max": null,
+        "unit": "CNY"
+      },
+      "moq": null,
+      "lead_time": null
+    },
+    {
+      "title": "リモート デスクトップの使い方 | Microsoft Support",
+      "url": "https://support.microsoft.com/ja-jp/windows/experience/connectivity-networking/how-to-use-remote-desktop",
+      "body": "Windows 11 Windows 10 概要 Windows、Android、または iOS デバイスでリモート デスクトップを使用して、遠くから Windows PC に接 …",
+      "price": {
+        "min": null,
+        "max": null,
+        "unit": "CNY"
+      },
+      "moq": null,
+      "lead_time": null
+    },
+    {
+      "title": "Use your Windows device as a mobile hotspot | Microsoft Support",
+      "url": "https://support.microsoft.com/en-us/windows/experience/connectivity-networking/use-your-windows-device-as-a-mobile-hotspot",
+      "body": "To allow your Windows PC to turn on your mobile hotspot, both devices must have Bluetooth and be paired. To connect on the other …",
+      "price": {
+        "min": null,
+        "max": null,
+        "unit": "CNY"
+      },
+      "moq": null,
+      "lead_time": null
+    },
+    {
+      "title": "Cómo usar Escritorio remoto | Microsoft Support",
+      "url": "https://support.microsoft.com/es-es/windows/experience/connectivity-networking/how-to-use-remote-desktop",
+      "body": "Windows 11 Windows 10 Resumen Usa Escritorio remoto en tu dispositivo Windows, Android o iOS para conectarte a un PC Windows a …",
+      "price": {
+        "min": null,
+        "max": null,
+        "unit": "CNY"
+      },
+      "moq": null,
+      "lead_time": null
+    },
+    {
+      "title": "Connect to a VPN in Windows | Microsoft Support",
+      "url": "https://support.microsoft.com/en-us/windows/experience/connectivity-networking/connect-to-a-vpn-in-windows",
+      "body": "Windows 11 Windows 10 Summary This article explains how to create and connect to a VPN in Windows 11 to help secure your internet …",
+      "price": {
+        "min": null,
+        "max": null,
+        "unit": "CNY"
+      },
+      "moq": null,
+      "lead_time": null
+    }
+  ]
+}
