@@ -13,6 +13,12 @@ CLAUDE.md 가이드:
     pending_updates 중 MIN_TRADES 이상인 패턴을 STRATEGY.md에 반영한다.
 """
 
+import sys
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 import json
 import os
 import re
