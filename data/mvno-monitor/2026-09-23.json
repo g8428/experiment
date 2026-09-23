@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-23",
+  "result": "no_match",
+  "summary": "조건 충족 요금제 없음. 40GB 이상 또는 10GB+일2GB 요금제는 모두 정상가 2만원 초과.",
+  "near_candidates": [
+    {"carrier": "A모바일 (U+망)", "plan": "A 갓성비 20GB/100분", "promo": "10원 x 7개월", "regular": 19800, "data": "10GB+추가10GB", "penalty": "언급 없음", "tethering": "미기재", "roaming": "미기재", "missing": ["데이터 기준 미달"], "url": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"},
+    {"carrier": "이야기모바일", "plan": "평생 11GB+매일2GB+3Mbps 통화/문자 무제한", "promo": "평생", "regular": 26400, "data": "11GB+일2GB+3Mbps", "penalty": "미확인", "tethering": "미기재", "roaming": "미기재", "missing": ["요금 2만원 초과"], "url": "https://www.fmkorea.com/8949001082"}
+  ],
+  "sources": ["https://www.clien.net/service/board/jirum/19256696", "https://www.fmkorea.com/8949001082", "https://m.ppomppu.co.kr/new/bbs_view.php?id=phone&no=3809125"]
+}
