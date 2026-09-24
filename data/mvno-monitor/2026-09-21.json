@@ -1,0 +1,34 @@
+{
+  "date": "2026-09-21",
+  "sources": [
+    "https://www.clien.net/service/board/jirum/19256696",
+    "https://www.moyoplan.com/plans/curation/youtube"
+  ],
+  "filter": {
+    "max_price_krw": 20000,
+    "data": "10GB+daily2GB or 40GB+",
+    "penalty_days_max": 120,
+    "tethering_roaming": "must be explicitly stated"
+  },
+  "fully_matching": [],
+  "reference_candidates": [
+    {
+      "carrier": "A모바일 (LG U+망)",
+      "plan": "A 갓성비 20GB/100분",
+      "price_promo": "10원 x 7개월",
+      "price_regular_krw": 19800,
+      "data": "기본10GB+추가10GB(LTE)",
+      "missing": ["데이터 조건 미충족(일2GB추가 방식 아님, 40GB 미만)", "테더링/로밍 미언급"],
+      "url": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"
+    },
+    {
+      "carrier": "프리티 (KT망)",
+      "plan": "더든든한500분20G (평생요금제)",
+      "price_regular_krw": 4400,
+      "data": "20GB",
+      "missing": ["데이터 조건 미충족(40GB 미만, 일2GB추가 아님)", "테더링/로밍 공식 명시 없음", "프로모션 9/4 마감 가능성"],
+      "url": "https://www.freet.co.kr/plan/ratePlan/detail?svcCd=FTDP213"
+    }
+  ],
+  "slack_message_link": "https://w1770953060-i3f711804.slack.com/archives/D0AEBCNV92T/p1789991364426829"
+}

@@ -6,7 +6,7 @@ engine.py — 백테스팅 엔진
 
 def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
                  initial_balance=1000.0, risk_pct=1.0, leverage=10,
-                 use_weights=True, sym=""):
+                 use_weights=True, sym="", tp_min_pct=0.0, rr_min=1.5):
     """
     백테스팅 엔진
     - 각 캔들 시점에서 strategy.signal() 호출
@@ -112,6 +112,14 @@ def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
 
             sig = strategy.signal(kl_window, h1_kl=h1_win, d1_kl=d1_win, m5_kl=m5_win)
             if sig:
+                # TP 최소 거리 필터
+                _tp_dist = (sig.tp1 - price) / price if sig.direction == "long" else (price - sig.tp1) / price
+                if tp_min_pct > 0 and _tp_dist < tp_min_pct / 100:
+                    continue
+                # RR 최소 필터 재검증
+                _sl_dist = abs(price - sig.sl) / price
+                if _sl_dist > 0 and _tp_dist / _sl_dist < rr_min:
+                    continue
                 sl_dist_pct = abs(price - sig.sl) / price
                 # SL 거리 최소 0.3% 보장 (degenerate sizing 방지)
                 sl_dist_pct = max(sl_dist_pct, 0.003)

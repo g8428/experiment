@@ -1,0 +1,34 @@
+{
+  "date": "2026-07-28",
+  "criteria": {
+    "monthly_price_normal_max": 20000,
+    "data": "10GB + daily 2GB top-up OR 40GB+",
+    "penalty_days_max": 120,
+    "tethering_required": true,
+    "roaming_required": true
+  },
+  "result": "no_full_match",
+  "sources": [
+    "https://www.clien.net/service/board/jirum/19219367"
+  ],
+  "candidates_reference_only": [
+    {
+      "carrier": "A모바일 (U+망)",
+      "plan": "A 갓성비 20GB/100분",
+      "promo_price": "110원 x 12개월",
+      "normal_price": 19800,
+      "data": "10GB + 익월부터 매월 추가 10GB (총 20GB)",
+      "missing_criteria": ["데이터 조건 미충족 (일 2GB 자동충전 아님, 40GB 미만)", "테더링/로밍 언급 없음"],
+      "link": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"
+    },
+    {
+      "carrier": "티플러스 (U+망)",
+      "plan": "5G 티플 가성비 15GB/300분",
+      "promo_price": "10원 x 6개월",
+      "normal_price": 24200,
+      "data": "15GB",
+      "missing_criteria": ["정상가 2만원 초과", "데이터 15GB로 조건 미달", "테더링/로밍 언급 없음"],
+      "link": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000005452&mvnopPtnId=PC0000000026"
+    }
+  ]
+}

@@ -56,3 +56,5 @@ logs/
 *.pem
 credentials.*
 .mcp.json
+
+**/.claude/worktrees/

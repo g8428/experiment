@@ -1,22 +1,22 @@
 """
 data_fetcher.py — Deepcoin API 과거 캔들 데이터 수집 + 파일 캐시
-캐시 경로: backtest/cache/{sym}_{bar}_{date}.json
+캐시 경로: backtest/cache/{sym}_{bar}_{days}d.json
+날짜와 무관하게 캐시를 재사용한다 — 최신 데이터가 필요하면 fetch_historical(refresh=True) 또는 run.py --refresh
 """
 
 import json
 import os
 import time
 import urllib.request
-from datetime import datetime, timezone
 
 CACHE_DIR = os.path.join(os.path.dirname(__file__), "cache")
 API_BASE  = "https://api.deepcoin.com/deepcoin/market/candles"
 
 
-def _cache_path(sym, bar, date_str):
+def _cache_path(sym, bar, cache_key):
     os.makedirs(CACHE_DIR, exist_ok=True)
     safe_sym = sym.replace("/", "-")
-    return os.path.join(CACHE_DIR, f"{safe_sym}_{bar}_{date_str}.json")
+    return os.path.join(CACHE_DIR, f"{safe_sym}_{bar}_{cache_key}.json")
 
 
 def _fetch_page(sym, bar, after_ms=None, limit=300):
@@ -61,13 +61,12 @@ def fetch_range(sym, bar, start_ms, end_ms):
     return all_kl
 
 
-def fetch_historical(sym="BTC-USDT-SWAP", bar="15m", days=30):
-    """최근 days일치 캔들 데이터 반환. 캐시 있으면 재사용."""
-    date_str  = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    cache_key = f"{days}d"
-    path      = _cache_path(sym, bar, f"{cache_key}_{date_str}")
+def fetch_historical(sym="BTC-USDT-SWAP", bar="15m", days=30, refresh=False):
+    """최근 days일치 캔들 데이터 반환.
+    캐시는 날짜와 무관하게 재사용 — 명시적으로 refresh=True(--refresh)를 줄 때만 다시 수집한다."""
+    path = _cache_path(sym, bar, f"{days}d")
 
-    if os.path.exists(path):
+    if os.path.exists(path) and not refresh:
         with open(path, "r") as f:
             return json.load(f)
 

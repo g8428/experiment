@@ -1,6 +1,7 @@
 ---
 name: researcher
 description: 시장조사, 경쟁사 분석, 기술 트렌드 조사를 수행하고 결과를 반드시 마크다운 파일로 남기는 리서치 서브에이전트 (사원1 역할). project-lead가 조사가 필요할 때 위임한다.
+model: sonnet
 tools: Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 ---
 

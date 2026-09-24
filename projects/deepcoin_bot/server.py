@@ -14,20 +14,46 @@ class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
 
 try:
-    from ict_engine import get_ict_signal, get_htf_trend, get_market_regime
+    from ict_engine import (get_ict_signal, get_htf_trend, get_market_regime,
+                             get_ote_signal, get_mtf_signal, get_killzone_signal,
+                             get_breaker_signal)
     from smc_engine import find_swings, get_kill_zone, get_asian_range
     get_smc_signal = get_ict_signal  # ICT가 SMC superset
     _SMC_AVAILABLE = True
 except ImportError:
-    try:
-        from smc_engine import get_smc_signal, find_swings, get_kill_zone, get_asian_range
-        get_ict_signal = get_smc_signal
-        _SMC_AVAILABLE = True
-    except ImportError:
-        _SMC_AVAILABLE = False
-        def get_kill_zone(*a, **kw): return None
-        def get_asian_range(*a, **kw): return None
-        def get_ict_signal(*a, **kw): return {"signal": None}
+    _SMC_AVAILABLE = False
+    def get_kill_zone(*a, **kw): return None
+    def get_asian_range(*a, **kw): return None
+    def get_ict_signal(*a, **kw): return {"signal": None}
+    def get_ote_signal(*a, **kw): return {"signal": None}
+    def get_mtf_signal(*a, **kw): return {"signal": None}
+    def get_killzone_signal(*a, **kw): return {"signal": None}
+    def get_breaker_signal(*a, **kw): return {"signal": None}
+
+# 라이브 멀티전략 우선순위 (2026-09-23 6개월 BTC 백테스트 성과순):
+# OTE(+164.75%) → MTF(+20.60%) → 킬존NY전용(+25.16%) → Breaker(-26.53%, 최후)
+_SIGNAL_CHAIN = [
+    ("OTE", lambda kl, h1, d1, m5: get_ote_signal(kl, h1_kl=h1, d1_kl=d1)),
+    ("MTF", lambda kl, h1, d1, m5: get_mtf_signal(kl, h1_kl=h1, d1_kl=d1, m5_kl=m5)),
+    ("KZ-NY", lambda kl, h1, d1, m5: get_killzone_signal(kl, h1_kl=h1, d1_kl=d1)),
+    ("BRK", lambda kl, h1, d1, m5: get_breaker_signal(kl, h1_kl=h1, d1_kl=d1)),
+]
+
+def _multi_strategy_signal(kl, h1_kl, d1_kl, m5_kl):
+    """우선순위 체인을 순서대로 시도해 가장 먼저 나오는 시그널을 채택.
+    반환: (smc_dict, 시그널 낸 전략명 또는 None)
+    아무 것도 안 나오면 MTF 결과(OB/FVG 진단 정보 보유)를 모니터링용으로 반환
+    — Breaker/OTE는 진단 필드가 항상 0이라 그걸 보여주면 "얼마나 가까운지" 알 수 없음"""
+    if not _SMC_AVAILABLE:
+        return {"signal": None}, None
+    diag = None
+    for name, fn in _SIGNAL_CHAIN:
+        smc = fn(kl, h1_kl, d1_kl, m5_kl)
+        if name == "MTF":
+            diag = smc
+        if smc.get("signal"):
+            return smc, name
+    return (diag if diag is not None else smc), None
 
 import sys as _sys_w
 _sys_w.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "backtest"))
@@ -49,13 +75,6 @@ if os.path.exists(_env_path):
                 k, v = ln.split("=", 1); _env[k.strip()] = v.strip()
 
 def _e(k, d=""): return _env.get(k, os.environ.get(k, d))
-
-SIGNAL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           "market_reports", "latest_signal.json")
-def load_signal():
-    if os.path.exists(SIGNAL_PATH):
-        with open(SIGNAL_PATH, encoding="utf-8") as f: return json.load(f)
-    return None
 
 # ── 딥코인 인증 모듈 ─────────────────────────────────────────────
 import hmac, hashlib, base64
@@ -107,6 +126,13 @@ _CONTRACT_SZ = {
     "XRP-USDT-SWAP": 1.0,     # 1계약 = 1 XRP
 }
 _ACTIVE_SYMS = ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "XRP-USDT-SWAP"]
+# 심볼별 가격 소수 자릿수 (TP/SL 주문가 반올림 + 표시)
+_PX_DEC = {"BTC-USDT-SWAP": 1, "ETH-USDT-SWAP": 2, "XRP-USDT-SWAP": 4}
+
+def _px_round(px, sym): return round(px, _PX_DEC.get(sym, 1))
+def _px_fmt(px, sym):
+    if px is None: return "-"
+    return f"{px:,.{_PX_DEC.get(sym, 1)}f}"
 
 def _default_st():
     return {
@@ -122,12 +148,9 @@ _bots_st  = {sym: _default_st() for sym in _ACTIVE_SYMS}
 _bots_thr = {sym: None for sym in _ACTIVE_SYMS}
 _bots_gen = {sym: 0    for sym in _ACTIVE_SYMS}
 
-_claude_st  = _bots_st["BTC-USDT-SWAP"]   # 하위호환 alias
-_claude_thr = None
-_bot_gen    = 0
 _logs  = []
 _daily = {}
-_smc_event_log = []   # SMC 이벤트 로그 (최근 100건)
+_smc_event_log = {sym: [] for sym in _ACTIVE_SYMS}   # 심볼별 SMC 이벤트 로그 (최근 100건)
 _pattern_stats = {}   # 패턴별 승률 통계 {pattern_key: {trades, wins, total_pnl}}
 
 def _persist_load():
@@ -139,81 +162,86 @@ def _persist_load():
             _logs          = d.get("logs",          [])[-500:]
             _daily         = d.get("daily",         {})
             _pattern_stats = d.get("pattern_stats", {})
-            # Claude 봇 상태 복원
-            cb = d.get("claude_state", {})
-            if cb.get("pos"):
-                _claude_st["position"] = cb["pos"]
-                _claude_st["entry"]    = cb.get("entry", 0.0)
-                _claude_st["pnl"]      = cb.get("sess_pnl", 0.0)
-                _claude_st["trades"]   = cb.get("sess_tr", 0)
-                _claude_st["mode"]     = cb.get("mode", "sim")
-                _claude_st["tp_px"]    = cb.get("tp_px")
-                _claude_st["sl_px"]    = cb.get("sl_px")
-                _claude_st["watch_msg"] = f"[재시작 복원] {cb['pos'].upper()} @ ${cb.get('entry',0):,.0f}"
+            for sym, cb in (d.get("bot_states") or {}).items():
+                st = _bots_st.get(sym)
+                if not st or not cb.get("pos"): continue
+                st.update({
+                    "position": cb["pos"], "entry": cb.get("entry", 0.0),
+                    "pnl": cb.get("sess_pnl", 0.0), "trades": cb.get("sess_tr", 0),
+                    "mode": cb.get("mode", "sim"),
+                    "tp_px": cb.get("tp_px"), "sl_px": cb.get("sl_px"),
+                    "watch_msg": f"[재시작 복원] {cb['pos'].upper()} @ ${_px_fmt(cb.get('entry',0), sym)}",
+                })
             print(f"[persist] 로드: 거래 {len(_logs)}건, 일별 {len(_daily)}일")
         except Exception as e:
             print(f"[persist] 로드 실패: {e}")
 
 def _persist_save():
     try:
-        cb = {
-            "pos":      _claude_st.get("position"),
-            "entry":    _claude_st.get("entry") or 0.0,
-            "sess_pnl": _claude_st.get("pnl") or 0.0,
-            "sess_tr":  _claude_st.get("trades") or 0,
-            "mode":     _claude_st.get("mode", "sim"),
-            "tp_px":    _claude_st.get("tp_px"),
-            "sl_px":    _claude_st.get("sl_px"),
+        bot_states = {
+            sym: {
+                "pos":      st.get("position"),
+                "entry":    st.get("entry") or 0.0,
+                "sess_pnl": st.get("pnl") or 0.0,
+                "sess_tr":  st.get("trades") or 0,
+                "mode":     st.get("mode", "sim"),
+                "tp_px":    st.get("tp_px"),
+                "sl_px":    st.get("sl_px"),
+            } for sym, st in _bots_st.items()
         }
         with open(_PERSIST, "w", encoding="utf-8") as f:
             json.dump({"logs": _logs[-500:], "daily": _daily,
-                       "claude_state": cb,
+                       "bot_states": bot_states,
                        "pattern_stats": _pattern_stats}, f, ensure_ascii=False)
     except Exception as e:
         print(f"[persist] 저장 실패: {e}")
 
 
-# ── 공통 한도 설정 ────────────────────────────────────────────────
+# ── 공통 한도 설정 (계좌 전체 기준, 3심볼 합산) ─────────────────────
 _cfg = {
-    "max_daily_trades":  7,      # 실제 일 최대 거래
-    "daily_profit_stop": 10.0,   # 일 수익 한도(%)
-    "daily_loss_stop":   3.0,    # 일 손실 한도(%)
+    "max_daily_trades":  7,
+    "daily_profit_stop": 10.0,
+    "daily_loss_stop":   25.0,   # risk_pct 10%/트레이드 기준 손실 2회까지 허용
+    "max_daily_losses":  3,
 }
 
 # ── Claude 봇 설정 (메인 봇) ────────────────────────────────────
 _claude_cfg = {
-    "leverage":  20,
-    "risk_pct":  10.0,  # 트레이드당 잔고 대비 리스크 % (동적 사이징 기준)
-    "size_pct":  40,    # 하위호환/시뮬 폴백용
-    "cooldown":  900,   # 청산 후 쿨다운 (초)
+    "leverage":               20,
+    "risk_pct":               10.0,
+    "size_pct":               40,
+    "cooldown":               900,
+    "rr_min":                 2.5,
+    "sl_cap_pct":             2.0,
+    "tp_max_pct":             15.0,
+    "tp_min_margin_pct":      0,
+    "tp_min_margin_by_sym":   {},
 }
-# == 다중전략 / 자동 튜닝 ==
-try:
-    from strategies import get_best_signal, ema200_filter
-    _STRATEGIES_AVAILABLE = True
-except ImportError:
-    _STRATEGIES_AVAILABLE = False
-    def get_best_signal(*a, **kw): return None
-    def ema200_filter(*a, **kw):   return "neutral"
 
-import threading as _thr_mod2
+# ── tuning.json 자동 반영 ─────────────────────────────────────────
+import threading as _thr_mod
 
 _TUNING_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tuning.json")
 _tuning_mtime = 0.0
+_active_syms_cfg = list(_ACTIVE_SYMS)   # tuning.json active_symbols (기본: 전체)
 
 def _load_tuning():
-    global _cfg, _claude_cfg, _tuning_mtime
+    """tuning.json 읽어서 _cfg / _claude_cfg 업데이트"""
+    global _cfg, _claude_cfg, _tuning_mtime, _active_syms_cfg
     try:
         mtime = os.path.getmtime(_TUNING_PATH)
         if mtime <= _tuning_mtime:
             return
         with open(_TUNING_PATH, encoding="utf-8") as f:
             t = json.load(f)
-        for k in ("max_daily_trades", "daily_profit_stop", "daily_loss_stop"):
+        for k in ("max_daily_trades", "daily_profit_stop", "daily_loss_stop", "max_daily_losses"):
             if k in t: _cfg[k] = t[k]
-        for k in ("leverage", "size_pct", "cooldown"):
+        for k in ("leverage", "risk_pct", "size_pct", "cooldown",
+                  "rr_min", "sl_cap_pct", "tp_max_pct",
+                  "tp_min_margin_pct", "tp_min_margin_by_sym"):
             if k in t: _claude_cfg[k] = t[k]
-        if "max_daily_losses" in t: _cfg["max_daily_losses"] = t["max_daily_losses"]
+        if isinstance(t.get("active_symbols"), list):
+            _active_syms_cfg = [s for s in t["active_symbols"] if s in _ACTIVE_SYMS]
         _tuning_mtime = mtime
         print(f"[tuning] v{t.get('version',0)} 반영 ({t.get('last_tuned','')})")
     except FileNotFoundError:
@@ -223,56 +251,6 @@ def _load_tuning():
 
 _load_tuning()
 
-def _tuning_watcher():
-    import time as _tt
-    while True:
-        try: _load_tuning()
-        except Exception: pass
-        _tt.sleep(60)
-
-_thr_mod2.Thread(target=_tuning_watcher, daemon=True).start()
-# == end 다중전략 / 자동 튜닝 ==
-
-# ── 다중전략 / 자동 튜닝 ──────────────────────────────────────────
-try:
-    from strategies import get_best_signal, ema200_filter
-    _STRATEGIES_AVAILABLE = True
-except ImportError:
-    _STRATEGIES_AVAILABLE = False
-    def get_best_signal(*a, **kw): return None
-    def ema200_filter(*a, **kw):   return "neutral"
-
-import threading as _thr_mod
-
-_TUNING_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tuning.json")
-_tuning_mtime = 0.0
-
-def _load_tuning():
-    """tuning.json 읽어서 _cfg / _claude_cfg 업데이트"""
-    global _cfg, _claude_cfg, _tuning_mtime
-    try:
-        mtime = os.path.getmtime(_TUNING_PATH)
-        if mtime <= _tuning_mtime:
-            return  # 변경 없음
-        with open(_TUNING_PATH, encoding="utf-8") as f:
-            t = json.load(f)
-        # _cfg 업데이트
-        for k in ("max_daily_trades", "daily_profit_stop", "daily_loss_stop"):
-            if k in t: _cfg[k] = t[k]
-        # _claude_cfg 업데이트
-        for k in ("leverage", "size_pct", "cooldown"):
-            if k in t: _claude_cfg[k] = t[k]
-        _tuning_mtime = mtime
-        print(f"[tuning] v{t.get('version',0)} 반영 ({t.get('last_tuned','')})")
-    except FileNotFoundError:
-        pass  # tuning.json 없으면 무시
-    except Exception as e:
-        print(f"[tuning] 로드 오류: {e}")
-
-# 기동 시 즉시 로드
-_load_tuning()
-
-# tuning.json 변경 감시 스레드 (60초마다)
 def _tuning_watcher():
     while True:
         try: _load_tuning()
@@ -336,20 +314,21 @@ def _ind(kl):
     # ATR(14)
     tr_list = [max(hi[i]-lo[i], abs(hi[i]-cl[i-1]), abs(lo[i]-cl[i-1]))
                for i in range(1, len(kl))]
-    atr = round(sum(tr_list[-14:])/14, 2)
+    # XRP처럼 가격이 작은 심볼은 소수 2자리 반올림 시 EMA9==EMA21이 되어 필터가 무력화됨 → 6자리
+    atr = round(sum(tr_list[-14:])/14, 6)
     # Bollinger Bands(20, 2.0)
     bb20 = cl[-20:]
     bm   = sum(bb20)/20
     bstd = (sum((x-bm)**2 for x in bb20)/20)**0.5
     return {
-        "ema9":     round(_ema(cl,9), 2),
-        "ema21":    round(_ema(cl,21), 2),
+        "ema9":     round(_ema(cl,9), 6),
+        "ema21":    round(_ema(cl,21), 6),
         "rsi":      _rsi(cl,14),
         "price":    cl[-1],
         "atr":      atr,
-        "bb_upper": round(bm + 2.0*bstd, 2),
-        "bb_lower": round(bm - 2.0*bstd, 2),
-        "bb_mid":   round(bm, 2),
+        "bb_upper": round(bm + 2.0*bstd, 6),
+        "bb_lower": round(bm - 2.0*bstd, 6),
+        "bb_mid":   round(bm, 6),
     }
 
 # ── FVG (Fair Value Gap) 탐지 + filled 추적 ───────────────────────────────
@@ -388,13 +367,6 @@ def _update_fvg_filled(fvgs, current_price):
     return fvgs
 
 
-def _any_open_pos(sym="BTC-USDT-SWAP"):
-    """클로드 봇 오픈 포지션 확인 (심볼별)"""
-    st = _bots_st.get(sym, _bots_st["BTC-USDT-SWAP"])
-    if st.get("position"): return st["position"], "Claude"
-    return None, None
-
-
 # ── KST 날짜 / 일별 통계 ──────────────────────────────────────────
 def _kst_day():
     kst = datetime.now(timezone(timedelta(hours=9)))
@@ -421,11 +393,12 @@ def _can_trade(mode):
         return False, f"당일 손절 {st['losses']}회 — 서킷브레이커 작동"
     return True, ""
 
-def _rec(mode, action, price, ind, reason, pnl=None, tp_px=None, sl_px=None, signal_src=None, smc_ctx=None):
+def _rec(mode, action, price, ind, reason, pnl=None, tp_px=None, sl_px=None,
+         signal_src=None, smc_ctx=None, sym="BTC-USDT-SWAP", size_pct=None):
     global _pattern_stats
     day = _kst_day()
     ts  = datetime.now(timezone(timedelta(hours=9))).strftime("%m-%d %H:%M")
-    _logs.append({"ts":ts,"day":day,"mode":mode,"action":action,
+    _logs.append({"ts":ts,"day":day,"mode":mode,"sym":sym,"action":action,
         "price":price,"e9":ind.get("ema9"),"e21":ind.get("ema21"),
         "rsi":ind.get("rsi"),"atr":ind.get("atr"),"reason":reason,"pnl":pnl,
         "tp_px":tp_px,"sl_px":sl_px,"signal_src":signal_src,
@@ -435,9 +408,8 @@ def _rec(mode, action, price, ind, reason, pnl=None, tp_px=None, sl_px=None, sig
         _daily.setdefault(day, {}).setdefault(
             mode, {"pnl_pct":0.0,"trades":0,"wins":0,"losses":0})
         s = _daily[day][mode]
-        # 자본 기준 P&L: 레버리지 수익률 × 포지션 사이즈 비율
-        # 예) lev_pct=-3.96%, size_pct=1 → 실제 자본 손실=-0.0396%
-        size_pct = _claude_cfg.get("size_pct", 1)
+        # 자본 기준 P&L = 증거금 수익률(pnl) × 실제 투입 증거금 비율
+        if size_pct is None: size_pct = _claude_cfg.get("size_pct", 40)
         cap_pnl  = round(pnl * (size_pct / 100.0), 6)
         s["pnl_pct"] = round(s["pnl_pct"] + cap_pnl, 6)
         s["trades"] += 1
@@ -471,8 +443,6 @@ def _win_rate(w, l):
 
 def save_daily_log(day):
     day_logs = [l for l in _logs if l["day"] == day]
-    ss  = _dst(day, "sim");          rs  = _dst(day, "real")
-    ssc = _dst(day, "scalp-sim");   rsc = _dst(day, "scalp-real")
     csc = _dst(day, "claude-sim");  crc = _dst(day, "claude-real")
 
     lines = [
@@ -480,46 +450,33 @@ def save_daily_log(day):
         "## 📊 일별 성과", "",
         "| 구분 | PnL | 거래 | 승/패 | 승률 |",
         "|------|-----|------|-------|------|",
-        f"| **Claude 시뮬** | {_pnl_str(csc['pnl_pct'])} | {csc['trades']}회 "
+        f"| **시뮬** | {_pnl_str(csc['pnl_pct'])} | {csc['trades']}회 "
         f"| {csc['wins']}승 {csc['losses']}패 | {_win_rate(csc['wins'],csc['losses'])} |",
-        f"| **Claude 실제** | {_pnl_str(crc['pnl_pct'])} | {crc['trades']}회 "
+        f"| **실제** | {_pnl_str(crc['pnl_pct'])} | {crc['trades']}회 "
         f"| {crc['wins']}승 {crc['losses']}패 | {_win_rate(crc['wins'],crc['losses'])} |",
-        f"| 모멘텀 시뮬 | {_pnl_str(ss['pnl_pct'])} | {ss['trades']}회 "
-        f"| {ss['wins']}승 {ss['losses']}패 | {_win_rate(ss['wins'],ss['losses'])} |",
-        f"| 모멘텀 실제 | {_pnl_str(rs['pnl_pct'])} | {rs['trades']}회 "
-        f"| {rs['wins']}승 {rs['losses']}패 | {_win_rate(rs['wins'],rs['losses'])} |",
-        f"| 스캘퍼 시뮬 | {_pnl_str(ssc['pnl_pct'])} | {ssc['trades']}회 "
-        f"| {ssc['wins']}승 {ssc['losses']}패 | {_win_rate(ssc['wins'],ssc['losses'])} |",
-        f"| 스캘퍼 실제 | {_pnl_str(rsc['pnl_pct'])} | {rsc['trades']}회 "
-        f"| {rsc['wins']}승 {rsc['losses']}패 | {_win_rate(rsc['wins'],rsc['losses'])} |",
         "",
         f"> 일 한도: 수익 +{_cfg['daily_profit_stop']:.0f}% | "
         f"손실 -{_cfg['daily_loss_stop']:.0f}% | 실제 최대 {_cfg['max_daily_trades']}회",
         "", "---", "",
         "## 📋 거래 로그", "",
-        "| 시간 | 봇 | 모드 | 액션 | 가격 | TP | SL | RSI | 소스 | 이유 | PnL |",
-        "|------|-----|------|------|------|-----|-----|-----|------|------|-----|",
+        "| 시간 | 심볼 | 모드 | 액션 | 가격 | TP | SL | RSI | 이유 | PnL |",
+        "|------|------|------|------|------|-----|-----|-----|------|-----|",
     ]
     for l in day_logs:
-        m = str(l.get("mode",""))
-        if m.startswith("claude"): bot_label = "Claude"
-        elif m.startswith("scalp"): bot_label = "스캘퍼"
-        else: bot_label = "모멘텀"
-        tp_str = f"${l['tp_px']:,.0f}" if l.get("tp_px") else "-"
-        sl_str = f"${l['sl_px']:,.0f}" if l.get("sl_px") else "-"
+        sym = l.get("sym", "BTC-USDT-SWAP")
         lines.append(
-            f"| {l['ts']} | {bot_label} | {l['mode']} | {l['action']} "
-            f"| ${l['price']:,.0f} | {tp_str} | {sl_str} "
-            f"| {l.get('rsi') or '-'} | {l.get('signal_src','-')} "
+            f"| {l['ts']} | {sym.split('-')[0]} | {l['mode']} | {l['action']} "
+            f"| ${_px_fmt(l['price'], sym)} | ${_px_fmt(l.get('tp_px'), sym)} | ${_px_fmt(l.get('sl_px'), sym)} "
+            f"| {l.get('rsi') or '-'} "
             f"| {l['reason']} | {_pnl_str(l['pnl'])} |"
         )
     if not day_logs:
-        lines.append("| - | - | - | 거래 없음 | - | - | - | - | - | - | - |")
+        lines.append("| - | - | - | 거래 없음 | - | - | - | - | - | - |")
 
-    tot_tr  = sum(x["trades"] for x in [ss,rs,ssc,rsc,csc,crc])
-    tot_pnl = round(sum(x["pnl_pct"] for x in [ss,rs,ssc,rsc,csc,crc]), 4)
-    wins    = sum(x["wins"]   for x in [ss,rs,ssc,rsc,csc,crc])
-    losses  = sum(x["losses"] for x in [ss,rs,ssc,rsc,csc,crc])
+    tot_tr  = sum(x["trades"] for x in [csc,crc])
+    tot_pnl = round(sum(x["pnl_pct"] for x in [csc,crc]), 4)
+    wins    = sum(x["wins"]   for x in [csc,crc])
+    losses  = sum(x["losses"] for x in [csc,crc])
     wr      = round(wins/(wins+losses)*100) if (wins+losses)>0 else 0
 
     lines += ["", "---", "", "## 📝 총평", ""]
@@ -597,10 +554,10 @@ def _place_order(side, pos_side, sz, tp_px=None, sl_px=None, sym="BTC-USDT-SWAP"
         "sz":          str(max(1, int(sz))),
     }
     if tp_px:
-        body["tpTriggerPx"] = str(round(tp_px, 1))
+        body["tpTriggerPx"] = str(_px_round(tp_px, sym))
         body["tpOrdPx"]     = "-1"   # 시장가 TP
     if sl_px:
-        body["slTriggerPx"] = str(round(sl_px, 1))
+        body["slTriggerPx"] = str(_px_round(sl_px, sym))
         body["slOrdPx"]     = "-1"   # 시장가 SL
     r = _dc_request("POST", "/deepcoin/trade/order", body)
     # top-level code "0"이어도 item-level sCode 체크 (data가 list 또는 dict 모두 대응)
@@ -685,6 +642,9 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     _last_fail_sl  = 0.0   # 직전 SL 터진 가격 레벨 (같은 구조 재진입 차단용)
     _pos_opened_at = 0.0   # 포지션 진입 시각 (DC sync 유예 기간 계산용)
     _entry_ctx     = None  # 진입 당시 SMC 컨텍스트 (패턴 학습용)
+    _pos_size_pct  = None  # 진입 시 실제 투입 증거금 비율 (자본 기준 PnL 계산용)
+    _ev_log        = _smc_event_log[sym]
+    _pf            = lambda v: _px_fmt(v, sym)
 
     # ── 실제 모드: DeepCoin 포지션 동기화 ─────────────────────────
     if mode == "real" and pos is None:
@@ -702,8 +662,8 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                         tp_px = _dc_tp; sl_px = _dc_sl
                         st.update({"position": pos, "entry": entry,
                                    "tp_px": tp_px, "sl_px": sl_px,
-                                   "watch_msg": f"[DC복원] {_dc_side.upper()} @ ${_dc_avg:,.0f} sz={_dc_sz}"})
-                        print(f"[DC복원] {_dc_side.upper()} {_dc_sz}계약 @ ${_dc_avg:,.0f}")
+                                   "watch_msg": f"[DC복원] {_dc_side.upper()} @ ${_pf(_dc_avg)} sz={_dc_sz}"})
+                        print(f"[DC복원:{sym}] {_dc_side.upper()} {_dc_sz}계약 @ ${_pf(_dc_avg)}")
                         break
         except Exception as _e:
             print(f"[DC포지션복원] 오류: {_e}")
@@ -724,38 +684,32 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
         price = ind.get("price", 0)
         atr   = ind.get("atr", price * 0.01)
         ok, stop_msg = _can_trade(claude_mode)
-        st["price"] = round(price, 2)   # continue 발생 시에도 price 반영
+        st["price"] = _px_round(price, sym)   # continue 발생 시에도 price 반영
 
         # ── ICT 킬존 & AMD 아시안 레인지 ──────────────────────────
         kz          = get_kill_zone()
         kz_name     = _KZ_NAMES.get(kz, "킬존외")
         asian_rng   = get_asian_range(kl_1h) if kl_1h else None
-        asian_tag   = (f" | 아시안레인지 H={asian_rng['high']:.0f}/L={asian_rng['low']:.0f}"
+        asian_tag   = (f" | 아시안레인지 H={_pf(asian_rng['high'])}/L={_pf(asian_rng['low'])}"
                        if asian_rng else "")
 
         cooldown_left = max(0, _last_close + _claude_cfg["cooldown"] - time.time())
 
         if pos is None:
-            # 타 봇 포지션 공유 체크
-            _shared_pos, _shared_bot = _any_open_pos(sym)
-            if _shared_pos and _shared_bot != "Claude":
-                st["watch_msg"] = f"{_shared_bot} 봇 {_shared_pos.upper()} 홀딩 중 — 대기"
-                time.sleep(30); continue
-
-            # ── 실시간 ICT/SMC (주 시그널) ───────────────────────
-            smc     = get_ict_signal(kl, h1_kl=kl_1h, d1_kl=kl_1d) if _SMC_AVAILABLE else {"signal": None}
-            # 이벤트 로그 업데이트 (최근 이벤트만 추가)
+            # ── 실시간 멀티전략 (OTE→MTF→킬존NY→Breaker 우선순위) ──
+            smc, _sig_src = _multi_strategy_signal(kl, kl_1h, kl_1d, kl_5m)
+            # 심볼별 이벤트 로그 업데이트 (최근 이벤트만 추가)
             if _SMC_AVAILABLE:
-                global _smc_event_log
                 new_events = smc.get("events_15m", []) + smc.get("events_1h", [])
                 new_events.sort(key=lambda x: x["time_ms"])
-                existing_keys = {(e["type"], e["direction"], e["level"], e["label"]) for e in _smc_event_log}
+                existing_keys = {(e["type"], e["direction"], e["level"], e["label"]) for e in _ev_log}
                 for ev in new_events:
                     k = (ev["type"], ev["direction"], ev["level"], ev["label"])
                     if k not in existing_keys:
-                        _smc_event_log.append(ev)
+                        _ev_log.append(ev)
                         existing_keys.add(k)
-                _smc_event_log = sorted(_smc_event_log, key=lambda x: x["time_ms"])[-100:]
+                _ev_log.sort(key=lambda x: x["time_ms"])
+                del _ev_log[:-100]
             s_sig   = smc.get("signal")      # "long" | "short" | None
             s_sl    = smc.get("sl")
             s_tp    = smc.get("tp1")
@@ -776,70 +730,23 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
             _same_sl = (_last_fail_sl > 0 and s_sl and
                         abs(s_sl - _last_fail_sl) / max(_last_fail_sl, 1) < 0.002)
 
-            # ── 진입 조건 체크 (SMC 주, RSI/EMA 보조 필터) ──
+            # ── 진입 조건 체크 (순서: 일한도 → 킬존 → SMC → 직전SL → RSI → 15m EMA → D1 → 쿨다운 → 5m) ──
             if not ok:
                 st["watch_msg"] = f"일 한도: {stop_msg}"
             elif kz not in ("london", "newyork"):
-                st["watch_msg"] = (f"킬존 외 진입 대기 [{kz_name}]{asian_tag} | {smc_info}")
-
-            # ── 추가 전략 평가 (킬존 외에서도 작동) ─────────────────
-            if not ok:
-                pass  # 일 한도 초과 시 추가 전략도 스킵
-            elif not s_sig and _STRATEGIES_AVAILABLE:
-                _kl_1h  = _klines(bar="1H", n=220)
-                _t_json = {}
-                try:
-                    import json as _js
-                    if os.path.exists(_TUNING_PATH):
-                        _t_json = _js.load(open(_TUNING_PATH, encoding="utf-8"))
-                except Exception:
-                    pass
-                _alt = get_best_signal(kl, _kl_1h,
-                                       asian_high=asian_rng["high"] if asian_rng else None,
-                                       asian_low=asian_rng["low"] if asian_rng else None,
-                                       tuning=_t_json)
-                if _alt and _alt.get("signal"):
-                    # 추가 전략 시그널을 SMC 시그널 형식으로 변환
-                    s_sig    = _alt["signal"]
-                    s_sl     = _alt["sl"]
-                    s_tp     = _alt["tp"]
-                    smc_rsn  = f"[{_alt['strategy'].upper()}] {_alt['reason']}"
-                    smc_tag  = f"[{_alt['strategy'].upper()}]"
-                    st["watch_msg"] = f"추가전략 시그널: {smc_rsn}"
-
-            # == 추가 전략 평가 (SMC 시그널 없을 때) ==
-            if not s_sig and _STRATEGIES_AVAILABLE and ok:
-                _kl_1h_alt = _klines(bar="1H", n=220)
-                _t_json_alt = {}
-                try:
-                    import json as _jsalt
-                    if os.path.exists(_TUNING_PATH):
-                        _t_json_alt = _jsalt.load(open(_TUNING_PATH, encoding="utf-8"))
-                except Exception:
-                    pass
-                _alt_sig = get_best_signal(kl, _kl_1h_alt,
-                                           asian_high=smc.get("asian_high") if smc else None,
-                                           asian_low=smc.get("asian_low") if smc else None,
-                                           tuning=_t_json_alt)
-                if _alt_sig and _alt_sig.get("signal"):
-                    s_sig   = _alt_sig["signal"]
-                    s_sl    = _alt_sig.get("sl")
-                    s_tp    = _alt_sig.get("tp")
-                    smc_rsn = f"[{_alt_sig['strategy'].upper()}] {_alt_sig['reason']}"
-            # == end 추가 전략 ==
-
+                st["watch_msg"] = f"킬존 외 진입 금지 [{kz_name}]{asian_tag} | {smc_info}"
             elif not s_sig:
                 st["watch_msg"] = f"SMC시그널 없음 [{kz_name}]{asian_tag} — {smc_info}"
             elif _same_sl:
-                st["watch_msg"] = f"직전 손절 구조 재진입 차단 SL≈${_last_fail_sl:,.0f} | {smc_info}"
+                st["watch_msg"] = f"직전 손절 구조 재진입 차단 SL≈${_pf(_last_fail_sl)} | {smc_info}"
             elif s_sig == "long" and rsi > 68:
                 st["watch_msg"] = f"RSI과매수({rsi:.1f}) 롱 스킵 | {smc_info}"
             elif s_sig == "short" and rsi < 32:
                 st["watch_msg"] = f"RSI과매도({rsi:.1f}) 숏 스킵 | {smc_info}"
             elif s_sig == "long" and ema9 < ema21:
-                st["watch_msg"] = f"15m EMA역배열 롱 스킵 (EMA9={ema9:.0f}<EMA21={ema21:.0f}) | {smc_info}"
+                st["watch_msg"] = f"15m EMA역배열 롱 스킵 (EMA9={_pf(ema9)}<EMA21={_pf(ema21)}) | {smc_info}"
             elif s_sig == "short" and ema9 > ema21:
-                st["watch_msg"] = f"15m EMA정배열 숏 스킵 (EMA9={ema9:.0f}>EMA21={ema21:.0f}) | {smc_info}"
+                st["watch_msg"] = f"15m EMA정배열 숏 스킵 (EMA9={_pf(ema9)}>EMA21={_pf(ema21)}) | {smc_info}"
             elif s_sig and _d1_regime_blocks(s_sig, kl_1d):
                 _regime_now = get_market_regime(kl_1d) if (kl_1d and _SMC_AVAILABLE) else "ranging"
                 st["watch_msg"] = f"D1레짐({_regime_now}) 역방향 스킵 [{s_sig}] | {smc_info}"
@@ -855,18 +762,23 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     _5m_bull = kl_5m[-1]["c"] > kl_5m[-1]["o"] and _5m_e9 > _5m_e21
                     _5m_bear = kl_5m[-1]["c"] < kl_5m[-1]["o"] and _5m_e9 < _5m_e21
                     if s_sig == "long"  and not _5m_bull:
-                        st["watch_msg"] = f"5m 롱 미확인 (5mEMA9={_5m_e9:.0f} EMA21={_5m_e21:.0f}) | {smc_info}"
+                        st["watch_msg"] = f"5m 롱 미확인 (5mEMA9={_pf(_5m_e9)} EMA21={_pf(_5m_e21)}) | {smc_info}"
                         _5m_ok = False
                     elif s_sig == "short" and not _5m_bear:
-                        st["watch_msg"] = f"5m 숏 미확인 (5mEMA9={_5m_e9:.0f} EMA21={_5m_e21:.0f}) | {smc_info}"
+                        st["watch_msg"] = f"5m 숏 미확인 (5mEMA9={_pf(_5m_e9)} EMA21={_pf(_5m_e21)}) | {smc_info}"
                         _5m_ok = False
                 if not _5m_ok:
                     time.sleep(30); continue
 
                 # ── 진입 실행 ────────────────────────────────────
                 sig = s_sig  # SMC가 방향 결정
-                _TP_CAP  = 0.100; _SL_CAP  = 0.015
-                _TP_MIN  = 0.012   # 최소 TP 1.2% (RR 확보용)
+                _lev     = _claude_cfg.get("leverage", 20)
+                _TP_CAP  = _claude_cfg.get("tp_max_pct", 15.0) / 100
+                _SL_CAP  = _claude_cfg.get("sl_cap_pct", 2.0)  / 100
+                # 심볼별 tp_min_margin → 현물 이동폭 환산 (증거금 기준 % ÷ 레버리지)
+                _sym_tp_map = _claude_cfg.get("tp_min_margin_by_sym", {})
+                _tp_min_margin = _sym_tp_map.get(sym, _claude_cfg.get("tp_min_margin_pct", 0))
+                _TP_MIN  = _tp_min_margin / (100.0 * _lev) if _tp_min_margin > 0 else 0.0
                 _SL_MIN  = max(atr / price * 0.8, 0.003)   # 최소 SL: ATR×0.8 또는 0.3% 중 큰 값
 
                 # tp2 업그레이드: tp1보다 유리하고 price 대비 2% 이내면 tp1 대신 사용
@@ -889,27 +801,32 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                         _tp_dist = min((price - _s_tp) / price, _TP_CAP) if _s_tp < price else atr / price * 2.0
                         raw_sl   = (s_sl - price) / price if s_sl > price else atr / price * 0.8
                         _sl_dist = min(max(raw_sl, _SL_MIN), _SL_CAP)
-                    smc_tag = "[SMC-OB/FVG]"
+                    smc_tag = f"[{_sig_src or 'SMC'}]"
                 else:
                     _tp_dist = min(atr / price * 2.0, _TP_CAP)
                     _sl_dist = min(max(atr / price * 0.8, _SL_MIN), _SL_CAP)
                     smc_tag = "[ATR폴백]"
 
-                # 최소 TP 강제 (1.2% 이상)
-                _tp_dist = max(_tp_dist, _TP_MIN)
+                # TP 목표가 최소 미달이면 진입 스킵 (_TP_MIN=0이면 비활성)
+                if _TP_MIN > 0 and _tp_dist < _TP_MIN:
+                    st["watch_msg"] = (
+                        f"TP목표 짧음 스킵 {smc_tag} TP={_tp_dist*100:.2f}% < 최소{_TP_MIN*100:.0f}%"
+                    )
+                    time.sleep(30); continue
 
-                # 손익비 불량 (RR < 1.5) 이면 진입 안 함
-                if _tp_dist < _sl_dist * 1.5:
+                # 손익비 불량이면 진입 안 함
+                _rr_min = _claude_cfg.get("rr_min", 2.5)
+                if _tp_dist < _sl_dist * _rr_min:
                     st["watch_msg"] = (
                         f"손익비 불량 스킵 {smc_tag} TP={_tp_dist*100:.2f}% SL={_sl_dist*100:.2f}%"
                     )
                     time.sleep(30); continue
                 if sig == "long":
-                    tp_px = round(price * (1 + _tp_dist), 1)
-                    sl_px = round(price * (1 - _sl_dist), 1)
+                    tp_px = _px_round(price * (1 + _tp_dist), sym)
+                    sl_px = _px_round(price * (1 - _sl_dist), sym)
                 else:
-                    tp_px = round(price * (1 - _tp_dist), 1)
-                    sl_px = round(price * (1 + _sl_dist), 1)
+                    tp_px = _px_round(price * (1 - _tp_dist), sym)
+                    sl_px = _px_round(price * (1 + _sl_dist), sym)
 
                 # ── SMC 컨텍스트 빌드 (패턴 학습용) ─────────────────
                 _poi_type = None
@@ -920,9 +837,10 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 _bos_t   = smc.get("bos_type") or "없음"
                 _has_sw  = smc.get("sweep", False)
                 _rr_val  = round(_tp_dist / _sl_dist, 2) if _sl_dist else 0
-                _pat_key = (f"{kz or 'no_kz'}+{_bos_t}+{_poi_type or 'no_poi'}"
+                _pat_key = (f"{_sig_src or 'SMC'}+{kz or 'no_kz'}+{_bos_t}+{_poi_type or 'no_poi'}"
                             f"+OB{_ob_cnt}+FVG{_fvg_cnt}+{'sweep' if _has_sw else 'no_sweep'}")
                 _smc_ctx = {
+                    "strategy":    _sig_src or "SMC",
                     "kill_zone":   kz,
                     "bos_type":    _bos_t,
                     "poi_type":    _poi_type,
@@ -945,12 +863,12 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 conf_tags = (f"RSI={rsi:.1f} EMA={'정' if ema9>=ema21 else '역'} "
                              f"BB={'하단권' if price<=bb_m else '상단권'}")
                 sw_tag = ""
-                if smc.get("strong_high"): sw_tag += f" StrongH=${smc['strong_high']:,.0f}"
-                if smc.get("weak_low"):    sw_tag += f" WeakL=${smc['weak_low']:,.0f}"
-                if smc.get("strong_low"):  sw_tag += f" StrongL=${smc['strong_low']:,.0f}"
-                if smc.get("weak_high"):   sw_tag += f" WeakH=${smc['weak_high']:,.0f}"
-                # 최근 SMC 이벤트 요약 (진입 근거)
-                recent_ev = (_smc_event_log[-5:] if _smc_event_log else [])
+                if smc.get("strong_high"): sw_tag += f" StrongH=${_pf(smc['strong_high'])}"
+                if smc.get("weak_low"):    sw_tag += f" WeakL=${_pf(smc['weak_low'])}"
+                if smc.get("strong_low"):  sw_tag += f" StrongL=${_pf(smc['strong_low'])}"
+                if smc.get("weak_high"):   sw_tag += f" WeakH=${_pf(smc['weak_high'])}"
+                # 최근 SMC 이벤트 요약 (진입 근거, 이 심볼만)
+                recent_ev = _ev_log[-5:]
                 ev_summary = " | ".join(
                     f"[{e['label']}]{e['type']}{'↑' if e['direction']=='bullish' else '↓'}@${e['level']}"
                     for e in recent_ev
@@ -959,7 +877,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                           f"| {conf_tags}{sw_tag} "
                           f"| [{kz_name}]{asian_tag} "
                           f"| 근거: {ev_summary} "
-                          f"[TP:${tp_px:,.0f} SL:${sl_px:,.0f} RR={_rr_val:.1f}]")
+                          f"[TP:${_pf(tp_px)} SL:${_pf(sl_px)} RR={_rr_val:.1f}]")
 
                 if mode == "real":
                     _lev_now  = _claude_cfg.get("leverage", 20)
@@ -972,7 +890,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     _set_leverage(_lev_now, sym=sym)
                     side  = "buy" if sig == "long" else "sell"
                     _sz   = _calc_sz(price, _dyn_size, _lev_now, sym=sym)
-                    print(f"[사이징] 리스크{_risk_pct}% SL={_sl_dist*100:.2f}% 레버리지={_lev_now}x 가중치={_wt:.2f} → {_dyn_size:.1f}% 증거금")
+                    print(f"[사이징:{sym}] 리스크{_risk_pct}% SL={_sl_dist*100:.2f}% 레버리지={_lev_now}x 가중치={_wt:.2f} → {_dyn_size:.1f}% 증거금")
                     ord_r = _place_order(side, sig, _sz, tp_px=tp_px, sl_px=sl_px, sym=sym)
                     if ord_r.get("code") not in ("0", 0):
                         reason += f" [주문실패:{ord_r.get('msg','')}]"
@@ -982,18 +900,20 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     else:
                         pos = sig; entry = price
                         _pos_opened_at = time.time()
+                        _pos_size_pct  = _dyn_size
                 else:
                     pos = sig; entry = price
                     _pos_opened_at = time.time()
+                    _pos_size_pct  = _claude_cfg.get("size_pct", 40)
 
                 if pos:
                     _entry_ctx = _smc_ctx   # 청산 시 패턴 학습에 사용
                     _rec(claude_mode, f"ENTER_{sig.upper()}", price, ind, reason,
-                         tp_px=tp_px, sl_px=sl_px, signal_src="Claude", smc_ctx=_smc_ctx)
+                         tp_px=tp_px, sl_px=sl_px, signal_src="Claude", smc_ctx=_smc_ctx, sym=sym)
                     st["watch_msg"] = reason
 
         elif pos:
-            _lev = _claude_cfg.get("leverage", 10)
+            _lev = _claude_cfg.get("leverage", 20)
             # ── Real 모드: DeepCoin 실제 포지션 확인 (진입 후 90초 유예) ──
             if mode == "real" and time.time() - _pos_opened_at > 90:
                 try:
@@ -1012,20 +932,21 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                             if tp_px and ((pos == "long" and price >= tp_px * 0.998) or
                                           (pos == "short" and price <= tp_px * 1.002)):
                                 action = f"CLOSE_{pos.upper()}"
-                                reason = f"DC서버TP ${tp_px:,.0f} 체결확인 {lev_pct:+.2f}% ({_lev}x)"
+                                reason = f"DC서버TP ${_pf(tp_px)} 체결확인 {lev_pct:+.2f}% ({_lev}x)"
                                 _last_fail_sl = 0.0
                             else:
                                 action = "SL_HIT"
-                                reason = f"DC서버SL 청산확인 (진입 ${entry:,.0f} → ${price:,.0f}) {lev_pct:+.2f}% ({_lev}x)"
+                                reason = f"DC서버SL 청산확인 (진입 ${_pf(entry)} → ${_pf(price)}) {lev_pct:+.2f}% ({_lev}x)"
                                 _last_fail_sl = sl_px or 0.0
                             _rec(claude_mode, action, price, ind, reason,
-                                 pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx)
+                                 pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx,
+                                 sym=sym, size_pct=_pos_size_pct)
                             sess_pnl += lev_pct; sess_tr += 1
                             pos = None; entry = 0.0; tp_px = None; sl_px = None
-                            _pos_opened_at = 0.0; _entry_ctx = None
+                            _pos_opened_at = 0.0; _entry_ctx = None; _pos_size_pct = None
                             _last_close = time.time()
                             st["last_close"] = _last_close
-                            print(f"[DC동기화] 외부 청산: {action} {lev_pct:+.2f}%")
+                            print(f"[DC동기화:{sym}] 외부 청산: {action} {lev_pct:+.2f}%")
                 except Exception as _sync_err:
                     print(f"[DC동기화] 오류: {_sync_err}")
 
@@ -1039,38 +960,45 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 # SL
                 if sl_px and ((pos == "long"  and price <= sl_px) or
                               (pos == "short" and price >= sl_px)):
-                    close_reason = f"SL ${sl_px:,.0f} 터치 {lev_pct:+.2f}% ({_lev}x)"
+                    close_reason = f"SL ${_pf(sl_px)} 터치 {lev_pct:+.2f}% ({_lev}x)"
                     action = "SL_HIT"
 
                 # TP
                 elif tp_px and ((pos == "long"  and price >= tp_px) or
                                 (pos == "short" and price <= tp_px)):
-                    close_reason = f"TP ${tp_px:,.0f} 달성 {lev_pct:+.2f}% ({_lev}x)"
+                    close_reason = f"TP ${_pf(tp_px)} 달성 {lev_pct:+.2f}% ({_lev}x)"
                     action = f"CLOSE_{pos.upper()}"
 
                 if close_reason:
                     _close_order(pos, mode, _claude_cfg["size_pct"], sym=sym)
                     _rec(claude_mode, action, price, ind, close_reason,
-                         pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx)
+                         pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx,
+                         sym=sym, size_pct=_pos_size_pct)
                     sess_pnl += lev_pct; sess_tr += 1
                     if action == "SL_HIT":
                         _last_fail_sl = sl_px
                     else:
                         _last_fail_sl = 0.0
                     pos = None; entry = 0.0; tp_px = None; sl_px = None
-                    _pos_opened_at = 0.0; _entry_ctx = None
+                    _pos_opened_at = 0.0; _entry_ctx = None; _pos_size_pct = None
                     _last_close = time.time()
                     st["last_close"] = _last_close
                 else:
                     st["watch_msg"] = (
-                        f"홀딩 {pos.upper()} @ ${entry:,.0f} "
-                        f"| 현재 ${price:,.0f} ({lev_pct:+.2f}%, {_lev}x) "
-                        f"| TP ${tp_px:,.0f} SL ${sl_px:,.0f}"
+                        f"홀딩 {pos.upper()} @ ${_pf(entry)} "
+                        f"| 현재 ${_pf(price)} ({lev_pct:+.2f}%, {_lev}x) "
+                        f"| TP ${_pf(tp_px)} SL ${_pf(sl_px)}"
                     )
 
+        # tuning.json active_symbols에서 빠지면 포지션 없을 때 스레드 종료
+        if pos is None and sym not in _active_syms_cfg:
+            st["watch_msg"] = "active_symbols 제외 — 정지"
+            st["position"] = None
+            break
+
         st.update({
-            "position": pos, "price": round(price, 2),
-            "entry": round(entry, 2) if pos else None,
+            "position": pos, "price": _px_round(price, sym),
+            "entry": _px_round(entry, sym) if pos else None,
             "tp_px": tp_px, "sl_px": sl_px,
             "pnl": round(sess_pnl, 2), "trades": sess_tr,
             "indicators": ind, "can_trade": ok, "stop_msg": stop_msg,
@@ -1142,10 +1070,12 @@ class Handler(BaseHTTPRequestHandler):
             idx = os.path.join(os.path.dirname(os.path.abspath(__file__)),"index.html")
             with open(idx, encoding="utf-8") as f: self._h(f.read())
         elif p == "/api/status":
-            sig = load_signal(); ak = _e("DEEPCOIN_API_KEY","")
+            ak = _e("DEEPCOIN_API_KEY","")
             self._j({"api_key_set":bool(ak and ak!="your_api_key_here"),
-                "claude_running":_claude_st["running"],
-                "signal":sig, "time":time.strftime("%Y-%m-%d %H:%M:%S"),
+                "claude_running":any(s["running"] for s in _bots_st.values()),
+                "running_syms":[s for s, st in _bots_st.items() if st["running"]],
+                "active_symbols":_active_syms_cfg,
+                "time":time.strftime("%Y-%m-%d %H:%M:%S"),
                 "config":_cfg})
         elif p == "/api/claude/status":
             qs = parse_qs(urlparse(self.path).query)
@@ -1169,45 +1099,19 @@ class Handler(BaseHTTPRequestHandler):
                 open24 = float(d.get("open24h") or last or 1)
                 chg = round((last - open24) / open24 * 100, 2) if open24 else 0
                 self._j({"last": last, "change": chg})
-            except:
-                import random
-                self._j({"last":round(68800+random.gauss(0,100),2),
-                         "change":-2.1,"sim":True})
+            except Exception as e:
+                self._j({"last": 0, "change": 0, "error": str(e)})
 
         elif p == "/api/klines":
             bar = qs.get("interval",["15m"])[0]
             lim = int(qs.get("limit",["100"])[0])
             sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
-            kl  = _klines(sym, bar, lim)
-            if not kl:
-                import random; sig = load_signal()
-                bp = float(sig.get("btc_price",68800)) if sig else 68800.0
-                price = bp; kl = []; now = int(time.time()*1000)
-                ims = {"1m":60000,"5m":300000,"15m":900000,
-                       "1h":3600000,"1H":3600000,"4H":14400000}.get(bar,900000)
-                for i in range(lim):
-                    o=price; h=o+abs(random.gauss(0,300)); l=o-abs(random.gauss(0,300))
-                    c=l+random.random()*(h-l); price=c
-                    kl.append({"t":now-(lim-i)*ims,"o":round(o,2),"h":round(h,2),
-                                "l":round(l,2),"c":round(c,2),
-                                "v":round(random.uniform(5,80),2),"sim":True})
-            self._j(kl)
+            self._j(_klines(sym, bar, lim))
 
         elif p == "/api/indicators":
             bar = qs.get("interval",["15m"])[0]
-            kl  = _klines(bar=bar, n=80)
-            # API 미응답 시 /api/klines와 같은 시뮬 폴백
-            if not kl:
-                import random; sig = load_signal()
-                bp = float(sig.get("btc_price", 68800)) if sig else 68800.0
-                price_sim = bp; now = int(time.time()*1000)
-                ims = {"1m":60000,"5m":300000,"15m":900000,"1h":3600000,
-                       "1H":3600000,"4H":14400000}.get(bar, 900000)
-                for i in range(80):
-                    o=price_sim; h=o+abs(random.gauss(0,300)); l=o-abs(random.gauss(0,300))
-                    c=l+random.random()*(h-l); price_sim=c
-                    kl.append({"t":now-(80-i)*ims,"o":round(o,2),"h":round(h,2),
-                               "l":round(l,2),"c":round(c,2),"v":round(random.uniform(5,80),2)})
+            sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+            kl  = _klines(sym=sym, bar=bar, n=80)
             if len(kl) < 22:
                 self._j({"ema9":[],"ema21":[],"rsi":[],"atr":[],"bb_upper":[],"bb_lower":[],"bb_mid":[],"ts":[]}); return
             hi = [k["h"] for k in kl]; lo = [k["l"] for k in kl]
@@ -1231,8 +1135,9 @@ class Handler(BaseHTTPRequestHandler):
 
         elif p == "/api/fvg":
             # 15분봉 기준 최근 FVG 목록 + filled 상태 (실시간)
-            kl_fvg  = _klines(bar="15m", n=80)
-            kl_1h_f = _klines(bar="1H",  n=50)
+            sym     = qs.get("symbol",["BTC-USDT-SWAP"])[0]
+            kl_fvg  = _klines(sym=sym, bar="15m", n=80)
+            kl_1h_f = _klines(sym=sym, bar="1H",  n=50)
             cur_px  = kl_fvg[-1]["c"] if kl_fvg else 0
             fvgs_f  = _detect_fvg(kl_fvg) if kl_fvg else []
             recent_f = fvgs_f[-15:]
@@ -1257,13 +1162,14 @@ class Handler(BaseHTTPRequestHandler):
             n = int(qs.get("n",["60"])[0])
             self._j(list(reversed(_logs[-n:])))
         elif p == "/api/daily":  self._j(_daily)
-        elif p == "/api/signal": self._j(load_signal() or {})
         elif p == "/api/debrief":
-            kl    = _klines(n=60)
-            kl_1h = _klines(bar="1H", n=25)
+            sym   = qs.get("sym", qs.get("symbol", ["BTC-USDT-SWAP"]))[0]
+            if sym not in _bots_st: sym = "BTC-USDT-SWAP"
+            _st   = _bots_st[sym]
+            kl    = _klines(sym=sym, n=60)
+            kl_1h = _klines(sym=sym, bar="1H", n=25)
             ind   = _ind(kl) if kl else {}
-            sd    = load_signal() or {}
-            kl_1d = _klines(bar="1D", n=120)
+            kl_1d = _klines(sym=sym, bar="1D", n=120)
             smc   = get_ict_signal(kl, h1_kl=kl_1h, d1_kl=kl_1d) if (_SMC_AVAILABLE and kl) else {"signal": None}
 
             price  = ind.get("price", 0)
@@ -1278,16 +1184,19 @@ class Handler(BaseHTTPRequestHandler):
             rsi_ok = not ((s_sig == "long" and rsi > 68) or (s_sig == "short" and rsi < 32))
             bb_ok  = not ((s_sig == "long"  and ema9 < ema21) or
                           (s_sig == "short" and ema9 > ema21))
-            cooldown_left = max(0, _claude_st.get("last_close", 0) + _claude_cfg["cooldown"] - time.time())
+            cooldown_left = max(0, _st.get("last_close", 0) + _claude_cfg["cooldown"] - time.time())
+            kz_now = get_kill_zone()
 
             filters = [
+                {"name": "킬존",        "pass": kz_now in ("london","newyork"), "value": kz_now or "킬존외"},
                 {"name": "SMC 시그널",  "pass": bool(s_sig),        "value": s_sig or "없음"},
                 {"name": "RSI 필터",    "pass": rsi_ok,              "value": f"{rsi:.1f}"},
-                {"name": "BB+EMA 필터", "pass": bb_ok,               "value": f"${price:.0f} mid=${bb_m:.0f} EMA{'정배열' if ema9>=ema21 else '역배열'}"},
+                {"name": "BB+EMA 필터", "pass": bb_ok,               "value": f"${_px_fmt(price, sym)} mid=${_px_fmt(bb_m, sym)} EMA{'정배열' if ema9>=ema21 else '역배열'}"},
                 {"name": "쿨다운",      "pass": cooldown_left <= 0,  "value": f"잔여 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초" if cooldown_left > 0 else "완료"},
             ]
 
             self._j({
+                "sym": sym,
                 "smc": {
                     "signal":         s_sig,
                     "bos_dir":        smc.get("bos_dir"),
@@ -1307,16 +1216,16 @@ class Handler(BaseHTTPRequestHandler):
                     "bb_mid": round(bb_m,1), "atr": round(atr,1),
                 },
                 "filters":   filters,
-                "watch_msg": _claude_st.get("watch_msg", ""),
-                "position":  _claude_st.get("position"),
-                "entry":     _claude_st.get("entry"),
-                "tp_px":     _claude_st.get("tp_px"),
-                "sl_px":     _claude_st.get("sl_px"),
+                "watch_msg": _st.get("watch_msg", ""),
+                "position":  _st.get("position"),
+                "entry":     _st.get("entry"),
+                "tp_px":     _st.get("tp_px"),
+                "sl_px":     _st.get("sl_px"),
                 "smc_events":  sorted(
                     smc.get("events_15m", []) + smc.get("events_1h", []),
                     key=lambda x: x["time_ms"], reverse=True
                 )[:20],
-                "smc_log": list(reversed(_smc_event_log[-20:])),
+                "smc_log": list(reversed(_smc_event_log[sym][-20:])),
             })
         elif p == "/api/pattern-stats":
             # 패턴별 학습 통계 (승률 순 정렬)
@@ -1379,14 +1288,15 @@ class Handler(BaseHTTPRequestHandler):
         p = urlparse(self.path).path; b = self._body()
 
         if p == "/api/claude/start":
-            global _claude_thr, _bot_gen
             mode = b.get("mode", "sim")
-            # 요청한 심볼 목록 (없으면 전체 active 심볼)
-            req_syms = b.get("syms", _ACTIVE_SYMS)
+            # 요청한 심볼 목록 (없으면 tuning.json active_symbols)
+            req_syms = b.get("syms", _active_syms_cfg)
             if isinstance(req_syms, str): req_syms = [req_syms]
-            started = []
+            started, skipped = [], []
             for _sym in req_syms:
                 if _sym not in _bots_st: continue
+                if _sym not in _active_syms_cfg:
+                    skipped.append(_sym); continue
                 _bots_st[_sym]["running"] = False
                 _bots_gen[_sym] += 1
                 _t = threading.Thread(target=_run_claude_bot, daemon=True,
@@ -1394,19 +1304,21 @@ class Handler(BaseHTTPRequestHandler):
                 _bots_thr[_sym] = _t
                 _t.start()
                 started.append(_sym)
-            # 하위호환: _claude_thr / _bot_gen 동기화 (BTC 기준)
-            _bot_gen = _bots_gen.get("BTC-USDT-SWAP", _bot_gen)
-            _claude_thr = _bots_thr.get("BTC-USDT-SWAP")
-            self._j({"ok": True, "msg": f"Claude봇({mode}) 시작", "syms": started})
+            self._j({"ok": True, "msg": f"Claude봇({mode}) 시작", "syms": started,
+                     "skipped_not_active": skipped})
 
         elif p == "/api/claude/stop":
-            req_syms = self._body().get("syms", _ACTIVE_SYMS) if hasattr(self, '_body') else _ACTIVE_SYMS
-            for _sym in _bots_st: _bots_st[_sym]["running"] = False
-            self._j({"ok":True,"msg":"Claude봇 전체 중지"})
+            req_syms = b.get("syms", list(_bots_st))
+            if isinstance(req_syms, str): req_syms = [req_syms]
+            for _sym in req_syms:
+                if _sym in _bots_st: _bots_st[_sym]["running"] = False
+            self._j({"ok":True,"msg":"Claude봇 중지","syms":req_syms})
 
         elif p == "/api/claude/config":
             for k in ("leverage","size_pct","cooldown"):
                 if k in b: _claude_cfg[k] = int(b[k])
+            for k in ("risk_pct","rr_min","sl_cap_pct","tp_max_pct","tp_min_margin_pct"):
+                if k in b: _claude_cfg[k] = float(b[k])
             self._j({"ok":True,"config":_claude_cfg})
 
         elif p == "/api/config":
@@ -1436,30 +1348,13 @@ class Handler(BaseHTTPRequestHandler):
             path = save_daily_log(day)
             self._j({"ok":True,"day":day,"path":path})
 
-        elif p == "/api/signal/save":
-            from datetime import date as _date
-            sig = load_signal() or {}
-            sig.update({
-                "report_date":      b.get("report_date", str(_date.today())),
-                "market_condition": b.get("market_condition", sig.get("market_condition","bearish")),
-                "fear_greed_index": b.get("fear_greed_index", sig.get("fear_greed_index",10)),
-                "stop_loss_pct":    b.get("stop_loss_pct",    sig.get("stop_loss_pct",0.015)),
-                "take_profit_pct":  b.get("take_profit_pct",  sig.get("take_profit_pct",0.025)),
-                "notes":            b.get("notes",             sig.get("notes","")),
-            })
-            # 레거시 필드 정리
-            for _lf in ("momentum_direction", "trend_score", "momentum_score",
-                        "vol_score", "claude_vcp_detected", "claude_vcp_contractions"):
-                sig.pop(_lf, None)
-            with open(SIGNAL_PATH, "w", encoding="utf-8") as f:
-                json.dump(sig, f, ensure_ascii=False, indent=2)
-            self._j({"ok":True,"date":sig["report_date"],"signal":sig})
-
         else: self._j({"error":"not found"}, 404)
 
 if __name__ == "__main__":
     _persist_load()
-    port = int(_e("PORT","5000"))
+    # 환경변수 PORT가 .env보다 우선 (테스트 서버를 다른 포트에 띄우기 위함)
+    port = int(os.environ.get("PORT") or _e("PORT", "5000"))
+    ThreadingHTTPServer.allow_reuse_address = False   # 운영 서버와 같은 포트에 겹쳐 붙는 사고 방지
     srv  = ThreadingHTTPServer(("0.0.0.0",port), Handler)
     print(f"\n{'='*52}\n  Deepcoin Bot — Claude SMC 메인봇\n  http://localhost:{port}\n  Stop: Ctrl+C\n{'='*52}\n")
     try: srv.serve_forever()

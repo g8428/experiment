@@ -4,11 +4,31 @@
 
 Python 기반 범용 실험 워크스페이스. 데이터 분석, 시각화, 자동화, AI 에이전트 개발 등 다양한 실험을 수행하는 모노레포.
 
+## 새 세션 시작 시 읽기 순서
+
+1. **이 파일 (CLAUDE.md)** — 레포 전체 구조 파악
+2. **`AGENTS.md`** — 에이전트 계층/브랜치 전략/모델 정책 파악
+3. **작업 대상 프로젝트의 `HANDOVER.md`** — 해당 프로젝트의 결정 이력 및 도메인 용어 파악
+4. **해당 프로젝트의 `CLAUDE.md`** — 현재 상태 및 실행 명령어 확인
+
+> 딥코인봇 작업 시: `projects/deepcoin_bot/HANDOVER.md` → `projects/deepcoin_bot/CLAUDE.md` → `projects/deepcoin_bot/STRATEGY.md`
+
+---
+
 ## 에이전트 조직 구조
 
 이 레포에서 여러 AI 에이전트가 어떻게 계층을 이루고(헤드봇/프로젝트 에이전트/하위 에이전트), 어떤 브랜치 전략을 쓰고, 언제 Cowork 스케줄 태스크를 쓰고 언제 로컬 Claude Code를 쓰는지는 **`AGENTS.md`**에 정리되어 있다. 새 프로젝트를 시작하거나 에이전트를 spawn하기 전에 먼저 읽을 것.
 
-하위 에이전트 정의는 `.claude/agents/*.md`에 커밋되어 있다 (project-lead, engineer, researcher).
+하위 에이전트 정의는 `.claude/agents/*.md`에 커밋되어 있다.
+
+| 에이전트 | 모델 | 역할 |
+|---------|------|------|
+| `trade-supervisor` | **Opus** | 거래 품질 감독 (딥코인봇 전담) |
+| `project-lead` | Sonnet | 프로젝트 조율 및 하위 에이전트 위임 |
+| `engineer` | Sonnet | 코드 구현/버그 수정/커밋 |
+| `researcher` | Sonnet | 시장·기술 조사 및 문서화 |
+
+> **에이전트 모델 원칙**: 감독/판단 역할은 Opus, 실행/개발 역할은 Sonnet. 비용 절감과 품질 균형.
 
 ## Directory Structure
 
@@ -38,11 +58,19 @@ Python 기반 범용 실험 워크스페이스. 데이터 분석, 시각화, 자
 pip install -r requirements.txt   # Install dependencies
 ```
 
+## 활성 프로젝트
+
+| 프로젝트 | 경로 | 상태 | 비고 |
+|---------|------|------|------|
+| **딥코인봇** | `projects/deepcoin_bot/` | **실거래 운용 중** (BTC/ETH, 20x) | ICT+MTF, 자가진화, HANDOVER.md 참조 |
+| mvno-monitor | `automation/mvno-monitor/` | Cowork 스케줄 태스크로 자동 운용 | 알뜰폰 특가 모니터링 |
+
 ## Notes
 
 - 한국어 프로젝트 — README 및 커밋 메시지는 한국어 사용
 - `sandbox/`는 임시 실험용이므로 코드 품질 기준이 낮아도 됨
 - `shared/utils/`에 재사용 가능한 유틸리티를 모아 중복 방지
+- **HANDOVER.md 패턴**: 복잡한 프로젝트는 반드시 `HANDOVER.md`를 두어 "왜 이렇게 됐는가"를 기록한다. 새 세션이 열릴 때 대화 히스토리는 압축/소실되지만 HANDOVER.md는 결정 이력을 보존한다. 딥코인봇이 이 패턴의 첫 구현 사례.
 
 ---
 

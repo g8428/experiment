@@ -1,170 +1,182 @@
 {
   "ict_killzone_long_newyork_BTC": {
-    "wins": 104,
-    "total": 295,
-    "win_rate": 35.3,
+    "wins": 143,
+    "total": 412,
+    "win_rate": 34.7,
     "weight": 0.5
   },
   "ict_killzone_short_newyork_BTC": {
-    "wins": 33,
-    "total": 150,
-    "win_rate": 22.0,
+    "wins": 42,
+    "total": 209,
+    "win_rate": 20.1,
     "weight": 0.25
   },
   "ict_ote_short_BTC": {
-    "wins": 148,
-    "total": 316,
-    "win_rate": 46.8,
+    "wins": 181,
+    "total": 384,
+    "win_rate": 47.1,
     "weight": 1.0
   },
   "ict_ote_long_BTC": {
-    "wins": 211,
-    "total": 654,
-    "win_rate": 32.3,
+    "wins": 261,
+    "total": 826,
+    "win_rate": 31.6,
     "weight": 0.5
   },
   "ict_breaker_long_BTC": {
-    "wins": 217,
-    "total": 756,
-    "win_rate": 28.7,
+    "wins": 274,
+    "total": 990,
+    "win_rate": 27.7,
     "weight": 0.25
   },
   "ict_breaker_short_BTC": {
-    "wins": 67,
-    "total": 143,
-    "win_rate": 46.9,
+    "wins": 84,
+    "total": 180,
+    "win_rate": 46.7,
     "weight": 1.0
   },
   "ict_mtf_long_london_BTC": {
-    "wins": 19,
-    "total": 81,
-    "win_rate": 23.5,
+    "wins": 40,
+    "total": 171,
+    "win_rate": 23.4,
     "weight": 0.25
   },
   "ict_mtf_long_newyork_BTC": {
-    "wins": 25,
-    "total": 31,
-    "win_rate": 80.6,
-    "weight": 2.0
+    "wins": 46,
+    "total": 59,
+    "win_rate": 78.0,
+    "weight": 1.5
   },
   "ict_mtf_short_london_BTC": {
-    "wins": 18,
-    "total": 68,
-    "win_rate": 26.5,
+    "wins": 37,
+    "total": 129,
+    "win_rate": 28.7,
     "weight": 0.25
   },
   "ict_mtf_short_newyork_BTC": {
     "wins": 0,
-    "total": 13,
+    "total": 24,
     "win_rate": 0.0,
     "weight": 0.25
   },
   "ict_killzone_short_newyork_ETH": {
-    "wins": 48,
-    "total": 189,
+    "wins": 60,
+    "total": 236,
     "win_rate": 25.4,
     "weight": 0.25
   },
   "ict_killzone_long_newyork_ETH": {
-    "wins": 64,
-    "total": 265,
-    "win_rate": 24.2,
+    "wins": 80,
+    "total": 332,
+    "win_rate": 24.1,
     "weight": 0.25
   },
   "ict_ote_short_ETH": {
-    "wins": 26,
-    "total": 102,
-    "win_rate": 25.5,
+    "wins": 39,
+    "total": 152,
+    "win_rate": 25.7,
     "weight": 0.25
   },
   "ict_ote_long_ETH": {
-    "wins": 54,
-    "total": 219,
-    "win_rate": 24.7,
+    "wins": 81,
+    "total": 329,
+    "win_rate": 24.6,
     "weight": 0.25
   },
   "ict_breaker_short_ETH": {
-    "wins": 27,
-    "total": 82,
-    "win_rate": 32.9,
+    "wins": 40,
+    "total": 121,
+    "win_rate": 33.1,
     "weight": 0.5
   },
   "ict_breaker_long_ETH": {
-    "wins": 118,
-    "total": 347,
+    "wins": 178,
+    "total": 523,
     "win_rate": 34.0,
     "weight": 0.5
   },
   "ict_mtf_short_london_ETH": {
-    "wins": 2,
-    "total": 18,
-    "win_rate": 11.1,
+    "wins": 9,
+    "total": 79,
+    "win_rate": 11.4,
     "weight": 0.25
   },
   "ict_mtf_long_newyork_ETH": {
-    "wins": 6,
-    "total": 30,
-    "win_rate": 20.0,
+    "wins": 25,
+    "total": 140,
+    "win_rate": 17.9,
     "weight": 0.25
   },
   "ict_mtf_short_newyork_ETH": {
-    "wins": 2,
-    "total": 8,
-    "win_rate": 25.0,
+    "wins": 11,
+    "total": 40,
+    "win_rate": 27.5,
     "weight": 0.25
   },
   "ict_mtf_long_london_ETH": {
-    "wins": 12,
-    "total": 36,
-    "win_rate": 33.3,
+    "wins": 52,
+    "total": 148,
+    "win_rate": 35.1,
     "weight": 0.5
   },
   "ict_killzone_long_newyork_XRP": {
-    "wins": 2,
-    "total": 14,
+    "wins": 3,
+    "total": 21,
     "win_rate": 14.3,
     "weight": 0.25
   },
   "ict_killzone_short_newyork_XRP": {
     "wins": 0,
-    "total": 2,
+    "total": 3,
     "win_rate": 0.0,
     "weight": 1.0
   },
   "ict_ote_short_XRP": {
-    "wins": 32,
-    "total": 83,
-    "win_rate": 38.6,
+    "wins": 48,
+    "total": 125,
+    "win_rate": 38.4,
     "weight": 0.5
   },
   "ict_ote_long_XRP": {
-    "wins": 34,
-    "total": 172,
+    "wins": 51,
+    "total": 258,
     "win_rate": 19.8,
     "weight": 0.25
   },
   "ict_breaker_short_XRP": {
-    "wins": 68,
-    "total": 269,
+    "wins": 102,
+    "total": 403,
     "win_rate": 25.3,
     "weight": 0.25
   },
   "ict_breaker_long_XRP": {
-    "wins": 84,
-    "total": 431,
-    "win_rate": 19.5,
+    "wins": 126,
+    "total": 648,
+    "win_rate": 19.4,
     "weight": 0.25
   },
   "ict_mtf_long_newyork_XRP": {
     "wins": 0,
-    "total": 2,
+    "total": 13,
     "win_rate": 0.0,
-    "weight": 1.0
+    "weight": 0.25
   },
   "ict_mtf_short_newyork_XRP": {
     "wins": 0,
-    "total": 2,
+    "total": 13,
     "win_rate": 0.0,
-    "weight": 1.0
+    "weight": 0.25
+  },
+  "wonyotti_fade_long_BTC": {
+    "wins": 6,
+    "total": 26,
+    "win_rate": 23.1,
+    "weight": 0.25
+  },
+  "wonyotti_fade_short_BTC": {
+    "wins": 6,
+    "total": 42,
+    "win_rate": 14.3,
+    "weight": 0.25
   }
 }

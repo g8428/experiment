@@ -1,6 +1,7 @@
 ---
 name: project-lead
 description: 프로젝트 브랜치(project/<name>)를 전담하는 리드 에이전트. 재영의 지시를 실제 작업 단위로 쪼개고, engineer/researcher 서브에이전트에게 위임하고, 진행 상황을 커밋 단위로 관리한다. 새 프로젝트를 시작하거나, 여러 파일에 걸친 작업을 조율해야 할 때 사용.
+model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
 ---
 

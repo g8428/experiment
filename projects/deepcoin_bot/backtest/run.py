@@ -50,19 +50,22 @@ def main():
     parser.add_argument("--balance",  type=float, default=1000.0)
     parser.add_argument("--risk",     type=float, default=10.0, help="리스크 % (기본 10%)")
     parser.add_argument("--leverage", type=int, default=20)
+    parser.add_argument("--tp_min",   type=float, default=0.0, help="최소 TP % (기본 0=비활성)")
+    parser.add_argument("--rr_min",   type=float, default=1.5, help="최소 RR (기본 1.5)")
     parser.add_argument("--json",     action="store_true", help="JSON 출력")
+    parser.add_argument("--refresh",  action="store_true", help="캐시 무시하고 캔들 새로 수집")
     args = parser.parse_args()
 
-    print(f"데이터 수집 중: {args.sym} {args.bar} {args.days}일...")
-    kl = fetch_historical(args.sym, args.bar, args.days)
+    print(f"데이터 준비 중: {args.sym} {args.bar} {args.days}일... (캐시 있으면 재사용, --refresh 시 새로 수집)")
+    kl = fetch_historical(args.sym, args.bar, args.days, refresh=args.refresh)
     if not kl:
         print("캔들 데이터 없음. 네트워크 확인 필요.")
         sys.exit(1)
-    print(f"캔들 {len(kl)}개 수집 완료.")
+    print(f"캔들 {len(kl)}개 준비 완료.")
 
-    h1_kl = fetch_historical(args.sym, "1H", args.days)
-    m5_kl = fetch_historical(args.sym, "5m", args.days)
-    d1_kl = fetch_historical(args.sym, "1D", args.days + 60)  # 일봉 EMA50 계산용 여유 확보
+    h1_kl = fetch_historical(args.sym, "1H", args.days, refresh=args.refresh)
+    m5_kl = fetch_historical(args.sym, "5m", args.days, refresh=args.refresh)
+    d1_kl = fetch_historical(args.sym, "1D", args.days + 60, refresh=args.refresh)  # 일봉 EMA50 계산용 여유 확보
     print(f"1H={len(h1_kl)}개 / 5m={len(m5_kl)}개 / 1D={len(d1_kl)}개")
 
     names = list(STRATEGIES.keys()) if args.all else [args.strategy]
@@ -82,6 +85,8 @@ def main():
             risk_pct=args.risk,
             leverage=args.leverage,
             sym=args.sym,
+            tp_min_pct=args.tp_min,
+            rr_min=args.rr_min,
         )
         # 가중치 업데이트
         update_weights(result["trades"], sym=args.sym)

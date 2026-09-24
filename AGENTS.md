@@ -42,6 +42,41 @@
      역할: 리서치/코딩/리뷰처럼 프로젝트 에이전트가 위임하는 하위 작업
 ```
 
+<details>
+<summary>Mermaid 버전 (GitHub/Obsidian에서 다이어그램으로 렌더링됨)</summary>
+
+```mermaid
+flowchart TD
+    Owner["재영 (사장님)"] --> Head
+
+    subgraph Head["헤드봇"]
+        direction TB
+        H1["Cowork 세션 + 스케줄 태스크"]
+        H2["실행 위치: 클라우드 (컴퓨터 꺼져도 동작)"]
+        H3["적합한 일: 반복 모니터링·리포트·조사"]
+    end
+
+    Head --> Proj
+
+    subgraph Proj["프로젝트 에이전트"]
+        direction TB
+        P1["로컬 Claude Code (VSCode 통합 터미널)"]
+        P2["프로젝트 1개 = 브랜치 1개 전담"]
+        P3["적합한 일: 실제 개발, 여러 파일 작업"]
+    end
+
+    Proj --> Sub
+
+    subgraph Sub["하위 에이전트 (.claude/agents/*.md)"]
+        direction LR
+        S1["project-lead"] -->|위임| S2["engineer"]
+        S1 -->|위임| S3["researcher"]
+        S4["trade-supervisor (Opus)"]
+    end
+```
+
+</details>
+
 ### 헤드봇 vs 프로젝트 에이전트, 언제 뭘 쓰나
 
 | 판단 기준 | 헤드봇 (Cowork 스케줄 태스크) | 프로젝트 에이전트 (로컬 Claude Code) |
@@ -76,6 +111,17 @@ projects/
 ```
 
 기존에 흩어져 있던 `agents/`, `automation/`, `랍스터주식회사/`는 아직 그대로 둔다 (강제 이관 시 GitHub Actions 경로나 스케줄 태스크 경로가 깨질 수 있어서). 새 프로젝트부터 `projects/` 아래로 통일하고, 기존 것들은 여유 있을 때 하나씩 옮기는 걸 권장한다.
+
+## 하위 에이전트 목록 및 모델 정책
+
+| 에이전트 | 모델 | 역할 |
+|---------|------|------|
+| `trade-supervisor` | **Opus** | 딥코인봇 거래 품질 감독 — 타점/TP/SL 사후 검증, STRATEGY.md 개선 제안 |
+| `project-lead` | Sonnet | 프로젝트 조율 및 하위 에이전트 위임 |
+| `engineer` | Sonnet | 코드 구현/버그 수정/커밋 |
+| `researcher` | Sonnet | 시장·기술 조사 및 결과 파일화 |
+
+> **모델 원칙**: 감독/판단 역할 → Opus. 실행/개발 역할 → Sonnet. 비용 절감과 품질 균형.
 
 ## 하위 에이전트 사용 규칙
 

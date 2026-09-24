@@ -1,0 +1,43 @@
+{
+  "date": "2026-07-30",
+  "criteria": {
+    "monthly_price_normal_max": 20000,
+    "data": "10GB + daily 2GB top-up OR 40GB+",
+    "penalty_days_max": 120,
+    "tethering_required": true,
+    "roaming_required": true
+  },
+  "result": "no_full_match",
+  "sources": [
+    "https://www.clien.net/service/board/jirum/19219367",
+    "https://www.moyoplan.com/plans/18523",
+    "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000003916&mvnopPtnId=PC0000000026",
+    "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"
+  ],
+  "candidates_reference_only": [
+    {
+      "carrier": "티플러스 (LG U+망)",
+      "plan": "The 완전마음껏11G+ (평생요금)",
+      "promo_price": null,
+      "normal_price": 27900,
+      "data": "월 11GB + 매일 2GB (소진 시 3Mbps 무제한)",
+      "penalty": "없음 (평생요금, 약정 없음)",
+      "tethering": "지원 (월 11GB 한도 내)",
+      "roaming": "미지원 (기본), 별도 신청 필요",
+      "missing_criteria": ["정상가 20,000원 초과 (27,900원)", "로밍 기본 미지원"],
+      "link": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000003916&mvnopPtnId=PC0000000026"
+    },
+    {
+      "carrier": "A모바일 (LG U+망)",
+      "plan": "A 갓성비 20GB/100분",
+      "promo_price": "110원 x 12개월",
+      "normal_price": 19800,
+      "data": "10GB + 익월부터 매월 추가 10GB (총 20GB, 일 단위 자동충전 아님)",
+      "penalty": "언급 없음",
+      "tethering": "미지원 (확인됨)",
+      "roaming": "언급 없음 (애매)",
+      "missing_criteria": ["데이터 조건 미충족 (일 2GB 자동충전 아님, 40GB 미만)", "테더링 미지원으로 원칙상 제외 대상"],
+      "link": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"
+    }
+  ]
+}

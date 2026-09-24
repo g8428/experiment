@@ -316,3 +316,141 @@ def get_ict_signal(kl, h1_kl=None, d1_kl=None):
         "ict_confirmation": ict_confirmation,
     })
     return smc_sig
+
+
+# ── 실거래 멀티전략 (backtest/strategy.py 백테스트 결과를 라이브로 이식) ──
+# 우선순위: OTE → MTF → 킬존(NY전용) → Breaker (2026-09-23 6개월 BTC 백테스트:
+# OTE +164.75%, 킬존 +25.16%, MTF +20.60%, Breaker -26.53% 순으로 반영)
+# 전부 get_smc_signal()과 동일한 dict 형태로 반환 → server.py 파이프라인 그대로 재사용
+
+_EMPTY_SIGNAL = {
+    "signal": None, "sl": None, "tp1": None, "tp2": None,
+    "bos_type": None, "bos_dir": None,
+    "bull_ob_count": 0, "bear_ob_count": 0,
+    "bull_fvg_count": 0, "bear_fvg_count": 0,
+    "sweep": False, "sweep_dir": None, "sweep_lvl": None,
+    "buy_liq": [], "sell_liq": [],
+    "strong_high": None, "weak_high": None,
+    "strong_low": None, "weak_low": None,
+    "reason": "",
+}
+
+
+def get_ote_signal(kl, h1_kl=None, d1_kl=None):
+    """OTE(Optimal Trade Entry) 시그널 — 유동성 스윕 후 0.618~0.786 되돌림 재진입.
+    backtest ICTOTEStrategy 이식. 킬존 조건 없음 (server.py 전역 킬존 게이트가 대신 적용)."""
+    result = dict(_EMPTY_SIGNAL, reason="OTE 조건 미충족")
+    if len(kl) < 30:
+        return result
+    regime   = get_market_regime(d1_kl) if d1_kl else "ranging"
+    h1_trend = get_htf_trend(h1_kl) if h1_kl else "neutral"
+    if h1_trend == "neutral":
+        return result
+    price = kl[-1]["c"]
+    highs, lows = find_swings(kl, n=3)
+    if not highs or not lows:
+        return result
+    sweep_dir, sweep_lvl = find_liquidity_sweep(kl, highs, lows)
+    result.update({"sweep": bool(sweep_dir), "sweep_dir": sweep_dir, "sweep_lvl": sweep_lvl})
+    if not sweep_dir:
+        return result
+
+    if (sweep_dir == "bullish" and h1_trend == "bullish" and regime != "bear"
+            and len(lows) >= 2 and len(highs) >= 1):
+        ote = get_ote(lows[-2]["p"], highs[-1]["p"], direction="bullish")
+        if ote["low"] <= price <= ote["high"]:
+            sl, tp1 = round(lows[-1]["p"] * 0.9995, 6), round(highs[-1]["p"], 6)
+            if sl < price < tp1:
+                result.update({
+                    "signal": "long", "sl": sl, "tp1": tp1, "bos_dir": "bullish",
+                    "weak_low": lows[-1]["p"], "strong_high": highs[-1]["p"],
+                    "reason": f"OTE롱 Sweep@{sweep_lvl:.4f}→되돌림{ote['low']:.4f}~{ote['high']:.4f}",
+                })
+    elif (sweep_dir == "bearish" and h1_trend == "bearish" and regime != "bull"
+          and len(highs) >= 2 and len(lows) >= 1):
+        ote = get_ote(lows[-1]["p"], highs[-2]["p"], direction="bearish")
+        if ote["low"] <= price <= ote["high"]:
+            sl, tp1 = round(highs[-1]["p"] * 1.0005, 6), round(lows[-1]["p"], 6)
+            if sl > price > tp1:
+                result.update({
+                    "signal": "short", "sl": sl, "tp1": tp1, "bos_dir": "bearish",
+                    "weak_high": highs[-1]["p"], "strong_low": lows[-1]["p"],
+                    "reason": f"OTE숏 Sweep@{sweep_lvl:.4f}→되돌림{ote['low']:.4f}~{ote['high']:.4f}",
+                })
+    return result
+
+
+def get_mtf_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None):
+    """MTF 컨플루언스 시그널 — OB/FVG 기본 시그널 + 컨플루언스 점수 3점 이상 + 5m 확인봉.
+    backtest ICTMTFStrategy 이식."""
+    base = get_ict_signal(kl, h1_kl=h1_kl, d1_kl=d1_kl)
+    direction = base.get("signal")
+    if not direction:
+        return base
+    score = get_confluence_score(kl, h1_kl, direction, base)
+    if score < 3:
+        return dict(base, signal=None,
+                    reason=f"MTF컨플루언스부족({score}/3) " + base.get("reason", ""))
+    if m5_kl and len(m5_kl) >= 3:
+        last_m5, prev_m5 = m5_kl[-1], m5_kl[-2]
+        if direction == "long" and last_m5["c"] < last_m5["o"] and last_m5["c"] < prev_m5["l"]:
+            return dict(base, signal=None, reason="MTF 5m역방향 " + base.get("reason", ""))
+        if direction == "short" and last_m5["c"] > last_m5["o"] and last_m5["c"] > prev_m5["h"]:
+            return dict(base, signal=None, reason="MTF 5m역방향 " + base.get("reason", ""))
+    return dict(base, reason=f"MTF[conf:{score}] " + base.get("reason", ""))
+
+
+def get_killzone_signal(kl, h1_kl=None, d1_kl=None):
+    """뉴욕 킬존 전용 시그널 — OB/FVG 기본 시그널을 NY 세션으로 한정.
+    backtest ICTKillzoneStrategy 이식."""
+    from datetime import datetime, timezone
+    if not kl:
+        return dict(_EMPTY_SIGNAL, reason="데이터 없음")
+    last_t = datetime.fromtimestamp(kl[-1]["t"] / 1000, tz=timezone.utc)
+    if get_kill_zone(last_t) != "newyork":
+        return dict(_EMPTY_SIGNAL, reason="뉴욕킬존 아님")
+    return get_ict_signal(kl, h1_kl=h1_kl, d1_kl=d1_kl)
+
+
+def get_breaker_signal(kl, h1_kl=None, d1_kl=None):
+    """Breaker Block 시그널 — 실패 OB가 반대 POI로 전환된 지점에서 반응.
+    backtest ICTBreakerStrategy 이식. 2026-09-23 6개월 BTC 백테스트 최하위(-26.53%) →
+    라이브 우선순위 최후. 승률 개선 전까지 tuning.json enabled_strategies에서 빼는 것도 고려."""
+    result = dict(_EMPTY_SIGNAL, reason="Breaker 조건 미충족")
+    if len(kl) < 30:
+        return result
+    regime   = get_market_regime(d1_kl) if d1_kl else "ranging"
+    h1_trend = get_htf_trend(h1_kl) if h1_kl else "neutral"
+    if h1_trend == "neutral":
+        return result
+    price = kl[-1]["c"]
+    highs, lows = find_swings(kl, n=3)
+    if not highs or not lows:
+        return result
+    bull_bb, bear_bb = find_breaker_blocks(kl, highs, lows)
+
+    if h1_trend == "bullish" and regime != "bear":
+        for bb in bull_bb:
+            if bb["bot"] * 0.999 <= price <= bb["top"] * 1.001:
+                sl = round(bb["bot"] * 0.9995, 6)
+                cands = [h["p"] for h in highs if h["p"] > price]
+                if not cands:
+                    continue
+                tp1 = round(min(cands), 6)
+                if sl < price < tp1:
+                    result.update({"signal": "long", "sl": sl, "tp1": tp1, "bos_dir": "bullish",
+                                   "reason": f"BullBreaker {bb['bot']:.4f}~{bb['top']:.4f}"})
+                    return result
+    elif h1_trend == "bearish" and regime != "bull":
+        for bb in bear_bb:
+            if bb["bot"] * 0.999 <= price <= bb["top"] * 1.001:
+                sl = round(bb["top"] * 1.0005, 6)
+                cands = [l["p"] for l in lows if l["p"] < price]
+                if not cands:
+                    continue
+                tp1 = round(max(cands), 6)
+                if sl > price > tp1:
+                    result.update({"signal": "short", "sl": sl, "tp1": tp1, "bos_dir": "bearish",
+                                   "reason": f"BearBreaker {bb['bot']:.4f}~{bb['top']:.4f}"})
+                    return result
+    return result

@@ -1,6 +1,7 @@
 ---
 name: engineer
 description: 실제 코드를 작성/수정/디버깅하고 커밋까지 마치는 개발 서브에이전트 (사원2 역할). project-lead가 위임한 구현 작업, 버그 수정, 리팩터링, 테스트 작성에 사용한다. "설명만 하고 끝"이 아니라 항상 파일을 바꾸고 커밋한다.
+model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 

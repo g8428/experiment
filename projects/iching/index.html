@@ -123,19 +123,6 @@ input.inp{resize:none;}
 .ldsb{font-size:.7rem;color:var(--dim);opacity:.6;letter-spacing:.1em;}
 
 /* API */
-.apnl{position:fixed;bottom:1.2rem;right:1.2rem;z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;}
-.atog{font-size:.68rem;color:var(--dim);letter-spacing:.1em;cursor:pointer;background:none;border:.5px solid var(--bdr);padding:.28rem .65rem;font-family:inherit;transition:all .2s;}
-.atog:hover{color:var(--muted);border-color:var(--bdrh);}
-.abox{display:none;background:var(--ink2);border:.5px solid var(--bdr);padding:.7rem;flex-direction:column;gap:.4rem;width:270px;}
-.abox.open{display:flex;}
-.abox label{font-size:.68rem;color:var(--dim);letter-spacing:.1em;}
-.ain{background:var(--ink3);border:.5px solid var(--bdr);color:var(--muted);font-family:monospace;font-size:.72rem;padding:.38rem .55rem;outline:none;transition:border-color .2s;width:100%;}
-.ain:focus{border-color:var(--bdrh);}
-.asav{padding:.3rem .75rem;background:var(--goldd);border:.5px solid var(--gold);color:var(--goldl);font-family:inherit;font-size:.7rem;cursor:pointer;letter-spacing:.1em;align-self:flex-end;transition:background .2s;}
-.asav:hover{background:rgba(196,154,42,.3);}
-.ast{font-size:.68rem;letter-spacing:.1em;}
-.ast.ok{color:#5a9;}
-.ast.no{color:var(--dim);}
 
 .mbtn{flex:1;padding:.55rem 0;border:.5px solid var(--bdr);background:transparent;color:var(--muted);font-family:inherit;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
 .mbtn:hover{border-color:var(--bdrh);color:var(--text);}
@@ -341,19 +328,6 @@ input.inp{resize:none;}
   </button>
 </div>
 
-<!-- API 패널 -->
-<div class="apnl">
-  <button class="atog" onclick="togApi()">⚙ API</button>
-  <div class="abox" id="abox">
-    <label>Anthropic API Key</label>
-    <input type="password" class="ain" id="ain" placeholder="sk-ant-...">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <span class="ast" id="ast">미설정</span>
-      <button class="asav" onclick="saveKey()">저장</button>
-    </div>
-    <p style="font-size:.65rem;color:var(--dim);line-height:1.5">API 키 설정 시 깊은 점사 제공</p>
-  </div>
-</div>
 
 <script>
 /* ─────────────────── DATA ─────────────────── */
@@ -441,7 +415,7 @@ const GD = {
 };
 
 /* ─────────────────── STATE ─────────────────── */
-const S={name:'',q:'',throws:[],benGua:null,jiGua:null,chg:[],q5:[],a5:[],apiKey:localStorage.getItem('ich_k')||'',_tm:null};
+const S={name:'',q:'',throws:[],benGua:null,jiGua:null,chg:[],q5:[],a5:[],_tm:null};
 
 /* ─────────────────── NAV ─────────────────── */
 function goTo(id){
@@ -710,8 +684,6 @@ async function generateQ5(ben,ji){
     '6개월 뒤 어떤 모습이기를 원하나요?',
   ];
 
-  if(!S.apiKey){ S.q5=defaultQ; renderQ5(); return; }
-
   const bStr=ben?`${S.benGua.n}(${S.benGua.no}번) — ${ben.v}`:'?';
   const jStr=ji?`${S.jiGua.n}(${S.jiGua.no}번) — ${ji.v}`:'없음';
   const hasQ=!!(S.q&&S.q.trim());
@@ -744,10 +716,10 @@ ${hasQ?`[고민]\n"${S.q}"\n\n이 고민을 중심으로 질문을 만들어주�
   try{
     const ctrl=new AbortController();
     const to=setTimeout(()=>ctrl.abort(),25000);
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('/api/questions',{
       method:'POST',signal:ctrl.signal,
-      headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:prompt}]})
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt,model:'claude-haiku-4-5-20251001',max_tokens:700})
     });
     clearTimeout(to);
     const data=await res.json();
@@ -1505,22 +1477,12 @@ function getHab(branchIdx){
 async function generateReading(ben,ji,retryCount=0){
   if(retryCount===0)showLoading();
   const prompt=window.buildReadingPrompt(ben,ji,S);
-  const useServer=!S.apiKey; // 서버 모드: API키 없을 때
-  const url=useServer?'/api/reading':'https://api.anthropic.com/v1/messages';
   const headers={'Content-Type':'application/json'};
-  let body;
-  if(useServer){
-    body=JSON.stringify({prompt,model:'claude-haiku-4-5-20251001',max_tokens:4000});
-  }else{
-    headers['x-api-key']=S.apiKey;
-    headers['anthropic-version']='2023-06-01';
-    headers['anthropic-dangerous-direct-browser-access']='true';
-    body=JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4000,messages:[{role:'user',content:prompt}]});
-  }
+  const body=JSON.stringify({prompt,model:'claude-haiku-4-5-20251001',max_tokens:4000});
   try{
     const ctrl=new AbortController();
     const to=setTimeout(()=>ctrl.abort(),65000);
-    const res=await fetch(url,{method:'POST',signal:ctrl.signal,headers,body});
+    const res=await fetch('/api/reading',{method:'POST',signal:ctrl.signal,headers,body});
     clearTimeout(to);
     const data=await res.json();
     if((res.status===429||res.status===529)&&retryCount<3){
@@ -1553,17 +1515,6 @@ async function generateReading(ben,ji,retryCount=0){
   }
 }
 
-/* ─────────────────── API ─────────────────── */
-function togApi(){const b=document.getElementById('abox');b.classList.toggle('open');if(b.classList.contains('open'))document.getElementById('ain').value=S.apiKey;}
-function saveKey(){
-  const k=document.getElementById('ain').value.trim();
-  S.apiKey=k;
-  if(k){localStorage.setItem('ich_k',k);setAst('ok','API 키 저장됨');}
-  else{localStorage.removeItem('ich_k');setAst('no','미설정');}
-  togApi();
-}
-function setAst(cls,msg){const el=document.getElementById('ast');el.textContent=msg;el.className='ast '+cls;}
-if(S.apiKey)setAst('ok','연결됨');
 </script>
 
 <!-- 동전 수동 입력 모달 -->
