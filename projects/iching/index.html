@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1001,52 +1001,85 @@ function buildLocalCards(ben,ji,chg){
 
 function buildReadingHtmlV2(r,ben,ji){
   if(!r||!r.sections||!r.sections.length){
-    // 구조가 다산역 v2 포맷이 아니면 구버전 렌더러로 폴백
     return buildReadingHtml(r,ben,ji)||'';
   }
-  const name=S.name||'당신';
-  const benName=S.benGua?.n||'';
-  const jiName=S.jiGua?.n||'';
+  const mdp=t=>(t||'').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/"([^"]+)"/g,'<span style="color:var(--goldl)">"$1"</span>');
+  const paras=t=>t.split(/\n+/).filter(p=>p.trim()).map(p=>`<p>${mdp(p)}</p>`).join('');
   let html='';
 
   // 헤드라인
   if(r.headline){
     html+=`<div class="ccard" style="margin-bottom:1.2rem">
-      <p style="font-size:.66rem;color:var(--gold);letter-spacing:.2em;margin-bottom:.5rem">✦ 총평</p>
-      <h2 style="font-size:1.05rem;font-weight:500;color:var(--text);line-height:1.6">${r.headline}</h2>
+      <p style="font-size:.66rem;color:var(--gold);letter-spacing:.2em;margin-bottom:.5rem">✦ 占</p>
+      <h2 style="font-size:1.05rem;font-weight:500;color:var(--text);line-height:1.6">${mdp(r.headline)}</h2>
     </div>`;
   }
 
-  // 섹션 렌더링
-  const TAG_STYLES={
-    '지금 서 있는 자리':'지금 서 있는 자리 · 현황',
-    '이 점괘의 심장':'이 점괘의 심장 · 핵심 변효',
-    '방향':'방향 · 귀결',
-    '시기':'시기 · 타이밍',
-    '조심할 것':'조심할 것 · 경계',
+  const TAG_LABELS={
+    '지금 서 있는 자리':'지금 서 있는 자리',
+    '이 점괘의 심장':'이 점괘의 심장',
+    '방향':'방향',
+    '시기':'시기',
+    '조심할 것':'조심할 것',
     '마무리':'마무리',
   };
 
   r.sections.forEach(sec=>{
-    if(!sec||!sec.content||!sec.content.trim())return;
-    const tagLabel=TAG_STYLES[sec.tag]||sec.tag||'해석';
+    if(!sec)return;
+    const tag=TAG_LABELS[sec.tag]||sec.tag||'';
     const isFinal=sec.tag==='마무리';
-    const ps=sec.content.split(/\n+/).filter(p=>p.trim())
-      .map(p=>`<p>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/"([^"]+)"/g,'<span style="color:var(--goldl)">"$1"</span>')}</p>`).join('');
+
+    // 3층 구조: quote / meaning / reading
+    const hasLayers=sec.quote||sec.meaning||sec.reading;
+
+    let body='';
+    if(hasLayers){
+      // 원문 인용
+      if(sec.quote&&sec.quote.trim()){
+        body+=`<div style="margin-bottom:.9rem;padding:.65rem .9rem;border-left:2px solid var(--gold);background:rgba(196,154,42,.06)">
+          <p style="font-size:.72rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">원문</p>
+          <p style="font-size:.88rem;color:var(--goldl);font-style:italic;line-height:1.7">${mdp(sec.quote)}</p>
+        </div>`;
+      }
+      // 내포된 의미
+      if(sec.meaning&&sec.meaning.trim()){
+        body+=`<div style="margin-bottom:.9rem">
+          <p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">意 · 의미</p>
+          <div class="sbody" style="color:var(--muted)">${paras(sec.meaning)}</div>
+        </div>`;
+      }
+      // 질문에 맞는 해석
+      if(sec.reading&&sec.reading.trim()){
+        body+=`<div style="padding-top:.6rem;border-top:.5px solid var(--bdr)">
+          <p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">↳ ${S.name||'당신'}에게</p>
+          <div class="sbody">${paras(sec.reading)}</div>
+        </div>`;
+      }
+    }else if(sec.content&&sec.content.trim()){
+      // 구버전 content 단일 필드 호환
+      body+=`<div class="sbody">${paras(sec.content)}</div>`;
+    }
+
+    if(!body)return;
+
     if(isFinal){
-      html+=`<div class="ccard"><span class="stag" style="display:block;margin-bottom:.5rem">마무리</span><div class="sbody">${ps}</div>${r.closing_line?`<p class="wnr">${r.closing_line}</p>`:''}</div>`;
+      html+=`<div class="ccard">
+        <span class="stag" style="display:block;margin-bottom:.8rem">마무리</span>
+        ${sec.title?`<h2 class="stit" style="margin-bottom:.8rem">${mdp(sec.title)}</h2>`:''}
+        ${body}
+        ${r.closing_line?`<p class="wnr">${mdp(r.closing_line)}</p>`:''}
+      </div>`;
     }else{
       html+=`<div class="scard">
-        <span class="stag">${tagLabel}</span>
-        ${sec.title?`<h2 class="stit">${sec.title}</h2>`:''}
-        <div class="sbody">${ps}</div>
+        <span class="stag">${tag}</span>
+        ${sec.title?`<h2 class="stit">${mdp(sec.title)}</h2>`:''}
+        ${body}
       </div>`;
     }
   });
 
-  // closing_line이 마무리 섹션에 없으면 단독으로 표시
-  if(r.closing_line&&(!r.sections.some(s=>s.tag==='마무리'&&s.content))){
-    html+=`<div class="ccard"><p class="wnr">${r.closing_line}</p></div>`;
+  if(r.closing_line&&!r.sections.some(s=>s.tag==='마무리'&&(s.reading||s.content))){
+    html+=`<div class="ccard"><p class="wnr">${mdp(r.closing_line)}</p></div>`;
   }
   return html;
 }
@@ -1357,105 +1390,134 @@ function buildLiuYaoData(benNo){
   };
 }
 
-/* ── 점사 프롬프트 빌더 (7섹션 구조) ── */
+/* ── 점사 프롬프트 빌더 (3층 섹션 구조) ── */
 window.buildReadingPrompt=function(ben,ji,state){
   const name=state.name||'상담자';
   const nats=(state.throws||[]).map(t=>t&&(t.sum===9||t.sum===7)?'양':'음');
   const dasan=nats.length===6?calcDasanYeok(nats,state.benGua?.no,state.chg||[]):null;
   const lyData=state.benGua?.no?buildLiuYaoData(state.benGua.no):null;
   const chg=state.chg||[];
+  const chgN=chg.length;
   const LABELS=['초효','이효','삼효','사효','오효','상효'];
-
   const benName=state.benGua?.n||'';
   const jiName=state.jiGua?.n||'';
 
-  // 다산역 정보 문자열
+  // ── 변효 개수별 해석 중심 ──
+  let readingFocus='';
+  if(chgN===0){
+    readingFocus=`[변효 없음 — 해석 원칙]
+본괘 괘사와 대상전만으로 전체를 읽는다.
+상황·방향·시기·경계 모두 본괘 하나에서 끌어낸다.
+지괘 없음. 변화보다 지금 이 자리의 의미에 집중.`;
+  }else if(chgN===1){
+    readingFocus=`[변효 1개 — 해석 원칙]
+변효(${LABELS[chg[0]]}) 효사가 이 점의 핵심 메시지다. 질문의 직접적인 답은 여기서 꺼낸다.
+본괘 괘사는 배경·상황 설명용.
+지괘는 이 흐름의 귀결 방향.`;
+  }else if(chgN===2){
+    readingFocus=`[변효 2개 — 해석 원칙]
+위 효(${LABELS[chg[1]]}) 효사가 중심, 아래 효(${LABELS[chg[0]]}) 효사는 보조.
+두 효의 메시지를 하나의 흐름으로 연결해서 읽는다.
+지괘는 귀결 방향.`;
+  }else if(chgN<=4){
+    readingFocus=`[변효 ${chgN}개 — 해석 원칙]
+효사보다 본괘↔지괘 괘사 대비가 핵심.
+"지금(본괘)은 이런 상황, 향하는 곳(지괘)은 저런 환경"으로 읽는다.
+변효 효사는 참고 수준.`;
+  }else{
+    readingFocus=`[변효 ${chgN}개 — 해석 원칙]
+지괘 괘사가 메인이다. 본괘는 지나가는 상황, 지괘가 실질적 현재이자 미래.`;
+  }
+
+  // ── 다산역 참고 ──
   let dasanStr='';
   if(dasan){
     const{hoche,isBiguai,biguaiName,chgMeanings}=dasan;
     if(hoche.inner||hoche.outer){
-      dasanStr+=`\n[다산역 호체]\n`;
-      if(hoche.inner)dasanStr+=`내호체(2·3·4효): ${hoche.inner.n}(${hoche.inner.nat}) — 겉에서 안 보이는 내부 구조\n`;
-      if(hoche.outer)dasanStr+=`외호체(3·4·5효): ${hoche.outer.n}(${hoche.outer.nat}) — 내부에서 외부로 이어지는 흐름\n`;
+      dasanStr+='\n[호체 — 숨은 내부 구조]\n';
+      if(hoche.inner)dasanStr+=`내호(2·3·4효): ${hoche.inner.n}(${hoche.inner.nat})\n`;
+      if(hoche.outer)dasanStr+=`외호(3·4·5효): ${hoche.outer.n}(${hoche.outer.nat})\n`;
     }
-    if(isBiguai)dasanStr+=`\n[추이] 이 괘는 12벽괘 중 하나입니다: ${biguaiName}. 계절과 절기의 전환점을 직접 나타냅니다.\n`;
+    if(isBiguai)dasanStr+=`\n[추이] ${biguaiName} — 계절 전환점 괘\n`;
     if(chgMeanings.length>0){
-      dasanStr+=`\n[효변 위치 의미]\n`;
-      chgMeanings.forEach(c=>dasanStr+=`${c.pos}효: ${c.meaning}\n`);
+      dasanStr+='\n[효 위치 의미]\n';
+      chgMeanings.forEach(c=>dasanStr+=`${LABELS[c.pos-1]}: ${c.meaning}\n`);
     }
   }
 
-  // 육효점 정보 문자열
+  // ── 육효점 타이밍 참고 ──
   let lyStr='';
   if(lyData){
-    lyStr+=`\n[육효점 데이터 — ${lyData.ilJin}일]\n`;
-    lyStr+=`궁: ${lyData.palace}궁(${lyData.palaceElement})\n`;
-    lyStr+=`세효(나): ${lyData.sePos}효 — ${lyData.seData?.branch||''}(${lyData.seData?.liuqin||''}, ${lyData.seData?.shou||''})${lyData.seData?.isKong?' [공망]':''}\n`;
-    lyStr+=`응효(상대): ${lyData.eungPos}효 — ${lyData.eungData?.branch||''}(${lyData.eungData?.liuqin||''}, ${lyData.eungData?.shou||''})${lyData.eungData?.isKong?' [공망]':''}\n`;
-    lyStr+=`공망: ${lyData.kongmang.join('·')}\n`;
-    // 관귀(직장·관직) 자리
-    const gwangui=lyData.positions.filter(p=>p.liuqin==='관귀');
-    if(gwangui.length>0)lyStr+=`관귀(직장/관직/남편): ${gwangui.map(p=>`${p.pos}효 ${p.branch}(${p.shou})${p.isKong?'[공망]':''}`).join(', ')}\n`;
-    const cheojai=lyData.positions.filter(p=>p.liuqin==='처재');
-    if(cheojai.length>0)lyStr+=`처재(재물/여자친구): ${cheojai.map(p=>`${p.pos}효 ${p.branch}(${p.shou})${p.isKong?'[공망]':''}`).join(', ')}\n`;
-    // 오늘 일진과 합충 관계 간단 서술
     const ilBr=lyData.ilJinBranchIdx;
-    const chungBr=(ilBr+6)%12; // 충(沖) = 6칸 차이
-    const chungBrKr=BRANCHES_KR[chungBr];
-    const heungBrSet=getHab(ilBr);
-    lyStr+=`일진 충(沖): ${BRANCHES_HAN[chungBr]}(${chungBrKr}) — 이 지지가 있는 효는 충발(沖發)됨\n`;
-    lyStr+=`일진 합(合): ${heungBrSet.map(b=>BRANCHES_HAN[b]).join('·')} — 합화, 묶이는 관계\n`;
+    const chungBr=(ilBr+6)%12;
+    const habSet=getHab(ilBr);
+    const gwangui=lyData.positions.filter(p=>p.liuqin==='관귀');
+    const cheojai=lyData.positions.filter(p=>p.liuqin==='처재');
+    lyStr=`\n[육효점 타이밍 참고 — ${lyData.ilJin}일]
+공망(비어있는 자리·시기): ${lyData.kongmang.join('·')}월·일 → 이 시기엔 일이 흐릿하거나 결과가 아직 안 차 있음
+충(사건이 발동하는 시기): ${BRANCHES_HAN[chungBr]}이 오는 날·달
+합(묶이거나 열리는 시기): ${habSet.map(b=>BRANCHES_HAN[b]).join('·')}이 오는 날·달
+나(세효) 자리: ${lyData.sePos}효 ${lyData.seData?.branch||''}${lyData.seData?.isKong?' [공망중 — 지금 내가 비어있는 상태]':''}
+결과·상대(응효) 자리: ${lyData.eungPos}효 ${lyData.eungData?.branch||''}${lyData.eungData?.isKong?' [공망중 — 상대나 결과가 아직 실체 없음]':''}
+${gwangui.length>0?`직업·권위(관귀): ${gwangui.map(p=>`${p.pos}효 ${p.branch}${p.isKong?'[공망]':''}`).join(' ')}`:''}
+${cheojai.length>0?`재물·실익(처재): ${cheojai.map(p=>`${p.pos}효 ${p.branch}${p.isKong?'[공망]':''}`).join(' ')}`:''}`;
   }
 
   const qap=(state.q5||[]).map((q,i)=>`Q${i+1}. ${q}\nA. ${(state.a5||[])[i]||'(답변 없음)'}`).join('\n\n');
+  const today=new Date();
+  const todayStr=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
 
-  return`당신은 수십 년 경력의 주역 점술가입니다. 아래 정보를 바탕으로 ${name}님에게 깊고 개인화된 점사를 써주세요.
+  return`당신은 수십 년 경력의 주역 점술가입니다.
+아래 정보를 바탕으로 ${name}님에게 점사를 써주세요. 오늘 ${todayStr}.
 
 ━━━━━━━━━━━━━━━━━━
 이름: ${name}
 고민: ${state.q||'(없음)'}
 
-본괘: ${benName}(${state.benGua?.no||'?'}번) — ${ben?.v||''}
-괘사: ${ben?.k||''} | 대상전: ${ben?.dst||''}
-${jiName?`지괘: ${jiName}(${state.jiGua?.no}번) — ${ji?.v||''}\n지괘 대상전: ${ji?.dst||''}`:''}
-변효: ${chg.length>0?chg.map(i=>LABELS[i]).join(', '):'없음'}
-${chg.length>0?`변효 효사:\n${chg.map(i=>`  ${LABELS[i]}: ${ben?.hy?.[i]||'(없음)'}`).join('\n')}`:''}
-${dasanStr}${lyStr}
+본괘: ${benName}(${state.benGua?.no||'?'}번)
+괘사: ${ben?.k||''}
+대상전: ${ben?.dst||''}
+본괘 핵심: ${ben?.v||''}
+${jiName?`\n지괘: ${jiName}(${state.jiGua?.no}번)\n지괘 괘사: ${ji?.k||''}\n지괘 대상전: ${ji?.dst||''}`:''}
+변효: ${chgN>0?chg.map(i=>LABELS[i]).join(', '):'없음'}
+${chgN>0?`변효 효사:\n${chg.map(i=>`  ${LABELS[i]}: ${ben?.hy?.[i]||'(없음)'}`).join('\n')}`:''}
+${readingFocus}${dasanStr}${lyStr}
+
 추가 질문·답변:
 ${qap}
 ━━━━━━━━━━━━━━━━━━
 
-[출력 형식] 순수 JSON만, 마크다운 없이.
+[출력 형식] 순수 JSON만. 마크다운 코드블록 없이.
 
-[7섹션 구조]
-1. headline: 전체를 한 문장으로 압축하는 소제목 (캐치하게, 30자 이내)
-2. sections 배열 (각 섹션: {tag, title, content}):
-   - tag "지금 서 있는 자리": 상하괘 물상으로 상황을 그림처럼 묘사 + 호체가 있으면 숨은 구조 언급 + 변효 위치 의미 연결 (3~4문단)
-   - tag "이 점괘의 심장": 변효 효사 원문 인용 후 바로 쉬운 풀이 (원문: "..." → 쉬운 말로) + 육효점 데이터로 지금 어떤 일이 일어나는지 서술형으로 엮기 (2~3문단)
-   - tag "방향": 지괘 방향과 그 괘가 상징하는 환경 묘사 (2~3문단, 지괘 없으면 본괘 귀결로)
-   - tag "시기": 구체적 시간 구간 (이번달/다음달/그 이후)별 가이드. 육효점 공망·충·합 정보를 타이밍 근거로 사용. "~월은 ~, ~월 말은 ~" 식으로 (2~3문단)
-   - tag "조심할 것": 경계 포인트 딱 1개만. 짧고 강하게 (1~2문단)
-   - tag "마무리": 한두 문장. 방향은 명확히 주되 선택은 본인 몫이라는 여지. 마지막 한 줄 응축 (2문단)
-3. closing_line: 마지막 한 줄 응축 메시지 (짧고 힘 있게, 20자 이내)
+[각 섹션은 quote / meaning / reading 3개 필드로 구성]
+  quote  : 이 섹션의 근거 원문 한 줄 (괘사·효사·대상전 원문. 없으면 "")
+  meaning: 그 원문의 전통적 의미 — 1~2문장. 전문 용어 가볍게 허용.
+  reading: ${name}의 고민·질문 답변과 직접 연결한 해석 — 2~3문장. 구체적으로.
+           전문 용어 쓰지 말고 일상어로. "그래서 ${name}에게 이 괘는 ~을 말한다" 식.
 
-[작성 규칙 — 반드시 지킬 것]
-- 이름(${name})을 자주 직접 부름
-- 질문 답변 내용을 구체적으로 녹여냄 (원문 복붙 금지, 돌려서 자연스럽게)
-- 효사 원문 인용 후 반드시 쉬운 말 풀이가 바로 따라옴
-- "~라는 뜻이고 ~라는 의미이며" 식 나열 금지 → 하나의 이야기 흐름으로
-- 시기 섹션에서 "~월은 ~, ~월 말은 ~" 형식으로 실제 캘린더 구간 제시
-- 육효점 요소(세효/응효/육친/공망 등)는 "기술적 나열" 말고 서술형 문장으로 자연스럽게 엮음
-- AI 티 없이 — 전통 점술사처럼
+[6섹션]
+1. tag "지금 서 있는 자리"  — 본괘 물상으로 지금 상황을 그림처럼. 호체 있으면 숨은 구조 한 줄.
+2. tag "이 점괘의 심장"     — 핵심 효사(또는 괘사). reading 필드에서 질문의 직접적 답을 줄 것.
+3. tag "방향"               — 지괘(없으면 본괘 귀결)가 가리키는 방향. 어떻게 움직여야 하는가.
+4. tag "시기"               — 구체적 월 단위 타이밍. 육효점 공망·충·합을 풀어서 "~월은 ~, ~월은 ~".
+5. tag "조심할 것"          — 경계 1개만. 짧고 강하게.
+6. tag "마무리"             — 방향 명확히 + 선택은 본인 몫 여지. quote 없어도 됨.
+
+[작성 규칙]
+- 이름(${name})을 각 섹션 reading에 직접 씀
+- 질문 답변 내용을 구체적으로 녹임 (복붙 금지)
+- 시기 섹션: "~월은 ~, ~월 말은 ~" 형식으로 실제 달 이름 제시
+- AI 티 없이
 
 {
   "headline":"",
   "sections":[
-    {"tag":"지금 서 있는 자리","title":"","content":""},
-    {"tag":"이 점괘의 심장","title":"","content":""},
-    {"tag":"방향","title":"","content":""},
-    {"tag":"시기","title":"","content":""},
-    {"tag":"조심할 것","title":"","content":""},
-    {"tag":"마무리","title":"","content":""}
+    {"tag":"지금 서 있는 자리","title":"","quote":"","meaning":"","reading":""},
+    {"tag":"이 점괘의 심장","title":"","quote":"","meaning":"","reading":""},
+    {"tag":"방향","title":"","quote":"","meaning":"","reading":""},
+    {"tag":"시기","title":"","quote":"","meaning":"","reading":""},
+    {"tag":"조심할 것","title":"","quote":"","meaning":"","reading":""},
+    {"tag":"마무리","title":"","quote":"","meaning":"","reading":""}
   ],
   "closing_line":""
 }`;
