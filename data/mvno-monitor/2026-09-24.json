@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-24",
+  "result": "no_match",
+  "summary": "조건 충족 요금제 없음. 11GB+일2GB/40GB+ 요금제는 정상가 2.4만~4만원대.",
+  "near_candidates": [
+    {
+      "carrier": "A모바일 (U+망)",
+      "plan": "A 갓성비 20GB/100분",
+      "promo_price": "10원 x 7개월",
+      "regular_price": 19800,
+      "data": "기본10GB+추가10GB",
+      "penalty": "언급 없음",
+      "tethering": "언급 없음",
+      "roaming": "언급 없음",
+      "missing": ["데이터 40GB 또는 일2GB 조건 미달"],
+      "link": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551&mvnopPtnId=PC0000000020"
+    }
+  ],
+  "sources": ["https://www.clien.net/service/board/jirum/19256696"],
+  "slack_sent": true
+}
