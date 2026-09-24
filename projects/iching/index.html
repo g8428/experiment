@@ -989,23 +989,7 @@ function buildLocalCards(ben,ji,chg){
   const _jk=_j2.k2||ji?.k||'';const _jdst=_j2.dst2||ji?.dst||'';
   let html='';
 
-  // 변효 수에 따른 해석 포인트
   const chgN=chg?chg.length:0;
-  const chgLabels=chg?chg.map(i=>LABELS[i]).join('·'):'';
-  let focusMsg='';
-  if(chgN===0){
-    focusMsg=`변효가 없습니다. <strong>${benName}</strong>의 괘기(卦氣)가 지금 이 순간 그대로입니다. 괘사와 대상전을 깊이 새기세요.`;
-  }else if(chgN===1){
-    focusMsg=`변효가 <strong>${chgLabels}</strong> 하나입니다. 이 효 하나가 지금 상황의 핵심입니다. 본괘 <strong>${benName}</strong>의 맥락 안에서 이 효를 중심으로 읽으세요.`;
-  }else if(chgN===2){
-    focusMsg=`<strong>${chgLabels}</strong>, 두 곳에서 동시에 움직임이 있습니다. 본괘 <strong>${benName}</strong>을 중심으로, 두 효가 가리키는 방향을 함께 살피세요.`;
-  }else if(chgN===3){
-    focusMsg=`효가 셋 변합니다. 본괘 <strong>${benName}</strong>과 지괘 <strong>${jiName}</strong>을 균등하게 읽어야 합니다. 지금 경계에 서 있어요.`;
-  }else if(chgN<=5){
-    focusMsg=`효 <strong>${chgN}개</strong>가 변합니다. 지괘 <strong>${jiName}</strong>이 이미 강하게 당겨지고 있습니다. 지괘를 중심으로, 본괘는 배경으로 읽으세요.`;
-  }else{
-    focusMsg=`모든 효가 변합니다. 지금 국면이 완전히 전환됩니다. 지괘 <strong>${jiName}</strong>${jiName?'을':''}이 새 현실입니다.`;
-  }
 
   html+=`<div class="scard">
     <span class="stag">형세 · 形勢</span>
@@ -1013,7 +997,6 @@ function buildLocalCards(ben,ji,chg){
     <div class="sbody">
       <p>뽑힌 괘: <strong>${benName}(${S.benGua?.no||'?'}번)</strong>${jiName?` → <strong>${jiName}(${S.jiGua?.no||'?'}번)</strong>`:''}</p>
       <p>${ben.v}</p>
-      <p style="margin-top:.7rem;padding:.7rem .9rem;border-left:2px solid var(--gold);background:rgba(196,154,42,.05);font-size:.86rem;line-height:1.75">${focusMsg}</p>
     </div>
   </div>`;
 
@@ -1030,16 +1013,6 @@ function buildLocalCards(ben,ji,chg){
 
   if(chg&&chg.length>0){
     const chgText=chg.map(i=>LABELS[i]).join(', ');
-    // 변효 수별 읽기 지침
-    const chgGuide=chg.length===1
-      ?`이 효 하나가 전체 읽기의 중심입니다. 본괘 <strong>${benName}</strong>의 상황 안에서 이 효사가 지금 당신에게 무슨 말을 하는지 집중하세요.`
-      :chg.length===2
-      ?`두 효의 메시지를 함께 읽으세요. 두 효가 서로 어떤 방향을 가리키는지 살펴보면 지금의 핵심이 드러납니다.`
-      :chg.length===3
-      ?`본괘 <strong>${benName}</strong>과 지괘 <strong>${jiName}</strong>을 균등하게 읽어야 합니다. 세 효는 지금 경계에서 움직이는 힘들입니다.`
-      :chg.length<=5
-      ?`효가 많이 변했습니다. 개별 효사보다 지괘 <strong>${jiName}</strong>의 방향이 더 중요합니다. 어디로 가고 있는지를 보세요.`
-      :`모든 효가 변했습니다. 건(乾)이면 용구(用九), 곤(坤)이면 용육(用六)의 뜻을 읽고, 그 외에는 지괘 <strong>${jiName}</strong>의 괘사가 핵심입니다.`;
     let hyosaParts='';
     chg.forEach(idx=>{
       const hyosa=_bhy(idx);
@@ -1052,7 +1025,6 @@ function buildLocalCards(ben,ji,chg){
       <span class="stag">변효 · 變爻 (${chg.length}개)</span>
       <h2 class="stit">지금 움직이고 있는 것들</h2>
       <div class="sbody">
-        <p style="font-size:.86rem;line-height:1.75;margin-bottom:.7rem">${chgGuide}</p>
         <p style="font-size:.75rem;color:var(--dim)">변효: <strong style="color:var(--text)">${chgText}</strong></p>
         ${hyosaParts}
         ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--muted)">→ 지괘 <strong style="color:var(--text)">${jiName}</strong>으로 흘러가고 있습니다.</p>`:''}
@@ -1065,7 +1037,7 @@ function buildLocalCards(ben,ji,chg){
       <span class="stag">지괘 · ${jiName}</span>
       <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
       <div class="sbody">
-        <p>${chgN>=4?`효가 ${chgN}개 변해 <strong>${jiName}</strong>이 이미 새 현실로 다가왔습니다. 이 괘를 중심으로 읽으세요.`:`변효를 통해 <strong>${jiName}(${S.jiGua?.no||'?'}번)</strong>으로 흘러가고 있습니다.`}</p>
+        <p>변효를 통해 <strong>${jiName}(${S.jiGua?.no||'?'}번)</strong>으로 흘러가고 있습니다.</p>
         <p style="margin-top:.5rem">${ji.v}</p>
         <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${_jdst}</p>
       </div>
