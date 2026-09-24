@@ -709,7 +709,7 @@ function showHexResult(){
   document.getElementById('hexTitle').textContent=S.benGua?(S.jiGua?`${S.benGua.n} → ${S.jiGua.n}`:S.benGua.n):'';
   document.getElementById('hexSub').textContent=S.chg.length>0?`변효 ${S.chg.map(i=>i+1+'효').join('·')} · ${S.benGua?.no||'??'}번 괘`:`변효 없음 · ${S.benGua?.no||'??'}번 괘`;
   renderGua('s2gua','s2chgi');
-  document.getElementById('hexDesc').textContent=ben?`${ben.k} ${ben.v}`:'';
+  document.getElementById('hexDesc').textContent=ben?`${(GD2?.[S.benGua?.no]?.k2||ben.k)} ${ben.v}`:'';
   // 해석 카드 렌더링
   document.getElementById('hexInterpret').innerHTML=buildLocalCards(ben,ji,S.chg);
   const hr=document.getElementById('hexResult');
@@ -856,6 +856,10 @@ function buildReadingHtml(r,ben,ji){
   const jiName=S.jiGua?.n||'';
   const chg=S.chg;
   const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  const _b2=GD2?.[S.benGua?.no]||{};const _j2=GD2?.[S.jiGua?.no]||{};
+  const _bk=_b2.k2||ben?.k||'';const _bdst=_b2.dst2||ben?.dst||'';
+  const _bhy=i=>_b2.hy2?.[i]||ben?.hy?.[i]||'';
+  const _jk=_j2.k2||ji?.k||'';const _jdst=_j2.dst2||ji?.dst||'';
 
   // ① 형세
   const aiXS=getAi(secs,'형세',0);
@@ -878,9 +882,9 @@ function buildReadingHtml(r,ben,ji){
     <h2 class="stit">${benName}이 전하는 말</h2>
     <div class="sbody">
       <p><strong>${ben.gs}</strong></p>
-      <p>${ben.k}</p>
+      <p>${_bk}</p>
       ${ben.p?`<p style="margin-top:.6rem">${ben.p}</p>`:''}
-      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${ben.dst}</p>
+      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${_bdst}</p>
     </div>
     ${aiBlock('해석',aiBen?.title,aiBen?.content)}
   </div>`;
@@ -894,7 +898,7 @@ function buildReadingHtml(r,ben,ji){
       :'변화의 포인트가 하나로 집중되어 있습니다. 이 효 하나가 지금의 핵심이에요.';
     let hyosaParts='';
     chg.forEach(idx=>{
-      const hyosa=ben.hy?.[idx];
+      const hyosa=_bhy(idx);
       if(hyosa)hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
         <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
         <p style="font-size:.86rem;color:var(--text);line-height:1.8">${hyosa}</p>
@@ -927,7 +931,7 @@ function buildReadingHtml(r,ben,ji){
         <p>지금 이 상황은 <strong>${jiName}${S.jiGua?.no?'('+S.jiGua.no+'번)':''}</strong>을 향해 나아가고 있습니다.</p>
         <p>${ji.v}</p>
         ${ji.p?`<p style="margin-top:.4rem">${ji.p}</p>`:''}
-        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${ji.dst}</p>
+        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${_jdst}</p>
       </div>
       ${aiBlock('흐름 해석',aiJi?.title,aiJi?.content)}
     </div>`;
@@ -945,7 +949,7 @@ function buildReadingHtml(r,ben,ji){
       </div>
       <div style="background:var(--ink2);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?ji.k:ben.k}</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?_jk:_bk}</p>
       </div>
       <div style="background:var(--ink2);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
@@ -975,13 +979,14 @@ function renderReading(r,ben,ji){
 /* HTML만 반환 — S2 괘상 미리보기용 (AI 없이) */
 function buildLocalCards(ben,ji,chg){
   if(!ben)return '';
-  // renderReading과 동일한 구조, AI 없이
-  const dummy={sections:[],closing:null,encouragement:null};
-  // 임시로 rdarea 교체 없이 HTML만 추출
   const name=S.name||'당신';
   const benName=S.benGua?.n||'';
   const jiName=S.jiGua?.n||'';
   const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  const _b2=GD2?.[S.benGua?.no]||{};const _j2=GD2?.[S.jiGua?.no]||{};
+  const _bk=_b2.k2||ben?.k||'';const _bdst=_b2.dst2||ben?.dst||'';
+  const _bhy=i=>_b2.hy2?.[i]||ben?.hy?.[i]||'';
+  const _jk=_j2.k2||ji?.k||'';const _jdst=_j2.dst2||ji?.dst||'';
   let html='';
 
   html+=`<div class="scard">
@@ -1000,9 +1005,9 @@ function buildLocalCards(ben,ji,chg){
     <h2 class="stit">${benName}이 전하는 말</h2>
     <div class="sbody">
       <p><strong>${ben.gs}</strong></p>
-      <p>${ben.k}</p>
+      <p>${_bk}</p>
       ${ben.p?`<p style="margin-top:.6rem">${ben.p}</p>`:''}
-      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${ben.dst}</p>
+      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${_bdst}</p>
     </div>
   </div>`;
 
@@ -1014,7 +1019,7 @@ function buildLocalCards(ben,ji,chg){
       :'변화의 포인트가 하나로 집중되어 있습니다.';
     let hyosaParts='';
     chg.forEach(idx=>{
-      const hyosa=ben.hy?.[idx];
+      const hyosa=_bhy(idx);
       if(hyosa)hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
         <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
         <p style="font-size:.86rem;color:var(--text);line-height:1.8">${hyosa}</p>
@@ -1040,7 +1045,7 @@ function buildLocalCards(ben,ji,chg){
         <p>지금 이 상황은 <strong>${jiName}${S.jiGua?.no?'('+S.jiGua.no+'번)':''}</strong>을 향해 나아가고 있습니다.</p>
         <p>${ji.v}</p>
         ${ji.p?`<p style="margin-top:.4rem">${ji.p}</p>`:''}
-        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${ji.dst}</p>
+        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${_jdst}</p>
       </div>
     </div>`;
   }
@@ -1055,7 +1060,7 @@ function buildLocalCards(ben,ji,chg){
       </div>
       <div style="background:var(--ink2);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?ji.k:ben.k}</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?_jk:_bk}</p>
       </div>
       <div style="background:var(--ink2);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
