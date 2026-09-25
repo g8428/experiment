@@ -984,7 +984,7 @@ function buildLocalCards(ben,ji,chg){
   const jiName=S.jiGua?.n||'';
   const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
   const _b2=GD2?.[S.benGua?.no]||{};const _j2=GD2?.[S.jiGua?.no]||{};
-  const _bk=_b2.k2||ben?.k||'';const _bdst=_b2.dst2||ben?.dst||'';
+  const _bk=_b2.k2||ben?.k||'';const _bdst=_b2.dst2||ben?.dst||'';const _bdt2=_b2.dt2||ben?.dt||'';
   const _bhy=i=>_b2.hy2?.[i]||ben?.hy?.[i]||'';
   const _jk=_j2.k2||ji?.k||'';const _jdst=_j2.dst2||ji?.dst||'';
   let html='';
@@ -1005,7 +1005,10 @@ function buildLocalCards(ben,ji,chg){
     <h2 class="stit">${benName}이 전하는 말</h2>
     <div class="sbody">
       <p>${_bk}</p>
-      ${ben.p?`<p style="margin-top:.6rem">${ben.p}</p>`:''}
+      ${ben.p?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
+        <p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">↳ 이 때를</p>
+        <p style="font-size:.86rem;line-height:1.85;color:var(--text)">${ben.p}</p>
+      </div>`:''}
       <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${_bdst}</p>
     </div>
   </div>`;
@@ -1086,7 +1089,7 @@ function buildLocalCards(ben,ji,chg){
       </div>
       <div style="background:var(--ink2);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>0&&ji)?(ji.v||_jdst):ben.v}</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chgN>0&&ji)?(ji.v||_jdst):(_bdt2||_bdst)}</p>
       </div>
     </div>
   </div>`;
