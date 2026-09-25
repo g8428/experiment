@@ -1083,8 +1083,8 @@ function buildLocalCards(ben,ji,chg){
         if(!hyosa&&!hd)return;
         hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
           <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
-          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${(hd&&chgN<=3)?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
-          ${(hd&&chgN<=3)?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
+          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${(hd&&chgN<=5)?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
+          ${(hd&&chgN<=5)?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
         </div>`;
       });
     }
