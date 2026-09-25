@@ -1004,7 +1004,6 @@ function buildLocalCards(ben,ji,chg){
     <span class="stag">본괘 · ${benName}</span>
     <h2 class="stit">${benName}이 전하는 말</h2>
     <div class="sbody">
-      <p><strong>${ben.gs}</strong></p>
       <p>${_bk}</p>
       ${ben.p?`<p style="margin-top:.6rem">${ben.p}</p>`:''}
       <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${_bdst}</p>
@@ -1054,11 +1053,11 @@ function buildLocalCards(ben,ji,chg){
       </div>
       <div style="background:var(--ink2);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?_jk:_bk}</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=3&&ji)?_jk:_bk}</p>
       </div>
       <div style="background:var(--ink2);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>0&&ji)?jiName+'을 향해 가는 길에서 바름을 잃지 말라.':benName+'의 경계를 잊지 말라.'}</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>0&&ji)?(ji.v||_jdst):ben.v}</p>
       </div>
     </div>
   </div>`;
