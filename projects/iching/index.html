@@ -1090,23 +1090,44 @@ function buildReadingHtmlV2(r,ben,ji){
     '마무리':'마무리',
   };
 
+  // ── 원전 카드: 본괘 괘사 + 변효 효사(각각) + 지괘 괘사 ──
+  const _LABELS=['초효','이효','삼효','사효','오효','상효'];
+  const _chg=S.chg||[];
+  const _ben2=GD2?.[S.benGua?.no]||{};
+  const _ji2=GD2?.[S.jiGua?.no]||{};
+  const _benK=_ben2.k2||ben?.k||'';
+  const _jiK=_ji2.k2||ji?.k||'';
+  const _benName=S.benGua?.n||'';
+  const _jiName=S.jiGua?.n||'';
+  {
+    let src=`<div class="scard"><span class="stag">원전 · 原典</span><div class="sbody">`;
+    src+=`<div style="margin-bottom:.85rem"><p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">본괘 · ${_benName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--text)">${_benK}</p></div>`;
+    if(_chg.length>0){
+      _chg.forEach(idx=>{
+        const hy=_ben2.hy2?.[idx]||ben?.hy?.[idx]||'';
+        if(!hy)return;
+        src+=`<div style="margin-bottom:.7rem;padding:.65rem .9rem;border-left:1.5px solid rgba(196,154,42,.45);background:rgba(196,154,42,.04)">`;
+        src+=`<p style="font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${_LABELS[idx]}</p>`;
+        src+=`<p style="font-size:.85rem;line-height:1.8;color:var(--text)">${hy}</p></div>`;
+      });
+    }
+    if(ji&&_jiK){
+      src+=`<div style="margin-top:.2rem"><p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">지괘 · ${_jiName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--text)">${_jiK}</p></div>`;
+    }
+    src+=`</div></div>`;
+    html+=src;
+  }
+
   r.sections.forEach(sec=>{
     if(!sec)return;
     const tag=TAG_LABELS[sec.tag]||sec.tag||'';
     const isFinal=sec.tag==='마무리';
 
-    // 3층 구조: quote / meaning / reading
-    const hasLayers=sec.quote||sec.meaning||sec.reading;
+    // 2층 구조: meaning / reading (quote는 원전 카드로 이동)
+    const hasLayers=sec.meaning||sec.reading;
 
     let body='';
     if(hasLayers){
-      // 원문 인용
-      if(sec.quote&&sec.quote.trim()){
-        body+=`<div style="margin-bottom:.9rem;padding:.65rem .9rem;border-left:2px solid var(--gold);background:rgba(196,154,42,.06)">
-          <p style="font-size:.72rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">원문</p>
-          <p style="font-size:.88rem;color:var(--goldl);font-style:italic;line-height:1.7">${mdp(sec.quote)}</p>
-        </div>`;
-      }
       // 내포된 의미
       if(sec.meaning&&sec.meaning.trim()){
         body+=`<div style="margin-bottom:.9rem">
