@@ -1004,12 +1004,16 @@ function buildLocalCards(ben,ji,chg){
     <span class="stag">본괘 · ${benName}</span>
     <h2 class="stit">${benName}이 전하는 말</h2>
     <div class="sbody">
-      <p>${_bk}</p>
+      <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
+      <p style="font-size:.88rem;color:var(--text);line-height:1.8">${_bk}</p>
       ${ben.p?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
-        <p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">↳ 이 때를</p>
+        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">↳ 이 때를</p>
         <p style="font-size:.86rem;line-height:1.85;color:var(--text)">${ben.p}</p>
       </div>`:''}
-      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${_bdst}</p>
+      <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
+        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.75">${_bdst}</p>
+      </div>
     </div>
   </div>`;
 
@@ -1044,13 +1048,27 @@ function buildLocalCards(ben,ji,chg){
   }else{
     const chgText=chg.map(i=>LABELS[i]).join(', ');
     let hyosaParts='';
-    chg.forEach(idx=>{
-      const hyosa=_bhy(idx);
-      if(hyosa)hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
-        <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
-        <p style="font-size:.86rem;color:var(--text);line-height:1.8">${hyosa}</p>
+    if(chgN===2){
+      // 위 효(높은 번호) 중심, 아래 효 보조 — 위 효 먼저 표시
+      const high=chg[1],low=chg[0];
+      const hyHigh=_bhy(high),hyLow=_bhy(low);
+      if(hyHigh)hyosaParts+=`<div style="margin-top:.85rem;padding:.8rem 1rem;border-left:2px solid rgba(196,154,42,.75);background:rgba(196,154,42,.06)">
+        <p style="font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.28rem">${LABELS[high]} <span style="opacity:.6">· 중심</span></p>
+        <p style="font-size:.88rem;color:var(--text);line-height:1.82">${hyHigh}</p>
       </div>`;
-    });
+      if(hyLow)hyosaParts+=`<div style="margin-top:.65rem;padding:.65rem 1rem;border-left:1px solid rgba(196,154,42,.28);background:rgba(196,154,42,.015)">
+        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.24rem">${LABELS[low]} <span style="opacity:.7">· 보조</span></p>
+        <p style="font-size:.84rem;color:var(--muted);line-height:1.78">${hyLow}</p>
+      </div>`;
+    }else{
+      chg.forEach(idx=>{
+        const hyosa=_bhy(idx);
+        if(hyosa)hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
+          <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
+          <p style="font-size:.86rem;color:var(--text);line-height:1.8">${hyosa}</p>
+        </div>`;
+      });
+    }
     html+=`<div class="scard">
       <span class="stag">변효 · 變爻 (${chg.length}개)</span>
       <h2 class="stit">지금 움직이고 있는 것들</h2>
@@ -1067,10 +1085,16 @@ function buildLocalCards(ben,ji,chg){
       <span class="stag">지괘 · ${jiName}</span>
       <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
       <div class="sbody">
-        <p>변효를 통해 <strong>${jiName}(${S.jiGua?.no||'?'}번)</strong>으로 흘러가고 있습니다.</p>
-        <p style="margin-top:.5rem">${ji.v}</p>
-        ${ji.p?`<p style="margin-top:.6rem">${ji.p}</p>`:''}
-        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${_jdst}</p>
+        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
+        <p style="font-size:.88rem;color:var(--text);line-height:1.8">${_jk}</p>
+        ${ji.p?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
+          <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">↳ 이 때를</p>
+          <p style="font-size:.86rem;line-height:1.85;color:var(--text)">${ji.p}</p>
+        </div>`:''}
+        <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
+          <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
+          <p style="font-size:.84rem;color:var(--muted);line-height:1.75">${_jdst}</p>
+        </div>
       </div>
     </div>`;
   }
