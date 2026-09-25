@@ -1008,7 +1008,7 @@ function buildLocalCards(ben,ji,chg){
     <div class="sbody">
       <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
       <p style="font-size:.88rem;color:var(--text);line-height:1.8">${_bk}</p>
-      ${(chgN===0&&ben.p)?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
+      ${ben.p?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
         <p style="font-size:.86rem;line-height:1.85;color:var(--text)">${ben.p}</p>
       </div>`:''}
       <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
@@ -1083,8 +1083,8 @@ function buildLocalCards(ben,ji,chg){
         if(!hyosa&&!hd)return;
         hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
           <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
-          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${(hd&&chgN===1)?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
-          ${(hd&&chgN===1)?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
+          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${(hd&&chgN<=3)?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
+          ${(hd&&chgN<=3)?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
         </div>`;
       });
     }
