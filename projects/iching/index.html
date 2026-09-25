@@ -1010,7 +1010,35 @@ function buildLocalCards(ben,ji,chg){
     </div>
   </div>`;
 
-  if(chg&&chg.length>0){
+  if(chgN===0){
+    // 변효 없음 — 六位 카드: 6효사 전부를 참고 층위로 표시
+    let allHy='';
+    LABELS.forEach((lb,idx)=>{
+      const hy=_bhy(idx);
+      if(hy)allHy+=`<div style="margin-top:.6rem;padding:.55rem .85rem;border-left:1px solid rgba(196,154,42,.22);background:rgba(196,154,42,.02)">
+        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.1em;margin-bottom:.2rem">${lb}</p>
+        <p style="font-size:.82rem;color:var(--muted);line-height:1.75">${hy}</p>
+      </div>`;
+    });
+    if(allHy)html+=`<div class="scard">
+      <span class="stag">六位 · 육위</span>
+      <h2 class="stit">이 괘의 여섯 자리</h2>
+      <div class="sbody">${allHy}</div>
+    </div>`;
+  }else if(chgN===6){
+    // 전효 변 — 용구/용육 또는 완전 전환
+    const benNo=S.benGua?.no;
+    const fullChgMsg=benNo===1
+      ?'모든 효가 양으로 변했습니다. 용구(用九) — 뭇 용이 앞서지 않고 함께하는 기운입니다. 강건함을 쓰되 독식하지 않을 때 길합니다.'
+      :benNo===2
+      ?'모든 효가 음으로 변했습니다. 용육(用六) — 오래도록 바름을 지키면 이롭습니다. 유순함이 가장 강한 힘인 시절입니다.'
+      :`여섯 효가 모두 변했습니다. 본괘 <strong>${benName}</strong>은 이미 지나가는 배경이고, 지괘 <strong>${jiName}</strong>이 지금의 실질적 현실입니다. 지괘 괘사를 깊이 새기세요.`;
+    html+=`<div class="scard">
+      <span class="stag">변효 · 變爻 (6개 전변)</span>
+      <h2 class="stit">완전한 전환</h2>
+      <div class="sbody"><p>${fullChgMsg}</p></div>
+    </div>`;
+  }else{
     const chgText=chg.map(i=>LABELS[i]).join(', ');
     let hyosaParts='';
     chg.forEach(idx=>{
@@ -1031,13 +1059,14 @@ function buildLocalCards(ben,ji,chg){
     </div>`;
   }
 
-  if(ji&&chg&&chg.length>0){
+  if(ji&&chgN>0){
     html+=`<div class="scard">
       <span class="stag">지괘 · ${jiName}</span>
       <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
       <div class="sbody">
         <p>변효를 통해 <strong>${jiName}(${S.jiGua?.no||'?'}번)</strong>으로 흘러가고 있습니다.</p>
         <p style="margin-top:.5rem">${ji.v}</p>
+        ${ji.p?`<p style="margin-top:.6rem">${ji.p}</p>`:''}
         <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${_jdst}</p>
       </div>
     </div>`;
