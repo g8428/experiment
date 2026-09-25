@@ -1077,22 +1077,37 @@ function buildLocalCards(ben,ji,chg){
         <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.24rem">${LABELS[low]} <span style="opacity:.7">· 보조</span></p>
         <p style="font-size:.84rem;color:var(--muted);line-height:1.78">${hyLow}</p>
       </div>`;
+    }else if(chgN>=4){
+      // 변효 4-5개: 불변효(움직이지 않는 효)가 핵심
+      const unchanged=[0,1,2,3,4,5].filter(i=>!chg.includes(i));
+      unchanged.forEach(idx=>{
+        const hyosa=_bhy(idx),hd=_bhd(idx);
+        if(!hyosa&&!hd)return;
+        hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
+          <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]} <span style="opacity:.6">· 중심</span></p>
+          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${hd?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
+          ${hd?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
+        </div>`;
+      });
     }else{
       chg.forEach(idx=>{
         const hyosa=_bhy(idx),hd=_bhd(idx);
         if(!hyosa&&!hd)return;
         hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
           <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
-          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${(hd&&chgN<=5)?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
-          ${(hd&&chgN<=5)?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
+          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${hd?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
+          ${hd?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
         </div>`;
       });
     }
+    const _cardStit=chgN>=4?'변하지 않는 자리가 중심':'지금 움직이고 있는 것들';
+    const _unchangedIdxs=chgN>=4?[0,1,2,3,4,5].filter(i=>!chg.includes(i)):[];
+    const _unchangedText=chgN>=4?_unchangedIdxs.map(i=>LABELS[i]).join(', '):'';
     html+=`<div class="scard">
       <span class="stag">변효 · 變爻 (${chg.length}개)</span>
-      <h2 class="stit">지금 움직이고 있는 것들</h2>
+      <h2 class="stit">${_cardStit}</h2>
       <div class="sbody">
-        <p style="font-size:.75rem;color:var(--dim)">변효: <strong style="color:var(--text)">${chgText}</strong></p>
+        <p style="font-size:.75rem;color:var(--dim)">변효: <strong style="color:var(--text)">${chgText}</strong>${chgN>=4?` · 불변효: <strong style="color:var(--text)">${_unchangedText}</strong>`:''}</p>
         ${hyosaParts}
         ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--muted)">→ 지괘 <strong style="color:var(--text)">${jiName}</strong>으로 흘러가고 있습니다.</p>`:''}
       </div>
