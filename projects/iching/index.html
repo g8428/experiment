@@ -1170,11 +1170,12 @@ function buildReadingHtmlV2(r,ben,ji){
   }
 
   const TAG_LABELS={
-    '지금 서 있는 자리':'지금 서 있는 자리',
+    '총평':'총평',
+    '괘의 형세':'괘의 형세',
+    '대상전 — 지금 할 것':'대상전 — 지금 할 것',
     '이 점괘의 심장':'이 점괘의 심장',
     '방향':'방향',
     '시기':'시기',
-    '조심할 것':'조심할 것',
     '마무리':'마무리',
   };
 
@@ -1206,8 +1207,33 @@ function buildReadingHtmlV2(r,ben,ji){
     html+=src;
   }
 
+  // 섹션별 meaning 자동 주입 (GD 데이터 기반, AI 생성값 무시)
+  const _benDst2=_ben2.dst2||ben?.dst||'';
+  const _jiDst2=_ji2.dst2||ji?.dst||'';
+  const _benV=ben?.v||'';
+  const _benDt2=_ben2.dt2||'';
+  function _autoMeaning(tag){
+    if(tag==='총평') return _benK?`${_benName} — ${_benK}`:'';
+    if(tag==='괘의 형세') return [_benV,_benDt2].filter(Boolean).join('\n');
+    if(tag==='대상전 — 지금 할 것'){
+      const parts=[_benDst2];
+      if(_jiDst2&&_jiDst2!==_benDst2)parts.push(`(지괘) ${_jiDst2}`);
+      return parts.filter(Boolean).join('\n');
+    }
+    if(tag==='이 점괘의 심장'){
+      if(_chg.length===0)return'';
+      return _chg.map(i=>{
+        const hy=_ben2.hy2?.[i]||ben?.hy?.[i]||'';
+        return hy?`${_LABELS[i]}: ${hy}`:'';
+      }).filter(Boolean).join('\n');
+    }
+    if(tag==='방향') return _jiK?`${_jiName} — ${_jiK}`:'';
+    return'';
+  }
+
   r.sections.forEach(sec=>{
     if(!sec)return;
+    sec.meaning=_autoMeaning(sec.tag); // GD 데이터로 덮어씀
     const tag=TAG_LABELS[sec.tag]||sec.tag||'';
     const isFinal=sec.tag==='마무리';
 
@@ -1430,6 +1456,9 @@ const BRANCH_ELEM=['水','土','木','木','土','火','Fire','土','金','金',
 const BR_EL=['水','土','木','木','土','火','火','土','金','金','土','Water'];
 // 정확한 버전
 const BRANCH_EL={0:'水',1:'土',2:'木',3:'木',4:'土',5:'火',6:'火',7:'土',8:'金',9:'金',10:'土',11:'水'};
+// 월건(月建) 절기 시작 근사: 子(0)=12/7, 丑(1)=1/5, 寅(2)=2/4, 卯(3)=3/6,
+// 辰(4)=4/5, 巳(5)=5/6, 午(6)=6/6, 未(7)=7/7, 申(8)=8/7, 酉(9)=9/8, 戌(10)=10/8, 亥(11)=11/7
+const WOLGEON_START=[[12,7],[1,5],[2,4],[3,6],[4,5],[5,6],[6,6],[7,7],[8,7],[9,8],[10,8],[11,7]];
 
 // 8궁 배속 (괘번호 → {궁,오행,세효위치,응효위치,세수(0=본괘..7=귀혼)})
 const PALACE={
@@ -1496,10 +1525,37 @@ function getIlJin(date){
 
 // 공망 계산 (일진 60갑자 인덱스 → 공망 지지 2개)
 function getKongmang(idx){
-  // 순(旬) 0~5, 각 순마다 공망 지지 2개
   const sun=Math.floor(idx/10);
   const pairs=[['술','해'],['신','유'],['오','미'],['진','사'],['인','묘'],['자','축']];
   return pairs[sun];
+}
+
+// 지지 인덱스 → 양력 월건 범위 문자열 (오늘 기준, 이미 지났으면 내년)
+function branchToCalStr(brIdx, today){
+  const [sm,sd]=WOLGEON_START[brIdx];
+  const ni=(brIdx+1)%12;
+  const [em,ed]=WOLGEON_START[ni];
+  const yr=today.getFullYear();
+  // 끝날짜 = 다음 지지 시작 전날
+  // 子月(0) 끝은 내년 1월 4일, 나머지는 같은해 em월 ed-1일
+  function makeEnd(y){
+    if(brIdx===0)return new Date(y+1,0,ed-1);       // 내년 1/4
+    if(brIdx===11)return new Date(y,em-1,ed-1);     // 같은해 12/6 (子=12월)
+    return new Date(y,em-1,ed-1);
+  }
+  let sy=yr, start=new Date(yr,sm-1,sd), end=makeEnd(yr);
+  // 子月(12월)은 같은해로 유효 — 다른 월은 끝이 오늘 이전이면 내년
+  if(end<today){sy=yr+1; start=new Date(sy,sm-1,sd); end=makeEnd(sy);}
+  const isCur=start<=today&&today<=end;
+  const fmt=d=>`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+  return`${fmt(start)}~${fmt(end)}${isCur?' ← 현재':''}`;
+}
+// 공망처럼 한글 지지명 배열 → 양력 범위 문자열 배열
+function kongmangToCalStrs(krArr, today){
+  return krArr.map(kr=>{
+    const bi=BRANCHES_KR.indexOf(kr);
+    return bi<0?kr:branchToCalStr(bi,today);
+  });
 }
 
 // 오행 생극
@@ -1632,19 +1688,29 @@ window.buildReadingPrompt=function(ben,ji,state){
   // ── 육효점 타이밍 참고 ──
   let lyStr='';
   if(lyData){
+    const refDate=lyData.date||new Date();
     const ilBr=lyData.ilJinBranchIdx;
     const chungBr=(ilBr+6)%12;
     const habSet=getHab(ilBr);
     const gwangui=lyData.positions.filter(p=>p.liuqin==='관귀');
     const cheojai=lyData.positions.filter(p=>p.liuqin==='처재');
+    // 지지 → 실제 양력 날짜로 변환
+    const chungCal=branchToCalStr(chungBr,refDate);
+    const habCal=habSet.map(b=>`${BRANCHES_HAN[b]}(${branchToCalStr(b,refDate)})`).join(' / ');
+    const kongCal=kongmangToCalStrs(lyData.kongmang,refDate)
+      .map((s,i)=>`${lyData.kongmang[i]}(${s})`).join(' / ');
     lyStr=`\n[육효점 타이밍 참고 — ${lyData.ilJin}일]
-공망(비어있는 자리·시기): ${lyData.kongmang.join('·')}월·일 → 이 시기엔 일이 흐릿하거나 결과가 아직 안 차 있음
-충(사건이 발동하는 시기): ${BRANCHES_HAN[chungBr]}이 오는 날·달
-합(묶이거나 열리는 시기): ${habSet.map(b=>BRANCHES_HAN[b]).join('·')}이 오는 날·달
+공망(비어있는 자리·시기): ${kongCal}
+  → 이 구간은 결과가 아직 차지 않음. 해당 월에 무언가를 밀어도 실체가 없으니 대기가 맞음.
+충(사건이 발동하는 시기): ${BRANCHES_HAN[chungBr]}月 = ${chungCal}
+  → 이 구간이 오면 잠자던 일이 깨어남. 이직·변화의 실질적 발동점.
+합(묶이거나 열리는 시기): ${habCal}
+  → 합이 오면 상황이 하나로 묶임. 합의(·계약·결합)가 이뤄지거나, 반대로 현재 상태에서 묶여 못 움직임.
 나(세효) 자리: ${lyData.sePos}효 ${lyData.seData?.branch||''}${lyData.seData?.isKong?' [공망중 — 지금 내가 비어있는 상태]':''}
 결과·상대(응효) 자리: ${lyData.eungPos}효 ${lyData.eungData?.branch||''}${lyData.eungData?.isKong?' [공망중 — 상대나 결과가 아직 실체 없음]':''}
 ${gwangui.length>0?`직업·권위(관귀): ${gwangui.map(p=>`${p.pos}효 ${p.branch}${p.isKong?'[공망]':''}`).join(' ')}`:''}
-${cheojai.length>0?`재물·실익(처재): ${cheojai.map(p=>`${p.pos}효 ${p.branch}${p.isKong?'[공망]':''}`).join(' ')}`:''}`;
+${cheojai.length>0?`재물·실익(처재): ${cheojai.map(p=>`${p.pos}효 ${p.branch}${p.isKong?'[공망]':''}`).join(' ')}`:''}
+[타이밍 원칙] 공망 해제(공망月 지나고 나서), 충月, 합月 순으로 발동 시기를 판단하라. 근거 없는 달 숫자는 쓰지 말 것.`;
   }
 
   const qap=(state.q5||[]).map((q,i)=>`Q${i+1}. ${q}\nA. ${(state.a5||[])[i]||'(답변 없음)'}`).join('\n\n');
@@ -1659,7 +1725,7 @@ ${cheojai.length>0?`재물·실익(처재): ${cheojai.map(p=>`${p.pos}효 ${p.br
 고민: ${state.q||'(없음)'}
 
 본괘: ${benName}(${state.benGua?.no||'?'}번)
-괘사: ${benK}${benDt2?`\n괘 해석 근거: ${benDt2}`:''}
+괘사: ${benK}${benDt2?`\n단전(괘 해석 근거): ${benDt2}`:''}
 대상전: ${benDst}
 본괘 핵심: ${ben?.v||''}
 ${jiName?`\n지괘: ${jiName}(${state.jiGua?.no}번)\n지괘 괘사: ${jiK}\n지괘 대상전: ${jiDst}`:''}
@@ -1673,46 +1739,78 @@ ${qap}
 
 [출력 형식] 순수 JSON만. 마크다운 코드블록 없이.
 
-[각 섹션은 meaning / reading 2개 필드로 구성]
-  meaning: 이 섹션 근거 괘사·효사의 전통적 의미 — 2~3문장. 원래 어떤 상황을 가리키는지 맥락 포함.
-  reading: ${name}의 상황에 녹여낸 해석 — 4문장 이상. 충분히 길게.
-           질문 답변 내용을 구체적 사실로 자연스럽게 녹임. 일상어로.
+[육효점 데이터 처리 원칙]
+위 육효점 타이밍 참고값을 절대 날 것으로 나열하지 말 것.
+"세효는 壬午이고 응효는 甲子입니다" 같은 형식 금지.
+계산 결과가 가리키는 의미를 서사 속에 자연스럽게 녹여 쓸 것.
+예: 공망 → "아직 결과가 차지 않은 시기", 충 → "이 달에 변화가 발동", 세효 공망 → "지금 내가 비어있는 상태"
 
-[6섹션 — 각 섹션 reading은 반드시 4문장 이상]
-1. tag "지금 서 있는 자리"
-   reading: 본괘 물상으로 지금 상황을 그림처럼. 호체 있으면 숨은 구조. 심리적 상태까지.
-2. tag "이 점괘의 심장"
-   reading: 핵심 괘사·효사의 길흉 기조를 먼저 밝힐 것 (예: "전반적으로 길한 흐름입니다", "조심이 필요한 국면입니다" 등).
-            단정적 지시("~하세요", "~해야 합니다")는 금지. "~하기 좋은 방향입니다", "~의 기운이 있습니다",
-            "~을 살펴볼 때입니다" 식으로. 괘상 본래의 행동 조언에서 크게 벗어나지 말 것.
-3. tag "방향"
-   reading: 지괘(없으면 본괘)가 가리키는 방향. 어떤 태도와 기운이 이 시기에 맞는지.
-            구체적 현대 액션플랜(인수인계 기간, 금융 계획 등) 쓰지 말 것. 괘상 속 조언에 머물 것.
-4. tag "시기"
-   reading: "~월은 ~, ~월은 ~" 형식으로 달별 기운 흐름. 육효점 공망·충·합을 풀어쓰기.
-5. tag "조심할 것"
-   reading: 경계 1개만. 이 괘/효가 원래 경계하는 것에서 끌어낼 것.
-6. tag "마무리"
-   reading: 전체 점사를 한 호흡으로 응축. 방향은 제시하되 결정은 본인 몫이라는 여지를 남길 것.
+[각 섹션 필드]
+  meaning: 반드시 빈 문자열("")로 둘 것 — 데이터에서 자동으로 채워짐. 절대 쓰지 말 것.
+  reading: ${name}의 상황에 녹인 해석 — 4문장 이상. 질문 답변 내용을 구체적 사실로 녹임.
 
-[작성 규칙 — 반드시 지킬 것]
-- 모든 문장 존댓말(해요체 또는 합쇼체)로 쓸 것. 반말 금지.
-- 이름(${name})을 각 섹션 reading에 자연스럽게 씀
-- quote 필드: 한자 쓰지 말 것. "風行水上" 같은 한문 금지. 국문 번역만.
-- 단정적 지시 금지: "~하세요", "~해야 합니다", "가야 합니다" 같은 표현 쓰지 말 것
-- 길흉 기조: 좋은 방향이면 "길한 흐름", "좋은 기운", 나쁘면 "조심이 필요", "삼가야 할 때"
-- 괘상 원래의 행동 조언(도망가라, 대인을 만나라, 동남쪽이 이롭다 등)을 현대적으로 풀 것
-- AI 티 없이. 전통 점술사가 말하듯
+[7섹션 — 각 섹션 reading은 반드시 4문장 이상]
+1. tag "총평"
+   title: 이 점괘 전체를 관통하는 한 문장 핵심 메시지
+   reading: 2~3문장 도입. 길흉 방향 포함.
+
+2. tag "괘의 형세"
+   reading: 다산역 3원리를 하나의 서사로 엮어 쓸 것. 항목 나열 절대 금지.
+   ① 물상 — 본괘 상괘·하괘의 자연 상징으로 지금 상황을 그림처럼 이미지화.
+   ② 추이 — 이 괘가 12벽괘 흐름에서 어느 절기인지. 지금이 성장기인지 쇠락기인지.
+   ③ 호체 — 호체 데이터가 있으면 겉 괘 안에 숨은 내부 구조를 풀어낼 것. "겉은 ~이지만 안에 ~가 숨어있다" 구조로.
+
+3. tag "대상전 — 지금 할 것"
+   reading: 대상전의 실천 지침("군자는 이를 본받아 ~한다")을 ${name}의 상황에 구체적으로 적용.
+   변효 있으면: 본괘 대상전(지금 당장의 실천) + 지괘 대상전(흘러가면서 갖춰야 할 태도) 모두 활용.
+   변효 없으면: 본괘 대상전만.
+   추상적 덕목 나열 금지 — "지금 ${name}에게 이것이 의미하는 것은..."으로 구체화할 것.
+
+4. tag "이 점괘의 심장"
+   reading:
+   - 변효 효사 한자 원문을 먼저 인용(예: "碩果不食"), 바로 이어서 국문 풀이.
+   - 효변: 이 효의 위치(초=씨앗/시작, 2=내부판단, 3=경계전환, 4=외부진입, 5=군위중심, 상=완성마무리)가 ${name}에게 무엇을 말하는지.
+   - 육효점 세효·응효·육친·생극·공망을 서술 속에 자연스럽게 녹여 구체화.
+   - 길흉 기조를 먼저 명확히 ("전반적으로 길한 흐름" / "조심이 필요한 국면").
+   - 변효 없으면 본괘 6위(六位) 始/中/終 흐름으로 읽을 것.
+
+5. tag "방향"
+   reading: 지괘(없으면 본괘)가 가리키는 방향. 어떤 태도와 기운이 이 시기에 맞는지. 구체적 현대 액션플랜 쓰지 말 것.
+
+6. tag "시기"
+   reading: 오늘(${todayStr}) 기준 앞으로 3~4개월을 달별로 구체적으로 서술.
+   공망·충·합을 실제 달에 직접 대응할 것: "공망이 ~달이니 이 달은 결과가 아직 차지 않은 시기", "~달에 충이 오니 변화가 발동하는 때" 같이.
+   "~월은 ~, ~월 말~는 ~" 형식 유지.
+
+7. tag "마무리"
+   reading: 한두 문장 응축. 방향은 제시하되 최종 선택은 본인 몫이라는 여지.
+
+[금지]
+- 육효점 데이터 기계적 나열
+- 항목 병렬 나열 ("이건 이렇고 저건 저렇고")
+- 원론적 설명 과다 ("~라는 것은 ~라는 뜻입니다")
+- 모든 괘 결론이 "중심을 지켜라"로 수렴
+- 단정적 지시 ("~하세요", "~해야 합니다")
+- AI 티 나는 표현
+- 효사 외 한자 기계적 나열 ("風行水上" 표기 금지 — 국문만)
+
+[필수]
+- 효사 한자 원문 인용 + 바로 이어지는 국문 풀이
+- 시기: 실제 달(10월, 11월 등) 기준으로 — 추상적 "충이 오는 달" 금지
+- 짧고 힘있는 문단, 감성적이되 담담한 톤
+- 이름(${name})을 각 섹션 reading에 자연스럽게
+- 전통 점술사가 말하듯 — AI 티 없이
 - 전체 분량: 유료 사주 리포트 수준으로 충분히 길게
 
 {
   "headline":"",
   "sections":[
-    {"tag":"지금 서 있는 자리","title":"","meaning":"","reading":""},
+    {"tag":"총평","title":"","meaning":"","reading":""},
+    {"tag":"괘의 형세","title":"","meaning":"","reading":""},
+    {"tag":"대상전 — 지금 할 것","title":"","meaning":"","reading":""},
     {"tag":"이 점괘의 심장","title":"","meaning":"","reading":""},
     {"tag":"방향","title":"","meaning":"","reading":""},
     {"tag":"시기","title":"","meaning":"","reading":""},
-    {"tag":"조심할 것","title":"","meaning":"","reading":""},
     {"tag":"마무리","title":"","meaning":"","reading":""}
   ],
   "closing_line":""
