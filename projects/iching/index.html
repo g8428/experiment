@@ -4,252 +4,206 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>周易占 · 주역점</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#0a0806;--ink2:#141009;--ink3:#1e170e;--text:#f0e0c0;--muted:#9a8462;--dim:#5a4e3a;--gold:#c49a2a;--goldl:#e8c86a;--goldd:rgba(196,154,42,0.2);--red:#c0392b;--bdr:rgba(196,154,42,0.18);--bdrh:rgba(196,154,42,0.4);--tr:0.45s cubic-bezier(0.4,0,0.2,1);}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;min-height:100vh;background:var(--ink);font-family:'Noto Serif KR','Noto Serif SC',serif;color:var(--text);overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(196,154,42,0.04),transparent 60%),radial-gradient(ellipse 60% 80% at 80% 90%,rgba(122,26,26,0.05),transparent 60%);pointer-events:none;}
-.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem 1rem 5rem;overflow-y:auto;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity var(--tr),transform var(--tr);}
+/* ── 토큰 ── */
+:root{
+  --bg:#0d0b09;--sf:#181410;--sf2:#201b14;--sf3:#2a231a;
+  --t1:#eee0c6;--t2:#9c8468;--t3:#5a4838;
+  --red:#bf3d28;--redl:#d85a3a;--redd:rgba(191,61,40,.14);
+  --gold:#9a7828;--goldl:#c09840;--goldd:rgba(154,120,40,.15);
+  --bl:#304870;--bll:#5478a0;--bld:rgba(48,72,112,.2);
+  --bdr:rgba(154,120,40,.18);--bdrh:rgba(191,61,40,.4);
+  --tr:.3s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{background:var(--bg);color:var(--t1);font-family:'Noto Sans KR',sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:2rem 1.25rem;overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transform:translateY(14px);transition:opacity var(--tr),transform var(--tr);background:var(--bg);}
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
-.screen.exit{opacity:0;transform:translateY(-18px);}
-.inner{width:100%;max-width:620px;margin:0 auto;}
-.stepbar{display:flex;gap:6px;justify-content:center;margin-bottom:1.8rem;}
-.step{width:30px;height:3px;background:var(--bdr);border-radius:2px;transition:background .3s;}
+.screen.exit{opacity:0;transform:translateY(-14px);}
+.inner{width:100%;max-width:440px;display:flex;flex-direction:column;}
+.stepbar{display:flex;gap:5px;justify-content:center;margin-bottom:1.5rem;}
+.step{width:28px;height:3px;background:var(--sf3);border-radius:2px;transition:background .3s,width .3s;}
 .step.done{background:var(--gold);}
-.step.cur{background:var(--goldl);}
-.orn{display:flex;align-items:center;gap:10px;color:var(--gold);font-size:11px;letter-spacing:.2em;margin:.8rem 0;}
-.orn::before,.orn::after{content:'';flex:1;height:.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.stitle{font-size:1.1rem;font-weight:400;letter-spacing:.18em;color:var(--gold);text-align:center;margin-bottom:.3rem;}
-.ssub{font-size:.8rem;color:var(--dim);letter-spacing:.1em;text-align:center;margin-bottom:1.2rem;}
-.btn{padding:.85rem 2.4rem;border:.5px solid var(--gold);background:transparent;color:var(--goldl);font-family:inherit;font-size:.88rem;letter-spacing:.18em;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
-.btn::before{content:'';position:absolute;inset:0;background:var(--gold);opacity:0;transition:opacity .3s;}
-.btn:hover{color:var(--ink);}
+.step.cur{background:var(--red);width:38px;}
+.orn{display:flex;align-items:center;gap:.7rem;margin:1.4rem 0 1rem;color:var(--t3);font-size:.7rem;letter-spacing:.2em;}
+.orn::before,.orn::after{content:'';flex:1;height:.5px;background:var(--bdr);}
+.orn span{font-family:'Noto Serif SC',serif;font-size:.95rem;color:var(--t3);}
+.stitle{font-family:'Noto Serif KR',serif;font-size:1.3rem;font-weight:500;color:var(--t1);text-align:center;letter-spacing:.08em;margin-bottom:.5rem;}
+.ssub{font-size:.88rem;color:var(--t2);text-align:center;letter-spacing:.06em;margin-bottom:1.2rem;line-height:1.7;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.9rem 2rem;background:var(--red);border:none;border-radius:2px;color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:.95rem;font-weight:500;letter-spacing:.07em;cursor:pointer;transition:background var(--tr),opacity var(--tr);min-height:48px;white-space:nowrap;position:relative;overflow:hidden;}
+.btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);opacity:0;transition:opacity .2s;}
 .btn:hover::before{opacity:1;}
 .btn span{position:relative;z-index:1;}
-.btns{display:flex;border:.5px solid var(--bdrh);background:transparent;}
-.btns .btn-s{flex:1;padding:.6rem 1.4rem;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:.8rem;letter-spacing:.12em;cursor:pointer;transition:all .25s;}
-.btns .btn-s:hover{color:var(--text);background:rgba(196,154,42,.06);}
+.btn:active{opacity:.87;}
+.btns{background:transparent;border:.5px solid var(--bdrh);border-radius:2px;display:inline-flex;overflow:hidden;}
+.btns .btn-s{flex:1;padding:.65rem 1.2rem;border:none;border-radius:0;background:transparent;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.88rem;letter-spacing:.08em;cursor:pointer;transition:all .2s;min-height:44px;}
+.btns .btn-s:hover{color:var(--t1);background:var(--redd);}
 .btns .btn-s+.btn-s{border-left:.5px solid var(--bdrh);}
-.btn-ghost{background:none;border:none;color:var(--dim);font-family:inherit;font-size:.76rem;cursor:pointer;letter-spacing:.1em;padding:.4rem .6rem;transition:color .2s;}
-.btn-ghost:hover{color:var(--muted);}
-.brow{display:flex;gap:.8rem;justify-content:flex-end;margin-top:1.2rem;}
-.inp{width:100%;padding:.8rem 1rem;background:rgba(255,255,255,.02);border:.5px solid var(--bdr);color:var(--text);font-family:inherit;font-size:.9rem;line-height:1.8;resize:none;outline:none;transition:border-color .3s;letter-spacing:.04em;}
-.inp:focus{border-color:var(--bdrh);}
-.inp::placeholder{color:var(--dim);}
+.btn-ghost{display:inline-flex;align-items:center;justify-content:center;padding:.72rem 1.2rem;background:transparent;border:.5px solid var(--bdr);border-radius:2px;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.88rem;letter-spacing:.06em;cursor:pointer;transition:border-color var(--tr),color var(--tr);min-height:44px;white-space:nowrap;}
+.btn-ghost:hover{border-color:var(--bdrh);color:var(--t1);}
+.brow{display:flex;gap:.6rem;justify-content:space-between;align-items:center;margin-top:1.4rem;flex-wrap:wrap;}
+.inp{display:block;width:100%;padding:.85rem 1rem;background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;color:var(--t1);font-family:'Noto Serif KR',serif;font-size:1rem;line-height:1.75;transition:border-color var(--tr),background var(--tr);-webkit-appearance:none;resize:none;outline:none;}
+.inp::placeholder{color:var(--t3);}
+.inp:focus{border-color:var(--red);background:var(--sf2);}
+textarea.inp{min-height:140px;resize:vertical;}
 input.inp{resize:none;}
 
-/* S0 */
+/* ── S0 인트로 ── */
 #s0{justify-content:center;text-align:center;}
-.logo{font-size:clamp(2.4rem,8vw,4.2rem);font-weight:300;letter-spacing:.3em;color:var(--goldl);font-family:'Noto Serif SC',serif;text-shadow:0 0 40px rgba(232,200,106,.12);}
-.trigs{display:flex;gap:1.2rem;justify-content:center;font-size:1.5rem;color:var(--gold);opacity:.4;animation:bth 4s ease-in-out infinite;margin:1rem 0;}
-@keyframes bth{0%,100%{opacity:.28;}50%{opacity:.58;}}
-.intro-p{max-width:380px;font-size:.85rem;color:var(--muted);line-height:2;letter-spacing:.05em;margin:0 auto 2rem;}
+.logo{font-family:'Noto Serif SC',serif;font-size:clamp(2.8rem,11vw,4rem);font-weight:300;letter-spacing:.3em;color:var(--t1);line-height:1;margin-bottom:.6rem;}
+.trigs{display:flex;gap:1rem;justify-content:center;font-size:1.15rem;color:var(--t3);letter-spacing:.4em;animation:bth 3.5s ease-in-out infinite;margin:1rem 0 1.5rem;}
+@keyframes bth{0%,100%{opacity:.22;}50%{opacity:.52;}}
+.intro-p{max-width:340px;font-family:'Noto Serif KR',serif;font-size:.88rem;color:var(--t2);line-height:2;margin:0 auto 2rem;}
 
-/* S2 throw */
-.ptrak{width:100%;height:1px;background:var(--bdr);margin-bottom:1.5rem;position:relative;overflow:visible;}
-.pfill{height:100%;background:var(--gold);transition:width .4s ease;}
-.pfill::after{content:'';position:absolute;right:-3px;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--goldl);box-shadow:0 0 8px var(--gold);}
-.trows{display:flex;flex-direction:column;gap:.5rem;}
-.trow{display:flex;align-items:center;gap:.8rem;padding:.6rem .9rem;border:.5px solid var(--bdr);background:rgba(255,255,255,.01);transition:border-color .3s;}
-.trow.done{background:rgba(196,154,42,.03);}
+/* ── 투전 ── */
+.ptrak{height:2px;background:var(--sf3);border-radius:1px;overflow:hidden;margin-bottom:1rem;}
+.pfill{height:100%;background:var(--red);transition:width .4s ease;border-radius:1px;}
+.trows{display:flex;flex-direction:column;gap:.45rem;}
+.trow{display:flex;align-items:center;gap:.55rem;padding:.7rem .8rem;background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;transition:border-color .2s;}
 .trow.ar{border-color:var(--bdrh);}
-.ylbl{font-size:.72rem;color:var(--dim);letter-spacing:.1em;width:52px;flex-shrink:0;}
-.cwrap{display:flex;gap:5px;flex-shrink:0;}
-.cn{width:26px;height:26px;border-radius:50%;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;background:var(--ink3);color:var(--dim);cursor:pointer;transition:all .2s;user-select:none;}
-.cn:hover{border-color:var(--bdrh);color:var(--muted);}
-.cn.fl{animation:flip .6s ease-out;}
-.cn.yang{background:rgba(196,154,42,.12);border-color:var(--gold);color:var(--goldl);}
-.cn.yin{background:rgba(30,50,80,.2);border-color:#3a6090;color:#7ab0d8;}
+.ylbl{font-family:'Noto Sans KR',sans-serif;font-size:.74rem;color:var(--t3);letter-spacing:.04em;width:36px;text-align:right;flex-shrink:0;}
+.cwrap{display:flex;gap:5px;align-items:center;}
+.cn{width:38px;height:38px;border-radius:50%;border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-size:11px;cursor:pointer;transition:all .2s;background:var(--sf2);color:var(--t3);flex-shrink:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+.cn:hover{border-color:var(--bdrh);color:var(--t2);}
+.cn.fl{animation:flip .55s ease-out;}
+@keyframes flip{0%{transform:rotateY(0);}50%{transform:rotateY(360deg) scale(1.1);}100%{transform:rotateY(720deg);}}
+.cn.yang{background:var(--goldd);border-color:var(--gold);color:var(--goldl);}
+.cn.yin{background:var(--bld);border-color:var(--bll);color:var(--bll);}
 .cn.locked{cursor:default;}
 .cn.locked:hover{border-color:inherit;}
-@keyframes flip{0%{transform:rotateY(0);}50%{transform:rotateY(360deg) scale(1.1);}100%{transform:rotateY(720deg);}}
-.lpv{flex:1;display:flex;align-items:center;gap:6px;}
-.ly{height:6px;width:78px;background:var(--gold);border-radius:1px;}
-.ln{height:6px;width:33px;background:#3a6090;border-radius:1px;}
+.lpv{flex:1;display:flex;align-items:center;gap:5px;}
+.ly{height:5px;width:70px;background:var(--goldl);border-radius:1px;}
+.ln{height:5px;width:29px;background:var(--bll);border-radius:1px;}
 .lchg{outline:1.5px solid var(--red);outline-offset:2px;}
-.ltyp{font-size:10px;color:var(--dim);letter-spacing:.07em;min-width:78px;}
+.ltyp{font-family:'Noto Sans KR',sans-serif;font-size:.7rem;color:var(--t3);letter-spacing:.05em;min-width:68px;}
 .ltyp.c{color:var(--red);}
-.tbtn{flex-shrink:0;padding:.28rem .8rem;border:.5px solid var(--bdrh);background:transparent;color:var(--muted);font-family:inherit;font-size:.72rem;cursor:pointer;transition:all .22s;letter-spacing:.1em;}
-.tbtn:hover{border-color:var(--gold);color:var(--goldl);}
+.tbtn{flex-shrink:0;padding:.42rem .7rem;background:transparent;border:.5px solid var(--bdrh);border-radius:2px;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.76rem;letter-spacing:.06em;cursor:pointer;transition:all .2s;min-height:36px;}
+.tbtn:hover{border-color:var(--red);color:var(--t1);}
 .tbtn:disabled{opacity:.3;cursor:not-allowed;}
 
-/* gua display */
-.gwrap{display:flex;align-items:flex-start;gap:2rem;justify-content:center;flex-wrap:wrap;margin:1rem 0;}
+/* ── 괘 표시 ── */
+.gwrap{display:flex;align-items:flex-start;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin:1rem 0;}
 .gblk{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.glines{display:flex;flex-direction:column;gap:6px;}
-.gy{height:9px;width:86px;background:var(--gold);border-radius:1.5px;}
-.gnw{display:flex;gap:8px;}
-.gn{height:9px;width:36px;background:#3a6090;border-radius:1.5px;}
+.glines{display:flex;flex-direction:column;gap:5px;}
+.gy{height:8px;width:80px;background:var(--goldl);border-radius:1.5px;}
+.gnw{display:flex;gap:7px;}
+.gn{height:8px;width:34px;background:var(--bll);border-radius:1.5px;}
 .gchg{box-shadow:0 0 0 2px var(--red);border-radius:2px;}
-.gdiv{height:.5px;background:var(--gold);opacity:.22;margin:3px 0;}
-.gname{font-size:1rem;color:var(--goldl);letter-spacing:.12em;margin-top:4px;}
-.gsub{font-size:.72rem;color:var(--dim);letter-spacing:.08em;}
-.garw{font-size:1.3rem;color:var(--dim);align-self:center;padding-top:1.2rem;}
-.chgi{font-size:.78rem;color:var(--dim);text-align:center;margin-bottom:.5rem;}
+.gdiv{width:.5px;background:var(--bdr);align-self:stretch;margin:0 .25rem;}
+.gname{font-family:'Noto Serif SC',serif;font-size:.82rem;color:var(--goldl);letter-spacing:.12em;margin-top:4px;text-align:center;}
+.gsub{font-size:.72rem;color:var(--t3);letter-spacing:.07em;text-align:center;}
+.garw{font-size:1.1rem;color:var(--t3);align-self:center;padding-top:1rem;}
+.chgi{font-family:'Noto Serif KR',serif;font-size:.82rem;color:var(--t2);text-align:center;margin-bottom:.5rem;line-height:1.9;}
 .chgi span{color:var(--red);}
 
-/* S3 questions */
-.q5lst{display:flex;flex-direction:column;gap:1rem;margin-top:1rem;}
-.q5it{display:flex;flex-direction:column;gap:.4rem;}
-.q5lb{font-size:.8rem;color:var(--goldl);letter-spacing:.1em;line-height:1.5;}
-.q5in{width:100%;padding:.7rem .9rem;background:rgba(255,255,255,.02);border:.5px solid var(--bdr);color:var(--text);font-family:inherit;font-size:.88rem;line-height:1.7;outline:none;resize:none;transition:border-color .3s;letter-spacing:.04em;}
-.q5in:focus{border-color:var(--bdrh);}
-.q5in::placeholder{color:var(--dim);}
-.aibox{border:.5px solid var(--bdr);padding:1.2rem;background:rgba(196,154,42,.02);}
-.aild{font-size:.8rem;color:var(--dim);letter-spacing:.12em;animation:pulse 1.2s ease-in-out infinite;}
+/* ── 추가 질문 (S3) ── */
+.q5lst{display:flex;flex-direction:column;gap:.8rem;margin-top:1rem;}
+.q5it{background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;padding:.9rem 1rem;transition:border-color .2s;}
+.q5it:focus-within{border-color:var(--red);}
+.q5lb{display:block;font-family:'Noto Serif KR',serif;font-size:.85rem;color:var(--t2);letter-spacing:.05em;margin-bottom:.5rem;line-height:1.65;}
+.q5in{display:block;width:100%;background:transparent;border:none;border-top:.5px solid var(--bdr);padding:.5rem 0 0;color:var(--t1);font-family:'Noto Serif KR',serif;font-size:1rem;line-height:1.65;outline:none;resize:none;}
+.q5in::placeholder{color:var(--t3);}
+.aibox{background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;padding:1.2rem;margin-bottom:.8rem;text-align:center;}
+.aild{font-family:'Noto Sans KR',sans-serif;font-size:.83rem;color:var(--t3);letter-spacing:.12em;animation:pulse 1.4s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
 
-/* S4 reading */
+/* ── 해석 카드 ── */
 #s4{justify-content:flex-start;padding-top:1.8rem;}
-.rhero{text-align:center;margin-bottom:1.5rem;}
-.rhtl{font-size:1.1rem;color:var(--goldl);letter-spacing:.15em;margin-bottom:.3rem;}
-.rhsb{font-size:.76rem;color:var(--dim);}
-.scard{border:.5px solid var(--bdr);background:rgba(255,255,255,.012);padding:1.6rem 1.8rem;margin-bottom:1rem;position:relative;}
-.scard::before{content:'';position:absolute;left:0;top:.6rem;bottom:.6rem;width:2px;background:var(--gold);opacity:.35;}
-.stag{font-size:.66rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem;display:block;}
-.stit{font-size:1.02rem;font-weight:500;line-height:1.5;margin-bottom:1rem;color:var(--text);}
-.sbody{font-size:.88rem;line-height:2.1;color:var(--muted);letter-spacing:.04em;}
-.sbody p{margin-bottom:1rem;}
+.rhero{text-align:center;padding:1rem 0;}
+.rhtl{font-family:'Noto Serif SC',serif;font-size:1.5rem;font-weight:300;color:var(--goldl);letter-spacing:.2em;margin-bottom:.4rem;}
+.rhsb{font-family:'Noto Sans KR',sans-serif;font-size:.78rem;color:var(--t3);letter-spacing:.16em;}
+.scard{border:.5px solid var(--bdr);border-left:2px solid var(--red);background:var(--sf);padding:1.4rem 1.2rem;margin-bottom:.75rem;border-radius:2px;}
+.stag{display:block;font-family:'Noto Sans KR',sans-serif;font-size:.68rem;color:var(--red);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.45rem;opacity:.85;}
+.stit{font-family:'Noto Serif KR',serif;font-size:1.02rem;font-weight:500;line-height:1.55;margin-bottom:.8rem;color:var(--t1);}
+.sbody{font-family:'Noto Serif KR',serif;font-size:.9rem;line-height:2.05;color:var(--t2);letter-spacing:.03em;}
+.sbody p{margin-bottom:.9rem;}
 .sbody p:last-child{margin-bottom:0;}
-.sbody strong{color:var(--text);font-weight:500;}
-.ccard{border:.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.04);padding:1.6rem 1.8rem;margin-bottom:1rem;text-align:center;}
-.ccard .sbody{font-size:.9rem;line-height:2.1;margin-bottom:1.2rem;}
-.wnr{font-size:1.05rem;color:var(--goldl);font-weight:500;letter-spacing:.06em;border-top:.5px solid var(--bdr);padding-top:1rem;margin-top:.5rem;}
-.ldful{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;padding:4rem 1rem;min-height:300px;}
-.ldgl{font-size:2.5rem;color:var(--gold);animation:spin 8s linear infinite;opacity:.5;}
+.sbody strong{color:var(--t1);font-weight:500;}
+.sbody h3{font-family:'Noto Sans KR',sans-serif;font-size:.74rem;color:var(--red);letter-spacing:.18em;font-weight:400;margin:1.1rem 0 .4rem;opacity:.85;}
+.ccard{border:.5px solid rgba(154,120,40,.35);background:var(--goldd);padding:1.4rem 1.2rem;margin-bottom:.75rem;text-align:center;border-radius:2px;}
+.ccard .sbody{font-size:.92rem;margin-bottom:1rem;}
+.wnr{font-family:'Noto Serif KR',serif;font-size:1rem;color:var(--goldl);font-weight:500;letter-spacing:.05em;border-top:.5px solid var(--bdr);padding-top:1rem;margin-top:.5rem;}
+.ldful{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;padding:3.5rem 1rem;min-height:280px;}
+.ldgl{font-size:2.4rem;color:var(--red);animation:spin 8s linear infinite;opacity:.45;}
 @keyframes spin{100%{transform:rotate(360deg);}}
-.ldmsg{font-size:.8rem;color:var(--dim);letter-spacing:.15em;}
-.ldsb{font-size:.7rem;color:var(--dim);opacity:.6;letter-spacing:.1em;}
+.ldmsg{font-family:'Noto Serif KR',serif;font-size:.85rem;color:var(--t2);letter-spacing:.14em;}
+.ldsb{font-size:.72rem;color:var(--t3);letter-spacing:.1em;}
 
-/* API */
-
-.mbtn{flex:1;padding:.55rem 0;border:.5px solid var(--bdr);background:transparent;color:var(--muted);font-family:inherit;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
-.mbtn:hover{border-color:var(--bdrh);color:var(--text);}
-.mbtn.sel.yang{background:rgba(196,154,42,.15);border-color:var(--gold);color:var(--goldl);}
-.mbtn.sel.yin{background:rgba(30,50,80,.25);border-color:#3a6090;color:#7ab0d8;}
-.mcn{width:36px;height:36px;border-radius:50%;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:var(--ink3);color:var(--dim);}
-.mcn.yang{background:rgba(196,154,42,.15);border-color:var(--gold);color:var(--goldl);}
-.mcn.yin{background:rgba(30,50,80,.25);border-color:#3a6090;color:#7ab0d8;}
+/* ── API 모달 동전 ── */
+.mbtn{flex:1;padding:.6rem 0;border:.5px solid var(--bdr);background:transparent;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
+.mbtn:hover{border-color:var(--bdrh);color:var(--t1);}
+.mbtn.sel.yang{background:var(--goldd);border-color:var(--gold);color:var(--goldl);}
+.mbtn.sel.yin{background:var(--bld);border-color:var(--bll);color:var(--bll);}
+.mcn{width:36px;height:36px;border-radius:50%;border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:11px;background:var(--sf2);color:var(--t3);}
+.mcn.yang{background:var(--goldd);border-color:var(--gold);color:var(--goldl);}
+.mcn.yin{background:var(--bld);border-color:var(--bll);color:var(--bll);}
 #coinModal.open{display:flex;}
 
-
 /* ── 하단 탭 ── */
-.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;height:56px;background:var(--ink2);border-top:.5px solid var(--bdr);}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--dim);font-size:.68rem;letter-spacing:.1em;transition:color .2s;border:none;background:none;font-family:inherit;}
-.tab-item.active{color:var(--gold);}
-.tab-item .tab-ico{font-size:1.1rem;line-height:1;}
-/* 스크린 하단 패딩 (탭바 높이만큼) */
-.screen{padding-bottom:7rem !important;}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;height:58px;background:var(--sf);border-top:.5px solid var(--bdr);padding-bottom:env(safe-area-inset-bottom,0px);}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--t3);font-family:'Noto Sans KR',sans-serif;font-size:.68rem;letter-spacing:.08em;transition:color .2s;border:none;background:none;min-height:44px;}
+.tab-item.active{color:var(--red);}
+.tab-item .tab-ico{font-size:1.05rem;line-height:1;}
+.screen{padding-bottom:calc(7rem + env(safe-area-inset-bottom,0px));}
 
 /* ── 보관함 탭 ── */
 #tab-archive{justify-content:flex-start;padding-top:3rem;}
-.archive-empty{text-align:center;padding:4rem 1rem;color:var(--dim);font-size:.88rem;line-height:2;}
-.archive-list{display:flex;flex-direction:column;gap:.7rem;width:100%;max-width:620px;margin:0 auto;}
-.archive-item{border:.5px solid var(--bdr);padding:1.1rem 1.3rem;cursor:pointer;transition:border-color .2s;background:rgba(255,255,255,.01);}
+.archive-empty{text-align:center;padding:4rem 1rem;color:var(--t3);font-size:.88rem;line-height:2;}
+.archive-list{display:flex;flex-direction:column;gap:.5rem;width:100%;max-width:440px;margin:0 auto;}
+.archive-item{background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
 .archive-item:hover{border-color:var(--bdrh);}
-.arch-date{font-size:.7rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem;}
-.arch-gua{font-size:.95rem;color:var(--goldl);letter-spacing:.1em;margin-bottom:.25rem;}
-.arch-q{font-size:.78rem;color:var(--muted);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.arch-del{float:right;background:none;border:none;color:var(--dim);cursor:pointer;font-size:.8rem;padding:.2rem .4rem;}
-.arch-del:hover{color:var(--red);}
+.arch-date{font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--t3);letter-spacing:.1em;margin-bottom:.25rem;}
+.arch-gua{font-family:'Noto Serif SC',serif;font-size:.95rem;color:var(--goldl);letter-spacing:.1em;margin-bottom:.2rem;}
+.arch-q{font-size:.8rem;color:var(--t2);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.arch-del{float:right;background:none;border:none;color:var(--t3);cursor:pointer;font-size:.78rem;padding:.2rem .4rem;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}
+.arch-del:hover{color:#c04040;}
 
 /* ── 로딩 풀팝업 ── */
-#loadingOverlay{display:none;position:fixed;inset:0;z-index:300;background:var(--ink);flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+#loadingOverlay{display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
 #loadingOverlay.show{display:flex;}
-.lo-sym{font-size:4rem;color:var(--gold);opacity:.6;animation:spin 6s linear infinite;}
-.lo-title{font-size:1.3rem;font-weight:300;letter-spacing:.3em;color:var(--goldl);font-family:'Noto Serif SC',serif;}
-.lo-sub{font-size:.8rem;color:var(--muted);letter-spacing:.18em;animation:pulse 2s ease-in-out infinite;}
-.lo-secs{font-size:.72rem;color:var(--dim);letter-spacing:.12em;}
+.lo-sym{font-size:3.5rem;color:var(--red);opacity:.45;animation:spin 6s linear infinite;}
+.lo-title{font-family:'Noto Serif SC',serif;font-size:1.2rem;font-weight:300;letter-spacing:.3em;color:var(--t1);}
+.lo-sub{font-family:'Noto Sans KR',sans-serif;font-size:.82rem;color:var(--t2);letter-spacing:.18em;animation:pulse 2s ease-in-out infinite;}
+.lo-secs{font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--t3);letter-spacing:.12em;}
 
 /* ── S4 버튼 ── */
 .s4btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;}
-.lock-btn{padding:.65rem 1.4rem;border:.5px solid var(--bdrh);background:transparent;color:var(--muted);font-family:inherit;font-size:.8rem;letter-spacing:.12em;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:.4rem;}
-.lock-btn:hover{border-color:var(--gold);color:var(--goldl);}
-.lock-icon{font-size:.75rem;opacity:.6;}
+.lock-btn{padding:.7rem 1.4rem;border:.5px solid var(--bdrh);background:transparent;border-radius:2px;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;letter-spacing:.1em;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:.4rem;min-height:44px;}
+.lock-btn:hover{border-color:var(--red);color:var(--t1);}
+.lock-icon{font-size:.78rem;opacity:.6;}
 
-/* ── 모바일 퍼스트 ── */
-@media (max-width:640px){
-  /* 기본 폰트 최소 사이즈 확보 */
-  body{font-size:16px;}
-
-  /* 입력창 — iOS 확대 방지 (min 16px) */
-  .inp,.q5in,input.inp{font-size:1rem!important;}
-
-  /* 작은 텍스트 상향 */
-  .stag{font-size:.75rem;}
-  .ssub{font-size:.85rem;}
-  .ylbl{font-size:.8rem;width:44px;}
-  .gsub{font-size:.78rem;}
-  .chgi{font-size:.84rem;}
-  .sbody{font-size:.95rem;line-height:2;}
-  .stit{font-size:1.05rem;}
-  .q5lb{font-size:.88rem;}
-  .arch-date{font-size:.78rem;}
-  .arch-q{font-size:.84rem;}
-  .ldmsg{font-size:.85rem;}
-  .aild{font-size:.86rem;}
-
-  /* 카드 패딩 — 모바일 여백 확보 */
-  .scard{padding:1.3rem 1rem;}
-  .ccard{padding:1.3rem 1rem;}
-
-  /* screen 좌우 여백 */
-  .screen{padding-left:.75rem;padding-right:.75rem;}
-
-  /* 동전 버튼 — 터치 타겟 44px 확보 */
-  .cn{width:40px;height:40px;font-size:11px;}
-  .cwrap{gap:6px;}
-
-  /* trow — 투전 행 모바일 최적화 */
-  .trow{padding:.7rem .6rem;gap:.5rem;flex-wrap:nowrap;}
-  /* 효 선 미리보기·텍스트 숨김 (괘 그래픽에서 이미 보임) */
+/* ── 모바일 ── */
+@media(max-width:640px){
+  .inp,.q5in,input.inp,textarea.inp{font-size:1rem!important;}
+  .screen{padding-left:1rem;padding-right:1rem;}
+  .inner{padding:0;}
   .lpv{display:none;}
   .ltyp{display:none;}
-  /* 동전 크기 축소 — 터치는 여전히 가능 */
   .cn{width:34px;height:34px;font-size:10px;}
-  .cwrap{gap:5px;}
-  /* 효 라벨 최소화 */
-  .ylbl{width:36px;font-size:.76rem;letter-spacing:.04em;}
-
-  /* 투전 버튼 */
-  .tbtn{padding:.5rem .7rem;font-size:.78rem;min-height:40px;letter-spacing:.06em;}
-
-  /* 기본 버튼 */
-  .btn{padding:.9rem 2rem;font-size:.92rem;min-height:48px;}
-  .btns .btn-s{padding:.75rem 1rem;font-size:.85rem;min-height:44px;}
-  .lock-btn{padding:.75rem 1.2rem;min-height:44px;}
-
-  /* 탭바 — iPhone 노치/홈 인디케이터 safe area */
-  .tab-bar{padding-bottom:env(safe-area-inset-bottom,0px);}
-  .tab-item{font-size:.72rem;}
-  .screen{padding-bottom:calc(7rem + env(safe-area-inset-bottom,0px))!important;}
-
-  /* 괘 표시 — 모바일 줄바꿈 */
-  .gwrap{gap:1rem;}
-  .gy{width:72px;}
-  .gn{width:30px;}
-
-  /* 로고 */
-  .logo{font-size:clamp(2.6rem,10vw,3.6rem);letter-spacing:.22em;}
-
-  /* archive 아이템 */
-  .archive-item{padding:1rem;}
-  .arch-del{min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;}
-
-  /* 섹션 inner 여백 */
-  .inner{padding:0;}
-
-  /* stepbar */
-  .stepbar{margin-bottom:1.4rem;}
-
-  /* 고민 입력 textarea */
-  textarea.inp{font-size:1rem;line-height:1.9;}
+  .cwrap{gap:4px;}
+  .ylbl{width:32px;font-size:.72rem;}
+  .trow{padding:.65rem .7rem;gap:.4rem;}
+  .tbtn{padding:.38rem .6rem;font-size:.74rem;min-height:36px;}
+  .scard{padding:1.2rem 1rem;}
+  .ccard{padding:1.2rem 1rem;}
+  .btn{padding:.88rem 1.8rem;font-size:.92rem;}
+  .btn-ghost{padding:.68rem 1rem;}
+  .btns .btn-s{padding:.6rem 1rem;font-size:.84rem;}
+  .lock-btn{padding:.68rem 1.1rem;}
+  .stepbar{margin-bottom:1.2rem;}
+  .gwrap{gap:.7rem;}
+  .gy{width:64px;}
+  .gn{width:27px;}
+  .logo{font-size:clamp(2.6rem,10vw,3.6rem);}
+  .archive-item{padding:.9rem 1rem;}
+  .arch-del{min-width:36px;min-height:36px;}
 }
 
-/* 아이폰 safe-area 상단 */
+/* ── iPhone safe-area 상단 ── */
 @supports(padding-top:env(safe-area-inset-top)){
-  .screen{padding-top:calc(1.5rem + env(safe-area-inset-top,0px));}
+  .screen{padding-top:calc(2rem + env(safe-area-inset-top,0px));}
 }
 </style>
 </head>
@@ -260,11 +214,11 @@ input.inp{resize:none;}
   <div style="font-family:'Noto Serif SC',serif;font-size:2.8rem;color:var(--gold);opacity:.06;position:absolute;top:4%;left:4%;writing-mode:vertical-rl;line-height:1.2;pointer-events:none">周易六十四卦</div>
   <div class="trigs">☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷</div>
   <h1 class="logo">周易占</h1>
-  <p style="font-size:.88rem;color:var(--muted);letter-spacing:.22em;margin:.4rem 0 1.5rem">주역점 · 육효투전법</p>
+  <p style="font-family:'Noto Sans KR',sans-serif;font-size:.84rem;color:var(--t2);letter-spacing:.22em;margin:.4rem 0 1.5rem">주역점 · 육효투전법</p>
   <div class="orn"><span>卦</span></div>
   <p class="intro-p">동전 셋을 여섯 번 던져 하늘의 뜻을 묻는다.<br>괘상이 뽑히면 몇 가지 질문을 드립니다. 그 대답이 더 깊은 점사의 바탕이 됩니다.<br>그 대답 위에서 비로소 진짜 점사가 펼쳐진다.</p>
   <button class="btn" onclick="goTo('s1')"><span>점괘 보기</span></button>
-  <div style="margin-top:2.5rem;display:flex;gap:1.5rem;justify-content:center;font-size:.68rem;color:var(--dim);letter-spacing:.14em">
+  <div style="margin-top:2.5rem;display:flex;gap:1.5rem;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.68rem;color:var(--t3);letter-spacing:.14em">
     <span>왕필 주역주</span><span style="color:var(--bdr)">·</span><span>정이천 역전</span><span style="color:var(--bdr)">·</span><span>주희 주역본의</span>
   </div>
 </div>
@@ -278,7 +232,7 @@ input.inp{resize:none;}
     <div class="orn"><span>問</span></div>
     <input class="inp" id="nameIn" placeholder="이름 (예: 재영)" maxlength="10" style="margin-bottom:.8rem">
     <textarea class="inp" id="qIn" rows="5" placeholder="지금 마음에 걸리는 것을 솔직하게 적어주세요.&#10;구체적일수록 점괘의 해석이 깊어집니다.&#10;&#10;예: 올해 안에 이직을 해야 할지 고민입니다. 지금 회사가 안정적이긴 한데 성장이 없어서 답답하고, 새로운 곳에서 도전해보고 싶은데 두렵기도 해요."></textarea>
-    <p style="font-size:.72rem;color:var(--dim);text-align:right;margin-top:.4rem">비워두면 일반 운세로 해석됩니다</p>
+    <p style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--t3);text-align:right;margin-top:.4rem">비워두면 일반 운세로 해석됩니다</p>
     <div class="brow">
       <button class="btn-ghost" onclick="goTo('s0')">← 뒤로</button>
       <button class="btn" onclick="startThrow()"><span>동전을 던진다 →</span></button>
@@ -292,7 +246,7 @@ input.inp{resize:none;}
     <div class="stepbar" id="sb2"></div>
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.8rem">
       <div><p class="stitle" style="text-align:left;margin:0">투전 · 投錢</p><p class="ssub" style="text-align:left;margin:0">동전 셋을 여섯 번 던진다</p></div>
-      <span style="font-size:.76rem;color:var(--dim)" id="tcnt">0 / 6효</span>
+      <span style="font-family:'Noto Sans KR',sans-serif;font-size:.76rem;color:var(--t3)" id="tcnt">0 / 6효</span>
     </div>
     <div class="ptrak"><div class="pfill" id="tprog" style="width:0%"></div></div>
     <div class="trows" id="trows"></div>
@@ -309,8 +263,8 @@ input.inp{resize:none;}
       <p class="ssub" id="hexSub"></p>
       <div class="gwrap" id="s2gua"></div>
       <p class="chgi" id="s2chgi"></p>
-      <div style="margin-top:.5rem;padding:.9rem 1rem;background:rgba(196,154,42,0.04);border:.5px solid var(--bdr)">
-        <p style="font-size:.82rem;color:var(--muted);line-height:1.9" id="hexDesc"></p>
+      <div style="margin-top:.5rem;padding:.9rem 1rem;background:var(--sf);border:.5px solid var(--bdr);border-radius:2px">
+        <p style="font-family:'Noto Serif KR',serif;font-size:.85rem;color:var(--t2);line-height:1.9" id="hexDesc"></p>
       </div>
       <!-- 해석 카드 -->
       <div id="hexInterpret" style="margin-top:.8rem"></div>
@@ -622,7 +576,7 @@ function renderGua(cid,iid){
       if(ns[i]==='양')h+=`<div class="gy ${m?'gchg':''}"></div>`;
       else h+=`<div class="gnw"><div class="gn ${m?'gchg':''}"></div><div class="gn ${m?'gchg':''}"></div></div>`;
     }
-    h+='<div style="font-size:9px;color:var(--dim);letter-spacing:.15em;text-align:center;margin-top:2px">하괘</div>';
+    h+='<div style="font-size:9px;color:var(--t3);letter-spacing:.15em;text-align:center;margin-top:2px">하괘</div>';
     return h+'</div>';
   }
   let html=`<div class="gblk">${lines(nats,S.chg)}<p class="gname">${ben?ben.n:'?'}</p><p class="gsub">${ben&&ben.no!=null?ben.no+'번':''}</p></div>`;
@@ -654,7 +608,7 @@ function initRows(){
     <div class="lpv" id="lp${i}"><div style="width:78px;height:6px;background:var(--bdr);border-radius:1px;opacity:.3"></div></div>
     <span class="ltyp" id="lt${i}">미투전</span>
     <button class="tbtn" id="tb${i}" onclick="throwYao(${i})">${i===0?'▶ 던지기':'던지기'}</button>
-    <button class="tbtn" id="mb${i}" onclick="openModal(${i})" style="border-color:var(--bdr);color:var(--dim)">입력</button>
+    <button class="tbtn" id="mb${i}" onclick="openModal(${i})" style="border-color:var(--bdr);color:var(--t3)">입력</button>
   </div>`;
   document.getElementById('tprog').style.width='0%';
   document.getElementById('tcnt').textContent='0 / 6효';
@@ -680,7 +634,7 @@ function openModal(rowIdx){
   document.getElementById('modalSumLabel').textContent='';
   const btn=document.getElementById('modalConfirm');
   btn.style.opacity='.4';btn.style.cursor='not-allowed';
-  btn.style.color='var(--muted)';btn.style.borderColor='var(--bdr)';
+  btn.style.color='var(--t2)';btn.style.borderColor='var(--bdr)';
   document.getElementById('coinModal').style.display='flex';
 }
 
@@ -916,7 +870,7 @@ function aiBlock(tag,title,text){
     .map(p=>`<p>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</p>`).join('');
   return `<div style="margin:.6rem 0 0;padding:1rem 1.2rem 1rem 1.4rem;border-left:2px solid var(--gold);background:rgba(196,154,42,.05)">
     <p style="font-size:.68rem;color:var(--gold);letter-spacing:.18em;margin-bottom:.5rem">✦ ${tag||'해석'}</p>
-    ${title?`<p style="font-size:.92rem;font-weight:500;color:var(--text);margin-bottom:.6rem">${title}</p>`:''}
+    ${title?`<p style="font-size:.92rem;font-weight:500;color:var(--t1);margin-bottom:.6rem">${title}</p>`:''}
     <div class="sbody" style="font-size:.86rem">${ps}</div>
   </div>`;
 }
@@ -967,7 +921,7 @@ function buildReadingHtml(r,ben,ji){
       <p><strong>${ben.gs}</strong></p>
       <p>${_bk}</p>
       ${ben.p?`<p style="margin-top:.6rem">${ben.p}</p>`:''}
-      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--text)">${_bdst}</p>
+      <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid var(--gold);background:rgba(196,154,42,.04);font-size:.84rem;color:var(--t1)">${_bdst}</p>
     </div>
     ${aiBlock('해석',aiBen?.title,aiBen?.content)}
   </div>`;
@@ -984,7 +938,7 @@ function buildReadingHtml(r,ben,ji){
       const hyosa=_bhy(idx);
       if(hyosa)hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
         <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
-        <p style="font-size:.86rem;color:var(--text);line-height:1.8">${hyosa}</p>
+        <p style="font-size:.86rem;color:var(--t1);line-height:1.8">${hyosa}</p>
       </div>`;
     });
     const aiChg=getAi(secs,'변효',2);
@@ -996,10 +950,10 @@ function buildReadingHtml(r,ben,ji){
       </div>
       ${aiBlock('변효 풀이',aiChg?.title,aiChg?.content)}
       <div class="sbody" style="margin-top:.8rem;border-top:.5px solid var(--bdr);padding-top:.8rem">
-        <p style="font-size:.75rem;color:var(--dim);letter-spacing:.1em;margin-bottom:.6rem">효사 원문</p>
-        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">${pace}</p>
+        <p style="font-size:.75rem;color:var(--t3);letter-spacing:.1em;margin-bottom:.6rem">효사 원문</p>
+        <p style="font-size:.82rem;color:var(--t2);margin-bottom:.6rem">${pace}</p>
         ${hyosaParts}
-        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--muted)">이 변효들을 통해 <strong style="color:var(--text)">${jiName}</strong>괘로 넘어가고 있습니다.</p>`:''}
+        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--t2)">이 변효들을 통해 <strong style="color:var(--t1)">${jiName}</strong>괘로 넘어가고 있습니다.</p>`:''}
       </div>
     </div>`;
   }
@@ -1014,7 +968,7 @@ function buildReadingHtml(r,ben,ji){
         <p>지금 이 상황은 <strong>${jiName}${S.jiGua?.no?'('+S.jiGua.no+'번)':''}</strong>을 향해 나아가고 있습니다.</p>
         <p>${ji.v}</p>
         ${ji.p?`<p style="margin-top:.4rem">${ji.p}</p>`:''}
-        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--text)">${_jdst}</p>
+        <p style="margin-top:.8rem;padding:.8rem;border-left:1.5px solid rgba(196,154,42,.5);background:rgba(196,154,42,.03);font-size:.84rem;color:var(--t1)">${_jdst}</p>
       </div>
       ${aiBlock('흐름 해석',aiJi?.title,aiJi?.content)}
     </div>`;
@@ -1026,17 +980,17 @@ function buildReadingHtml(r,ben,ji){
     <span class="stag">점사 · 占辭</span>
     <h2 class="stit">형세 · 활로 · 경계</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);margin-top:.5rem">
-      <div style="background:var(--ink2);padding:1rem;text-align:center">
+      <div style="background:var(--sf);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">形勢 · 형세</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${ben.v}</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${ben.v}</p>
       </div>
-      <div style="background:var(--ink2);padding:1rem;text-align:center">
+      <div style="background:var(--sf);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=4&&ji)?_jk:_bk}</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>=4&&ji)?_jk:_bk}</p>
       </div>
-      <div style="background:var(--ink2);padding:1rem;text-align:center">
+      <div style="background:var(--sf);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>0&&ji)?jiName+'을 향해 가는 길에서 바름을 잃지 말라.':benName+'의 경계를 잊지 말라.'}</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>0&&ji)?jiName+'을 향해 가는 길에서 바름을 잃지 말라.':benName+'의 경계를 잊지 말라.'}</p>
       </div>
     </div>
     ${aiBlock('조언',aiAdv?.title,aiAdv?.content)}
@@ -1089,15 +1043,15 @@ function buildLocalCards(ben,ji,chg){
     <span class="stag">본괘 · ${benName}</span>
     <h2 class="stit">${benName}이 전하는 말</h2>
     <div class="sbody">
-      <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
-      <p style="font-size:.88rem;color:var(--text);line-height:1.8">${_bk}</p>
+      <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
+      <p style="font-size:.88rem;color:var(--t1);line-height:1.8">${_bk}</p>
       ${ben.p?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
-        <p style="font-size:.86rem;line-height:1.85;color:var(--text)">${ben.p}</p>
+        <p style="font-size:.86rem;line-height:1.85;color:var(--t1)">${ben.p}</p>
       </div>`:''}
       <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
-        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.75">${_bdst}</p>
-        <p style="margin-top:.55rem;font-size:.76rem;color:var(--dim);font-style:italic">이 실천 지침이 지금 상황에서 구체적으로 무엇을 뜻하는지는 AI 풀이에서 풀어드립니다.</p>
+        <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.75">${_bdst}</p>
+        <p style="margin-top:.55rem;font-size:.76rem;color:var(--t3);font-style:italic">이 실천 지침이 지금 상황에서 구체적으로 무엇을 뜻하는지는 AI 풀이에서 풀어드립니다.</p>
       </div>
     </div>
   </div>`;
@@ -1116,9 +1070,9 @@ function buildLocalCards(ben,ji,chg){
         const hy=_bhy(idx),hd=_bhd(idx);
         if(!hy&&!hd)return;
         effHtml+=`<div style="margin-top:.65rem;padding:.7rem .9rem;border-left:1px solid rgba(196,154,42,.25);background:rgba(196,154,42,.025)">
-          <p style="font-size:.67rem;color:var(--dim);letter-spacing:.1em;margin-bottom:.2rem">${LABELS[idx]}</p>
-          ${hy?`<p style="font-size:.82rem;color:var(--muted);line-height:1.7${hd?';margin-bottom:.35rem':''}">${hy}</p>`:''}
-          ${hd?`<p style="font-size:.82rem;color:var(--text);line-height:1.78">${hd}</p>`:''}
+          <p style="font-size:.67rem;color:var(--t3);letter-spacing:.1em;margin-bottom:.2rem">${LABELS[idx]}</p>
+          ${hy?`<p style="font-size:.82rem;color:var(--t2);line-height:1.7${hd?';margin-bottom:.35rem':''}">${hy}</p>`:''}
+          ${hd?`<p style="font-size:.82rem;color:var(--t1);line-height:1.78">${hd}</p>`:''}
         </div>`;
       });
       if(effHtml)secHtml+=`<div style="margin-top:.9rem">
@@ -1153,12 +1107,12 @@ function buildLocalCards(ben,ji,chg){
       const hyHigh=_bhy(high),hyLow=_bhy(low),hdHigh=_bhd(high);
       if(hyHigh||hdHigh)hyosaParts+=`<div style="margin-top:.85rem;padding:.8rem 1rem;border-left:2px solid rgba(196,154,42,.75);background:rgba(196,154,42,.06)">
         <p style="font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.28rem">${LABELS[high]} <span style="opacity:.6">· 중심</span></p>
-        ${hyHigh?`<p style="font-size:.84rem;color:var(--muted);line-height:1.8${hdHigh?';margin-bottom:.4rem':''}">${hyHigh}</p>`:''}
-        ${hdHigh?`<p style="font-size:.88rem;color:var(--text);line-height:1.82">${hdHigh}</p>`:''}
+        ${hyHigh?`<p style="font-size:.84rem;color:var(--t2);line-height:1.8${hdHigh?';margin-bottom:.4rem':''}">${hyHigh}</p>`:''}
+        ${hdHigh?`<p style="font-size:.88rem;color:var(--t1);line-height:1.82">${hdHigh}</p>`:''}
       </div>`;
       if(hyLow)hyosaParts+=`<div style="margin-top:.65rem;padding:.65rem 1rem;border-left:1px solid rgba(196,154,42,.28);background:rgba(196,154,42,.015)">
-        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.24rem">${LABELS[low]} <span style="opacity:.7">· 보조</span></p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.78">${hyLow}</p>
+        <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.24rem">${LABELS[low]} <span style="opacity:.7">· 보조</span></p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.78">${hyLow}</p>
       </div>`;
     }else if(chgN>=4){
       // 변효 4-5개: 불변효(움직이지 않는 효)가 핵심
@@ -1168,8 +1122,8 @@ function buildLocalCards(ben,ji,chg){
         if(!hyosa&&!hd)return;
         hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
           <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]} <span style="opacity:.6">· 중심</span></p>
-          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${hd?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
-          ${hd?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
+          ${hyosa?`<p style="font-size:.86rem;color:var(--t2);line-height:1.8${hd?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
+          ${hd?`<p style="font-size:.86rem;color:var(--t1);line-height:1.82">${hd}</p>`:''}
         </div>`;
       });
     }else{
@@ -1178,8 +1132,8 @@ function buildLocalCards(ben,ji,chg){
         if(!hyosa&&!hd)return;
         hyosaParts+=`<div style="margin-top:.8rem;padding:.75rem 1rem;border-left:1.5px solid rgba(196,154,42,.4);background:rgba(196,154,42,.03)">
           <p style="font-size:.72rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${LABELS[idx]}</p>
-          ${hyosa?`<p style="font-size:.86rem;color:var(--muted);line-height:1.8${hd?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
-          ${hd?`<p style="font-size:.86rem;color:var(--text);line-height:1.82">${hd}</p>`:''}
+          ${hyosa?`<p style="font-size:.86rem;color:var(--t2);line-height:1.8${hd?';margin-bottom:.4rem':''}">${hyosa}</p>`:''}
+          ${hd?`<p style="font-size:.86rem;color:var(--t1);line-height:1.82">${hd}</p>`:''}
         </div>`;
       });
     }
@@ -1190,9 +1144,9 @@ function buildLocalCards(ben,ji,chg){
       <span class="stag">변효 · 變爻 (${chg.length}개)</span>
       <h2 class="stit">${_cardStit}</h2>
       <div class="sbody">
-        <p style="font-size:.75rem;color:var(--dim)">변효: <strong style="color:var(--text)">${chgText}</strong>${chgN>=4?` · 불변효: <strong style="color:var(--text)">${_unchangedText}</strong>`:''}</p>
+        <p style="font-size:.75rem;color:var(--t3)">변효: <strong style="color:var(--t1)">${chgText}</strong>${chgN>=4?` · 불변효: <strong style="color:var(--t1)">${_unchangedText}</strong>`:''}</p>
         ${hyosaParts}
-        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--muted)">→ 지괘 <strong style="color:var(--text)">${jiName}</strong>으로 흘러가고 있습니다.</p>`:''}
+        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--t2)">→ 지괘 <strong style="color:var(--t1)">${jiName}</strong>으로 흘러가고 있습니다.</p>`:''}
       </div>
     </div>`;
   }
@@ -1202,14 +1156,14 @@ function buildLocalCards(ben,ji,chg){
       <span class="stag">지괘 · ${jiName}</span>
       <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
       <div class="sbody">
-        <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
-        <p style="font-size:.88rem;color:var(--text);line-height:1.8">${_jk}</p>
+        <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
+        <p style="font-size:.88rem;color:var(--t1);line-height:1.8">${_jk}</p>
         ${(_jpj||ji.p)?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
-          <p style="font-size:.86rem;line-height:1.85;color:var(--text)">${_jpj||ji.p}</p>
+          <p style="font-size:.86rem;line-height:1.85;color:var(--t1)">${_jpj||ji.p}</p>
         </div>`:''}
         <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
-          <p style="font-size:.67rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
-          <p style="font-size:.84rem;color:var(--muted);line-height:1.75">${_jdst}</p>
+          <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
+          <p style="font-size:.84rem;color:var(--t2);line-height:1.75">${_jdst}</p>
         </div>
       </div>
     </div>`;
@@ -1219,17 +1173,17 @@ function buildLocalCards(ben,ji,chg){
     <span class="stag">점사 · 占辭</span>
     <h2 class="stit">형세 · 활로 · 경계</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);margin-top:.5rem">
-      <div style="background:var(--ink2);padding:1rem;text-align:center">
+      <div style="background:var(--sf);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">形勢 · 형세</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${ben.v}</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${ben.v}</p>
       </div>
-      <div style="background:var(--ink2);padding:1rem;text-align:center">
+      <div style="background:var(--sf);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chg&&chg.length>=3&&ji)?_jk:_bk}</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>=3&&ji)?_jk:_bk}</p>
       </div>
-      <div style="background:var(--ink2);padding:1rem;text-align:center">
+      <div style="background:var(--sf);padding:1rem;text-align:center">
         <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
-        <p style="font-size:.84rem;color:var(--muted);line-height:1.7">${(chgN>0&&ji)?(ji.v||_jdst):(_bdt2||_bdst)}</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chgN>0&&ji)?(ji.v||_jdst):(_bdt2||_bdst)}</p>
       </div>
     </div>
   </div>`;
@@ -1248,7 +1202,7 @@ function buildReadingHtmlV2(r,ben,ji){
   if(r.headline){
     html+=`<div class="ccard" style="margin-bottom:1.2rem">
       <p style="font-size:.66rem;color:var(--gold);letter-spacing:.2em;margin-bottom:.5rem">✦ 占</p>
-      <h2 style="font-size:1.05rem;font-weight:500;color:var(--text);line-height:1.6">${mdp(r.headline)}</h2>
+      <h2 style="font-size:1.05rem;font-weight:500;color:var(--t1);line-height:1.6">${mdp(r.headline)}</h2>
     </div>`;
   }
 
@@ -1273,18 +1227,18 @@ function buildReadingHtmlV2(r,ben,ji){
   const _jiName=S.jiGua?.n||'';
   {
     let src=`<div class="scard"><span class="stag">원전 · 原典</span><div class="sbody">`;
-    src+=`<div style="margin-bottom:.85rem"><p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">본괘 · ${_benName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--text)">${_benK}</p></div>`;
+    src+=`<div style="margin-bottom:.85rem"><p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">본괘 · ${_benName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_benK}</p></div>`;
     if(_chg.length>0){
       _chg.forEach(idx=>{
         const hy=_ben2.hy2?.[idx]||ben?.hy?.[idx]||'';
         if(!hy)return;
         src+=`<div style="margin-bottom:.7rem;padding:.65rem .9rem;border-left:1.5px solid rgba(196,154,42,.45);background:rgba(196,154,42,.04)">`;
         src+=`<p style="font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${_LABELS[idx]}</p>`;
-        src+=`<p style="font-size:.85rem;line-height:1.8;color:var(--text)">${hy}</p></div>`;
+        src+=`<p style="font-size:.85rem;line-height:1.8;color:var(--t1)">${hy}</p></div>`;
       });
     }
     if(ji&&_jiK){
-      src+=`<div style="margin-top:.2rem"><p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">지괘 · ${_jiName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--text)">${_jiK}</p></div>`;
+      src+=`<div style="margin-top:.2rem"><p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">지괘 · ${_jiName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_jiK}</p></div>`;
     }
     src+=`</div></div>`;
     html+=src;
@@ -1328,14 +1282,14 @@ function buildReadingHtmlV2(r,ben,ji){
       // 내포된 의미
       if(sec.meaning&&sec.meaning.trim()){
         body+=`<div style="margin-bottom:.9rem">
-          <p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">意 · 의미</p>
-          <div class="sbody" style="color:var(--muted)">${paras(sec.meaning)}</div>
+          <p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">意 · 의미</p>
+          <div class="sbody" style="color:var(--t2)">${paras(sec.meaning)}</div>
         </div>`;
       }
       // 질문에 맞는 해석
       if(sec.reading&&sec.reading.trim()){
         body+=`<div style="padding-top:.6rem;border-top:.5px solid var(--bdr)">
-          <p style="font-size:.68rem;color:var(--dim);letter-spacing:.12em;margin-bottom:.35rem">↳ ${S.name||'당신'}에게</p>
+          <p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">↳ ${S.name||'당신'}에게</p>
           <div class="sbody">${paras(sec.reading)}</div>
         </div>`;
       }
@@ -1374,9 +1328,9 @@ function renderFallback(ben,ji,err){
   if(err){
     const isCredit=err.toString().includes('credit')||err.toString().includes('400');
     const msg=isCredit?'크레딧 부족 — console.anthropic.com에서 충전 후 다시 시도해주세요':'연결에 문제가 있어요 — 잠시 후 다시 시도해주세요';
-    html+=`<div class="scard"><span class="stag">알림</span><div class="sbody"><p style="color:var(--dim);font-size:.8rem">${msg}</p></div></div>`;
+    html+=`<div class="scard"><span class="stag">알림</span><div class="sbody"><p style="color:var(--t3);font-size:.8rem">${msg}</p></div></div>`;
   }
-  if(!ben){document.getElementById('rdarea').innerHTML='<p style="text-align:center;color:var(--dim);padding:3rem">괘를 읽지 못했습니다</p>';return;}
+  if(!ben){document.getElementById('rdarea').innerHTML='<p style="text-align:center;color:var(--t3);padding:3rem">괘를 읽지 못했습니다</p>';return;}
 
   html+=buildLocalCards(ben,ji,S.chg);
   html+=`<div class="ccard">
@@ -1448,7 +1402,7 @@ function renderArchive(){
       <button class="arch-del" onclick="event.stopPropagation();deleteArchive(${r.id})">✕</button>
       <p class="arch-date">${r.date}</p>
       <p class="arch-gua">${r.gua}</p>
-      ${r.q?`<p class="arch-q">"${r.q}"</p>`:'<p class="arch-q" style="color:var(--dim)">일반 운세</p>'}
+      ${r.q?`<p class="arch-q">"${r.q}"</p>`:'<p class="arch-q" style="color:var(--t3)">일반 운세</p>'}
     </div>`).join('');
 }
 function viewArchive(id){
@@ -1960,23 +1914,23 @@ async function generateReading(ben,ji,retryCount=0){
 
 <!-- 동전 수동 입력 모달 -->
 <div id="coinModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,8,6,.85);align-items:center;justify-content:center;padding:1rem">
-  <div style="background:var(--ink2);border:.5px solid var(--bdrh);padding:1.6rem 1.8rem;width:100%;max-width:360px">
+  <div style="background:var(--sf);border:.5px solid var(--bdrh);padding:1.6rem 1.8rem;width:100%;max-width:360px">
     <p style="font-size:.72rem;color:var(--gold);letter-spacing:.18em;margin-bottom:.4rem" id="modalYaoLabel"></p>
-    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem">실제로 던진 결과를 선택해주세요</p>
+    <p style="font-size:.82rem;color:var(--t2);margin-bottom:1.2rem">실제로 던진 결과를 선택해주세요</p>
     <div style="display:flex;gap:.8rem;margin-bottom:1.4rem" id="modalCoins">
-      <div style="flex:1" id="mc0"><p style="font-size:.7rem;color:var(--dim);text-align:center;margin-bottom:.4rem">첫 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb0y" onclick="setModalCoin(0,3)">앞</button><button class="mbtn" id="mb0n" onclick="setModalCoin(0,2)">뒤</button></div></div>
-      <div style="flex:1" id="mc1"><p style="font-size:.7rem;color:var(--dim);text-align:center;margin-bottom:.4rem">두 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb1y" onclick="setModalCoin(1,3)">앞</button><button class="mbtn" id="mb1n" onclick="setModalCoin(1,2)">뒤</button></div></div>
-      <div style="flex:1" id="mc2"><p style="font-size:.7rem;color:var(--dim);text-align:center;margin-bottom:.4rem">세 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb2y" onclick="setModalCoin(2,3)">앞</button><button class="mbtn" id="mb2n" onclick="setModalCoin(2,2)">뒤</button></div></div>
+      <div style="flex:1" id="mc0"><p style="font-size:.7rem;color:var(--t3);text-align:center;margin-bottom:.4rem">첫 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb0y" onclick="setModalCoin(0,3)">앞</button><button class="mbtn" id="mb0n" onclick="setModalCoin(0,2)">뒤</button></div></div>
+      <div style="flex:1" id="mc1"><p style="font-size:.7rem;color:var(--t3);text-align:center;margin-bottom:.4rem">두 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb1y" onclick="setModalCoin(1,3)">앞</button><button class="mbtn" id="mb1n" onclick="setModalCoin(1,2)">뒤</button></div></div>
+      <div style="flex:1" id="mc2"><p style="font-size:.7rem;color:var(--t3);text-align:center;margin-bottom:.4rem">세 번째</p><div style="display:flex;gap:.5rem;justify-content:center"><button class="mbtn" id="mb2y" onclick="setModalCoin(2,3)">앞</button><button class="mbtn" id="mb2n" onclick="setModalCoin(2,2)">뒤</button></div></div>
     </div>
     <div style="display:flex;gap:.6rem;margin-bottom:.8rem;padding:.7rem;background:rgba(196,154,42,.04);border:.5px solid var(--bdr);justify-content:center;align-items:center;gap:1rem">
       <div class="mcn" id="mdisp0">?</div>
       <div class="mcn" id="mdisp1">?</div>
       <div class="mcn" id="mdisp2">?</div>
     </div>
-    <div style="font-size:.76rem;color:var(--muted);text-align:center;margin-bottom:1rem">합: <span id="modalSum" style="color:var(--goldl);font-weight:500">—</span> <span id="modalSumLabel" style="color:var(--dim)"></span></div>
+    <div style="font-size:.76rem;color:var(--t2);text-align:center;margin-bottom:1rem">합: <span id="modalSum" style="color:var(--goldl);font-weight:500">—</span> <span id="modalSumLabel" style="color:var(--t3)"></span></div>
     <div style="display:flex;gap:.6rem">
       <button class="btn-ghost" style="flex:1;text-align:center;padding:.6rem" onclick="closeModal()">취소</button>
-      <button id="modalConfirm" style="flex:2;padding:.7rem;border:.5px solid var(--bdrh);background:transparent;color:var(--muted);font-family:inherit;font-size:.82rem;letter-spacing:.1em;cursor:not-allowed;opacity:.4" onclick="confirmModal()">확인</button>
+      <button id="modalConfirm" style="flex:2;padding:.7rem;border:.5px solid var(--bdrh);background:transparent;color:var(--t2);font-family:inherit;font-size:.82rem;letter-spacing:.1em;cursor:not-allowed;opacity:.4" onclick="confirmModal()">확인</button>
     </div>
   </div>
 </div>
