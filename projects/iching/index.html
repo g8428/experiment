@@ -168,6 +168,81 @@ input.inp{resize:none;}
 .lock-btn:hover{border-color:var(--gold);color:var(--goldl);}
 .lock-icon{font-size:.75rem;opacity:.6;}
 
+/* ── 모바일 퍼스트 ── */
+@media (max-width:640px){
+  /* 기본 폰트 최소 사이즈 확보 */
+  body{font-size:16px;}
+
+  /* 입력창 — iOS 확대 방지 (min 16px) */
+  .inp,.q5in,input.inp{font-size:1rem!important;}
+
+  /* 작은 텍스트 상향 */
+  .stag{font-size:.75rem;}
+  .ssub{font-size:.85rem;}
+  .ylbl{font-size:.8rem;width:44px;}
+  .gsub{font-size:.78rem;}
+  .chgi{font-size:.84rem;}
+  .sbody{font-size:.95rem;line-height:2;}
+  .stit{font-size:1.05rem;}
+  .q5lb{font-size:.88rem;}
+  .arch-date{font-size:.78rem;}
+  .arch-q{font-size:.84rem;}
+  .ldmsg{font-size:.85rem;}
+  .aild{font-size:.86rem;}
+
+  /* 카드 패딩 — 모바일 여백 확보 */
+  .scard{padding:1.3rem 1rem;}
+  .ccard{padding:1.3rem 1rem;}
+
+  /* screen 좌우 여백 */
+  .screen{padding-left:.75rem;padding-right:.75rem;}
+
+  /* 동전 버튼 — 터치 타겟 44px 확보 */
+  .cn{width:40px;height:40px;font-size:11px;}
+  .cwrap{gap:6px;}
+
+  /* trow — 터치 영역 확보 */
+  .trow{padding:.75rem .7rem;gap:.6rem;}
+
+  /* 투전 버튼 */
+  .tbtn{padding:.5rem 1rem;font-size:.8rem;min-height:40px;}
+
+  /* 기본 버튼 */
+  .btn{padding:.9rem 2rem;font-size:.92rem;min-height:48px;}
+  .btns .btn-s{padding:.75rem 1rem;font-size:.85rem;min-height:44px;}
+  .lock-btn{padding:.75rem 1.2rem;min-height:44px;}
+
+  /* 탭바 — iPhone 노치/홈 인디케이터 safe area */
+  .tab-bar{padding-bottom:env(safe-area-inset-bottom,0px);}
+  .tab-item{font-size:.72rem;}
+  .screen{padding-bottom:calc(7rem + env(safe-area-inset-bottom,0px))!important;}
+
+  /* 괘 표시 — 모바일 줄바꿈 */
+  .gwrap{gap:1rem;}
+  .gy{width:72px;}
+  .gn{width:30px;}
+
+  /* 로고 */
+  .logo{font-size:clamp(2.6rem,10vw,3.6rem);letter-spacing:.22em;}
+
+  /* archive 아이템 */
+  .archive-item{padding:1rem;}
+  .arch-del{min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;}
+
+  /* 섹션 inner 여백 */
+  .inner{padding:0;}
+
+  /* stepbar */
+  .stepbar{margin-bottom:1.4rem;}
+
+  /* 고민 입력 textarea */
+  textarea.inp{font-size:1rem;line-height:1.9;}
+}
+
+/* 아이폰 safe-area 상단 */
+@supports(padding-top:env(safe-area-inset-top)){
+  .screen{padding-top:calc(1.5rem + env(safe-area-inset-top,0px));}
+}
 </style>
 </head>
 <body>
