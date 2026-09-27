@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-27",
+  "criteria": {
+    "monthly_price_max_krw": 20000,
+    "data_requirement": "10GB+ with daily 2GB top-up, OR 40GB+",
+    "penalty_days_exclude_over": 120,
+    "tethering_required_explicit": true,
+    "roaming_required_explicit": true
+  },
+  "result": "no_full_match",
+  "recommended": [],
+  "reference_candidates": [
+    {
+      "carrier_network": "LGU+",
+      "mvno": "A모바일",
+      "plan_name": "A 갓성비",
+      "promo_price_krw": 10,
+      "promo_months": 7,
+      "regular_price_krw": 19800,
+      "data": "20GB (기본 10GB + 추가 10GB, 일일 추가 아님)",
+      "penalty": "약정 없음",
+      "tethering": "미명시",
+      "roaming": "미명시",
+      "apply_url": "https://www.uplusmvno.com/plan/plan-list/detail?mvnopPpId=CP0000004551",
+      "missing_conditions": ["data_requirement (40GB/일2GB 방식 아님)"]
+    },
+    {
+      "carrier_network": "LGU+",
+      "mvno": "프리텔레콤",
+      "plan_name": "예스24 크레마클럽 71GB+3Mbps",
+      "promo_price_krw": 30900,
+      "regular_price_krw": 39900,
+      "regular_price_after_months": 24,
+      "data": "11GB + 일 2GB + 3Mbps 무제한",
+      "penalty": "불명확",
+      "tethering": "미확인",
+      "roaming": "미확인",
+      "apply_url": "https://www.freet.co.kr/plan/ratePlan",
+      "missing_conditions": ["monthly_price_max_krw (2만원 초과)"]
+    }
+  ],
+  "sources": [
+    "https://www.clien.net/service/board/jirum/19256696",
+    "https://www.moyoplan.com/plans/curation/youtube",
+    "https://amobile.co.kr/plan/79760"
+  ],
+  "slack_sent": true
+}
