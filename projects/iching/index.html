@@ -201,11 +201,19 @@ input.inp{resize:none;}
   .cn{width:40px;height:40px;font-size:11px;}
   .cwrap{gap:6px;}
 
-  /* trow — 터치 영역 확보 */
-  .trow{padding:.75rem .7rem;gap:.6rem;}
+  /* trow — 투전 행 모바일 최적화 */
+  .trow{padding:.7rem .6rem;gap:.5rem;flex-wrap:nowrap;}
+  /* 효 선 미리보기·텍스트 숨김 (괘 그래픽에서 이미 보임) */
+  .lpv{display:none;}
+  .ltyp{display:none;}
+  /* 동전 크기 축소 — 터치는 여전히 가능 */
+  .cn{width:34px;height:34px;font-size:10px;}
+  .cwrap{gap:5px;}
+  /* 효 라벨 최소화 */
+  .ylbl{width:36px;font-size:.76rem;letter-spacing:.04em;}
 
   /* 투전 버튼 */
-  .tbtn{padding:.5rem 1rem;font-size:.8rem;min-height:40px;}
+  .tbtn{padding:.5rem .7rem;font-size:.78rem;min-height:40px;letter-spacing:.06em;}
 
   /* 기본 버튼 */
   .btn{padding:.9rem 2rem;font-size:.92rem;min-height:48px;}
