@@ -1,0 +1,72 @@
+name: Claude Code 트렌드 모니터 & 컨텐츠 생성
+
+on:
+  schedule:
+    # 매주 월요일 오전 9시 KST = UTC 일요일 00:00
+    - cron: '0 0 * * 1'
+  workflow_dispatch:  # 수동 실행 버튼
+
+jobs:
+  monitor-and-generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write  # 결과 파일 커밋용
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 패키지 설치
+        run: pip install requests anthropic
+
+      - name: GitHub 트렌드 수집
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Actions 기본 제공
+        run: python projects/claude-code-monitor/monitor.py
+
+      - name: 블로그 + 인스타 컨텐츠 생성
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python projects/claude-code-monitor/generate_content.py
+
+      - name: 결과 파일 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add research/ content/
+          git diff --staged --quiet || git commit -m "chore: Claude Code 트렌드 리포트 + 컨텐츠 자동 생성 $(date +%Y-%m-%d)"
+          git push
+
+      - name: Slack 보고 (#성과보고)
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL 미설정 — 보고 스킵"
+            exit 0
+          fi
+
+          STATUS="${{ job.status }}"
+          DATE=$(date +%Y-%m-%d)
+
+          if [ "$STATUS" = "success" ]; then
+            BLOG_FILE=$(ls content/blog/${DATE}-*.md 2>/dev/null | head -1 || echo "없음")
+            IG_FILE=$(ls content/instagram/${DATE}-*.md 2>/dev/null | head -1 || echo "없음")
+            TREND_FILE="research/claude-code-trends-${DATE}.md"
+
+            MSG="✅ Claude Code 트렌드 모니터 완료 (${DATE})\n블로그: ${BLOG_FILE}\n인스타: ${IG_FILE}\n트렌드: ${TREND_FILE}"
+          else
+            MSG="❌ Claude Code 트렌드 모니터 실패 (${DATE})\n로그: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+
+          curl -s -X POST "$SLACK_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\": \"${MSG}\"}"
