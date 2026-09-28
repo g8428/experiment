@@ -18,7 +18,9 @@ projects/iching/
 ├── index.html                        # 전체 앱 (3000줄+, 단일 파일)
 ├── HANDOVER.md                       # 이 파일
 ├── interpretation_methodology_guide.md  # AI 해석 방법론 (다산역+육효점)
-└── server.js                         # 로컬 dev 서버 (필요 시 node server.js)
+├── local-server.js                   # 로컬 dev 서버 (api/ 핸들러를 동적 import)
+├── api/                              # Vercel 서버리스 (reading, questions, auth, billing)
+└── lib/prompt-reading-v2.js          # 구버전 프롬프트 빌더 — index.html에서 로드하지 않음(참고용 잔재)
 ```
 
 스크립트는 `E:/Users/g8428/experiment/.env`에서 `ANTHROPIC_API_KEY` 읽음.
@@ -139,6 +141,22 @@ GD2[20] = {
 | `window.buildReadingPrompt` | 하위호환 래퍼(system+user 합침). 현재 호출처 없음 |
 
 변효 개수별 규칙은 `buildReadingUser` 안의 `readingFocus`/`heartRule`이 **0 / 1 / 2 / 3 / 4~5 / 6** 으로 분기한다(무료판과 동일). 4~5개는 변효 효사를 프롬프트에 아예 넣지 않고 불변효 효사만 준다. `_autoMeaning('이 점괘의 심장')`도 4~5개면 불변효를 원전으로 표시.
+
+### 시기(時期) 계산 (2026-09-28 수정)
+
+**문제였던 것**: 예전 `lyStr`은 "오늘 일진 지지의 충·합·공망 지지 = 발동 달"로 시기를 줬다. 괘가 무엇이든 그날 점친 사람 전원이 같은 달을 받았고(壬寅일이면 누구나 "충=申월=내년 8월"), 시스템 규칙 "앞으로 3~4개월을 달별로"가 겹쳐 "10~11월 대기, 내년 8월 완성" 식 고정 윈도우에 점괘를 맞춰 끼우게 됐다. 피드백으로 발견.
+
+**지금 구조** (`index.html`, `buildLiuYaoData` 아래):
+| 함수 | 역할 |
+|---|---|
+| `getWolGeon(date)` | 절기 기준 월건 지지 (`WOLGEON_START`) |
+| `buildDasanTiming(...)` | 다산 추이: 본괘·지괘의 12벽괘 절기 위치(`BYEOK_MONTH`, 비벽괘는 양효 수 → `TUI_PARENT` 모괘 두 개, 61·62는 재윤괘) + 변효 방향(음→양=성장기, 양→음=수렴기) + 효변 단계(`YAO_STAGE`, 변효 ≤3개) |
+| `detectYongsin(q)` | 질문 키워드 → 용신 육친 (관귀/부모/처재/자손/형제, 연애는 관귀·처재 둘 다) |
+| `buildEunggi(lyData,chg,q,date)` | 육효 응기. 세효·응효·용신·동효(변효 4~5개면 불변효, 6개면 세·응·용신만)의 지지별로 상태(동/정, 왕상휴수, 공망, 월파, 일진 충·합)와 응기 후보(값·합·충·출공)를 실제 달 범위 + 60일 내 가까운 날로 준다 |
+
+`buildReadingUser`는 `[추이 — 계절 국면]`과 `[시기 판단 근거 — 육효 응기]` 두 블록을 넣고, system 규칙 6번과 user 마지막 줄이 "이 두 블록에서만 시기를 가져오라, 근거 없는 달·어림 숫자·N개월 채우기 금지"로 바뀌었다.
+
+원칙은 `interpretation_methodology_guide.md` "시기 판단" 절 참고. **검증 방법**: `buildReadingUser`를 node에서 서로 다른 괘·질문으로 호출해 두 블록이 괘마다 달라지는지 본다(같은 날 모든 괘가 같은 달을 받으면 퇴행).
 
 ### 서버 (`api/reading.js`, `api/questions.js`)
 Anthropic Messages API 프록시. 클라이언트가 보낸 `system / messages / tools / tool_choice / temperature / max_tokens`를 그대로 전달한다(구버전 `prompt`만 와도 동작). `local-server.js`가 같은 핸들러를 동적 import하므로 로컬/Vercel 동작이 같다.

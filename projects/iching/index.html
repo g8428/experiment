@@ -1570,8 +1570,22 @@ function getKongmang(idx){
   return pairs[sun];
 }
 
+// 월건(月建): 절기 기준 이달의 지지 인덱스 (오늘이 속한 절기월)
+function getWolGeon(date){
+  const y=date.getFullYear();
+  let bi=0,bs=new Date(y-1,11,7); // 직전 子月 시작(작년 12/7)
+  for(let b=0;b<12;b++){
+    const[m,d]=WOLGEON_START[b];
+    const s=new Date(y,m-1,d);
+    if(s<=date&&s>bs){bs=s;bi=b;}
+  }
+  return bi;
+}
+// 지지월 → 계절 위치 표기 (다산 추이용 — 특정 연도의 날짜가 아니라 절기상 위치)
+const BRANCH_SEASON=['12~1월(동지)','1~2월(소한·대한)','2~3월(입춘)','3~4월(경칩·춘분)','4~5월(청명·곡우)','5~6월(입하·소만)','6~7월(하지)','7~8월(소서·대서)','8~9월(입추·처서)','9~10월(백로·추분)','10~11월(한로·상강)','11~12월(입동·소설)'];
+
 // 지지 인덱스 → 양력 월건 범위 문자열 (오늘 기준, 이미 지났으면 내년)
-function branchToCalStr(brIdx, today){
+function branchToCalStr(brIdx, today, compact){
   const [sm,sd]=WOLGEON_START[brIdx];
   const ni=(brIdx+1)%12;
   const [em,ed]=WOLGEON_START[ni];
@@ -1587,15 +1601,10 @@ function branchToCalStr(brIdx, today){
   // 子月(12월)은 같은해로 유효 — 다른 월은 끝이 오늘 이전이면 내년
   if(end<today){sy=yr+1; start=new Date(sy,sm-1,sd); end=makeEnd(sy);}
   const isCur=start<=today&&today<=end;
-  const fmt=d=>`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
-  return`${fmt(start)}~${fmt(end)}${isCur?' ← 현재':''}`;
-}
-// 공망처럼 한글 지지명 배열 → 양력 범위 문자열 배열
-function kongmangToCalStrs(krArr, today){
-  return krArr.map(kr=>{
-    const bi=BRANCHES_KR.indexOf(kr);
-    return bi<0?kr:branchToCalStr(bi,today);
-  });
+  const fmt=compact
+    ?d=>`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`
+    :d=>`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+  return`${fmt(start)}~${fmt(end)}${isCur?(compact?'←지금':' ← 현재'):''}`;
 }
 
 // 오행 생극
@@ -1644,22 +1653,148 @@ function buildLiuYaoData(benNo){
     const isSe=posIdx===pal.s;
     const isEung=posIdx===pal.r;
     return{
-      pos:posIdx+1,
+      pos:posIdx+1,brIdx,
       branch:BRANCHES_HAN[brIdx],branchKr:BRANCHES_KR[brIdx],
       element:brEl,liuqin,shou,isKong,isSe,isEung
     };
   });
 
+  const wolGeonBranchIdx=getWolGeon(today);
   return{
     palace:pal.p,palaceElement:pal.e,
     sePos:pal.s+1,eungPos:pal.r+1,
     seData:positions[pal.s],eungData:positions[pal.r],
     ilJin:`${ilJin.stem}${ilJin.branch}(${ilJin.stemKr}${ilJin.branchKr})`,
     ilJinStemIdx:ilJin.stemIdx,ilJinBranchIdx:ilJin.branchIdx,
+    wolGeonBranchIdx,wolGeon:BRANCHES_HAN[wolGeonBranchIdx],
     kongmang,positions,
     date:today
   };
 }
+
+/* ═══ 시기(時期) 판단 — 왜 이렇게 계산하나 (2026-09-28)
+   예전엔 "오늘 일진의 충·합·공망 지지 = 발동 달"로 시기를 줬다. 그러면 괘가 무엇이든
+   그날 점친 사람 전원이 같은 달(예: 壬寅일이면 누구나 "충=申월=내년 8월")을 받고,
+   시스템 규칙 "앞으로 3~4개월"까지 겹쳐 "10~11월 대기, 내년 8월 완성" 식 고정 윈도우가 됐다.
+   육효 응기(應期)는 일진 자체가 아니라 *효(세효·용신·동효)의 지지*가 월건·일진과 맺는 관계에서 나온다.
+   다산역의 시기는 추이(12벽괘 절기 위치)와 효변 방향·위치에서 나온다. 아래 두 함수가 그 근거만 준다. ═══ */
+
+// ── 다산역 추이(推移): 12벽괘 절기 위치 ──
+// 복→건 = 양이 자라는 쪽(子~巳), 구→곤 = 음이 자라는 쪽(午~亥)
+const BYEOK_MONTH={24:0,19:1,11:2,34:3,43:4,1:5,44:6,33:7,12:8,20:9,23:10,2:11};
+// 양효 개수 → 추이의 모괘 [양이 자라는 쪽, 음이 자라는 쪽] (다산 추이표: 1양=복·박, 2양=임·관, 3양=태·비, 4양=대장·둔, 5양=쾌·구)
+const TUI_PARENT={1:[24,23],2:[19,20],3:[11,12],4:[34,33],5:[43,44]};
+const YAO_STAGE=['초효 — 일의 첫머리, 가장 가까운 시일','이효 — 안에서 무르익는 중, 가까운 시일','삼효 — 안팎이 갈리는 고비, 중간 국면','사효 — 밖으로 나서는 문턱, 중간 국면','오효 — 일의 절정, 먼 시점','상효 — 끝자락·마무리, 가장 먼 시점'];
+
+function dasanTuiOf(nats,no,name){
+  if(!nats||nats.length!==6||!no)return'';
+  const bm=BYEOK_MONTH[no];
+  const seasonOf=n=>`${BIGUAI_NAME[n]}(${BRANCHES_HAN[BYEOK_MONTH[n]]}月·${BRANCH_SEASON[BYEOK_MONTH[n]]})`;
+  if(bm!==undefined)return`${name}: 12벽괘 그 자체 — ${BRANCHES_HAN[bm]}月(${BRANCH_SEASON[bm]}) 절기의 기운. ${bm<=5?'양이 자라는 쪽(성장·전진)':'음이 자라는 쪽(수렴·물러남)'}.`;
+  if(no===61||no===62)return`${name}: 재윤괘(再閏卦) — 12벽괘 사이에 윤달처럼 끼어드는 괘. 정해진 절기가 없고 국면이 겹치는 시기.`;
+  const yang=nats.filter(n=>n==='양').length;
+  const par=TUI_PARENT[yang];
+  if(!par)return'';
+  return`${name}: ${yang}양${6-yang}음 → 벽괘 ${seasonOf(par[0])}과 ${seasonOf(par[1])} 사이에서 추이한 괘.`;
+}
+
+function buildDasanTiming(nats,benNo,benName,jiNats,jiNo,jiName,chg,throws){
+  const out=[];
+  const b=dasanTuiOf(nats,benNo,`본괘 ${benName}`);
+  if(b)out.push(b);
+  if(jiNo&&jiNats){const j=dasanTuiOf(jiNats,jiNo,`지괘 ${jiName}`);if(j)out.push(j);}
+  const toYin=chg.filter(i=>throws?.[i]?.sum===9).length;   // 양→음
+  const toYang=chg.filter(i=>throws?.[i]?.sum===6).length;  // 음→양
+  if(chg.length===0)out.push('변효 없음 → 절기가 고정된 상태. 시기는 이 절기 안에 머물며, 큰 전환은 읽지 않는다.');
+  else if(toYang>toYin)out.push(`변효 방향: 음→양 ${toYang}개${toYin?`, 양→음 ${toYin}개`:''} → 양이 자라는 쪽(성장·전진기) 국면으로 읽는다.`);
+  else if(toYin>toYang)out.push(`변효 방향: 양→음 ${toYin}개${toYang?`, 음→양 ${toYang}개`:''} → 음이 자라는 쪽(수렴·물러남·정리기) 국면으로 읽는다.`);
+  else out.push(`변효 방향: 음→양 ${toYang}개, 양→음 ${toYin}개 — 양방향이 섞인 전환기.`);
+  if(chg.length>0&&chg.length<=3)out.push(`효변 단계(변효 위치가 말하는 시간의 원근): ${chg.map(i=>YAO_STAGE[i]).join(' / ')}`);
+  return out.join('\n');
+}
+
+// ── 질문 주제 → 용신 육친 (육효 통례) ──
+function detectYongsin(q){
+  const s=q||'';
+  const out=[];
+  const add=(qin,why)=>{if(!out.some(o=>o.qin===qin))out.push({qin,why});};
+  if(/이직|직장|회사|취업|취직|승진|면접|커리어|일자리|공무원|소송|재판|명예|직위|질병|병|건강/.test(s))add('관귀','직장·승진·소송·질병은 관귀가 용신');
+  if(/시험|합격|자격|학업|공부|계약|문서|서류|집|주택|전세|이사|부동산|차|부모|어른|상사|윗사람/.test(s))add('부모','시험 합격·문서·계약·집·부모·윗사람은 부모가 용신');
+  if(/돈|재물|수입|월급|연봉|매출|사업|투자|주식|코인|매매|판매|장사|대출|빚|수익/.test(s))add('처재','재물·사업·투자·매매는 처재가 용신');
+  if(/연애|결혼|남자|여자|남친|여친|남편|아내|배우자|썸|짝|소개팅|이혼|애인/.test(s)){add('관귀','상담자가 여성이면 상대(남자)는 관귀');add('처재','상담자가 남성이면 상대(여자)는 처재');}
+  if(/자녀|아이|자식|임신|출산|반려|강아지|고양이|건강|치료|약|근심|걱정/.test(s))add('자손','자녀·출산·치료·근심 해소는 자손이 용신');
+  if(/형제|친구|동료|동업|경쟁|파트너|팀/.test(s))add('형제','형제·친구·동료·동업·경쟁은 형제가 용신');
+  return out;
+}
+
+// ── 육효 응기(應期) ──
+// 원칙: 공망→출공(값·충), 월파→실파(값·합), 동효→합에 응(합·값), 정효→충에 응(충·값).
+// 가까운 일은 일 단위(값일·합일·충일), 먼 일은 월 단위. 시기는 효의 지지에서만 나온다.
+function buildEunggi(lyData,chg,question,refDate){
+  const today=refDate||lyData.date||new Date();
+  const wb=lyData.wolGeonBranchIdx, db=lyData.ilJinBranchIdx;
+  const wolEl=BRANCH_EL[wb];
+  const chungOf=b=>(b+6)%12;
+  const strengthOf=el=>({'형제':'월건과 같은 기운(왕)','부모':'월건이 생해줌(상)','자손':'월건에 기운을 내어줌(휴)','처재':'월건을 극하느라 소모(수)','관귀':'월건에 눌림(사)'}[getWuXingRel(el,wolEl)]||'');
+  // 앞으로 60일 안에서 같은 지지의 날
+  const nextDay=bi=>{
+    for(let k=1;k<=60;k++){
+      const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+k);
+      if(getIlJin(d).branchIdx===bi)return`${d.getMonth()+1}/${d.getDate()}`;
+    }
+    return'';
+  };
+  const lines=lyData.positions.map(p=>{
+    const bi=p.brIdx;
+    const moving=chg.includes(p.pos-1);
+    const wolpa=chungOf(bi)===wb, ilchung=chungOf(bi)===db;
+    const wolhab=getHab(bi).includes(wb), ilhab=getHab(bi).includes(db);
+    const habB=getHab(bi), chungB=chungOf(bi);
+    let mode,cands;
+    if(p.isKong&&wolpa){mode='공망+월파(진공) → 값월에 출공·실파. 그 전엔 실체 없음';cands=[[bi,'값']];}
+    else if(p.isKong){mode='공망 → 출공(값·충)에 응';cands=[[bi,'값'],[chungB,'충']];}
+    else if(wolpa){mode='월파 → 실파(값·합)에 응';cands=[[bi,'값'],...habB.map(h=>[h,'합'])];}
+    else if(moving){mode='동효 → 합(또는 값)에 응';cands=[...habB.map(h=>[h,'합']),[bi,'값']];}
+    else{mode='정효 → 충(또는 값)에 응';cands=[[chungB,'충'],[bi,'값']];}
+    if(wolhab&&!moving)mode+=' · 월건과 합 → 합처봉충(충이 오는 달에 풀림)';
+    const months=cands.map(([b,t])=>`${t} ${BRANCHES_HAN[b]}月(${branchToCalStr(b,today,true)})`).join(' / ');
+    const days=cands.map(([b,t])=>{const d=nextDay(b);return d?`${t} ${BRANCHES_HAN[b]}일 ${d}`:'';}).filter(Boolean).join(' / ');
+    const state=[moving?'동효':'정효',strengthOf(p.element),p.isKong?'공망':'',wolpa?'월파':'',ilchung&&!moving?'일진 충(암동)':'',ilhab?'일진 합':''].filter(Boolean).join(' · ');
+    return{...p,bi,moving,mode,months,days,state};
+  });
+
+  // 역할 배정: 세효 / 응효 / 동효 / 용신(질문 주제)
+  const roles=new Map(); // pos → [role...]
+  const addRole=(line,role)=>{if(!line)return;const a=roles.get(line.pos)||[];a.push(role);roles.set(line.pos,a);};
+  addRole(lines[lyData.sePos-1],'나(세효)');
+  addRole(lines[lyData.eungPos-1],'상대·결과(응효)');
+  // 변효 1~3개: 동효가 시기의 축. 4~5개: 해석 중심이 불변효이므로 불변효를 축으로. 6개: 전변이라 개별 동효는 축이 아님(세효·응효·용신만)
+  if(chg.length<=3)lines.filter(l=>l.moving).forEach(l=>addRole(l,'동효'));
+  else if(chg.length<=5)lines.filter(l=>!l.moving).forEach(l=>addRole(l,'불변효(해석 중심)'));
+  const yongsin=detectYongsin(question);
+  const missing=[];
+  yongsin.forEach(y=>{
+    const cand=lines.filter(l=>l.liuqin===y.qin);
+    if(cand.length===0){missing.push(y);return;}
+    // 여러 개면 동효 우선, 그다음 공망 아닌 것
+    cand.sort((a,b)=>(b.moving-a.moving)||(a.isKong-b.isKong));
+    addRole(cand[0],`용신(${y.qin} — ${y.why})`);
+  });
+
+  const body=[...roles.entries()].sort((a,b)=>a[0]-b[0]).map(([pos,rs])=>{
+    const l=lines[pos-1];
+    return`${rs.join(' = ')}: ${l.pos}효 ${l.branch}${OHAENG_KR[l.element]||''} · ${l.liuqin} · ${l.state}\n  ${l.mode}\n  응기 달: ${l.months}${l.days?`\n  가까운 날: ${l.days}`:''}`;
+  }).join('\n');
+  const missStr=missing.map(y=>`용신(${y.qin}) 불현(伏神) — 이 괘에 ${y.qin}이 드러나지 않음. 일이 더디고 실체가 늦게 나타나는 신호. 세효로 대신 읽되 시기는 넉넉히.`).join('\n');
+  const yongNone=yongsin.length===0?'용신: 주제가 특정되지 않아 세효 중심으로 읽는다.':'';
+
+  return`\n[시기 판단 근거 — 육효 응기] 오늘 ${lyData.ilJin}일 · 월건 ${BRANCHES_HAN[wb]}月(${branchToCalStr(wb,today,true)})
+※ 시기는 아래 효들의 지지가 월건·일진과 맺는 관계에서만 나온다. 오늘 일진 자체의 충·합·공망 달은 시기 근거가 아니다.
+${body}
+${[missStr,yongNone].filter(Boolean).join('\n')}
+[응기 원칙] 가까운 일(이번 달~다음 달 안에 결판나는 물음)은 일 단위, 먼 일은 월 단위. 위 후보 가운데 괘의 형세(추이 방향)와 질문 맥락에 맞는 것을 고르고, 왜 그 달인지 이유를 서술에 녹인다. 용신·세효가 공망이면 출공 전까지는 결과가 차지 않는 대기 기간이다. 위에 없는 달은 쓰지 않는다. 응기가 하나면 하나만 쓴다.`;
+}
+const OHAENG_KR={'木':'木','火':'火','土':'土','金':'金','水':'水','Water':'水','Fire':'火'};
 
 /* ── 점사 프롬프트 빌더 (3층 섹션 구조) ── */
 /* ── AI 점사 프롬프트: system(고정 규칙) + user(이번 점사 데이터) + write_reading 도구 스키마 ──
@@ -1742,39 +1877,20 @@ ${yong?`본괘가 ${benName}이므로 ${yong}로 읽는다.`:'지괘 괘사가 �
       if(hoche.inner)dasanStr+=`내호(2·3·4효): ${hoche.inner.n}(${hoche.inner.nat})\n`;
       if(hoche.outer)dasanStr+=`외호(3·4·5효): ${hoche.outer.n}(${hoche.outer.nat})\n`;
     }
-    if(isBiguai)dasanStr+=`\n[추이] ${biguaiName} — 계절 전환점 괘\n`;
+    // 추이: 12벽괘 절기 위치 + 변효 방향(성장기/수렴기) + 효변 단계. 특정 달을 찍는 근거가 아니라 계절 국면의 근거.
+    const jiNats=nats.map((n,i)=>chg.includes(i)?(n==='양'?'음':'양'):n);
+    const tui=buildDasanTiming(nats,benNo,benName,state.jiGua?.no?jiNats:null,state.jiGua?.no,jiName,chg,state.throws||[]);
+    if(tui)dasanStr+=`\n[추이 — 계절 국면]\n${tui}\n`;
     if(chgMeanings.length>0){
       dasanStr+='\n[효 위치 의미]\n';
       chgMeanings.forEach(c=>dasanStr+=`${LABELS[c.pos-1]}: ${c.meaning}\n`);
     }
   }
 
-  // ── 육효점 타이밍 참고 ──
+  // ── 육효 응기(시기) — 효의 지지 기준. 일진 자체의 충·합·공망 달은 쓰지 않는다 ──
   let lyStr='';
   if(lyData){
-    const refDate=lyData.date||new Date();
-    const ilBr=lyData.ilJinBranchIdx;
-    const chungBr=(ilBr+6)%12;
-    const habSet=getHab(ilBr);
-    const gwangui=lyData.positions.filter(p=>p.liuqin==='관귀');
-    const cheojai=lyData.positions.filter(p=>p.liuqin==='처재');
-    // 지지 → 실제 양력 날짜로 변환
-    const chungCal=branchToCalStr(chungBr,refDate);
-    const habCal=habSet.map(b=>`${BRANCHES_HAN[b]}(${branchToCalStr(b,refDate)})`).join(' / ');
-    const kongCal=kongmangToCalStrs(lyData.kongmang,refDate)
-      .map((s,i)=>`${lyData.kongmang[i]}(${s})`).join(' / ');
-    lyStr=`\n[육효점 타이밍 참고 — ${lyData.ilJin}일]
-공망(비어있는 자리·시기): ${kongCal}
-  → 이 구간은 결과가 아직 차지 않음. 해당 월에 무언가를 밀어도 실체가 없으니 대기가 맞음.
-충(사건이 발동하는 시기): ${BRANCHES_HAN[chungBr]}月 = ${chungCal}
-  → 이 구간이 오면 잠자던 일이 깨어남. 이직·변화의 실질적 발동점.
-합(묶이거나 열리는 시기): ${habCal}
-  → 합이 오면 상황이 하나로 묶임. 합의(·계약·결합)가 이뤄지거나, 반대로 현재 상태에서 묶여 못 움직임.
-나(세효) 자리: ${lyData.sePos}효 ${lyData.seData?.branch||''}${lyData.seData?.isKong?' [공망중 — 지금 내가 비어있는 상태]':''}
-결과·상대(응효) 자리: ${lyData.eungPos}효 ${lyData.eungData?.branch||''}${lyData.eungData?.isKong?' [공망중 — 상대나 결과가 아직 실체 없음]':''}
-${gwangui.length>0?`직업·권위(관귀): ${gwangui.map(p=>`${p.pos}효 ${p.branch}${p.isKong?'[공망]':''}`).join(' ')}`:''}
-${cheojai.length>0?`재물·실익(처재): ${cheojai.map(p=>`${p.pos}효 ${p.branch}${p.isKong?'[공망]':''}`).join(' ')}`:''}
-[타이밍 원칙] 공망 해제(공망月 지나고 나서), 충月, 합月 순으로 발동 시기를 판단하라. 근거 없는 달 숫자는 쓰지 말 것.`;
+    lyStr=buildEunggi(lyData,chg,state.q||'',lyData.date||new Date());
   }
 
   const qap=(state.q5||[]).map((q,i)=>`Q${i+1}. ${q}\nA. ${(state.a5||[])[i]||'(답변 없음)'}`).join('\n\n');
@@ -1808,7 +1924,7 @@ ${qap}
 ${heartRule}
 
 위 데이터로 ${name}님의 점사를 write_reading 도구로 작성하세요.
-"시기" 섹션은 오늘(${todayStr}) 기준 앞으로 3~4개월을 실제 달 이름(예: 10월, 11월)으로 씁니다.`;
+"시기" 섹션은 오늘(${todayStr}) 기준으로, [추이 — 계절 국면]에서 큰 흐름을, [시기 판단 근거 — 육효 응기]의 후보에서만 구체적인 달·날을 가져와 씁니다. 그 밖의 달이나 "몇 달 뒤" 같은 어림 숫자는 쓰지 않습니다.`;
 };
 
 /* ── system: 매 호출 동일한 고정 규칙 (문체·구조·금지) ── */
@@ -1829,7 +1945,7 @@ window.buildReadingSystem=function(){
 3. "대상전 — 지금 할 것" — 대상전의 실천 지침을 상담자 상황에 구체 적용. 변효 있으면 본괘 대상전(지금 당장) + 지괘 대상전(흘러가며 갖출 태도). 추상적 덕목 나열 금지.
 4. "이 점괘의 심장" — 사용자 메시지 끝의 [심장 섹션 규칙]을 그대로 따릅니다. 길흉 기조("전반적으로 길한 흐름" / "조심이 필요한 국면")를 먼저 명확히. 육효점의 세효·응효·육친·공망은 서사에 녹여서.
 5. "방향" — 지괘(없으면 본괘)가 가리키는 방향·태도·기운. 현대식 액션플랜 금지.
-6. "시기" — 앞으로 3~4개월을 달별로. 공망·충·합을 실제 달에 대응("~월은 ~, ~월 말은 ~"). 근거 없는 달 숫자 금지.
+6. "시기" — 사용자 메시지의 [추이 — 계절 국면]과 [시기 판단 근거 — 육효 응기] 블록에서만 시기를 가져옵니다. 추이로 지금이 자라는 국면인지 거두는 국면인지, 그리고 변효 위치가 가까운 일인지 먼 일인지를 먼저 말하고, 응기 후보(값·합·충·출공) 가운데 세효·용신·동효에 해당하는 것을 골라 실제 달·날로 씁니다("~월 초순은 ~, ~일 무렵은 ~"). 가까운 일은 일 단위, 먼 일은 월 단위. 응기가 하나면 하나만 씁니다. 근거 블록에 없는 달, 앞으로 몇 달을 무조건 채워 쓰는 방식, "몇 달 뒤" 같은 어림 숫자는 금지입니다.
 7. "마무리" — 한두 문장 응축, 응원과 위로. 날짜·시간·서명·낙관 금지.
 - title은 "총평" 외에는 빈 문자열이어도 됩니다.
 - headline: 점사 전체를 한 줄로. closing_line: 마지막 여운 한 문장.
