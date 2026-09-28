@@ -1,8 +1,9 @@
 // Vercel Serverless Function: /api/reading
-// 주역 본괘 풀이 생성 - Claude Haiku 사용
+// 주역 점사 생성 — Anthropic Messages API 프록시.
+// 클라이언트가 system / messages / tools / tool_choice / temperature 를 그대로 보내면 전달한다.
+// (구버전 호환: prompt만 오면 user 메시지 하나로 감싼다)
 
 export default async function handler(req, res) {
-  // CORS 헤더
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -13,8 +14,22 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
 
-  const { prompt, model = 'claude-haiku-4-5-20251001', max_tokens = 3500 } = req.body;
-  if (!prompt) return res.status(400).json({ error: 'prompt is required' });
+  const {
+    prompt, messages, system, tools, tool_choice, temperature,
+    model = 'claude-haiku-4-5-20251001',
+    max_tokens = 8000,
+  } = req.body || {};
+
+  const msgs = Array.isArray(messages) && messages.length
+    ? messages
+    : (prompt ? [{ role: 'user', content: prompt }] : null);
+  if (!msgs) return res.status(400).json({ error: 'messages or prompt is required' });
+
+  const payload = { model, max_tokens, messages: msgs };
+  if (system)                      payload.system = system;
+  if (Array.isArray(tools) && tools.length) payload.tools = tools;
+  if (tool_choice)                 payload.tool_choice = tool_choice;
+  if (typeof temperature === 'number') payload.temperature = temperature;
 
   try {
     const controller = new AbortController();
@@ -28,7 +43,7 @@ export default async function handler(req, res) {
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify({ model, max_tokens, messages: [{ role: 'user', content: prompt }] }),
+      body: JSON.stringify(payload),
     });
 
     clearTimeout(timeout);
@@ -39,6 +54,7 @@ export default async function handler(req, res) {
       return res.status(anthropicRes.status).json({ error: data?.error?.message || anthropicRes.status });
     }
 
+    // stop_reason(max_tokens 여부)과 content(tool_use 블록)를 그대로 넘긴다
     return res.status(200).json(data);
   } catch (err) {
     if (err.name === 'AbortError') return res.status(504).json({ error: 'Request timeout' });

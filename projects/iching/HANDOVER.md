@@ -119,25 +119,34 @@ GD2[20] = {
 
 ---
 
-## 다음으로 남은 작업
+## AI 해석 호출 구조 (2026-09-28 재설계)
 
-### generateReading 프롬프트 업데이트
-현재 프롬프트는 구 방식. `interpretation_methodology_guide.md`의 구조로 재작성 필요:
-- 다산역 4원리 (추이·호체·물상·효변) 계산 결과를 프롬프트에 주입
-- 육효점 계산 로직 구현 (납갑·세효·응효·육친·육수·생극·형충·공망)
-- 7단계 리포트 구조 적용
+다산역(`calcDasanYeok`)·육효점(`buildLiuYaoData`) 계산과 7섹션 리포트는 이미 구현돼 있다(위 "남은 작업"은 완료됨). 2026-09-28에 **출력 일관성** 문제(존댓말/반말 오락가락, 섹션 누락, JSON이 코드블록에 감싸짐, 변효 4개 오독)를 고치며 호출 구조를 바꿨다.
 
-### 다산역 자동 계산
-- 추이: 12벽괘 매핑 테이블
-- 호체: 2·3·4효, 3·4·5효 → GUA 룩업 재사용 가능
-- 물상: TRIG_MAP의 nat 필드 활용
-- 효변: 변효 위치(0-5) → 고정 의미 텍스트 매핑
+### 왜 바꿨나 — 예전 방식의 문제
+- 규칙·데이터·JSON 스키마를 전부 **user 메시지 하나**에 넣고 "JSON만 출력해"라고 부탁 → `system` 미사용, `temperature` 미지정(기본 1.0), 출력 강제 장치 없음.
+- `max_tokens=5000`에 `stop_reason`을 안 봐서 잘린 응답은 JSON 파싱 실패 → 재시도 → 운에 따라 결과가 달라짐.
+- 변효 개수별 원칙(`readingFocus`)이 3개와 4개를 한 분기로 묶은 채, 섹션4 지침은 개수와 무관하게 "변효 효사를 인용하라" → 변효 4개일 때 모순. 무료판(`buildLocalCards`)은 4~5개면 **불변효** 중심인데 유료판엔 그 규칙이 없었음.
 
-### 육효점 계산 로직 (신규 구현)
-- 60갑자 날짜 변환
-- 64괘 8궁 배속표
-- 각 효 납갑 간지 배당 (64×6)
-- 세효·응효 위치표, 육친·육수 배당, 생극·형충파해합·공망 함수
+### 지금 구조 (`index.html`)
+| 함수/객체 | 역할 |
+|---|---|
+| `window.buildReadingSystem()` | 매 호출 동일한 고정 규칙 — 존댓말 절대 규칙, 7섹션 규격, 육효 처리, 금지/필수. `system` 필드로 전송 |
+| `window.buildReadingUser(ben,ji,state)` | 이번 점사 데이터만 — 괘사/대상전/변효 또는 불변효 효사/다산역/육효 타이밍/Q&A + `heartRule`(개수별 심장 섹션 규칙) |
+| `window.READING_TOOL` | `write_reading` 도구 JSON 스키마(7섹션 고정, tag enum). `tool_choice:{type:'tool'}`로 **강제** — "JSON만 써줘"가 아니라 구조적으로 못 벗어남 |
+| `parseReadingResponse(data)` | `tool_use` 블록 `input` 우선, 텍스트 JSON 폴백. 섹션을 `READING_TAGS` 순서로 재정렬, `meaning`은 렌더러가 GD로 채움 |
+| `generateReading(ben,ji,retry,compact)` | `temperature 0.35`, `max_tokens 8000`. `stop_reason==='max_tokens'`면 간결 모드(`compact=true`)로 1회 재요청 |
+| `window.buildReadingPrompt` | 하위호환 래퍼(system+user 합침). 현재 호출처 없음 |
+
+변효 개수별 규칙은 `buildReadingUser` 안의 `readingFocus`/`heartRule`이 **0 / 1 / 2 / 3 / 4~5 / 6** 으로 분기한다(무료판과 동일). 4~5개는 변효 효사를 프롬프트에 아예 넣지 않고 불변효 효사만 준다. `_autoMeaning('이 점괘의 심장')`도 4~5개면 불변효를 원전으로 표시.
+
+### 서버 (`api/reading.js`, `api/questions.js`)
+Anthropic Messages API 프록시. 클라이언트가 보낸 `system / messages / tools / tool_choice / temperature / max_tokens`를 그대로 전달한다(구버전 `prompt`만 와도 동작). `local-server.js`가 같은 핸들러를 동적 import하므로 로컬/Vercel 동작이 같다.
+
+### 유지 원칙
+- 규칙을 바꿀 땐 `buildReadingSystem`(모든 점사 공통)인지 `buildReadingUser`(이번 점사 데이터)인지 구분해서 넣을 것. 다시 한 덩어리로 합치지 말 것.
+- 출력 형식은 `READING_TOOL.input_schema`가 원본. 섹션을 추가/삭제하면 스키마·`READING_TAGS`·`buildReadingHtmlV2`의 `TAG_LABELS`를 같이 바꿀 것.
+- `temperature`를 올리면 톤이 다시 흔들린다. 0.3~0.4 유지.
 
 ---
 

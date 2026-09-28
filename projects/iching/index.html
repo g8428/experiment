@@ -22,7 +22,7 @@ body{background:var(--bg);color:var(--t1);font-family:'Noto Sans KR',sans-serif;
 .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:2rem 1.25rem;overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transform:translateY(14px);transition:opacity var(--tr),transform var(--tr);background:var(--bg);}
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
 .screen.exit{opacity:0;transform:translateY(-14px);}
-.inner{width:100%;max-width:440px;display:flex;flex-direction:column;}
+.inner{width:100%;max-width:440px;display:flex;flex-direction:column;padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px));}
 .stepbar{display:flex;gap:5px;justify-content:center;margin-bottom:1.5rem;}
 .step{width:28px;height:3px;background:var(--sf3);border-radius:2px;transition:background .3s,width .3s;}
 .step.done{background:var(--gold);}
@@ -146,7 +146,7 @@ input.inp{resize:none;}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--t3);font-family:'Noto Sans KR',sans-serif;font-size:.68rem;letter-spacing:.08em;transition:color .2s;border:none;background:none;min-height:44px;}
 .tab-item.active{color:var(--red);}
 .tab-item .tab-ico{font-size:1.05rem;line-height:1;}
-.screen{padding-bottom:calc(7rem + env(safe-area-inset-bottom,0px));}
+.screen{padding-bottom:calc(10rem + env(safe-area-inset-bottom,0px));}
 
 /* ── 보관함 탭 ── */
 #tab-archive{justify-content:flex-start;padding-top:3rem;}
@@ -823,7 +823,7 @@ ${hasQ?`[고민]\n"${S.q}"\n\n이 고민을 중심으로 질문을 만들어주�
     const res=await fetch('/api/questions',{
       method:'POST',signal:ctrl.signal,
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt,model:'claude-haiku-4-5-20251001',max_tokens:700})
+      body:JSON.stringify({prompt,model:'claude-haiku-4-5-20251001',max_tokens:700,temperature:0.5})
     });
     clearTimeout(to);
     const data=await res.json();
@@ -1259,9 +1259,12 @@ function buildReadingHtmlV2(r,ben,ji){
     }
     if(tag==='이 점괘의 심장'){
       if(_chg.length===0)return'';
-      return _chg.map(i=>{
+      // 변효 4~5개면 무료판(buildLocalCards)과 동일하게 불변효가 중심 — 원전 표시도 그쪽으로
+      const focus=(_chg.length>=4&&_chg.length<=5)?[0,1,2,3,4,5].filter(i=>!_chg.includes(i)):_chg;
+      const prefix=(_chg.length>=4&&_chg.length<=5)?'불변효 ':'';
+      return focus.map(i=>{
         const hy=_ben2.hy2?.[i]||ben?.hy?.[i]||'';
-        return hy?`${_LABELS[i]}: ${hy}`:'';
+        return hy?`${prefix}${_LABELS[i]}: ${hy}`:'';
       }).filter(Boolean).join('\n');
     }
     if(tag==='방향') return _jiK?`${_jiName} — ${_jiK}`:'';
@@ -1659,7 +1662,14 @@ function buildLiuYaoData(benNo){
 }
 
 /* ── 점사 프롬프트 빌더 (3층 섹션 구조) ── */
-window.buildReadingPrompt=function(ben,ji,state){
+/* ── AI 점사 프롬프트: system(고정 규칙) + user(이번 점사 데이터) + write_reading 도구 스키마 ──
+   왜 이렇게 나눴나: 한 덩어리 user 프롬프트에 규칙까지 다 넣고 "JSON만 출력"을 부탁하던 방식은
+   존댓말/반말이 오락가락하고 섹션이 빠지고 코드블록으로 감싸는 등 일관성이 없었음(2026-09-28).
+   고정 규칙은 system으로, 출력은 tool_choice 강제 스키마로, temperature는 0.35로 고정. */
+const POS_MEAN=['씨앗·시작','내부 판단','경계·전환','외부 진입','군위·중심','완성·마무리'];
+window.READING_TAGS=['총평','괘의 형세','대상전 — 지금 할 것','이 점괘의 심장','방향','시기','마무리'];
+
+window.buildReadingUser=function(ben,ji,state){
   const name=state.name||'상담자';
   const nats=(state.throws||[]).map(t=>t&&(t.sum===9||t.sum===7)?'양':'음');
   const dasan=nats.length===6?calcDasanYeok(nats,state.benGua?.no,state.chg||[]):null;
@@ -1679,31 +1689,48 @@ window.buildReadingPrompt=function(ben,ji,state){
   const jiK=ji2.k2||ji?.k||'';
   const jiDst=ji2.dst2||ji?.dst||'';
 
-  // ── 변효 개수별 해석 중심 ──
-  let readingFocus='';
+  // ── 변효 개수별 해석 중심 — 무료판 buildLocalCards와 같은 규칙 (0/1/2/3/4~5/6 분기) ──
+  // 예전엔 3개와 4개를 한 분기로 묶고, 섹션4 지침은 개수와 무관하게 "변효 효사를 인용하라"고 해서
+  // 변효 4개일 때 서로 모순됐음 → heartRule로 섹션4 규칙까지 개수별로 명시.
+  const unchanged=[0,1,2,3,4,5].filter(i=>!chg.includes(i));
+  const benNo=state.benGua?.no;
+  let readingFocus='',heartRule='';
   if(chgN===0){
     readingFocus=`[변효 없음 — 해석 원칙]
 본괘 괘사와 대상전만으로 전체를 읽는다.
 상황·방향·시기·경계 모두 본괘 하나에서 끌어낸다.
 지괘 없음. 변화보다 지금 이 자리의 의미에 집중.`;
+    heartRule=`변효가 없으므로 효사 인용 없이, 본괘 6위(六位)의 始(초·이효)/中(삼·사효)/終(오·상효) 흐름으로 읽는다.`;
   }else if(chgN===1){
     readingFocus=`[변효 1개 — 해석 원칙]
 변효(${LABELS[chg[0]]}) 효사가 이 점의 핵심 메시지다. 질문의 직접적인 답은 여기서 꺼낸다.
 본괘 괘사는 배경·상황 설명용.
 지괘는 이 흐름의 귀결 방향.`;
+    heartRule=`변효 ${LABELS[chg[0]]} 효사의 한자 원문을 먼저 인용하고 바로 국문 풀이. 이 자리(${POS_MEAN[chg[0]]})가 ${name}님에게 무엇을 말하는지.`;
   }else if(chgN===2){
     readingFocus=`[변효 2개 — 해석 원칙]
 위 효(${LABELS[chg[1]]}) 효사가 중심, 아래 효(${LABELS[chg[0]]}) 효사는 보조.
 두 효의 메시지를 하나의 흐름으로 연결해서 읽는다.
 지괘는 귀결 방향.`;
-  }else if(chgN<=4){
-    readingFocus=`[변효 ${chgN}개 — 해석 원칙]
+    heartRule=`위 효(${LABELS[chg[1]]}) 효사 원문을 인용해 중심으로, 아래 효(${LABELS[chg[0]]})는 보조로 짧게. 두 자리의 의미(${POS_MEAN[chg[1]]} / ${POS_MEAN[chg[0]]})를 하나의 흐름으로.`;
+  }else if(chgN===3){
+    readingFocus=`[변효 3개 — 해석 원칙]
 효사보다 본괘↔지괘 괘사 대비가 핵심.
 "지금(본괘)은 이런 상황, 향하는 곳(지괘)은 저런 환경"으로 읽는다.
 변효 효사는 참고 수준.`;
+    heartRule=`본괘 괘사와 지괘 괘사의 대비를 중심에 두고, 세 변효 효사는 원문 인용 없이 참고로만 짧게.`;
+  }else if(chgN<=5){
+    const unLabels=unchanged.map(i=>LABELS[i]).join(', ');
+    readingFocus=`[변효 ${chgN}개 — 해석 원칙: 변하지 않는 자리가 중심]
+변효가 ${chgN}개면 움직이는 효가 아니라 불변효(${unLabels})를 읽는다.
+변효 효사는 인용하지 않는다. 불변효 효사가 이 점의 중심 메시지.
+지괘 괘사는 귀결 방향.`;
+    heartRule=`반드시 불변효(${unLabels})의 효사 한자 원문을 인용하고 국문 풀이. 변효 효사는 절대 인용하지 말 것. 불변효 자리의 의미(${unchanged.map(i=>POS_MEAN[i]).join(' / ')})가 ${name}님에게 무엇을 말하는지.`;
   }else{
-    readingFocus=`[변효 ${chgN}개 — 해석 원칙]
-지괘 괘사가 메인이다. 본괘는 지나가는 상황, 지괘가 실질적 현재이자 미래.`;
+    const yong=benNo===1?'용구(用九) — 뭇 용이 앞서지 않고 함께하는 기운':benNo===2?'용육(用六) — 오래도록 바름을 지키면 이롭다':null;
+    readingFocus=`[변효 6개 — 완전한 전환]
+${yong?`본괘가 ${benName}이므로 ${yong}로 읽는다.`:'지괘 괘사가 메인이다. 본괘는 지나가는 배경, 지괘가 실질적 현재이자 미래.'}`;
+    heartRule=yong?`${yong}를 중심으로. 개별 효사 인용 없음.`:`지괘 괘사를 중심으로. 개별 효사 인용 없음.`;
   }
 
   // ── 다산역 참고 ──
@@ -1754,12 +1781,15 @@ ${cheojai.length>0?`재물·실익(처재): ${cheojai.map(p=>`${p.pos}효 ${p.br
   const today=new Date();
   const todayStr=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
 
-  return`당신은 수십 년 경력의 주역 점술가입니다.
-아래 정보를 바탕으로 ${name}님에게 점사를 써주세요. 오늘 ${todayStr}.
+  // 변효 1~3개: 변효 효사 제공 / 4~5개: 불변효 효사만 제공(변효 효사는 일부러 안 줘서 인용을 막는다)
+  let hyosaBlock='';
+  if(chgN>=1&&chgN<=3)hyosaBlock=`변효 효사:\n${chg.map(i=>`  ${LABELS[i]}: ${benHy(i)}`).join('\n')}`;
+  else if(chgN>=4&&chgN<=5)hyosaBlock=`불변효 효사(이 점의 중심 — 변효 효사는 제공하지 않음):\n${unchanged.map(i=>`  ${LABELS[i]}: ${benHy(i)}`).join('\n')}`;
 
-━━━━━━━━━━━━━━━━━━
+  return`━━━━━━━━━━━━━━━━━━
 이름: ${name}
 고민: ${state.q||'(없음)'}
+오늘: ${todayStr}
 
 본괘: ${benName}(${state.benGua?.no||'?'}번)
 괘사: ${benK}${benDt2?`\n단전(괘 해석 근거): ${benDt2}`:''}
@@ -1767,94 +1797,114 @@ ${cheojai.length>0?`재물·실익(처재): ${cheojai.map(p=>`${p.pos}효 ${p.br
 본괘 핵심: ${ben?.v||''}
 ${jiName?`\n지괘: ${jiName}(${state.jiGua?.no}번)\n지괘 괘사: ${jiK}\n지괘 대상전: ${jiDst}`:''}
 변효: ${chgN>0?chg.map(i=>LABELS[i]).join(', '):'없음'}
-${chgN>0?`변효 효사:\n${chg.map(i=>`  ${LABELS[i]}: ${benHy(i)}`).join('\n')}`:''}
+${hyosaBlock}
 ${readingFocus}${dasanStr}${lyStr}
 
 추가 질문·답변:
 ${qap}
 ━━━━━━━━━━━━━━━━━━
 
-[출력 형식] 순수 JSON만. 마크다운 코드블록 없이.
+[이번 점사의 "이 점괘의 심장" 섹션 규칙 — 이 규칙이 다른 모든 지침보다 우선]
+${heartRule}
 
-[육효점 데이터 처리 원칙]
-위 육효점 타이밍 참고값을 절대 날 것으로 나열하지 말 것.
-"세효는 壬午이고 응효는 甲子입니다" 같은 형식 금지.
-계산 결과가 가리키는 의미를 서사 속에 자연스럽게 녹여 쓸 것.
-예: 공망 → "아직 결과가 차지 않은 시기", 충 → "이 달에 변화가 발동", 세효 공망 → "지금 내가 비어있는 상태"
+위 데이터로 ${name}님의 점사를 write_reading 도구로 작성하세요.
+"시기" 섹션은 오늘(${todayStr}) 기준 앞으로 3~4개월을 실제 달 이름(예: 10월, 11월)으로 씁니다.`;
+};
 
-[각 섹션 필드]
-  meaning: 반드시 빈 문자열("")로 둘 것 — 데이터에서 자동으로 채워짐. 절대 쓰지 말 것.
-  reading: ${name}의 상황에 녹인 해석 — 4문장 이상. 질문 답변 내용을 구체적 사실로 녹임.
+/* ── system: 매 호출 동일한 고정 규칙 (문체·구조·금지) ── */
+window.buildReadingSystem=function(){
+  return`당신은 수십 년 경력의 주역 점술가입니다. 상담자의 이름·고민·괘 데이터를 받아 점사를 씁니다.
 
-[7섹션 — 각 섹션 reading은 반드시 4문장 이상]
-1. tag "총평"
-   title: 이 점괘 전체를 관통하는 한 문장 핵심 메시지
-   reading: 2~3문장 도입. 길흉 방향 포함.
+[문체 — 절대 규칙]
+- 모든 문장은 존댓말로 끝냅니다: "-습니다", "-ㅂ니다", "-입니다", "-지요", "-까요". "-다", "-어", "-아", "-지", "-야", "-네" 같은 반말 종결은 단 한 문장도 쓰지 않습니다.
+- 짧고 힘있는 문단. 감성적이되 담담한 톤. 전통 점술가가 말하듯, AI 티 없이.
+- 상담자 이름을 각 섹션에 한 번 이상 자연스럽게.
+- 단정적 지시("~하세요", "~해야 합니다") 금지 — 방향을 보여주되 최종 선택은 본인 몫이라는 여지.
 
-2. tag "괘의 형세"
-   reading: 다산역 3원리를 하나의 서사로 엮어 쓸 것. 항목 나열 절대 금지.
-   ① 물상 — 본괘 상괘·하괘의 자연 상징으로 지금 상황을 그림처럼 이미지화.
-   ② 추이 — 이 괘가 12벽괘 흐름에서 어느 절기인지. 지금이 성장기인지 쇠락기인지.
-   ③ 호체 — 호체 데이터가 있으면 겉 괘 안에 숨은 내부 구조를 풀어낼 것. "겉은 ~이지만 안에 ~가 숨어있다" 구조로.
+[출력 — write_reading 도구만 사용]
+- 결과는 반드시 write_reading 도구 호출로만 넣습니다. 도구 밖에 텍스트를 쓰지 않습니다.
+- sections는 정확히 7개, 아래 tag 순서 그대로. 각 reading은 4문장 이상.
+1. "총평" — title: 이 점괘 전체를 관통하는 한 문장. reading: 2~3문장 도입, 길흉 방향 포함.
+2. "괘의 형세" — 다산역 3원리(물상·추이·호체)를 항목 나열 없이 하나의 서사로. 물상=상괘·하괘의 자연 상징으로 지금 상황을 그림처럼. 추이=12벽괘 흐름에서 성장기인지 쇠락기인지. 호체 데이터가 있으면 "겉은 ~이지만 안에 ~가 숨어있습니다" 구조로.
+3. "대상전 — 지금 할 것" — 대상전의 실천 지침을 상담자 상황에 구체 적용. 변효 있으면 본괘 대상전(지금 당장) + 지괘 대상전(흘러가며 갖출 태도). 추상적 덕목 나열 금지.
+4. "이 점괘의 심장" — 사용자 메시지 끝의 [심장 섹션 규칙]을 그대로 따릅니다. 길흉 기조("전반적으로 길한 흐름" / "조심이 필요한 국면")를 먼저 명확히. 육효점의 세효·응효·육친·공망은 서사에 녹여서.
+5. "방향" — 지괘(없으면 본괘)가 가리키는 방향·태도·기운. 현대식 액션플랜 금지.
+6. "시기" — 앞으로 3~4개월을 달별로. 공망·충·합을 실제 달에 대응("~월은 ~, ~월 말은 ~"). 근거 없는 달 숫자 금지.
+7. "마무리" — 한두 문장 응축, 응원과 위로. 날짜·시간·서명·낙관 금지.
+- title은 "총평" 외에는 빈 문자열이어도 됩니다.
+- headline: 점사 전체를 한 줄로. closing_line: 마지막 여운 한 문장.
 
-3. tag "대상전 — 지금 할 것"
-   reading: 대상전의 실천 지침("군자는 이를 본받아 ~한다")을 ${name}의 상황에 구체적으로 적용.
-   변효 있으면: 본괘 대상전(지금 당장의 실천) + 지괘 대상전(흘러가면서 갖춰야 할 태도) 모두 활용.
-   변효 없으면: 본괘 대상전만.
-   추상적 덕목 나열 금지 — "지금 ${name}에게 이것이 의미하는 것은..."으로 구체화할 것.
-
-4. tag "이 점괘의 심장"
-   reading:
-   - 변효 효사 한자 원문을 먼저 인용(예: "碩果不食"), 바로 이어서 국문 풀이.
-   - 효변: 이 효의 위치(초=씨앗/시작, 2=내부판단, 3=경계전환, 4=외부진입, 5=군위중심, 상=완성마무리)가 ${name}에게 무엇을 말하는지.
-   - 육효점 세효·응효·육친·생극·공망을 서술 속에 자연스럽게 녹여 구체화.
-   - 길흉 기조를 먼저 명확히 ("전반적으로 길한 흐름" / "조심이 필요한 국면").
-   - 변효 없으면 본괘 6위(六位) 始/中/終 흐름으로 읽을 것.
-
-5. tag "방향"
-   reading: 지괘(없으면 본괘)가 가리키는 방향. 어떤 태도와 기운이 이 시기에 맞는지. 구체적 현대 액션플랜 쓰지 말 것.
-
-6. tag "시기"
-   reading: 오늘(${todayStr}) 기준 앞으로 3~4개월을 달별로 구체적으로 서술.
-   공망·충·합을 실제 달에 직접 대응할 것: "공망이 ~달이니 이 달은 결과가 아직 차지 않은 시기", "~달에 충이 오니 변화가 발동하는 때" 같이.
-   "~월은 ~, ~월 말~는 ~" 형식 유지.
-
-7. tag "마무리"
-   reading: 한두 문장 응축. 응원과 위로가 담긴 한마디로 마무리. 방향은 제시하되 최종 선택은 본인 몫이라는 여지.
-   마무리 뒤에 날짜·시간·서명·낙관(落款) 절대 붙이지 말 것.
+[육효점 데이터 처리]
+- 계산값을 날 것으로 나열하지 않습니다("세효는 壬午이고 응효는 甲子입니다" 금지). 의미로 녹입니다: 공망→"아직 결과가 차지 않은 시기", 충→"이 달에 변화가 발동", 세효 공망→"지금 내가 비어있는 상태".
 
 [금지]
-- 육효점 데이터 기계적 나열
-- 항목 병렬 나열 ("이건 이렇고 저건 저렇고")
-- 원론적 설명 과다 ("~라는 것은 ~라는 뜻입니다")
-- 모든 괘 결론이 "중심을 지켜라"로 수렴
-- 단정적 지시 ("~하세요", "~해야 합니다")
-- AI 티 나는 표현
-- 효사 외 한자 기계적 나열 ("風行水上" 표기 금지 — 국문만)
-- 마무리 섹션 끝에 날짜·시간·서명·낙관 붙이기
+- 항목 병렬 나열("이건 이렇고 저건 저렇고"), 원론적 설명 과다("~라는 것은 ~라는 뜻입니다"), 모든 결론이 "중심을 지켜라"로 수렴, 효사 외 한자 나열("風行水上" 같은 표기 금지 — 국문만), 마무리 뒤 날짜·서명, AI 티 나는 표현.
 
 [필수]
-- 효사 한자 원문 인용 + 바로 이어지는 국문 풀이
-- 시기: 실제 달(10월, 11월 등) 기준으로 — 추상적 "충이 오는 달" 금지
-- 짧고 힘있는 문단, 감성적이되 담담한 톤
-- 이름(${name})을 각 섹션 reading에 자연스럽게
-- 전통 점술사가 말하듯 — AI 티 없이
-- 전체 분량: 유료 사주 리포트 수준으로 충분히 길게
-
-{
-  "headline":"",
-  "sections":[
-    {"tag":"총평","title":"","meaning":"","reading":""},
-    {"tag":"괘의 형세","title":"","meaning":"","reading":""},
-    {"tag":"대상전 — 지금 할 것","title":"","meaning":"","reading":""},
-    {"tag":"이 점괘의 심장","title":"","meaning":"","reading":""},
-    {"tag":"방향","title":"","meaning":"","reading":""},
-    {"tag":"시기","title":"","meaning":"","reading":""},
-    {"tag":"마무리","title":"","meaning":"","reading":""}
-  ],
-  "closing_line":""
-}`;
+- 효사를 인용할 때는 한자 원문을 먼저 쓰고 바로 국문 풀이를 잇습니다.
+- 전체 분량은 유료 리포트 수준으로 충분히, 단 각 섹션은 4~8문장 안에서.`;
 };
+
+/* ── write_reading 도구 스키마: 출력 구조를 모델에게 "부탁"하지 않고 강제한다 ── */
+window.READING_TOOL={
+  name:'write_reading',
+  description:'주역 점사 결과를 정해진 7섹션 구조로 기록한다. 모든 문장은 존댓말.',
+  input_schema:{
+    type:'object',
+    properties:{
+      headline:{type:'string',description:'점사 전체를 관통하는 한 줄'},
+      sections:{
+        type:'array',minItems:7,maxItems:7,
+        description:'총평, 괘의 형세, 대상전 — 지금 할 것, 이 점괘의 심장, 방향, 시기, 마무리 순서',
+        items:{
+          type:'object',
+          properties:{
+            tag:{type:'string',enum:window.READING_TAGS},
+            title:{type:'string',description:'소제목. 총평 외에는 빈 문자열 가능'},
+            reading:{type:'string',description:'상담자 상황에 녹인 해석. 존댓말, 4문장 이상'}
+          },
+          required:['tag','title','reading']
+        }
+      },
+      closing_line:{type:'string',description:'마지막 여운 한 문장'}
+    },
+    required:['headline','sections','closing_line']
+  }
+};
+
+/* 하위호환: 예전처럼 한 덩어리 프롬프트가 필요하면 */
+window.buildReadingPrompt=function(ben,ji,state){
+  return window.buildReadingSystem()+'\n\n'+window.buildReadingUser(ben,ji,state);
+};
+
+/* 응답 파싱: tool_use 블록 우선, 없으면 텍스트 JSON 폴백. 섹션은 고정 순서로 재정렬. */
+function parseReadingResponse(data){
+  const blocks=data?.content||[];
+  const tu=blocks.find(b=>b.type==='tool_use'&&b.input&&typeof b.input==='object');
+  let r=tu?tu.input:null;
+  if(!r){
+    const raw=blocks.filter(b=>b.type==='text').map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    r=JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||'{}');
+  }
+  // tag enum은 API가 강제하지 않아 모델이 "관의 형세"처럼 오타를 내기도 함(2026-09-28 스모크에서 실제 발생).
+  // → 키워드로 정규화하고, 못 맞추면 남는 슬롯에 순서대로 배정.
+  const KEY=[['총평','총평'],['형세','괘의 형세'],['대상전','대상전 — 지금 할 것'],['심장','이 점괘의 심장'],['방향','방향'],['시기','시기'],['마무리','마무리']];
+  const canon=t=>{const s=String(t||'');for(const[k,v]of KEY)if(s.includes(k))return v;return null;};
+  const byTag={},unmatched=[];
+  (r.sections||[]).forEach(s=>{
+    if(!s)return;
+    const c=canon(s.tag);
+    if(c&&!byTag[c])byTag[c]=s;else unmatched.push(s);
+  });
+  window.READING_TAGS.forEach(tag=>{if(!byTag[tag]&&unmatched.length)byTag[tag]=unmatched.shift();});
+  r.sections=window.READING_TAGS.map(tag=>{
+    const s=byTag[tag]||{};
+    return{tag,title:s.title||'',meaning:'',reading:s.reading||''};   // meaning은 렌더러가 GD로 채움
+  });
+  r.headline=r.headline||'';
+  r.closing_line=r.closing_line||'';
+  return r;
+}
 
 // 지지 합 관계 (삼합·육합)
 function getHab(branchIdx){
@@ -1869,11 +1919,21 @@ function getHab(branchIdx){
 }
 
 /* ── generateReading: 서버 + 직접 API 듀얼 모드 ── */
-async function generateReading(ben,ji,retryCount=0){
-  if(retryCount===0)showLoading();
-  const prompt=window.buildReadingPrompt(ben,ji,S);
+async function generateReading(ben,ji,retryCount=0,compact=false){
+  if(retryCount===0&&!compact)showLoading();
+  const system=window.buildReadingSystem();
+  let user=window.buildReadingUser(ben,ji,S);
+  if(compact)user+='\n\n[분량 조정] 직전 응답이 길이 제한에 걸렸습니다. 각 섹션 reading을 4~6문장으로 간결하게 씁니다.';
   const headers={'Content-Type':'application/json'};
-  const body=JSON.stringify({prompt,model:'claude-haiku-4-5-20251001',max_tokens:5000});
+  const body=JSON.stringify({
+    model:'claude-haiku-4-5-20251001',
+    max_tokens:8000,
+    temperature:0.35,
+    system,
+    messages:[{role:'user',content:user}],
+    tools:[window.READING_TOOL],
+    tool_choice:{type:'tool',name:'write_reading'},
+  });
   try{
     const ctrl=new AbortController();
     const to=setTimeout(()=>ctrl.abort(),130000);
@@ -1886,11 +1946,17 @@ async function generateReading(ben,ji,retryCount=0){
       document.getElementById('loSub').textContent=`잠시 후 다시 시도합니다... (${retryCount+1}/3)`;
       document.getElementById('loadingOverlay').classList.add('show');
       await new Promise(r=>setTimeout(r,wait));
-      return generateReading(ben,ji,retryCount+1);
+      return generateReading(ben,ji,retryCount+1,compact);
     }
     if(!res.ok)throw new Error(data?.error?.message||res.status);
-    const raw=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
-    const result=JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||'{}');
+    // 길이 제한에 걸려 잘린 응답은 조용히 넘기지 않고 간결 모드로 1회 재요청
+    if(data.stop_reason==='max_tokens'&&!compact){
+      console.warn('[점사] max_tokens 도달 — 간결 모드로 재요청');
+      document.getElementById('loSub').textContent='분량을 조정해 다시 씁니다...';
+      return generateReading(ben,ji,retryCount,true);
+    }
+    const result=parseReadingResponse(data);
+    if(!result.sections.some(s=>s.reading))throw new Error('빈 응답');
     hideLoading();
     const rdHtml=buildReadingHtmlV2(result,ben,ji);
     document.getElementById('rdarea').innerHTML=rdHtml;
