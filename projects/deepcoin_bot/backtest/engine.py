@@ -18,7 +18,7 @@ def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
                  initial_balance=1000.0, risk_pct=1.0, leverage=10,
                  use_weights=True, sym="", tp_min_pct=0.0, rr_min=1.5,
                  sl_min_atr_mult=0.8, sl_cap_pct=None,
-                 m15_confirm_n=0, require_h1_trend=True):
+                 m15_confirm_n=0, require_h1_trend=True, h1_window=50):
     """
     백테스팅 엔진
     - 각 캔들 시점에서 strategy.signal() 호출
@@ -32,6 +32,13 @@ def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
 
     m15_confirm_n, require_h1_trend: ict_engine.py의 전략 함수에 그대로 전달하는 비교용
     파라미터(2026-10-01 B안 백테스트). 기본값은 라이브(server.py)와 동일 동작.
+
+    h1_window: get_htf_trend() 등에 넘길 1H 캔들 슬라이스 크기(캔들 개수). 기존 디폴트
+    동작(=50)을 그대로 보존한다 — 실제 라이브(server.py)는 `_klines(..., n=25)`로 25개만
+    가져와 쓰므로, 지금까지(이 파라미터 추가 전까지)의 백테스트는 디폴트 50이 고정값이라
+    라이브(25)와 다른 조건을 테스트해온 불일치가 있었다(2026-10-01 발견). 이 파라미터로
+    `h1_window=25`를 주면 라이브와 동일한 조건을 재현할 수 있고, 다른 값으로는 "1H EMA
+    수렴에 더 긴 윈도우를 쓰면 어떻게 되는지"를 비교할 수 있다. 라이브 코드는 바꾸지 않는다.
     반환: {"trades": [...], "equity_curve": [...], "summary": {...}}
     """
     balance      = initial_balance
@@ -126,7 +133,7 @@ def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
 
         # ── 신규 시그널 탐색 (포지션 없을 때만) ────────────────────
         if open_pos is None:
-            h1_win = _slice_mtf(h1_ts_map, h1_all, current["t"])
+            h1_win = _slice_mtf(h1_ts_map, h1_all, current["t"], window=h1_window)
             d1_win = _slice_mtf(d1_ts_map, d1_all, current["t"])
             m5_win = _slice_mtf(m5_ts_map, m5_all, current["t"], window=20)
 

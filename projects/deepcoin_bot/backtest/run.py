@@ -74,6 +74,10 @@ def main():
     parser.add_argument("--no_h1_trend", action="store_true",
                          help="1H 추세(get_htf_trend) 체크를 건너뛰고 D1레짐+자체 신호만으로 판단 "
                               "(기본은 끔=server.py와 동일 동작)")
+    parser.add_argument("--h1_window", type=int, default=50,
+                         help="E안: get_htf_trend 등에 넘길 1H 캔들 윈도우 크기 "
+                              "(기본 50=기존 백테스트와 동일. 라이브 server.py는 25개만 씀 — "
+                              "라이브와 동일 조건을 재현하려면 --h1_window 25)")
     args = parser.parse_args()
     require_h1_trend = not args.no_h1_trend
 
@@ -89,7 +93,8 @@ def main():
     print(f"SL 규칙: ATR×{sl_min_atr_mult} 최소폭, 상한 {sl_cap_pct}% "
           f"({'tuning.json' if args.sl_min_atr_mult is None else 'CLI 지정'}) — server.py와 동일 소스")
     print(f"비교 파라미터: m15_confirm_n={args.m15_confirm_n} (0=비활성/server.py 동일), "
-          f"require_h1_trend={require_h1_trend} (True=server.py 동일)")
+          f"require_h1_trend={require_h1_trend} (True=server.py 동일), "
+          f"h1_window={args.h1_window} (server.py 라이브는 25)")
 
     print(f"데이터 준비 중: {args.sym} {args.bar} {args.days}일... (캐시 있으면 재사용, --refresh 시 새로 수집)")
     kl = fetch_historical(args.sym, args.bar, args.days, refresh=args.refresh)
@@ -126,6 +131,7 @@ def main():
             sl_cap_pct=sl_cap_pct,
             m15_confirm_n=args.m15_confirm_n,
             require_h1_trend=require_h1_trend,
+            h1_window=args.h1_window,
         )
         # 가중치 업데이트
         update_weights(result["trades"], sym=args.sym)
