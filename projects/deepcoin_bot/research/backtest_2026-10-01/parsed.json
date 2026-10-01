@@ -1,0 +1,362 @@
+[
+  {
+    "sym": "BTC",
+    "ver": "baseline",
+    "strat": "ict_killzone",
+    "trades": 15,
+    "win_rate": 26.7,
+    "pf": 0.461,
+    "ret": -38.34,
+    "mdd": 45.45
+  },
+  {
+    "sym": "BTC",
+    "ver": "baseline",
+    "strat": "ict_ote",
+    "trades": 17,
+    "win_rate": 35.3,
+    "pf": 0.898,
+    "ret": -8.49,
+    "mdd": 38.09
+  },
+  {
+    "sym": "BTC",
+    "ver": "baseline",
+    "strat": "ict_breaker",
+    "trades": 15,
+    "win_rate": 33.3,
+    "pf": 0.818,
+    "ret": -12.59,
+    "mdd": 32.97
+  },
+  {
+    "sym": "BTC",
+    "ver": "baseline",
+    "strat": "ict_mtf",
+    "trades": 5,
+    "win_rate": 40.0,
+    "pf": 1.499,
+    "ret": 9.22,
+    "mdd": 16.94
+  },
+  {
+    "sym": "BTC",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_killzone",
+    "trades": 3,
+    "win_rate": 33.3,
+    "pf": 0.584,
+    "ret": -7.64,
+    "mdd": 18.36
+  },
+  {
+    "sym": "BTC",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_ote",
+    "trades": 5,
+    "win_rate": 20.0,
+    "pf": 0.437,
+    "ret": -16.05,
+    "mdd": 21.17
+  },
+  {
+    "sym": "BTC",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_breaker",
+    "trades": 6,
+    "win_rate": 33.3,
+    "pf": 0.901,
+    "ret": -3.01,
+    "mdd": 20.71
+  },
+  {
+    "sym": "BTC",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_mtf",
+    "trades": 1,
+    "win_rate": 100.0,
+    "pf": Infinity,
+    "ret": 20.44,
+    "mdd": 0.0
+  },
+  {
+    "sym": "BTC",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_killzone",
+    "trades": 22,
+    "win_rate": 22.7,
+    "pf": 0.39,
+    "ret": -58.08,
+    "mdd": 58.81
+  },
+  {
+    "sym": "BTC",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_ote",
+    "trades": 39,
+    "win_rate": 30.8,
+    "pf": 0.702,
+    "ret": -41.63,
+    "mdd": 63.38
+  },
+  {
+    "sym": "BTC",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_breaker",
+    "trades": 27,
+    "win_rate": 44.4,
+    "pf": 1.253,
+    "ret": 35.03,
+    "mdd": 31.47
+  },
+  {
+    "sym": "BTC",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_mtf",
+    "trades": 6,
+    "win_rate": 50.0,
+    "pf": 2.471,
+    "ret": 30.66,
+    "mdd": 11.64
+  },
+  {
+    "sym": "ETH",
+    "ver": "baseline",
+    "strat": "ict_killzone",
+    "trades": 27,
+    "win_rate": 25.9,
+    "pf": 0.714,
+    "ret": -37.68,
+    "mdd": 55.36
+  },
+  {
+    "sym": "ETH",
+    "ver": "baseline",
+    "strat": "ict_ote",
+    "trades": 39,
+    "win_rate": 28.2,
+    "pf": 0.901,
+    "ret": -21.83,
+    "mdd": 40.82
+  },
+  {
+    "sym": "ETH",
+    "ver": "baseline",
+    "strat": "ict_breaker",
+    "trades": 12,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": -59.11,
+    "mdd": 59.11
+  },
+  {
+    "sym": "ETH",
+    "ver": "baseline",
+    "strat": "ict_mtf",
+    "trades": 15,
+    "win_rate": 26.7,
+    "pf": 0.763,
+    "ret": -15.07,
+    "mdd": 39.41
+  },
+  {
+    "sym": "ETH",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_killzone",
+    "trades": 10,
+    "win_rate": 30.0,
+    "pf": 0.747,
+    "ret": -11.97,
+    "mdd": 25.49
+  },
+  {
+    "sym": "ETH",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_ote",
+    "trades": 13,
+    "win_rate": 15.4,
+    "pf": 0.428,
+    "ret": -42.85,
+    "mdd": 56.73
+  },
+  {
+    "sym": "ETH",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_breaker",
+    "trades": 7,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": -38.34,
+    "mdd": 38.34
+  },
+  {
+    "sym": "ETH",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_mtf",
+    "trades": 3,
+    "win_rate": 33.3,
+    "pf": 1.054,
+    "ret": 0.69,
+    "mdd": 12.83
+  },
+  {
+    "sym": "ETH",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_killzone",
+    "trades": 35,
+    "win_rate": 34.3,
+    "pf": 1.015,
+    "ret": 3.61,
+    "mdd": 62.6
+  },
+  {
+    "sym": "ETH",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_ote",
+    "trades": 80,
+    "win_rate": 28.7,
+    "pf": 0.858,
+    "ret": -44.44,
+    "mdd": 58.18
+  },
+  {
+    "sym": "ETH",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_breaker",
+    "trades": 20,
+    "win_rate": 15.0,
+    "pf": 0.373,
+    "ret": -55.52,
+    "mdd": 55.52
+  },
+  {
+    "sym": "ETH",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_mtf",
+    "trades": 18,
+    "win_rate": 33.3,
+    "pf": 1.027,
+    "ret": 1.96,
+    "mdd": 39.54
+  },
+  {
+    "sym": "XRP",
+    "ver": "baseline",
+    "strat": "ict_killzone",
+    "trades": 6,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": -46.86,
+    "mdd": 46.86
+  },
+  {
+    "sym": "XRP",
+    "ver": "baseline",
+    "strat": "ict_ote",
+    "trades": 35,
+    "win_rate": 28.6,
+    "pf": 0.823,
+    "ret": -29.12,
+    "mdd": 48.68
+  },
+  {
+    "sym": "XRP",
+    "ver": "baseline",
+    "strat": "ict_breaker",
+    "trades": 15,
+    "win_rate": 40.0,
+    "pf": 1.213,
+    "ret": 23.79,
+    "mdd": 40.55
+  },
+  {
+    "sym": "XRP",
+    "ver": "baseline",
+    "strat": "ict_mtf",
+    "trades": 1,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": -10.0,
+    "mdd": 10.0
+  },
+  {
+    "sym": "XRP",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_killzone",
+    "trades": 2,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": -19.0,
+    "mdd": 19.0
+  },
+  {
+    "sym": "XRP",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_ote",
+    "trades": 6,
+    "win_rate": 33.3,
+    "pf": 1.107,
+    "ret": 3.45,
+    "mdd": 12.26
+  },
+  {
+    "sym": "XRP",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_breaker",
+    "trades": 7,
+    "win_rate": 14.3,
+    "pf": 0.243,
+    "ret": -30.55,
+    "mdd": 36.76
+  },
+  {
+    "sym": "XRP",
+    "ver": "B안(m15_confirm_n=2)",
+    "strat": "ict_mtf",
+    "trades": 0,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": 0.0,
+    "mdd": 0.0
+  },
+  {
+    "sym": "XRP",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_killzone",
+    "trades": 7,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": -52.17,
+    "mdd": 52.17
+  },
+  {
+    "sym": "XRP",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_ote",
+    "trades": 73,
+    "win_rate": 23.3,
+    "pf": 0.687,
+    "ret": -83.54,
+    "mdd": 87.94
+  },
+  {
+    "sym": "XRP",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_breaker",
+    "trades": 27,
+    "win_rate": 40.7,
+    "pf": 1.175,
+    "ret": 39.89,
+    "mdd": 45.32
+  },
+  {
+    "sym": "XRP",
+    "ver": "C안(no_h1_trend)",
+    "strat": "ict_mtf",
+    "trades": 1,
+    "win_rate": 0.0,
+    "pf": 0.0,
+    "ret": -10.0,
+    "mdd": 10.0
+  }
+]

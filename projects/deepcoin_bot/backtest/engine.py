@@ -4,14 +4,34 @@ engine.py — 백테스팅 엔진
 """
 
 
+def _atr14(kl):
+    """server.py의 _ind()와 동일한 ATR(14) 계산 — 백테스트 SL이 라이브와 같은 폭을 쓰도록 공유."""
+    if len(kl) < 15:
+        return 0.0
+    hi = [k["h"] for k in kl]; lo = [k["l"] for k in kl]; cl = [k["c"] for k in kl]
+    tr = [max(hi[i] - lo[i], abs(hi[i] - cl[i - 1]), abs(lo[i] - cl[i - 1]))
+          for i in range(1, len(kl))]
+    return sum(tr[-14:]) / 14
+
+
 def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
                  initial_balance=1000.0, risk_pct=1.0, leverage=10,
-                 use_weights=True, sym="", tp_min_pct=0.0, rr_min=1.5):
+                 use_weights=True, sym="", tp_min_pct=0.0, rr_min=1.5,
+                 sl_min_atr_mult=0.8, sl_cap_pct=None,
+                 m15_confirm_n=0, require_h1_trend=True):
     """
     백테스팅 엔진
     - 각 캔들 시점에서 strategy.signal() 호출
     - 신호 발생 시 포지션 진입 (포지션 크기 = balance * risk_pct% / sl_distance_pct)
     - 이후 캔들에서 SL/TP 도달 여부 확인 → 청산
+
+    sl_min_atr_mult, sl_cap_pct: server.py _run_claude_bot의 SL 폭 규칙과 동일하게
+    맞춘 것. 실제 청산에 쓰는 SL은 전략이 찾은 구조 레벨(sig.sl)이 아니라
+    max(구조거리, ATR(14)×sl_min_atr_mult, 0.3%) 를 sl_cap_pct로 자른 값이다 —
+    라이브와 다른 SL을 쓰면 백테스트 숫자가 실거래를 대표하지 못한다(2026-09-25 확인된 문제).
+
+    m15_confirm_n, require_h1_trend: ict_engine.py의 전략 함수에 그대로 전달하는 비교용
+    파라미터(2026-10-01 B안 백테스트). 기본값은 라이브(server.py)와 동일 동작.
     반환: {"trades": [...], "equity_curve": [...], "summary": {...}}
     """
     balance      = initial_balance
@@ -110,37 +130,47 @@ def run_backtest(strategy, kl_all, h1_all=None, d1_all=None, m5_all=None,
             d1_win = _slice_mtf(d1_ts_map, d1_all, current["t"])
             m5_win = _slice_mtf(m5_ts_map, m5_all, current["t"], window=20)
 
-            sig = strategy.signal(kl_window, h1_kl=h1_win, d1_kl=d1_win, m5_kl=m5_win)
+            sig = strategy.signal(kl_window, h1_kl=h1_win, d1_kl=d1_win, m5_kl=m5_win,
+                                  m15_confirm_n=m15_confirm_n, require_h1_trend=require_h1_trend)
             if sig:
                 # TP 최소 거리 필터
                 _tp_dist = (sig.tp1 - price) / price if sig.direction == "long" else (price - sig.tp1) / price
                 if tp_min_pct > 0 and _tp_dist < tp_min_pct / 100:
                     continue
-                # RR 최소 필터 재검증
-                _sl_dist = abs(price - sig.sl) / price
-                if _sl_dist > 0 and _tp_dist / _sl_dist < rr_min:
+
+                # ── SL 폭: 구조 레벨 vs ATR 최소폭 vs 상한 — 라이브와 동일 규칙 ──
+                raw_sl_dist = abs(price - sig.sl) / price
+                atr = _atr14(kl_window)
+                sl_min = max(atr / price * sl_min_atr_mult, 0.003) if price else 0.003
+                sl_dist_pct = max(raw_sl_dist, sl_min)
+                if sl_cap_pct is not None:
+                    sl_dist_pct = min(sl_dist_pct, sl_cap_pct / 100)
+                if sl_dist_pct <= 0:
                     continue
-                sl_dist_pct = abs(price - sig.sl) / price
-                # SL 거리 최소 0.3% 보장 (degenerate sizing 방지)
-                sl_dist_pct = max(sl_dist_pct, 0.003)
-                if sl_dist_pct > 0:
-                    # 가중치 기반 포지션 크기 조정
-                    wkey = f"{sig.pattern_key}_{sym.split('-')[0]}" if sym else sig.pattern_key
-                    weight = get_weight(wkey) if use_weights else 1.0
-                    # 리스크 = balance * risk_pct% (레버리지 포함 실제 손실 기준)
-                    risk_amount = balance * (risk_pct / 100) * weight
-                    size = min(risk_amount / (sl_dist_pct * leverage), balance)  # 레버리지 보정, 잔고 초과 금지
-                    open_pos = {
-                        "direction":   sig.direction,
-                        "entry":       price,
-                        "sl":          sig.sl,
-                        "tp1":         sig.tp1,
-                        "tp2":         sig.tp2,
-                        "size":        round(size, 4),
-                        "pattern_key": sig.pattern_key,
-                        "reason":      sig.reason,
-                        "open_idx":    i,
-                    }
+                effective_sl = (price * (1 - sl_dist_pct) if sig.direction == "long"
+                                else price * (1 + sl_dist_pct))
+
+                # RR 최소 필터 재검증 — 실제로 쓸 SL 폭 기준으로 (구조 레벨 기준이면 과대평가됨)
+                if _tp_dist / sl_dist_pct < rr_min:
+                    continue
+
+                # 가중치 기반 포지션 크기 조정
+                wkey = f"{sig.pattern_key}_{sym.split('-')[0]}" if sym else sig.pattern_key
+                weight = get_weight(wkey) if use_weights else 1.0
+                # 리스크 = balance * risk_pct% (레버리지 포함 실제 손실 기준)
+                risk_amount = balance * (risk_pct / 100) * weight
+                size = min(risk_amount / (sl_dist_pct * leverage), balance)  # 레버리지 보정, 잔고 초과 금지
+                open_pos = {
+                    "direction":   sig.direction,
+                    "entry":       price,
+                    "sl":          effective_sl,
+                    "tp1":         sig.tp1,
+                    "tp2":         sig.tp2,
+                    "size":        round(size, 4),
+                    "pattern_key": sig.pattern_key,
+                    "reason":      sig.reason,
+                    "open_idx":    i,
+                }
 
     # 미청산 포지션 마지막 가격으로 강제 청산
     if open_pos and kl_all:

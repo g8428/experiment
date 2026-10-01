@@ -19,6 +19,16 @@ from engine import run_backtest
 from metrics import calc_metrics
 from weights import update_weights, print_weights
 
+_TUNING_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tuning.json")
+
+
+def _load_tuning():
+    try:
+        with open(_TUNING_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
 
 def _print_summary(name, result):
     s = result["summary"]
@@ -52,9 +62,34 @@ def main():
     parser.add_argument("--leverage", type=int, default=20)
     parser.add_argument("--tp_min",   type=float, default=0.0, help="최소 TP % (기본 0=비활성)")
     parser.add_argument("--rr_min",   type=float, default=1.5, help="최소 RR (기본 1.5)")
+    parser.add_argument("--sl_min_atr_mult", type=float, default=None,
+                         help="SL 최소폭 ATR 배율 — 안 주면 tuning.json의 심볼별/전역값 사용 (라이브와 동일)")
+    parser.add_argument("--sl_cap",   type=float, default=None,
+                         help="SL 상한 %% — 안 주면 tuning.json의 심볼별/전역값 사용 (라이브와 동일)")
     parser.add_argument("--json",     action="store_true", help="JSON 출력")
     parser.add_argument("--refresh",  action="store_true", help="캐시 무시하고 캔들 새로 수집")
+    parser.add_argument("--m15_confirm_n", type=int, default=0,
+                         help="B안: 신호 직전 15분봉 n개가 방향과 일치하는지 확인 필터 "
+                              "(기본 0=비활성, server.py와 동일 동작)")
+    parser.add_argument("--no_h1_trend", action="store_true",
+                         help="1H 추세(get_htf_trend) 체크를 건너뛰고 D1레짐+자체 신호만으로 판단 "
+                              "(기본은 끔=server.py와 동일 동작)")
     args = parser.parse_args()
+    require_h1_trend = not args.no_h1_trend
+
+    tuning = _load_tuning()
+    sl_min_atr_mult = args.sl_min_atr_mult
+    if sl_min_atr_mult is None:
+        sl_min_atr_mult = tuning.get("sl_min_atr_mult_by_sym", {}).get(
+            args.sym, tuning.get("sl_min_atr_mult", 0.8))
+    sl_cap_pct = args.sl_cap
+    if sl_cap_pct is None:
+        sl_cap_pct = tuning.get("sl_cap_pct_by_sym", {}).get(
+            args.sym, tuning.get("sl_cap_pct"))
+    print(f"SL 규칙: ATR×{sl_min_atr_mult} 최소폭, 상한 {sl_cap_pct}% "
+          f"({'tuning.json' if args.sl_min_atr_mult is None else 'CLI 지정'}) — server.py와 동일 소스")
+    print(f"비교 파라미터: m15_confirm_n={args.m15_confirm_n} (0=비활성/server.py 동일), "
+          f"require_h1_trend={require_h1_trend} (True=server.py 동일)")
 
     print(f"데이터 준비 중: {args.sym} {args.bar} {args.days}일... (캐시 있으면 재사용, --refresh 시 새로 수집)")
     kl = fetch_historical(args.sym, args.bar, args.days, refresh=args.refresh)
@@ -87,6 +122,10 @@ def main():
             sym=args.sym,
             tp_min_pct=args.tp_min,
             rr_min=args.rr_min,
+            sl_min_atr_mult=sl_min_atr_mult,
+            sl_cap_pct=sl_cap_pct,
+            m15_confirm_n=args.m15_confirm_n,
+            require_h1_trend=require_h1_trend,
         )
         # 가중치 업데이트
         update_weights(result["trades"], sym=args.sym)

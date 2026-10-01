@@ -1,0 +1,377 @@
+SL 규칙: ATR×0.4 최소폭, 상한 0.8% (tuning.json) — server.py와 동일 소스
+비교 파라미터: m15_confirm_n=2 (0=비활성/server.py 동일), require_h1_trend=True (True=server.py 동일)
+데이터 준비 중: XRP-USDT-SWAP 15m 60일... (캐시 있으면 재사용, --refresh 시 새로 수집)
+캔들 5758개 준비 완료.
+1H=1440개 / 5m=17273개 / 1D=120개
+{
+  "ict_killzone": {
+    "summary": {
+      "strategy": "ict_killzone",
+      "initial_balance": 1000.0,
+      "final_balance": 810.0,
+      "total_pnl": -190.0,
+      "total_return_pct": -19.0,
+      "max_drawdown_pct": 19.0,
+      "total_candles": 5758,
+      "trade_count": 2
+    },
+    "metrics": {
+      "total_trades": 2,
+      "win_rate": 0.0,
+      "profit_factor": 0.0,
+      "avg_rr": 0.0,
+      "max_drawdown": 190.0,
+      "sharpe": -26.87,
+      "by_pattern": {
+        "ict_killzone_short_newyork": {
+          "trades": 1,
+          "wins": 0,
+          "total_pnl": -100.0,
+          "win_rate": 0.0
+        },
+        "ict_killzone_long_newyork": {
+          "trades": 1,
+          "wins": 0,
+          "total_pnl": -90.0,
+          "win_rate": 0.0
+        }
+      }
+    },
+    "trades": [
+      {
+        "open_idx": 2804,
+        "close_idx": 2807,
+        "direction": "short",
+        "entry": 1.3617,
+        "exit": 1.3725935999999999,
+        "exit_reason": "SL",
+        "sl": 1.3725935999999999,
+        "tp1": 1.3,
+        "size": 625.0,
+        "pnl": -100.0,
+        "pattern_key": "ict_killzone_short_newyork",
+        "reason": "[newyork][1H:bearish] SMC숏 BOS [FVG진입] OB=1~1 SL=1 TP1=1 RR=1.6",
+        "open_t": 1788183900000,
+        "close_t": 1788186600000
+      },
+      {
+        "open_idx": 3287,
+        "close_idx": 3383,
+        "direction": "long",
+        "entry": 1.4162,
+        "exit": 1.4048703999999999,
+        "exit_reason": "SL",
+        "sl": 1.4048703999999999,
+        "tp1": 1.5,
+        "size": 562.5,
+        "pnl": -90.0,
+        "pattern_key": "ict_killzone_long_newyork",
+        "reason": "[newyork][1H:bullish] SMC롱 BOS [OB재터치] OB=1~1 SL=1 TP1=2 RR=5.2",
+        "open_t": 1788618600000,
+        "close_t": 1788705000000
+      }
+    ]
+  },
+  "ict_ote": {
+    "summary": {
+      "strategy": "ict_ote",
+      "initial_balance": 1000.0,
+      "final_balance": 1034.4566,
+      "total_pnl": 34.4566,
+      "total_return_pct": 3.45,
+      "max_drawdown_pct": 12.26,
+      "total_candles": 5758,
+      "trade_count": 6
+    },
+    "metrics": {
+      "total_trades": 6,
+      "win_rate": 33.3,
+      "profit_factor": 1.107,
+      "avg_rr": 2.213,
+      "max_drawdown": 131.8121,
+      "sharpe": 0.114,
+      "by_pattern": {
+        "ict_ote_long": {
+          "trades": 5,
+          "wins": 1,
+          "total_pnl": -147.8747,
+          "win_rate": 20.0
+        },
+        "ict_ote_short": {
+          "trades": 1,
+          "wins": 1,
+          "total_pnl": 182.3313,
+          "win_rate": 100.0
+        }
+      }
+    },
+    "trades": [
+      {
+        "open_idx": 1929,
+        "close_idx": 1930,
+        "direction": "long",
+        "entry": 1.502,
+        "exit": 1.489984,
+        "exit_reason": "SL",
+        "sl": 1.489984,
+        "tp1": 1.6276,
+        "size": 625.0,
+        "pnl": -100.0,
+        "pattern_key": "ict_ote_long",
+        "reason": "OTE롱 Sweep@1.4872→되돌림1.4800~1.5100",
+        "open_t": 1787394600000,
+        "close_t": 1787395500000
+      },
+      {
+        "open_idx": 2064,
+        "close_idx": 2068,
+        "direction": "long",
+        "entry": 1.5003,
+        "exit": 1.5237,
+        "exit_reason": "TP1",
+        "sl": 1.4882975999999999,
+        "tp1": 1.5237,
+        "size": 562.5,
+        "pnl": 175.4649,
+        "pattern_key": "ict_ote_long",
+        "reason": "OTE롱 Sweep@1.4989→되돌림1.5000~1.5100",
+        "open_t": 1787516100000,
+        "close_t": 1787519700000
+      },
+      {
+        "open_idx": 2452,
+        "close_idx": 2461,
+        "direction": "long",
+        "entry": 1.4493,
+        "exit": 1.444477,
+        "exit_reason": "SL",
+        "sl": 1.444477,
+        "tp1": 1.4605,
+        "size": 1075.4649,
+        "pnl": -71.5789,
+        "pattern_key": "ict_ote_long",
+        "reason": "OTE롱 Sweep@1.4452→되돌림1.4400~1.4500",
+        "open_t": 1787867100000,
+        "close_t": 1787875200000
+      },
+      {
+        "open_idx": 3128,
+        "close_idx": 3130,
+        "direction": "long",
+        "entry": 1.4552,
+        "exit": 1.4508344,
+        "exit_reason": "SL",
+        "sl": 1.4508344,
+        "tp1": 1.4777,
+        "size": 1003.886,
+        "pnl": -60.2332,
+        "pattern_key": "ict_ote_long",
+        "reason": "OTE롱 Sweep@1.4545→되돌림1.4500~1.4600",
+        "open_t": 1788475500000,
+        "close_t": 1788477300000
+      },
+      {
+        "open_idx": 3648,
+        "close_idx": 3651,
+        "direction": "short",
+        "entry": 1.4376,
+        "exit": 1.4221,
+        "exit_reason": "TP1",
+        "sl": 1.445622,
+        "tp1": 1.4221,
+        "size": 845.5468,
+        "pnl": 182.3313,
+        "pattern_key": "ict_ote_short",
+        "reason": "OTE숏 Sweep@1.4420→되돌림1.4300~1.4400",
+        "open_t": 1788943500000,
+        "close_t": 1788946200000
+      },
+      {
+        "open_idx": 4648,
+        "close_idx": 4657,
+        "direction": "long",
+        "entry": 1.43,
+        "exit": 1.424188,
+        "exit_reason": "SL",
+        "sl": 1.424188,
+        "tp1": 1.4449,
+        "size": 1125.9841,
+        "pnl": -91.5275,
+        "pattern_key": "ict_ote_long",
+        "reason": "OTE롱 Sweep@1.4249→되돌림1.4300~1.4300",
+        "open_t": 1789843500000,
+        "close_t": 1789851600000
+      }
+    ]
+  },
+  "ict_breaker": {
+    "summary": {
+      "strategy": "ict_breaker",
+      "initial_balance": 1000.0,
+      "final_balance": 694.4951,
+      "total_pnl": -305.5049,
+      "total_return_pct": -30.55,
+      "max_drawdown_pct": 36.76,
+      "total_candles": 5758,
+      "trade_count": 7
+    },
+    "metrics": {
+      "total_trades": 7,
+      "win_rate": 14.3,
+      "profit_factor": 0.243,
+      "avg_rr": 1.459,
+      "max_drawdown": 403.683,
+      "sharpe": -1.852,
+      "by_pattern": {
+        "ict_breaker_short": {
+          "trades": 1,
+          "wins": 1,
+          "total_pnl": 98.178,
+          "win_rate": 100.0
+        },
+        "ict_breaker_long": {
+          "trades": 6,
+          "wins": 0,
+          "total_pnl": -403.683,
+          "win_rate": 0.0
+        }
+      }
+    },
+    "trades": [
+      {
+        "open_idx": 356,
+        "close_idx": 358,
+        "direction": "short",
+        "entry": 1.0593,
+        "exit": 1.0541,
+        "exit_reason": "TP1",
+        "sl": 1.0624778999999998,
+        "tp1": 1.0541,
+        "size": 1000.0,
+        "pnl": 98.178,
+        "pattern_key": "ict_breaker_short",
+        "reason": "BearBreaker 1.0600~1.0600",
+        "open_t": 1785978900000,
+        "close_t": 1785980700000
+      },
+      {
+        "open_idx": 2792,
+        "close_idx": 2797,
+        "direction": "long",
+        "entry": 1.3803,
+        "exit": 1.369315,
+        "exit_reason": "SL",
+        "sl": 1.369315,
+        "tp1": 1.403,
+        "size": 689.9477,
+        "pnl": -109.8178,
+        "pattern_key": "ict_breaker_long",
+        "reason": "BullBreaker 1.3700~1.3800",
+        "open_t": 1788173100000,
+        "close_t": 1788177600000
+      },
+      {
+        "open_idx": 3942,
+        "close_idx": 3953,
+        "direction": "long",
+        "entry": 1.3713,
+        "exit": 1.3671861,
+        "exit_reason": "SL",
+        "sl": 1.3671861,
+        "tp1": 1.4051,
+        "size": 988.3602,
+        "pnl": -59.3016,
+        "pattern_key": "ict_breaker_long",
+        "reason": "BullBreaker 1.3700~1.3700",
+        "open_t": 1789208100000,
+        "close_t": 1789218000000
+      },
+      {
+        "open_idx": 4857,
+        "close_idx": 4858,
+        "direction": "long",
+        "entry": 1.558,
+        "exit": 1.549225,
+        "exit_reason": "SL",
+        "sl": 1.549225,
+        "tp1": 1.5744,
+        "size": 824.7711,
+        "pnl": -92.9059,
+        "pattern_key": "ict_breaker_long",
+        "reason": "BullBreaker 1.5500~1.5600",
+        "open_t": 1790031600000,
+        "close_t": 1790032500000
+      },
+      {
+        "open_idx": 4899,
+        "close_idx": 4901,
+        "direction": "long",
+        "entry": 1.5394,
+        "exit": 1.5347818000000002,
+        "exit_reason": "SL",
+        "sl": 1.5347818000000002,
+        "tp1": 1.5542,
+        "size": 836.1528,
+        "pnl": -50.1692,
+        "pattern_key": "ict_breaker_long",
+        "reason": "BullBreaker 1.5400~1.5400",
+        "open_t": 1790069400000,
+        "close_t": 1790071200000
+      },
+      {
+        "open_idx": 5157,
+        "close_idx": 5158,
+        "direction": "long",
+        "entry": 1.5509,
+        "exit": 1.5462472999999999,
+        "exit_reason": "SL",
+        "sl": 1.5462472999999999,
+        "tp1": 1.56,
+        "size": 785.9836,
+        "pnl": -47.159,
+        "pattern_key": "ict_breaker_long",
+        "reason": "BullBreaker 1.5500~1.5500",
+        "open_t": 1790301600000,
+        "close_t": 1790302500000
+      },
+      {
+        "open_idx": 5371,
+        "close_idx": 5377,
+        "direction": "long",
+        "entry": 1.5314,
+        "exit": 1.5268058,
+        "exit_reason": "SL",
+        "sl": 1.5268058,
+        "tp1": 1.5517,
+        "size": 738.8246,
+        "pnl": -44.3295,
+        "pattern_key": "ict_breaker_long",
+        "reason": "BullBreaker 1.5300~1.5300",
+        "open_t": 1790494200000,
+        "close_t": 1790499600000
+      }
+    ]
+  },
+  "ict_mtf": {
+    "summary": {
+      "strategy": "ict_mtf",
+      "initial_balance": 1000.0,
+      "final_balance": 1000.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_candles": 5758,
+      "trade_count": 0
+    },
+    "metrics": {
+      "total_trades": 0,
+      "win_rate": 0.0,
+      "profit_factor": 0.0,
+      "avg_rr": 0.0,
+      "max_drawdown": 0.0,
+      "sharpe": 0.0,
+      "by_pattern": {}
+    },
+    "trades": []
+  }
+}
