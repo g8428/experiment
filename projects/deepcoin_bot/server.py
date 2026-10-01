@@ -30,30 +30,34 @@ except ImportError:
     def get_killzone_signal(*a, **kw): return {"signal": None}
     def get_breaker_signal(*a, **kw): return {"signal": None}
 
-# 라이브 멀티전략 우선순위 (2026-09-23 6개월 BTC 백테스트 성과순):
-# OTE(+164.75%) → MTF(+20.60%) → 킬존NY전용(+25.16%) → Breaker(-26.53%, 최후)
+# 라이브 멀티전략 우선순위 (2026-10-01 6개월 재검증 후 조정):
+# OTE(+206.42%), MTF(+44.13%)는 6개월 재백테스트에서도 유지 — m15_confirm_n=2(B안,
+# 직전 15분봉 확인캔들 재검증)로 노이즈성 신호 안정화.
+# 킬존NY전용은 9/23 +25.16%→지금 -33.89%로 역전(숏 승률 17.4%가 주범), Breaker는
+# 원래부터 약함(-26.53%→-21.55%, 롱 승률 25%가 주범) — 둘 다 비활성화.
 _SIGNAL_CHAIN = [
-    ("OTE", lambda kl, h1, d1, m5: get_ote_signal(kl, h1_kl=h1, d1_kl=d1)),
-    ("MTF", lambda kl, h1, d1, m5: get_mtf_signal(kl, h1_kl=h1, d1_kl=d1, m5_kl=m5)),
-    ("KZ-NY", lambda kl, h1, d1, m5: get_killzone_signal(kl, h1_kl=h1, d1_kl=d1)),
-    ("BRK", lambda kl, h1, d1, m5: get_breaker_signal(kl, h1_kl=h1, d1_kl=d1)),
+    ("OTE", lambda kl, h1, d1, m5: get_ote_signal(kl, h1_kl=h1, d1_kl=d1, m15_confirm_n=2)),
+    ("MTF", lambda kl, h1, d1, m5: get_mtf_signal(kl, h1_kl=h1, d1_kl=d1, m5_kl=m5, m15_confirm_n=2)),
 ]
 
 def _multi_strategy_signal(kl, h1_kl, d1_kl, m5_kl):
-    """우선순위 체인을 순서대로 시도해 가장 먼저 나오는 시그널을 채택.
-    반환: (smc_dict, 시그널 낸 전략명 또는 None)
-    아무 것도 안 나오면 MTF 결과(OB/FVG 진단 정보 보유)를 모니터링용으로 반환
-    — Breaker/OTE는 진단 필드가 항상 0이라 그걸 보여주면 "얼마나 가까운지" 알 수 없음"""
+    """4개 전략을 전부 평가하고, 우선순위 순으로 가장 먼저 시그널을 낸 전략을 채택.
+    반환: (채택 smc_dict, 전략명 또는 None, {전략명: 각 결과 dict}) — 결과 dict는
+    대시보드에 "각 전략이 지금 왜 안 되는지"를 보여주는 데 쓴다."""
     if not _SMC_AVAILABLE:
-        return {"signal": None}, None
-    diag = None
+        return {"signal": None}, None, {}
+    results, chosen, src = {}, None, None
     for name, fn in _SIGNAL_CHAIN:
-        smc = fn(kl, h1_kl, d1_kl, m5_kl)
-        if name == "MTF":
-            diag = smc
-        if smc.get("signal"):
-            return smc, name
-    return (diag if diag is not None else smc), None
+        try:
+            r = fn(kl, h1_kl, d1_kl, m5_kl)
+        except Exception as e:
+            r = {"signal": None, "reason": f"오류 {e}"}
+        results[name] = r
+        if chosen is None and r.get("signal"):
+            chosen, src = r, name
+    if chosen is None:
+        chosen = results.get("MTF") or {"signal": None}   # OB/FVG 진단 필드가 있는 결과를 모니터링용으로
+    return chosen, src, results
 
 import sys as _sys_w
 _sys_w.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "backtest"))
@@ -120,11 +124,14 @@ _PERSIST = os.path.join(_BASE, "trade_logs", "persist.json")
 os.makedirs(LOGS_DIR, exist_ok=True)
 
 # ── 심볼별 계약 사이즈 ────────────────────────────────────────────
+# 딥코인 /deepcoin/market/instruments 실측값 (2026-09-24). 예전엔 ETH 0.01 / XRP 1.0으로
+# 잘못 적혀 있어 ETH는 10배 과대, XRP는 10배 과소 사이징이었음 — 반드시 거래소 값과 맞출 것.
 _CONTRACT_SZ = {
-    "BTC-USDT-SWAP": 0.001,   # 1계약 = 0.001 BTC
-    "ETH-USDT-SWAP": 0.01,    # 1계약 = 0.01 ETH
-    "XRP-USDT-SWAP": 1.0,     # 1계약 = 1 XRP
+    "BTC-USDT-SWAP": 0.001,   # ctVal 0.001 BTC, lotSz 1, minSz 1
+    "ETH-USDT-SWAP": 0.1,     # ctVal 0.1 ETH,   lotSz 0.1, minSz 0.1
+    "XRP-USDT-SWAP": 0.1,     # ctVal 0.1 XRP,   lotSz 1, minSz 100
 }
+_MIN_SZ = {"BTC-USDT-SWAP": 1, "ETH-USDT-SWAP": 1, "XRP-USDT-SWAP": 100}
 _ACTIVE_SYMS = ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "XRP-USDT-SWAP"]
 # 심볼별 가격 소수 자릿수 (TP/SL 주문가 반올림 + 표시)
 _PX_DEC = {"BTC-USDT-SWAP": 1, "ETH-USDT-SWAP": 2, "XRP-USDT-SWAP": 4}
@@ -147,6 +154,11 @@ def _default_st():
 _bots_st  = {sym: _default_st() for sym in _ACTIVE_SYMS}
 _bots_thr = {sym: None for sym in _ACTIVE_SYMS}
 _bots_gen = {sym: 0    for sym in _ACTIVE_SYMS}
+# 의도 상태 — 워치독이 "사용자가 껐다"와 "죽어서 멈췄다"를 구분하는 기준.
+# running=True인데 _bots_st[sym]["running"]이 False면 죽은 것으로 보고 재시작한다.
+_bots_want = {sym: {"running": False, "mode": "sim", "restarts": []} for sym in _ACTIVE_SYMS}
+_WATCHDOG_MAX_RESTARTS = 5      # 이 횟수 넘게 재시작 반복되면 루프 문제로 보고 포기
+_WATCHDOG_WINDOW_SEC   = 1800   # 30분 창
 
 _logs  = []
 _daily = {}
@@ -216,6 +228,9 @@ _claude_cfg = {
     "tp_max_pct":             15.0,
     "tp_min_margin_pct":      0,
     "tp_min_margin_by_sym":   {},
+    "sl_cap_pct_by_sym":      {},
+    "sl_min_atr_mult":        0.8,
+    "sl_min_atr_mult_by_sym": {},
 }
 
 # ── tuning.json 자동 반영 ─────────────────────────────────────────
@@ -238,7 +253,8 @@ def _load_tuning():
             if k in t: _cfg[k] = t[k]
         for k in ("leverage", "risk_pct", "size_pct", "cooldown",
                   "rr_min", "sl_cap_pct", "tp_max_pct",
-                  "tp_min_margin_pct", "tp_min_margin_by_sym"):
+                  "tp_min_margin_pct", "tp_min_margin_by_sym",
+                  "sl_cap_pct_by_sym", "sl_min_atr_mult", "sl_min_atr_mult_by_sym"):
             if k in t: _claude_cfg[k] = t[k]
         if isinstance(t.get("active_symbols"), list):
             _active_syms_cfg = [s for s in t["active_symbols"] if s in _ACTIVE_SYMS]
@@ -260,20 +276,40 @@ def _tuning_watcher():
 _thr_mod.Thread(target=_tuning_watcher, daemon=True).start()
 # ──────────────────────────────────────────────────────────────────
 
+def _spawn_bot_thread(sym, mode):
+    _bots_st[sym]["running"] = False
+    _bots_gen[sym] += 1
+    t = threading.Thread(target=_run_claude_bot, daemon=True,
+        kwargs={"mode": mode, "gen": _bots_gen[sym], "sym": sym})
+    _bots_thr[sym] = t
+    t.start()
 
-# ── 보조지표 계산 ──────────────────────────────────────────────────
-def _ema(cl, n):
-    if len(cl) < n: return cl[-1] if cl else 0.0
-    k = 2.0/(n+1); e = sum(cl[:n])/n
-    for p in cl[n:]: e = p*k + e*(1-k)
-    return e
+def _bot_watchdog():
+    """20초마다: '가동 의도'인데 루프가 죽어있는 심볼을 감지해 같은 모드로 재시작.
+    /api/claude/stop으로 사용자가 직접 끈 건 _bots_want도 같이 꺼지므로 건드리지 않는다.
+    같은 심볼이 30분 안에 5번 넘게 재시작되면 루프 자체 문제로 보고 더 시도하지 않는다."""
+    while True:
+        time.sleep(20)
+        now = time.time()
+        for sym, want in _bots_want.items():
+            if not want["running"] or sym not in _active_syms_cfg:
+                continue
+            if _bots_st.get(sym, {}).get("running"):
+                continue
+            want["restarts"] = [t for t in want["restarts"] if now - t < _WATCHDOG_WINDOW_SEC]
+            if len(want["restarts"]) >= _WATCHDOG_MAX_RESTARTS:
+                continue
+            want["restarts"].append(now)
+            print(f"[watchdog] {sym} 죽어있음(의도=가동 {want['mode']}) → 재시작 "
+                  f"({len(want['restarts'])}/{_WATCHDOG_MAX_RESTARTS} in {_WATCHDOG_WINDOW_SEC//60}분)")
+            try:
+                _spawn_bot_thread(sym, want["mode"])
+            except Exception as e:
+                print(f"[watchdog] {sym} 재시작 실패: {e}")
 
-def _rsi(cl, n=14):
-    if len(cl) < n+1: return 50.0
-    d = [cl[i]-cl[i-1] for i in range(1,len(cl))]
-    g = sum(max(x,0) for x in d[-n:])/n
-    l = sum(max(-x,0) for x in d[-n:])/n
-    return round(100.0 if l==0 else 100-100/(1+g/l), 2)
+_thr_mod.Thread(target=_bot_watchdog, daemon=True).start()
+# ──────────────────────────────────────────────────────────────────
+
 
 # ── 딥코인 klines (30초 캐시) ─────────────────────────────────────
 _kl_cache = {}
@@ -306,65 +342,13 @@ def _klines(sym="BTC-USDT-SWAP", bar="15m", n=80):
             return _kl_cache.get(key, {}).get("data", [])
 
 def _ind(kl):
-    """공통 지표: EMA9/21 + RSI + ATR(14) + BB(20,2.0)"""
-    if len(kl) < 22: return {}
-    hi = [k["h"] for k in kl]
-    lo = [k["l"] for k in kl]
-    cl = [k["c"] for k in kl]
-    # ATR(14)
+    """ATR(14) + 현재가 — SL/TP ATR 폴백과 최소 SL 계산에만 쓴다.
+    (EMA/RSI/BB는 전략 함수 밖의 별도 필터였고 백테스트에 없던 것이라 제거됨)"""
+    if len(kl) < 15: return {}
+    hi = [k["h"] for k in kl]; lo = [k["l"] for k in kl]; cl = [k["c"] for k in kl]
     tr_list = [max(hi[i]-lo[i], abs(hi[i]-cl[i-1]), abs(lo[i]-cl[i-1]))
                for i in range(1, len(kl))]
-    # XRP처럼 가격이 작은 심볼은 소수 2자리 반올림 시 EMA9==EMA21이 되어 필터가 무력화됨 → 6자리
-    atr = round(sum(tr_list[-14:])/14, 6)
-    # Bollinger Bands(20, 2.0)
-    bb20 = cl[-20:]
-    bm   = sum(bb20)/20
-    bstd = (sum((x-bm)**2 for x in bb20)/20)**0.5
-    return {
-        "ema9":     round(_ema(cl,9), 6),
-        "ema21":    round(_ema(cl,21), 6),
-        "rsi":      _rsi(cl,14),
-        "price":    cl[-1],
-        "atr":      atr,
-        "bb_upper": round(bm + 2.0*bstd, 6),
-        "bb_lower": round(bm - 2.0*bstd, 6),
-        "bb_mid":   round(bm, 6),
-    }
-
-# ── FVG (Fair Value Gap) 탐지 + filled 추적 ───────────────────────────────
-def _detect_fvg(kl):
-    """
-    15분봉에서 Fair Value Gap 탐지.
-    Bullish FVG : kl[i].low  > kl[i-2].high  → 지지 갭 (롱 기회)
-    Bearish FVG : kl[i].high < kl[i-2].low   → 저항 갭 (숏 기회)
-    반환: [{"type","low","high","formed_at","filled"}, ...]
-    """
-    fvgs = []
-    for i in range(2, len(kl)):
-        if kl[i]["l"] > kl[i-2]["h"]:          # Bullish FVG
-            fvgs.append({
-                "type":      "bull",
-                "low":       round(kl[i-2]["h"], 1),   # 갭 하단
-                "high":      round(kl[i]["l"],   1),   # 갭 상단
-                "formed_at": kl[i]["t"],
-                "filled":    False,
-            })
-        elif kl[i]["h"] < kl[i-2]["l"]:        # Bearish FVG
-            fvgs.append({
-                "type":      "bear",
-                "low":       round(kl[i]["h"],   1),   # 갭 하단
-                "high":      round(kl[i-2]["l"], 1),   # 갭 상단
-                "formed_at": kl[i]["t"],
-                "filled":    False,
-            })
-    return fvgs
-
-def _update_fvg_filled(fvgs, current_price):
-    """현재가가 FVG 구간에 들어오면 filled=True 마킹"""
-    for fg in fvgs:
-        if not fg["filled"] and fg["low"] <= current_price <= fg["high"]:
-            fg["filled"] = True
-    return fvgs
+    return {"price": cl[-1], "atr": round(sum(tr_list[-14:]) / 14, 6)}
 
 
 # ── KST 날짜 / 일별 통계 ──────────────────────────────────────────
@@ -399,8 +383,7 @@ def _rec(mode, action, price, ind, reason, pnl=None, tp_px=None, sl_px=None,
     day = _kst_day()
     ts  = datetime.now(timezone(timedelta(hours=9))).strftime("%m-%d %H:%M")
     _logs.append({"ts":ts,"day":day,"mode":mode,"sym":sym,"action":action,
-        "price":price,"e9":ind.get("ema9"),"e21":ind.get("ema21"),
-        "rsi":ind.get("rsi"),"atr":ind.get("atr"),"reason":reason,"pnl":pnl,
+        "price":price,"atr":ind.get("atr"),"reason":reason,"pnl":pnl,
         "tp_px":tp_px,"sl_px":sl_px,"signal_src":signal_src,
         "smc_ctx": smc_ctx})
     if len(_logs) > 500: _logs.pop(0)
@@ -459,15 +442,15 @@ def save_daily_log(day):
         f"손실 -{_cfg['daily_loss_stop']:.0f}% | 실제 최대 {_cfg['max_daily_trades']}회",
         "", "---", "",
         "## 📋 거래 로그", "",
-        "| 시간 | 심볼 | 모드 | 액션 | 가격 | TP | SL | RSI | 이유 | PnL |",
-        "|------|------|------|------|------|-----|-----|-----|------|-----|",
+        "| 시간 | 심볼 | 모드 | 액션 | 가격 | TP | SL | 전략 | 이유 | PnL |",
+        "|------|------|------|------|------|-----|-----|------|------|-----|",
     ]
     for l in day_logs:
         sym = l.get("sym", "BTC-USDT-SWAP")
         lines.append(
             f"| {l['ts']} | {sym.split('-')[0]} | {l['mode']} | {l['action']} "
             f"| ${_px_fmt(l['price'], sym)} | ${_px_fmt(l.get('tp_px'), sym)} | ${_px_fmt(l.get('sl_px'), sym)} "
-            f"| {l.get('rsi') or '-'} "
+            f"| {(l.get('smc_ctx') or {}).get('strategy', '-')} "
             f"| {l['reason']} | {_pnl_str(l['pnl'])} |"
         )
     if not day_logs:
@@ -535,12 +518,12 @@ def _calc_sz(price, size_pct, lev, sym="BTC-USDT-SWAP"):
                         return 1
                     margin_to_use       = avail * (size_pct / 100.0)
                     margin_per_contract = price * ct_sz / lev
-                    sz = max(1, int(margin_to_use / margin_per_contract))
-                    print(f"[사이징:{sym}] 잔고=${avail:.2f} size={size_pct}% 증거금=${margin_to_use:.2f} → {sz}계약 (계약당${margin_per_contract:.2f})")
+                    sz = max(_MIN_SZ.get(sym, 1), int(margin_to_use / margin_per_contract))
+                    print(f"[사이징:{sym}] 잔고=${avail:.2f} size={size_pct}% 증거금=${margin_to_use:.2f} → {sz}계약 (계약당${margin_per_contract:.4f})")
                     return sz
     except Exception as e:
         print(f"[사이징오류:{sym}] {e}")
-    return max(1, int(size_pct))
+    return _MIN_SZ.get(sym, 1)
 
 def _place_order(side, pos_side, sz, tp_px=None, sl_px=None, sym="BTC-USDT-SWAP"):
     """시장가 주문 + DeepCoin 서버사이드 TP/SL 동시 설정"""
@@ -599,21 +582,6 @@ def _close_order(pos_side, mode, sz, sym="BTC-USDT-SWAP"):
         "reduceOnly": True,
     })
 
-def _d1_regime_blocks(sig, kl_1d):
-    """D1 레짐이 시그널 방향을 막는지 확인. True면 스킵."""
-    if not kl_1d or not _SMC_AVAILABLE:
-        return False
-    try:
-        regime = get_market_regime(kl_1d)
-        if sig == "short" and regime == "bull":
-            return True
-        if sig == "long" and regime == "bear":
-            return True
-    except Exception:
-        pass
-    return False
-
-
 # ── Claude 메인 봇 ────────────────────────────────────────────────
 def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     """
@@ -624,12 +592,16 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     st = _bots_st[sym]
     claude_mode = "claude-" + mode
 
-    prev_pos   = st.get("position")
-    prev_entry = st.get("entry") or 0.0
+    # 로컬에 남은 포지션 상태는 같은 모드(sim↔sim)일 때만 이어받는다.
+    # real은 항상 거래소 조회로 복원 — 시뮬 포지션이 persist를 타고 real로 넘어와
+    # "거래소에 없음 → 청산됨"으로 가짜 기록되던 사고(2026-09-23 BTC) 재발 방지.
+    _carry = (st.get("mode") == mode) and mode != "real"
+    prev_pos   = st.get("position") if _carry else None
+    prev_entry = (st.get("entry") or 0.0) if _carry else 0.0
     prev_pnl   = st.get("pnl")   or 0.0
     prev_tr    = st.get("trades") or 0
-    prev_tp    = st.get("tp_px")
-    prev_sl    = st.get("sl_px")
+    prev_tp    = st.get("tp_px") if _carry else None
+    prev_sl    = st.get("sl_px") if _carry else None
 
     st.update({"running": True, "mode": mode, "stop_msg": "",
                "position": prev_pos, "entry": prev_entry,
@@ -696,8 +668,10 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
         cooldown_left = max(0, _last_close + _claude_cfg["cooldown"] - time.time())
 
         if pos is None:
-            # ── 실시간 멀티전략 (OTE→MTF→킬존NY→Breaker 우선순위) ──
-            smc, _sig_src = _multi_strategy_signal(kl, kl_1h, kl_1d, kl_5m)
+            # ── 멀티전략 체인 (OTE→MTF→킬존NY→Breaker). 킬존/D1레짐/1H추세/RR은 각 전략 안에서 판단 ──
+            smc, _sig_src, _chain = _multi_strategy_signal(kl, kl_1h, kl_1d, kl_5m)
+            st["chain"] = {n: {"signal": r.get("signal"), "reason": r.get("reason", "")}
+                           for n, r in _chain.items()}
             # 심볼별 이벤트 로그 업데이트 (최근 이벤트만 추가)
             if _SMC_AVAILABLE:
                 new_events = smc.get("events_15m", []) + smc.get("events_1h", [])
@@ -715,71 +689,39 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
             s_tp    = smc.get("tp1")
             s_tp2   = smc.get("tp2")
             smc_rsn = smc.get("reason", "")
-            rsi     = ind.get("rsi", 50)
-            bb_u    = ind.get("bb_upper", price)
-            bb_l    = ind.get("bb_lower", price)
-            bb_m    = ind.get("bb_mid",   price)
-            ema9    = ind.get("ema9",  price)
-            ema21   = ind.get("ema21", price)
+            _chain_brief = " | ".join(f"{n}:{(r.get('reason') or '-')[:16]}" for n, r in _chain.items())
 
-            smc_info = (f"SMC:{s_sig or '없음'} BOS:{smc.get('bos_dir','?')} "
-                        f"OB=b{smc.get('bull_ob_count',0)}/d{smc.get('bear_ob_count',0)} "
-                        f"FVG=b{smc.get('bull_fvg_count',0)}/d{smc.get('bear_fvg_count',0)}")
-
-            # ── 직전 SL 레벨 재진입 차단 (같은 OB에서 반복 손절 방지) ──
+            # ── 직전 SL 레벨 재진입 차단 (같은 구조에서 반복 손절 방지) ──
             _same_sl = (_last_fail_sl > 0 and s_sl and
                         abs(s_sl - _last_fail_sl) / max(_last_fail_sl, 1) < 0.002)
 
-            # ── 진입 조건 체크 (순서: 일한도 → 킬존 → SMC → 직전SL → RSI → 15m EMA → D1 → 쿨다운 → 5m) ──
+            # ── 리스크 게이트만 (시그널 필터는 전략 함수 안에 있음): 일한도 → 시그널 → 직전SL → 쿨다운 ──
             if not ok:
                 st["watch_msg"] = f"일 한도: {stop_msg}"
-            elif kz not in ("london", "newyork"):
-                st["watch_msg"] = f"킬존 외 진입 금지 [{kz_name}]{asian_tag} | {smc_info}"
             elif not s_sig:
-                st["watch_msg"] = f"SMC시그널 없음 [{kz_name}]{asian_tag} — {smc_info}"
+                st["watch_msg"] = f"시그널 없음 [{kz_name}]{asian_tag} — {_chain_brief}"
             elif _same_sl:
-                st["watch_msg"] = f"직전 손절 구조 재진입 차단 SL≈${_pf(_last_fail_sl)} | {smc_info}"
-            elif s_sig == "long" and rsi > 68:
-                st["watch_msg"] = f"RSI과매수({rsi:.1f}) 롱 스킵 | {smc_info}"
-            elif s_sig == "short" and rsi < 32:
-                st["watch_msg"] = f"RSI과매도({rsi:.1f}) 숏 스킵 | {smc_info}"
-            elif s_sig == "long" and ema9 < ema21:
-                st["watch_msg"] = f"15m EMA역배열 롱 스킵 (EMA9={_pf(ema9)}<EMA21={_pf(ema21)}) | {smc_info}"
-            elif s_sig == "short" and ema9 > ema21:
-                st["watch_msg"] = f"15m EMA정배열 숏 스킵 (EMA9={_pf(ema9)}>EMA21={_pf(ema21)}) | {smc_info}"
-            elif s_sig and _d1_regime_blocks(s_sig, kl_1d):
-                _regime_now = get_market_regime(kl_1d) if (kl_1d and _SMC_AVAILABLE) else "ranging"
-                st["watch_msg"] = f"D1레짐({_regime_now}) 역방향 스킵 [{s_sig}] | {smc_info}"
+                st["watch_msg"] = f"[{_sig_src}] 직전 손절 구조 재진입 차단 SL≈${_pf(_last_fail_sl)}"
             elif cooldown_left > 0:
-                st["watch_msg"] = f"쿨다운 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초 | {smc_info}"
+                st["watch_msg"] = f"[{_sig_src} {s_sig}] 쿨다운 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초"
             else:
-                # ── 5m 진입 타이밍 확인 ───────────────────────────
-                _5m_ok = True
-                if kl_5m and len(kl_5m) >= 10:
-                    _5m_cl   = [k["c"] for k in kl_5m]
-                    _5m_e9   = _ema(_5m_cl, 9)
-                    _5m_e21  = _ema(_5m_cl, 21)
-                    _5m_bull = kl_5m[-1]["c"] > kl_5m[-1]["o"] and _5m_e9 > _5m_e21
-                    _5m_bear = kl_5m[-1]["c"] < kl_5m[-1]["o"] and _5m_e9 < _5m_e21
-                    if s_sig == "long"  and not _5m_bull:
-                        st["watch_msg"] = f"5m 롱 미확인 (5mEMA9={_pf(_5m_e9)} EMA21={_pf(_5m_e21)}) | {smc_info}"
-                        _5m_ok = False
-                    elif s_sig == "short" and not _5m_bear:
-                        st["watch_msg"] = f"5m 숏 미확인 (5mEMA9={_pf(_5m_e9)} EMA21={_pf(_5m_e21)}) | {smc_info}"
-                        _5m_ok = False
-                if not _5m_ok:
-                    time.sleep(30); continue
-
                 # ── 진입 실행 ────────────────────────────────────
                 sig = s_sig  # SMC가 방향 결정
                 _lev     = _claude_cfg.get("leverage", 20)
                 _TP_CAP  = _claude_cfg.get("tp_max_pct", 15.0) / 100
-                _SL_CAP  = _claude_cfg.get("sl_cap_pct", 2.0)  / 100
+                # 심볼별 SL 상한 (없으면 전역 sl_cap_pct) — XRP처럼 변동성 큰 종목만 더 타이트하게
+                _sl_cap_map = _claude_cfg.get("sl_cap_pct_by_sym", {})
+                _SL_CAP  = _sl_cap_map.get(sym, _claude_cfg.get("sl_cap_pct", 2.0)) / 100
                 # 심볼별 tp_min_margin → 현물 이동폭 환산 (증거금 기준 % ÷ 레버리지)
                 _sym_tp_map = _claude_cfg.get("tp_min_margin_by_sym", {})
                 _tp_min_margin = _sym_tp_map.get(sym, _claude_cfg.get("tp_min_margin_pct", 0))
                 _TP_MIN  = _tp_min_margin / (100.0 * _lev) if _tp_min_margin > 0 else 0.0
-                _SL_MIN  = max(atr / price * 0.8, 0.003)   # 최소 SL: ATR×0.8 또는 0.3% 중 큰 값
+                # 최소 SL: ATR×배율 또는 0.3% 중 큰 값. 배율은 심볼별로 다르게 (변동성 큰 종목만 낮춰서
+                # 구조적 저점/고점이 좁아도 ATR이 억지로 넓히는 폭을 줄인다 — 백테스트는 이 ATR 확장이
+                # 없고 구조 레벨 그대로 쓰므로, 배율을 낮출수록 라이브가 백테스트에 가까워진다)
+                _sl_mult_map = _claude_cfg.get("sl_min_atr_mult_by_sym", {})
+                _sl_mult = _sl_mult_map.get(sym, _claude_cfg.get("sl_min_atr_mult", 0.8))
+                _SL_MIN  = max(atr / price * _sl_mult, 0.003)
 
                 # tp2 업그레이드: tp1보다 유리하고 price 대비 2% 이내면 tp1 대신 사용
                 _s_tp = s_tp
@@ -795,16 +737,16 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 if s_sl and _s_tp:
                     if sig == "long":
                         _tp_dist = min((_s_tp - price) / price, _TP_CAP) if _s_tp > price else atr / price * 2.0
-                        raw_sl   = (price - s_sl) / price if s_sl < price else atr / price * 0.8
+                        raw_sl   = (price - s_sl) / price if s_sl < price else atr / price * _sl_mult
                         _sl_dist = min(max(raw_sl, _SL_MIN), _SL_CAP)
                     else:
                         _tp_dist = min((price - _s_tp) / price, _TP_CAP) if _s_tp < price else atr / price * 2.0
-                        raw_sl   = (s_sl - price) / price if s_sl > price else atr / price * 0.8
+                        raw_sl   = (s_sl - price) / price if s_sl > price else atr / price * _sl_mult
                         _sl_dist = min(max(raw_sl, _SL_MIN), _SL_CAP)
                     smc_tag = f"[{_sig_src or 'SMC'}]"
                 else:
                     _tp_dist = min(atr / price * 2.0, _TP_CAP)
-                    _sl_dist = min(max(atr / price * 0.8, _SL_MIN), _SL_CAP)
+                    _sl_dist = min(max(atr / price * _sl_mult, _SL_MIN), _SL_CAP)
                     smc_tag = "[ATR폴백]"
 
                 # TP 목표가 최소 미달이면 진입 스킵 (_TP_MIN=0이면 비활성)
@@ -838,7 +780,8 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 _has_sw  = smc.get("sweep", False)
                 _rr_val  = round(_tp_dist / _sl_dist, 2) if _sl_dist else 0
                 _pat_key = (f"{_sig_src or 'SMC'}+{kz or 'no_kz'}+{_bos_t}+{_poi_type or 'no_poi'}"
-                            f"+OB{_ob_cnt}+FVG{_fvg_cnt}+{'sweep' if _has_sw else 'no_sweep'}")
+                            f"+OB{_ob_cnt}+FVG{_fvg_cnt}+{'sweep' if _has_sw else 'no_sweep'}"
+                            f"+{sym.split('-')[0]}")
                 _smc_ctx = {
                     "strategy":    _sig_src or "SMC",
                     "kill_zone":   kz,
@@ -860,8 +803,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 _pk_wr   = (_pk_stat.get("wins", 0) / _pk_tr * 100) if _pk_tr >= 3 else None
                 _pat_warn = f"[패턴경고:{_pk_wr:.0f}%WR/{_pk_tr}회] " if (_pk_wr is not None and _pk_wr < 30) else ""
 
-                conf_tags = (f"RSI={rsi:.1f} EMA={'정' if ema9>=ema21 else '역'} "
-                             f"BB={'하단권' if price<=bb_m else '상단권'}")
+                conf_tags = f"KZ={kz_name}"
                 sw_tag = ""
                 if smc.get("strong_high"): sw_tag += f" StrongH=${_pf(smc['strong_high'])}"
                 if smc.get("weak_low"):    sw_tag += f" WeakL=${_pf(smc['weak_low'])}"
@@ -984,8 +926,9 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     _last_close = time.time()
                     st["last_close"] = _last_close
                 else:
+                    _src_tag = f"[{_entry_ctx['strategy']}] " if _entry_ctx and _entry_ctx.get("strategy") else ""
                     st["watch_msg"] = (
-                        f"홀딩 {pos.upper()} @ ${_pf(entry)} "
+                        f"{_src_tag}홀딩 {pos.upper()} @ ${_pf(entry)} "
                         f"| 현재 ${_pf(price)} ({lev_pct:+.2f}%, {_lev}x) "
                         f"| TP ${_pf(tp_px)} SL ${_pf(sl_px)}"
                     )
@@ -1082,7 +1025,14 @@ class Handler(BaseHTTPRequestHandler):
             _sym = qs.get("sym", ["BTC-USDT-SWAP"])[0]
             self._j(_bots_st.get(_sym, _bots_st["BTC-USDT-SWAP"]))
         elif p == "/api/bots/status":
-            self._j({s: dict(st) for s, st in _bots_st.items()})
+            out = {}
+            for s, st in _bots_st.items():
+                d = dict(st)
+                w = _bots_want.get(s, {})
+                d["want_running"] = w.get("running", False)
+                d["watchdog_restarts_30m"] = len(w.get("restarts", []))
+                out[s] = d
+            self._j(out)
         elif p == "/api/claude/config":   self._j(_claude_cfg)
         elif p == "/api/ticker":
             try:
@@ -1108,125 +1058,77 @@ class Handler(BaseHTTPRequestHandler):
             sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
             self._j(_klines(sym, bar, lim))
 
-        elif p == "/api/indicators":
-            bar = qs.get("interval",["15m"])[0]
-            sym = qs.get("symbol",["BTC-USDT-SWAP"])[0]
-            kl  = _klines(sym=sym, bar=bar, n=80)
-            if len(kl) < 22:
-                self._j({"ema9":[],"ema21":[],"rsi":[],"atr":[],"bb_upper":[],"bb_lower":[],"bb_mid":[],"ts":[]}); return
-            hi = [k["h"] for k in kl]; lo = [k["l"] for k in kl]
-            cl = [k["c"] for k in kl]; ts = [k["t"] for k in kl]
-            e9s=[]; e21s=[]; rs=[]; atrs=[]; bbus=[]; bbls=[]; bbms=[]
-            for i in range(21, len(cl)):
-                sub_kl = kl[:i+1]
-                sub_hi = hi[:i+1]; sub_lo = lo[:i+1]; sub_cl = cl[:i+1]
-                e9s.append(round(_ema(sub_cl,9),2))
-                e21s.append(round(_ema(sub_cl,21),2))
-                rs.append(_rsi(sub_cl,14))
-                tr_list = [max(sub_hi[j]-sub_lo[j], abs(sub_hi[j]-sub_cl[j-1]),
-                               abs(sub_lo[j]-sub_cl[j-1])) for j in range(1,len(sub_kl))]
-                atrs.append(round(sum(tr_list[-14:])/14, 2) if len(tr_list)>=14 else 0)
-                bb20 = sub_cl[-20:]; bm = sum(bb20)/20
-                bstd = (sum((x-bm)**2 for x in bb20)/20)**0.5
-                bbus.append(round(bm+2*bstd,2)); bbls.append(round(bm-2*bstd,2))
-                bbms.append(round(bm,2))
-            self._j({"ema9":e9s,"ema21":e21s,"rsi":rs,"atr":atrs,
-                     "bb_upper":bbus,"bb_lower":bbls,"bb_mid":bbms,"ts":ts[21:]})
-
-        elif p == "/api/fvg":
-            # 15분봉 기준 최근 FVG 목록 + filled 상태 (실시간)
-            sym     = qs.get("symbol",["BTC-USDT-SWAP"])[0]
-            kl_fvg  = _klines(sym=sym, bar="15m", n=80)
-            kl_1h_f = _klines(sym=sym, bar="1H",  n=50)
-            cur_px  = kl_fvg[-1]["c"] if kl_fvg else 0
-            fvgs_f  = _detect_fvg(kl_fvg) if kl_fvg else []
-            recent_f = fvgs_f[-15:]
-            _update_fvg_filled(recent_f, cur_px)
-            trend_str = None
-            if kl_1h_f and len(kl_1h_f) >= 22:
-                cl_f = [k["c"] for k in kl_1h_f]
-                e9f = _ema(cl_f, 9); e21f = _ema(cl_f, 21)
-                if   e9f > e21f * 1.0002: trend_str = "bull"
-                elif e9f < e21f * 0.9998: trend_str = "bear"
-                else: trend_str = "neutral"
-            self._j({
-                "trend_1h": trend_str,
-                "fvgs": [{"type": fg["type"], "low": fg["low"], "high": fg["high"],
-                          "filled": fg["filled"],
-                          "formed_at": fg["formed_at"]} for fg in recent_f],
-                "unfilled_bull": sum(1 for fg in recent_f if fg["type"]=="bull" and not fg["filled"]),
-                "unfilled_bear": sum(1 for fg in recent_f if fg["type"]=="bear" and not fg["filled"]),
-                "current_price": cur_px,
-            })
+        elif p == "/api/fills":
+            # 거래소 실제 주문 이력 (체결 완료분) — 봇 내부 로그가 아니라 딥코인 원장이 기준
+            n = min(int(qs.get("n", ["50"])[0]), 100)
+            r = _dc_request("GET", f"/deepcoin/trade/orders-history?instType=SWAP&limit={n}")
+            if str(r.get("code")) != "0":
+                self._j({"ok": False, "code": r.get("code"), "msg": r.get("msg"), "orders": []}); return
+            out = []
+            for o in r.get("data") or []:
+                if o.get("state") != "filled":
+                    continue
+                sym  = o.get("instId", "")
+                side, ps = o.get("side"), o.get("posSide")
+                avg  = float(o.get("avgPx") or 0); sz = float(o.get("accFillSz") or 0)
+                lev  = float(o.get("lever") or 0) or None
+                pnl  = float(o.get("pnl") or 0); fee = float(o.get("fee") or 0)
+                ct   = _CONTRACT_SZ.get(sym, 1.0)
+                margin = (sz * ct * avg / lev) if (lev and avg) else None
+                is_close = (side == "sell" and ps == "long") or (side == "buy" and ps == "short")
+                ts_ms = int(o.get("fillTime") or o.get("uTime") or 0)
+                kst = datetime.fromtimestamp(ts_ms / 1000, tz=timezone(timedelta(hours=9))) if ts_ms else None
+                out.append({
+                    "ts": kst.strftime("%m-%d %H:%M") if kst else "-",
+                    "ts_ms": ts_ms, "sym": sym, "ordId": o.get("ordId"),
+                    "action": ("CLOSE_" if is_close else "OPEN_") + (ps or "").upper(),
+                    "px": avg, "sz": sz, "lever": lev, "ordType": o.get("ordType"),
+                    "pnl": pnl, "fee": fee,
+                    "margin_pct": round((pnl - fee) / margin * 100, 2) if (margin and is_close) else None,
+                })
+            out.sort(key=lambda x: x["ts_ms"], reverse=True)
+            self._j({"ok": True, "orders": out})
         elif p == "/api/logs":
             n = int(qs.get("n",["60"])[0])
             self._j(list(reversed(_logs[-n:])))
         elif p == "/api/daily":  self._j(_daily)
-        elif p == "/api/debrief":
-            sym   = qs.get("sym", qs.get("symbol", ["BTC-USDT-SWAP"]))[0]
+        elif p == "/api/gates":
+            # 전략 밖 리스크 게이트 상태 (선택 심볼) — 라이브 루프의 진입 게이트와 1:1
+            sym = qs.get("sym", ["BTC-USDT-SWAP"])[0]
             if sym not in _bots_st: sym = "BTC-USDT-SWAP"
-            _st   = _bots_st[sym]
-            kl    = _klines(sym=sym, n=60)
-            kl_1h = _klines(sym=sym, bar="1H", n=25)
-            ind   = _ind(kl) if kl else {}
-            kl_1d = _klines(sym=sym, bar="1D", n=120)
-            smc   = get_ict_signal(kl, h1_kl=kl_1h, d1_kl=kl_1d) if (_SMC_AVAILABLE and kl) else {"signal": None}
-
-            price  = ind.get("price", 0)
-            rsi    = ind.get("rsi", 50)
-            bb_u   = ind.get("bb_upper", price)
-            bb_l   = ind.get("bb_lower", price)
-            bb_m   = ind.get("bb_mid",   price)
-            ema9   = ind.get("ema9",  price)
-            ema21  = ind.get("ema21", price)
-            atr    = ind.get("atr",   0)
-            s_sig  = smc.get("signal")
-            rsi_ok = not ((s_sig == "long" and rsi > 68) or (s_sig == "short" and rsi < 32))
-            bb_ok  = not ((s_sig == "long"  and ema9 < ema21) or
-                          (s_sig == "short" and ema9 > ema21))
+            _st = _bots_st[sym]
+            ok, msg = _can_trade("claude-" + _st.get("mode", "real"))
             cooldown_left = max(0, _st.get("last_close", 0) + _claude_cfg["cooldown"] - time.time())
-            kz_now = get_kill_zone()
-
-            filters = [
-                {"name": "킬존",        "pass": kz_now in ("london","newyork"), "value": kz_now or "킬존외"},
-                {"name": "SMC 시그널",  "pass": bool(s_sig),        "value": s_sig or "없음"},
-                {"name": "RSI 필터",    "pass": rsi_ok,              "value": f"{rsi:.1f}"},
-                {"name": "BB+EMA 필터", "pass": bb_ok,               "value": f"${_px_fmt(price, sym)} mid=${_px_fmt(bb_m, sym)} EMA{'정배열' if ema9>=ema21 else '역배열'}"},
-                {"name": "쿨다운",      "pass": cooldown_left <= 0,  "value": f"잔여 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초" if cooldown_left > 0 else "완료"},
-            ]
-
+            day = _dst(_kst_day(), "claude-" + _st.get("mode", "real"))
             self._j({
                 "sym": sym,
-                "smc": {
-                    "signal":         s_sig,
-                    "bos_dir":        smc.get("bos_dir"),
-                    "sl":             smc.get("sl"),
-                    "tp1":            smc.get("tp1"),
-                    "reason":         smc.get("reason", ""),
-                    "bull_ob_count":  smc.get("bull_ob_count", 0),
-                    "bear_ob_count":  smc.get("bear_ob_count", 0),
-                    "bull_fvg_count": smc.get("bull_fvg_count", 0),
-                    "bear_fvg_count": smc.get("bear_fvg_count", 0),
-                    "sweep":          smc.get("sweep", False),
-                },
-                "indicators": {
-                    "price": round(price,2), "rsi": round(rsi,1),
-                    "ema9":  round(ema9,1),  "ema21": round(ema21,1),
-                    "bb_upper": round(bb_u,1), "bb_lower": round(bb_l,1),
-                    "bb_mid": round(bb_m,1), "atr": round(atr,1),
-                },
-                "filters":   filters,
-                "watch_msg": _st.get("watch_msg", ""),
-                "position":  _st.get("position"),
-                "entry":     _st.get("entry"),
-                "tp_px":     _st.get("tp_px"),
-                "sl_px":     _st.get("sl_px"),
-                "smc_events":  sorted(
-                    smc.get("events_15m", []) + smc.get("events_1h", []),
-                    key=lambda x: x["time_ms"], reverse=True
-                )[:20],
-                "smc_log": list(reversed(_smc_event_log[sym][-20:])),
+                "gates": [
+                    {"name": "일 한도", "pass": ok,
+                     "value": msg or f"손익 {day['pnl_pct']:+.2f}% / 거래 {day['trades']}회 / 손절 {day['losses']}회"},
+                    {"name": "쿨다운", "pass": cooldown_left <= 0,
+                     "value": f"잔여 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초" if cooldown_left > 0 else "없음"},
+                    {"name": "킬존(참고)", "pass": True,
+                     "value": {"london":"런던","newyork":"뉴욕","asian":"아시안"}.get(get_kill_zone(), "킬존외") + " — MTF·킬존NY 전략만 영향"},
+                ],
+                "limits": {"rr_min": _claude_cfg.get("rr_min"), "sl_cap_pct": _claude_cfg.get("sl_cap_pct"),
+                           "tp_max_pct": _claude_cfg.get("tp_max_pct"),
+                           "tp_min_margin": _claude_cfg.get("tp_min_margin_by_sym", {}).get(sym, _claude_cfg.get("tp_min_margin_pct", 0))},
             })
+        elif p == "/api/regime":
+            # 심볼별 일봉 시장국면 + 1H 추세 (라이브 _klines 캐시 재사용, 30초 캐시)
+            out = {}
+            for sym in _bots_st:
+                try:
+                    kl_1d = _klines(sym=sym, bar="1D", n=120)
+                    kl_1h = _klines(sym=sym, bar="1H", n=25)
+                    out[sym] = {
+                        "regime":   get_market_regime(kl_1d) if kl_1d else "unknown",
+                        "h1_trend": get_htf_trend(kl_1h) if kl_1h else "unknown",
+                        "price":    kl_1d[-1]["c"] if kl_1d else None,
+                    }
+                except Exception as e:
+                    out[sym] = {"regime": "unknown", "h1_trend": "unknown", "price": None, "error": str(e)}
+            self._j(out)
         elif p == "/api/pattern-stats":
             # 패턴별 학습 통계 (승률 순 정렬)
             stats = []
@@ -1297,12 +1199,8 @@ class Handler(BaseHTTPRequestHandler):
                 if _sym not in _bots_st: continue
                 if _sym not in _active_syms_cfg:
                     skipped.append(_sym); continue
-                _bots_st[_sym]["running"] = False
-                _bots_gen[_sym] += 1
-                _t = threading.Thread(target=_run_claude_bot, daemon=True,
-                    kwargs={"mode": mode, "gen": _bots_gen[_sym], "sym": _sym})
-                _bots_thr[_sym] = _t
-                _t.start()
+                _bots_want[_sym] = {"running": True, "mode": mode, "restarts": []}
+                _spawn_bot_thread(_sym, mode)
                 started.append(_sym)
             self._j({"ok": True, "msg": f"Claude봇({mode}) 시작", "syms": started,
                      "skipped_not_active": skipped})
@@ -1312,6 +1210,7 @@ class Handler(BaseHTTPRequestHandler):
             if isinstance(req_syms, str): req_syms = [req_syms]
             for _sym in req_syms:
                 if _sym in _bots_st: _bots_st[_sym]["running"] = False
+                if _sym in _bots_want: _bots_want[_sym]["running"] = False
             self._j({"ok":True,"msg":"Claude봇 중지","syms":req_syms})
 
         elif p == "/api/claude/config":
