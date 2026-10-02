@@ -1,6 +1,6 @@
 {
   "leverage": 20,
-  "risk_pct": 10.0,
+  "risk_pct": 5.0,
   "size_pct": 40,
   "cooldown": 900,
   "max_daily_trades": 7,
@@ -9,19 +9,41 @@
   "max_daily_losses": 3,
   "rsi_long_max": 60,
   "rsi_short_min": 40,
-  "rr_min": 2.5,
+  "rr_min": 1.2,
   "sl_cap_pct": 2.0,
+  "sl_cap_pct_by_sym": {
+    "XRP-USDT-SWAP": 1.6
+  },
+  "sl_min_atr_mult": 1.2,
+  "sl_min_atr_mult_by_sym": {
+    "XRP-USDT-SWAP": 0.6
+  },
   "tp_min_margin_pct": 0,
   "tp_max_pct": 15.0,
+  "tp_max_atr_mult": 3.0,
+  "tp_fvg_block": true,
   "tp_min_margin_by_sym": {
-    "BTC-USDT-SWAP": 5.0,
-    "ETH-USDT-SWAP": 3.0,
-    "XRP-USDT-SWAP": 3.0
+    "BTC-USDT-SWAP": 10.0,
+    "ETH-USDT-SWAP": 10.0,
+    "XRP-USDT-SWAP": 10.0
   },
   "active_symbols": [
     "BTC-USDT-SWAP",
-    "ETH-USDT-SWAP"
+    "ETH-USDT-SWAP",
+    "XRP-USDT-SWAP"
   ],
-  "version": 11,
-  "last_tuned": "2026-09-23 KST (수동: 일손실 3→25%, 손절 2→3회, XRP 비활성)"
+  "legacy_chain_enabled": true,
+  "trend": {
+    "enabled": true,
+    "symbols": [
+      "BTC-USDT-SWAP",
+      "ETH-USDT-SWAP",
+      "XRP-USDT-SWAP"
+    ],
+    "risk_pct": 2.0,
+    "allow_short": false,
+    "liq_mult": 2.0
+  },
+  "version": 15,
+  "last_tuned": "2026-10-02 KST (TP/SL 시간축 정합 수정. 09-22~10-01 실거래 TP_HIT 0건/SL_HIT 12건 원인: TP는 15시간치 스윙하이에서 뽑고 SL은 15분 ATR 0.8배로 잡아 시간축이 어긋남. 수정: TP에 ATR 3.0배 상한 신설(tp_max_atr_mult), TP 앞 역방향 FVG 절단(tp_fvg_block), SL 하한 0.8→1.2 ATR로 노이즈 밖 이동. TP가 멀면 거래를 막는 게 아니라 TP를 낮춰서 진행시킨다. rr_min 2.5→1.2: 랜덤워크에서 TP선도달 확률=SL/(SL+TP)라 RR은 기대값을 못 바꾸고, 높은 RR 요구가 오히려 'TP 먼 신호만 통과'를 만들어 12연패의 원인이 됐다. 차단 기준은 RR이 아니라 수수료 바닥으로 이전 — tp_min_margin_by_sym 5/3/3→10(=가격 0.50%, 왕복수수료 0.12%의 4배). XRP는 sl_cap 0.8%가 새 SL하한보다 좁아 수정이 무효화되므로 1.6%로 동반 상향. 슬리피지는 33건 실측 중앙값 -0.013%로 체계적 비용 아님(급락 꼬리위험만 존재)"
 }

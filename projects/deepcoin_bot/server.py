@@ -17,13 +17,14 @@ try:
     from ict_engine import (get_ict_signal, get_htf_trend, get_market_regime,
                              get_ote_signal, get_mtf_signal, get_killzone_signal,
                              get_breaker_signal)
-    from smc_engine import find_swings, get_kill_zone, get_asian_range
+    from smc_engine import find_swings, get_kill_zone, get_asian_range, find_fvg
     get_smc_signal = get_ict_signal  # ICT가 SMC superset
     _SMC_AVAILABLE = True
 except ImportError:
     _SMC_AVAILABLE = False
     def get_kill_zone(*a, **kw): return None
     def get_asian_range(*a, **kw): return None
+    def find_fvg(*a, **kw): return ([], [])
     def get_ict_signal(*a, **kw): return {"signal": None}
     def get_ote_signal(*a, **kw): return {"signal": None}
     def get_mtf_signal(*a, **kw): return {"signal": None}
@@ -67,6 +68,15 @@ try:
 except ImportError:
     _WEIGHTS_AVAILABLE = False
     def _get_weight(key): return 1.0
+
+# ── 일봉+4시간봉 롱 추세돌파 (2026-10-01 재검증에서 채택). 신호 로직은 backtest/strategies_v2.py 재사용 ──
+try:
+    import trend_live as _TL
+    _TL_OK = _TL.AVAILABLE
+    _TL_ERR = _TL.IMPORT_ERROR
+except Exception as _tl_e:
+    _TL = None; _TL_OK = False; _TL_ERR = str(_tl_e)
+_trend_saved = {}   # 재시작 복원용: persist.json의 심볼별 추세 포지션 컨텍스트
 
 # ── 환경변수 ───────────────────────────────────────────────────────
 _env = {}
@@ -176,6 +186,7 @@ def _persist_load():
             _pattern_stats = d.get("pattern_stats", {})
             for sym, cb in (d.get("bot_states") or {}).items():
                 st = _bots_st.get(sym)
+                if cb.get("trend_ctx"): _trend_saved[sym] = cb["trend_ctx"]
                 if not st or not cb.get("pos"): continue
                 st.update({
                     "position": cb["pos"], "entry": cb.get("entry", 0.0),
@@ -199,6 +210,7 @@ def _persist_save():
                 "mode":     st.get("mode", "sim"),
                 "tp_px":    st.get("tp_px"),
                 "sl_px":    st.get("sl_px"),
+                "trend_ctx": st.get("trend_ctx"),
             } for sym, st in _bots_st.items()
         }
         with open(_PERSIST, "w", encoding="utf-8") as f:
@@ -223,14 +235,24 @@ _claude_cfg = {
     "risk_pct":               10.0,
     "size_pct":               40,
     "cooldown":               900,
-    "rr_min":                 2.5,
+    "rr_min":                 1.2,
     "sl_cap_pct":             2.0,
     "tp_max_pct":             15.0,
+    # TP 상한 ATR 배수. tp_max_pct(15%)는 사실상 상한 역할을 못 해서 TP가 3.3 ATR까지 벌어졌다.
+    "tp_max_atr_mult":        3.0,
+    "tp_max_atr_mult_by_sym": {},
+    # TP 앞 역방향 FVG에서 TP를 끊을지 여부
+    "tp_fvg_block":           True,
     "tp_min_margin_pct":      0,
     "tp_min_margin_by_sym":   {},
     "sl_cap_pct_by_sym":      {},
-    "sl_min_atr_mult":        0.8,
+    "sl_min_atr_mult":        1.2,
     "sl_min_atr_mult_by_sym": {},
+    # 기존 OTE→MTF 체인 사용 여부 (2026-10-01 정직한 백테스트에서 거래당 -0.3~-0.6R — 끄는 걸 권장)
+    "legacy_chain_enabled":   True,
+    # 일봉+4시간봉 롱 추세돌파. risk_pct는 '1회 손절 시 계좌 손실 %' (기존 체인 risk_pct와 별개)
+    "trend": {"enabled": False, "symbols": ["BTC-USDT-SWAP"], "risk_pct": 2.0,
+              "allow_short": False, "liq_mult": 2.0},
 }
 
 # ── tuning.json 자동 반영 ─────────────────────────────────────────
@@ -254,7 +276,9 @@ def _load_tuning():
         for k in ("leverage", "risk_pct", "size_pct", "cooldown",
                   "rr_min", "sl_cap_pct", "tp_max_pct",
                   "tp_min_margin_pct", "tp_min_margin_by_sym",
-                  "sl_cap_pct_by_sym", "sl_min_atr_mult", "sl_min_atr_mult_by_sym"):
+                  "sl_cap_pct_by_sym", "sl_min_atr_mult", "sl_min_atr_mult_by_sym",
+                  "tp_max_atr_mult", "tp_max_atr_mult_by_sym", "tp_fvg_block",
+                  "legacy_chain_enabled", "trend"):
             if k in t: _claude_cfg[k] = t[k]
         if isinstance(t.get("active_symbols"), list):
             _active_syms_cfg = [s for s in t["active_symbols"] if s in _ACTIVE_SYMS]
@@ -617,6 +641,8 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     _pos_size_pct  = None  # 진입 시 실제 투입 증거금 비율 (자본 기준 PnL 계산용)
     _ev_log        = _smc_event_log[sym]
     _pf            = lambda v: _px_fmt(v, sym)
+    _trend_ctx     = None  # 추세돌파 포지션 컨텍스트 (추적 손절·타임스탑·레버리지). None이면 기존 체인 포지션
+    _pos_lev       = None  # 이 포지션의 실제 레버리지 (추세 전략은 손절폭에 따라 거래별로 다름)
 
     # ── 실제 모드: DeepCoin 포지션 동기화 ─────────────────────────
     if mode == "real" and pos is None:
@@ -632,10 +658,23 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                         _dc_sl   = float(_dp.get("slTriggerPx", 0) or 0) or None
                         pos = _dc_side; entry = _dc_avg
                         tp_px = _dc_tp; sl_px = _dc_sl
+                        # 추세돌파 포지션이면 저장된 컨텍스트(추적 손절 등)를 복원 — 진입가가 1% 이내로 일치할 때만
+                        _sv = _trend_saved.get(sym)
+                        if _sv and _dc_avg and abs(_sv.get("entry", 0) - _dc_avg) / _dc_avg < 0.01:
+                            _trend_ctx = _sv
+                            _pos_lev = _sv.get("lev")
+                            _pos_opened_at = _sv.get("opened_ts", 0.0)
+                            _pos_size_pct = _sv.get("size_pct")
+                            _entry_ctx = {"strategy": "TREND-" + str(_sv.get("tag", "")),
+                                          "pattern_key": f"TREND+{_sv.get('tag','')}+{sym.split('-')[0]}"}
+                            _dc_sl = _sv.get("sl") or _dc_sl   # 추적 손절 반영
                         st.update({"position": pos, "entry": entry,
-                                   "tp_px": tp_px, "sl_px": sl_px,
-                                   "watch_msg": f"[DC복원] {_dc_side.upper()} @ ${_pf(_dc_avg)} sz={_dc_sz}"})
-                        print(f"[DC복원:{sym}] {_dc_side.upper()} {_dc_sz}계약 @ ${_pf(_dc_avg)}")
+                                   "tp_px": tp_px, "sl_px": _dc_sl,
+                                   "watch_msg": f"[DC복원] {_dc_side.upper()} @ ${_pf(_dc_avg)} sz={_dc_sz}"
+                                                + (" [추세 컨텍스트 복원]" if _trend_ctx else "")})
+                        sl_px = _dc_sl
+                        print(f"[DC복원:{sym}] {_dc_side.upper()} {_dc_sz}계약 @ ${_pf(_dc_avg)}"
+                              + (f" 추세 컨텍스트 복원(sl={_dc_sl})" if _trend_ctx else ""))
                         break
         except Exception as _e:
             print(f"[DC포지션복원] 오류: {_e}")
@@ -668,8 +707,27 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
         cooldown_left = max(0, _last_close + _claude_cfg["cooldown"] - time.time())
 
         if pos is None:
-            # ── 멀티전략 체인 (OTE→MTF→킬존NY→Breaker). 킬존/D1레짐/1H추세/RR은 각 전략 안에서 판단 ──
-            smc, _sig_src, _chain = _multi_strategy_signal(kl, kl_1h, kl_1d, kl_5m)
+            # ── 추세돌파 (일봉+4시간봉, 롱). 1H 봉이 마감된 직후에만 판단 — 미완성 캔들로 판단하지 않는다 ──
+            _tcfg     = _claude_cfg.get("trend") or {}
+            _trend_on = bool(_TL_OK and _tcfg.get("enabled") and sym in (_tcfg.get("symbols") or []))
+            _legacy_on = bool(_claude_cfg.get("legacy_chain_enabled", True))
+            _tres, _tsig = None, None
+            if _trend_on:
+                try:
+                    _tres = _TL.evaluate(sym, allow_short=bool(_tcfg.get("allow_short", False)))
+                except Exception as _te:
+                    _tres = {"ok": False, "reason": f"추세 평가 오류 {_te}", "signal": None}
+                _tsig = _tres.get("signal")
+                st["trend"] = {k: _tres.get(k) for k in ("ok", "bar_t", "bar_ct", "bar_close", "regime", "regime_label",
+                                                         "adx4", "shock", "levels", "signal", "reason", "error")}
+            elif not _TL_OK and _tcfg.get("enabled"):
+                st["trend"] = {"ok": False, "reason": f"추세 모듈 비활성: {_TL_ERR}"}
+
+            # ── 기존 멀티전략 체인 (OTE→MTF). 끄면(legacy_chain_enabled=false) 평가하지 않는다 ──
+            if _legacy_on:
+                smc, _sig_src, _chain = _multi_strategy_signal(kl, kl_1h, kl_1d, kl_5m)
+            else:
+                smc, _sig_src, _chain = {"signal": None, "reason": "기존 체인 비활성"}, None, {}
             st["chain"] = {n: {"signal": r.get("signal"), "reason": r.get("reason", "")}
                            for n, r in _chain.items()}
             # 심볼별 이벤트 로그 업데이트 (최근 이벤트만 추가)
@@ -695,11 +753,58 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
             _same_sl = (_last_fail_sl > 0 and s_sl and
                         abs(s_sl - _last_fail_sl) / max(_last_fail_sl, 1) < 0.002)
 
+            # ── 추세돌파 진입 (게이트: 일 한도 · 쿨다운만. 손절폭이 크므로 기존 SL상한/RR/TP 게이트는 쓰지 않는다) ──
+            _trend_handled = False
+            if _tsig and ok and cooldown_left <= 0:
+                _trend_handled = True
+                _TL.consume(sym, _tres["bar_t"])   # 성공/실패와 무관하게 이 봉 신호는 한 번만 시도
+                _sd      = _tsig["stop_dist"]
+                _t_lev   = _TL.pick_leverage(_sd, max_lev=_claude_cfg.get("leverage", 20),
+                                             liq_mult=float(_tcfg.get("liq_mult", 2.0)))
+                _t_risk  = float(_tcfg.get("risk_pct", 2.0))
+                _t_marg  = _TL.margin_pct(_t_risk, _sd, _t_lev)
+                sig      = "long" if _tsig["dir"] == 1 else "short"
+                _t_sl    = _px_round(price * (1 - _tsig["dir"] * _sd), sym)
+                reason = (f"추세돌파 {sig.upper()} [{_tsig['tag']}] 일봉국면={_tres.get('regime_label')} "
+                          f"| 손절 {_sd*100:.2f}% 레버리지 {_t_lev}x 증거금 {_t_marg:.1f}% (계좌리스크 {_t_risk}%) "
+                          f"| 추적 {_tsig['trail_dist']:.6g} [SL:${_pf(_t_sl)}]")
+                _ok_entry = True
+                if mode == "real":
+                    _set_leverage(_t_lev, sym=sym)
+                    _t_sz = _calc_sz(price, _t_marg, _t_lev, sym=sym)
+                    print(f"[추세진입:{sym}] {sig} 손절{_sd*100:.2f}% lev={_t_lev}x 증거금{_t_marg:.2f}% → {_t_sz}계약")
+                    ord_r = _place_order("buy" if sig == "long" else "sell", sig, _t_sz,
+                                         tp_px=None, sl_px=_t_sl, sym=sym)
+                    if ord_r.get("code") not in ("0", 0):
+                        _ok_entry = False
+                        reason += f" [주문실패:{ord_r.get('msg','')}]"
+                        st["watch_msg"] = reason
+                        time.sleep(60)
+                if _ok_entry:
+                    pos = sig; entry = price; sl_px = _t_sl; tp_px = None
+                    _pos_opened_at = time.time(); _pos_lev = _t_lev; _pos_size_pct = _t_marg
+                    _trend_ctx = _TL.new_ctx(_tsig, entry, _t_lev, size_pct=_t_marg)
+                    _trend_ctx["sl"] = _trend_ctx["init_sl"] = sl_px
+                    _entry_ctx = {"strategy": "TREND-" + _tsig["tag"], "kill_zone": None,
+                                  "pattern_key": f"TREND+{_tsig['tag']}+{sym.split('-')[0]}",
+                                  "rr": None, "regime": _tres.get("regime_label")}
+                    _rec(claude_mode, f"ENTER_{sig.upper()}", price, ind, reason, tp_px=None, sl_px=sl_px,
+                         signal_src="Trend", smc_ctx=_entry_ctx, sym=sym)
+                    st["watch_msg"] = reason
+            elif _tsig and not ok:
+                st["watch_msg"] = f"[추세 {_tsig['tag']}] 신호 있음 — 일 한도: {stop_msg}"
+
             # ── 리스크 게이트만 (시그널 필터는 전략 함수 안에 있음): 일한도 → 시그널 → 직전SL → 쿨다운 ──
-            if not ok:
+            if _trend_handled:
+                pass
+            elif not ok:
                 st["watch_msg"] = f"일 한도: {stop_msg}"
             elif not s_sig:
-                st["watch_msg"] = f"시그널 없음 [{kz_name}]{asian_tag} — {_chain_brief}"
+                _tmsg = f"[추세] {_tres.get('reason')}" if _tres else ""
+                if _legacy_on:
+                    st["watch_msg"] = f"시그널 없음 [{kz_name}]{asian_tag} — {_chain_brief}" + (f" | {_tmsg}" if _tmsg else "")
+                else:
+                    st["watch_msg"] = _tmsg or "시그널 없음 (기존 체인 비활성, 추세 전략 대기)"
             elif _same_sl:
                 st["watch_msg"] = f"[{_sig_src}] 직전 손절 구조 재진입 차단 SL≈${_pf(_last_fail_sl)}"
             elif cooldown_left > 0:
@@ -720,8 +825,13 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 # 구조적 저점/고점이 좁아도 ATR이 억지로 넓히는 폭을 줄인다 — 백테스트는 이 ATR 확장이
                 # 없고 구조 레벨 그대로 쓰므로, 배율을 낮출수록 라이브가 백테스트에 가까워진다)
                 _sl_mult_map = _claude_cfg.get("sl_min_atr_mult_by_sym", {})
-                _sl_mult = _sl_mult_map.get(sym, _claude_cfg.get("sl_min_atr_mult", 0.8))
-                _SL_MIN  = max(atr / price * _sl_mult, 0.003)
+                _sl_mult = _sl_mult_map.get(sym, _claude_cfg.get("sl_min_atr_mult", 1.2))
+                _SL_MIN  = max(atr / price * _sl_mult, 0.0035)
+                # TP 상한(ATR 배수): 구조 레벨은 최대 15시간치 스윙에서 나오는데 SL은 15분 ATR 기준이라
+                # 시간축이 안 맞는다. 15분봉에서 도달 가능한 거리로 TP를 묶는다 (0이면 비활성).
+                _tp_atr_mult_map = _claude_cfg.get("tp_max_atr_mult_by_sym", {})
+                _tp_atr_mult = _tp_atr_mult_map.get(sym, _claude_cfg.get("tp_max_atr_mult", 3.0))
+                _TP_ATR_CAP = (atr / price * _tp_atr_mult) if _tp_atr_mult > 0 else 1e9
 
                 # tp2 업그레이드: tp1보다 유리하고 price 대비 2% 이내면 tp1 대신 사용
                 _s_tp = s_tp
@@ -736,31 +846,64 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 # SL/TP: SMC 구조적 레벨 우선 → 없으면 ATR 기반
                 if s_sl and _s_tp:
                     if sig == "long":
-                        _tp_dist = min((_s_tp - price) / price, _TP_CAP) if _s_tp > price else atr / price * 2.0
+                        _tp_dist = min((_s_tp - price) / price, _TP_CAP, _TP_ATR_CAP) if _s_tp > price else atr / price * 2.0
                         raw_sl   = (price - s_sl) / price if s_sl < price else atr / price * _sl_mult
                         _sl_dist = min(max(raw_sl, _SL_MIN), _SL_CAP)
                     else:
-                        _tp_dist = min((price - _s_tp) / price, _TP_CAP) if _s_tp < price else atr / price * 2.0
+                        _tp_dist = min((price - _s_tp) / price, _TP_CAP, _TP_ATR_CAP) if _s_tp < price else atr / price * 2.0
                         raw_sl   = (s_sl - price) / price if s_sl > price else atr / price * _sl_mult
                         _sl_dist = min(max(raw_sl, _SL_MIN), _SL_CAP)
                     smc_tag = f"[{_sig_src or 'SMC'}]"
                 else:
-                    _tp_dist = min(atr / price * 2.0, _TP_CAP)
+                    _tp_dist = min(atr / price * 2.0, _TP_CAP, _TP_ATR_CAP)
                     _sl_dist = min(max(atr / price * _sl_mult, _SL_MIN), _SL_CAP)
                     smc_tag = "[ATR폴백]"
 
-                # TP 목표가 최소 미달이면 진입 스킵 (_TP_MIN=0이면 비활성)
-                if _TP_MIN > 0 and _tp_dist < _TP_MIN:
+                # SL 상한이 하한보다 좁으면 ATR 확대가 통째로 무효화된다(min(max(raw,floor),cap) 순서상
+                # cap이 항상 이김). 노이즈 밖으로 빼려던 SL이 조용히 노이즈 안으로 돌아오므로 진입을 막는다.
+                if _SL_CAP < _SL_MIN:
                     st["watch_msg"] = (
-                        f"TP목표 짧음 스킵 {smc_tag} TP={_tp_dist*100:.2f}% < 최소{_TP_MIN*100:.0f}%"
+                        f"SL상한<하한 스킵 {smc_tag} cap={_SL_CAP*100:.2f}% < min={_SL_MIN*100:.2f}%"
                     )
                     time.sleep(30); continue
 
-                # 손익비 불량이면 진입 안 함
-                _rr_min = _claude_cfg.get("rr_min", 2.5)
-                if _tp_dist < _sl_dist * _rr_min:
+                # TP 앞 역방향 FVG(미체결 갭) 절단: 롱이면 위쪽 하락FVG, 숏이면 아래쪽 상승FVG가 1차 벽이다.
+                # 그 너머를 TP로 잡으면 벽에서 되돌림 맞고 SL까지 끌려간다(09-30 BTC 건이 정확히 이 케이스).
+                if _claude_cfg.get("tp_fvg_block", True):
+                    try:
+                        _b_fvg, _d_fvg = find_fvg(kl)
+                    except Exception:
+                        _b_fvg, _d_fvg = [], []
+                    _tp_raw_px = price * (1 + _tp_dist) if sig == "long" else price * (1 - _tp_dist)
+                    if sig == "long":
+                        _walls = [f["bot"] for f in _d_fvg if price < f["bot"] < _tp_raw_px]
+                        if _walls:
+                            _tp_dist = max((min(_walls) * 0.999 - price) / price, 0.0)
+                            smc_tag += "[FVG절단]"
+                    else:
+                        _walls = [f["top"] for f in _b_fvg if _tp_raw_px < f["top"] < price]
+                        if _walls:
+                            _tp_dist = max((price - max(_walls) * 1.001) / price, 0.0)
+                            smc_tag += "[FVG절단]"
+
+                # 비용 바닥: TP가 왕복 수수료(≈0.12%)를 유의미하게 못 넘으면 먹을 게 없다.
+                # FVG 벽이 코앞이라 TP가 눌린 경우가 여기서 걸린다 — RR이 아니라 이게 진짜 차단 기준.
+                if _TP_MIN > 0 and _tp_dist < _TP_MIN:
                     st["watch_msg"] = (
-                        f"손익비 불량 스킵 {smc_tag} TP={_tp_dist*100:.2f}% SL={_sl_dist*100:.2f}%"
+                        f"TP<비용바닥 스킵 {smc_tag} TP={_tp_dist*100:.2f}% < {_TP_MIN*100:.2f}%"
+                    )
+                    time.sleep(30); continue
+
+                # RR 하한은 느슨하게 둔다. 무편향 랜덤워크에서 TP 선도달 확률은 SL/(SL+TP)라
+                # RR이 높든 낮든 기대값은 같다 — RR 자체는 엣지를 만들지 않는다. 높은 RR을 요구하면
+                # TP가 먼 신호만 통과시키게 되는데, 그게 TP_HIT 0건/SL_HIT 12건을 만든 원인이었다.
+                # 진짜 바닥은 수수료이고 그건 위 _TP_MIN이 담당한다.
+                _rr_min = _claude_cfg.get("rr_min", 1.2)
+                if _tp_dist < _sl_dist * _rr_min:
+                    _rr_now = (_tp_dist / _sl_dist) if _sl_dist else 0
+                    st["watch_msg"] = (
+                        f"손익비 불량 스킵 {smc_tag} TP={_tp_dist*100:.2f}% SL={_sl_dist*100:.2f}% "
+                        f"RR={_rr_now:.2f}<{_rr_min}"
                     )
                     time.sleep(30); continue
                 if sig == "long":
@@ -855,7 +998,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     st["watch_msg"] = reason
 
         elif pos:
-            _lev = _claude_cfg.get("leverage", 20)
+            _lev = _pos_lev or _claude_cfg.get("leverage", 20)   # 추세 포지션은 거래별 레버리지
             # ── Real 모드: DeepCoin 실제 포지션 확인 (진입 후 90초 유예) ──
             if mode == "real" and time.time() - _pos_opened_at > 90:
                 try:
@@ -899,8 +1042,21 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 lev_pct  = round(raw_pct * _lev, 4)
                 close_reason = None
 
+                # 추세돌파 포지션: 마감된 1H 봉으로 추적 손절 갱신 → 현재가로 손절/타임스탑 판단 (거래소엔 최초 손절만 걸려 있음)
+                if _trend_ctx:
+                    try:
+                        _tm = _TL.evaluate(sym, allow_short=bool((_claude_cfg.get("trend") or {}).get("allow_short", False)))
+                        st["trend"] = {k: _tm.get(k) for k in ("ok", "bar_t", "bar_ct", "bar_close", "regime", "regime_label",
+                                                               "adx4", "shock", "levels", "reason", "error")}
+                    except Exception as _te:
+                        print(f"[추세갱신:{sym}] 오류 {_te}")
+                    _tkind, _tmsg = _TL.manage(_trend_ctx, price, h1=_TL.closed_h1(sym))
+                    sl_px = _px_round(_trend_ctx["sl"], sym)
+                    if _tkind:
+                        close_reason = f"{_tmsg} {lev_pct:+.2f}% ({_lev}x)"
+                        action = {"SL": "SL_HIT", "TRAIL": "TRAIL_EXIT", "TIME": "TIME_EXIT"}[_tkind]
                 # SL
-                if sl_px and ((pos == "long"  and price <= sl_px) or
+                elif sl_px and ((pos == "long"  and price <= sl_px) or
                               (pos == "short" and price >= sl_px)):
                     close_reason = f"SL ${_pf(sl_px)} 터치 {lev_pct:+.2f}% ({_lev}x)"
                     action = "SL_HIT"
@@ -927,11 +1083,15 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     st["last_close"] = _last_close
                 else:
                     _src_tag = f"[{_entry_ctx['strategy']}] " if _entry_ctx and _entry_ctx.get("strategy") else ""
+                    _trail_tag = " (추적중)" if _trend_ctx and _trend_ctx.get("trail_on") else ""
                     st["watch_msg"] = (
                         f"{_src_tag}홀딩 {pos.upper()} @ ${_pf(entry)} "
                         f"| 현재 ${_pf(price)} ({lev_pct:+.2f}%, {_lev}x) "
-                        f"| TP ${_pf(tp_px)} SL ${_pf(sl_px)}"
+                        f"| TP ${_pf(tp_px)} SL ${_pf(sl_px)}{_trail_tag}"
                     )
+
+        if pos is None:
+            _trend_ctx = None; _pos_lev = None   # 어떤 경로로 청산됐든 추세 컨텍스트 정리
 
         # tuning.json active_symbols에서 빠지면 포지션 없을 때 스레드 종료
         if pos is None and sym not in _active_syms_cfg:
@@ -942,7 +1102,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
         st.update({
             "position": pos, "price": _px_round(price, sym),
             "entry": _px_round(entry, sym) if pos else None,
-            "tp_px": tp_px, "sl_px": sl_px,
+            "tp_px": tp_px, "sl_px": sl_px, "trend_ctx": _trend_ctx,
             "pnl": round(sess_pnl, 2), "trades": sess_tr,
             "indicators": ind, "can_trade": ok, "stop_msg": stop_msg,
             "daily": _dst(_kst_day(), claude_mode),
@@ -1034,6 +1194,19 @@ class Handler(BaseHTTPRequestHandler):
                 out[s] = d
             self._j(out)
         elif p == "/api/claude/config":   self._j(_claude_cfg)
+        elif p == "/api/trend":
+            # 일봉+4시간봉 추세돌파 상태 (심볼별 국면·돌파 레벨·신호·포지션 컨텍스트)
+            tc = _claude_cfg.get("trend") or {}
+            out = {"available": _TL_OK, "error": _TL_ERR if not _TL_OK else "", "cfg": tc,
+                   "legacy_chain_enabled": bool(_claude_cfg.get("legacy_chain_enabled", True)), "syms": {}}
+            for _s, _st in _bots_st.items():
+                out["syms"][_s] = {
+                    "enabled": bool(tc.get("enabled") and _s in (tc.get("symbols") or [])),
+                    "eval": _st.get("trend"), "ctx": _st.get("trend_ctx"),
+                    "position": _st.get("position"), "price": _st.get("price"),
+                    "entry": _st.get("entry"), "sl_px": _st.get("sl_px"),
+                }
+            self._j(out)
         elif p == "/api/ticker":
             try:
                 import urllib.request
