@@ -245,6 +245,27 @@ def new_ctx(sig, entry, lev, now=None, size_pct=None):
     }
 
 
+def partial_due(ctx, price, r_mult):
+    """진입가 + r_mult×R 에 처음 도달했으면 True (이미 반익절했거나 r_mult가 없으면 False)."""
+    if not r_mult or ctx.get("partial_done"):
+        return False
+    d = ctx["dir"]
+    return (price - ctx["entry"]) * d >= r_mult * ctx["R"]
+
+
+def apply_partial(ctx, frac, be=True, fee=0.0006):
+    """반익절 체결 후 컨텍스트 갱신: 남은 수량 비율만큼 size_pct 축소, 손절을 본절(+왕복수수료)로 이동.
+    백테스트(engine_v2 partial_be)와 같은 규칙 — 추적 손절은 이 위에서 계속 올라간다."""
+    d = ctx["dir"]
+    ctx["partial_done"] = True
+    if ctx.get("size_pct"):
+        ctx["size_pct"] = ctx["size_pct"] * (1.0 - frac)
+    if be:
+        be_px = ctx["entry"] * (1 + 2 * fee * d)
+        ctx["sl"] = max(ctx["sl"], be_px) if d == 1 else min(ctx["sl"], be_px)
+    return ctx
+
+
 def manage(ctx, price, now=None, h1=None):
     """30초 루프에서 호출. 새로 마감된 1H 봉으로 추적 손절을 갱신하고(백테스트와 같은 시점),
     현재가로 손절/타임스탑 청산 여부를 판단한다. 반환: (exit_kind|None, 메시지)
