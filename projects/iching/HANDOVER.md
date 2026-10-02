@@ -18,7 +18,9 @@ projects/iching/
 ├── index.html                        # 전체 앱 (3000줄+, 단일 파일)
 ├── HANDOVER.md                       # 이 파일
 ├── interpretation_methodology_guide.md  # AI 해석 방법론 (다산역+육효점)
-└── server.js                         # 로컬 dev 서버 (필요 시 node server.js)
+├── local-server.js                   # 로컬 dev 서버 (api/ 핸들러를 동적 import)
+├── api/                              # Vercel 서버리스 (reading, questions, auth, billing)
+└── lib/prompt-reading-v2.js          # 구버전 프롬프트 빌더 — index.html에서 로드하지 않음(참고용 잔재)
 ```
 
 스크립트는 `E:/Users/g8428/experiment/.env`에서 `ANTHROPIC_API_KEY` 읽음.
@@ -119,25 +121,50 @@ GD2[20] = {
 
 ---
 
-## 다음으로 남은 작업
+## AI 해석 호출 구조 (2026-09-28 재설계)
 
-### generateReading 프롬프트 업데이트
-현재 프롬프트는 구 방식. `interpretation_methodology_guide.md`의 구조로 재작성 필요:
-- 다산역 4원리 (추이·호체·물상·효변) 계산 결과를 프롬프트에 주입
-- 육효점 계산 로직 구현 (납갑·세효·응효·육친·육수·생극·형충·공망)
-- 7단계 리포트 구조 적용
+다산역(`calcDasanYeok`)·육효점(`buildLiuYaoData`) 계산과 7섹션 리포트는 이미 구현돼 있다(위 "남은 작업"은 완료됨). 2026-09-28에 **출력 일관성** 문제(존댓말/반말 오락가락, 섹션 누락, JSON이 코드블록에 감싸짐, 변효 4개 오독)를 고치며 호출 구조를 바꿨다.
 
-### 다산역 자동 계산
-- 추이: 12벽괘 매핑 테이블
-- 호체: 2·3·4효, 3·4·5효 → GUA 룩업 재사용 가능
-- 물상: TRIG_MAP의 nat 필드 활용
-- 효변: 변효 위치(0-5) → 고정 의미 텍스트 매핑
+### 왜 바꿨나 — 예전 방식의 문제
+- 규칙·데이터·JSON 스키마를 전부 **user 메시지 하나**에 넣고 "JSON만 출력해"라고 부탁 → `system` 미사용, `temperature` 미지정(기본 1.0), 출력 강제 장치 없음.
+- `max_tokens=5000`에 `stop_reason`을 안 봐서 잘린 응답은 JSON 파싱 실패 → 재시도 → 운에 따라 결과가 달라짐.
+- 변효 개수별 원칙(`readingFocus`)이 3개와 4개를 한 분기로 묶은 채, 섹션4 지침은 개수와 무관하게 "변효 효사를 인용하라" → 변효 4개일 때 모순. 무료판(`buildLocalCards`)은 4~5개면 **불변효** 중심인데 유료판엔 그 규칙이 없었음.
 
-### 육효점 계산 로직 (신규 구현)
-- 60갑자 날짜 변환
-- 64괘 8궁 배속표
-- 각 효 납갑 간지 배당 (64×6)
-- 세효·응효 위치표, 육친·육수 배당, 생극·형충파해합·공망 함수
+### 지금 구조 (`index.html`)
+| 함수/객체 | 역할 |
+|---|---|
+| `window.buildReadingSystem()` | 매 호출 동일한 고정 규칙 — 존댓말 절대 규칙, 7섹션 규격, 육효 처리, 금지/필수. `system` 필드로 전송 |
+| `window.buildReadingUser(ben,ji,state)` | 이번 점사 데이터만 — 괘사/대상전/변효 또는 불변효 효사/다산역/육효 타이밍/Q&A + `heartRule`(개수별 심장 섹션 규칙) |
+| `window.READING_TOOL` | `write_reading` 도구 JSON 스키마(7섹션 고정, tag enum). `tool_choice:{type:'tool'}`로 **강제** — "JSON만 써줘"가 아니라 구조적으로 못 벗어남 |
+| `parseReadingResponse(data)` | `tool_use` 블록 `input` 우선, 텍스트 JSON 폴백. 섹션을 `READING_TAGS` 순서로 재정렬, `meaning`은 렌더러가 GD로 채움 |
+| `generateReading(ben,ji,retry,compact)` | `temperature 0.35`, `max_tokens 8000`. `stop_reason==='max_tokens'`면 간결 모드(`compact=true`)로 1회 재요청 |
+| `window.buildReadingPrompt` | 하위호환 래퍼(system+user 합침). 현재 호출처 없음 |
+
+변효 개수별 규칙은 `buildReadingUser` 안의 `readingFocus`/`heartRule`이 **0 / 1 / 2 / 3 / 4~5 / 6** 으로 분기한다(무료판과 동일). 4~5개는 변효 효사를 프롬프트에 아예 넣지 않고 불변효 효사만 준다. `_autoMeaning('이 점괘의 심장')`도 4~5개면 불변효를 원전으로 표시.
+
+### 시기(時期) 계산 (2026-09-28 수정)
+
+**문제였던 것**: 예전 `lyStr`은 "오늘 일진 지지의 충·합·공망 지지 = 발동 달"로 시기를 줬다. 괘가 무엇이든 그날 점친 사람 전원이 같은 달을 받았고(壬寅일이면 누구나 "충=申월=내년 8월"), 시스템 규칙 "앞으로 3~4개월을 달별로"가 겹쳐 "10~11월 대기, 내년 8월 완성" 식 고정 윈도우에 점괘를 맞춰 끼우게 됐다. 피드백으로 발견.
+
+**지금 구조** (`index.html`, `buildLiuYaoData` 아래):
+| 함수 | 역할 |
+|---|---|
+| `getWolGeon(date)` | 절기 기준 월건 지지 (`WOLGEON_START`) |
+| `buildDasanTiming(...)` | 다산 추이: 본괘·지괘의 12벽괘 절기 위치(`BYEOK_MONTH`, 비벽괘는 양효 수 → `TUI_PARENT` 모괘 두 개, 61·62는 재윤괘) + 변효 방향(음→양=성장기, 양→음=수렴기) + 효변 단계(`YAO_STAGE`, 변효 ≤3개) |
+| `detectYongsin(q)` | 질문 키워드 → 용신 육친 (관귀/부모/처재/자손/형제, 연애는 관귀·처재 둘 다) |
+| `buildEunggi(lyData,chg,q,date)` | 육효 응기. 세효·응효·용신·동효(변효 4~5개면 불변효, 6개면 세·응·용신만)의 지지별로 상태(동/정, 왕상휴수, 공망, 월파, 일진 충·합)와 응기 후보(값·합·충·출공)를 실제 달 범위 + 60일 내 가까운 날로 준다 |
+
+`buildReadingUser`는 `[추이 — 계절 국면]`과 `[시기 판단 근거 — 육효 응기]` 두 블록을 넣고, system 규칙 6번과 user 마지막 줄이 "이 두 블록에서만 시기를 가져오라, 근거 없는 달·어림 숫자·N개월 채우기 금지"로 바뀌었다.
+
+원칙은 `interpretation_methodology_guide.md` "시기 판단" 절 참고. **검증 방법**: `buildReadingUser`를 node에서 서로 다른 괘·질문으로 호출해 두 블록이 괘마다 달라지는지 본다(같은 날 모든 괘가 같은 달을 받으면 퇴행).
+
+### 서버 (`api/reading.js`, `api/questions.js`)
+Anthropic Messages API 프록시. 클라이언트가 보낸 `system / messages / tools / tool_choice / temperature / max_tokens`를 그대로 전달한다(구버전 `prompt`만 와도 동작). `local-server.js`가 같은 핸들러를 동적 import하므로 로컬/Vercel 동작이 같다.
+
+### 유지 원칙
+- 규칙을 바꿀 땐 `buildReadingSystem`(모든 점사 공통)인지 `buildReadingUser`(이번 점사 데이터)인지 구분해서 넣을 것. 다시 한 덩어리로 합치지 말 것.
+- 출력 형식은 `READING_TOOL.input_schema`가 원본. 섹션을 추가/삭제하면 스키마·`READING_TAGS`·`buildReadingHtmlV2`의 `TAG_LABELS`를 같이 바꿀 것.
+- `temperature`를 올리면 톤이 다시 흔들린다. 0.3~0.4 유지.
 
 ---
 

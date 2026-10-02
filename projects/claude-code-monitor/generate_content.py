@@ -25,6 +25,16 @@ def latest_research_file() -> Path:
     return files[0]
 
 
+def extract_text(msg) -> str:
+    """msg.content[0]이 항상 TextBlock이라고 가정하면 안 된다.
+    claude-opus-5는 응답 앞에 ThinkingBlock(.text 속성 없음)을 먼저 반환할 수 있어서,
+    content 배열에서 type == 'text'인 블록만 골라 이어붙인다."""
+    parts = [block.text for block in msg.content if getattr(block, "type", None) == "text"]
+    if not parts:
+        raise RuntimeError(f"응답에 text 블록이 없습니다. content types: {[getattr(b, 'type', None) for b in msg.content]}")
+    return "\n".join(parts)
+
+
 def generate_blog_post(client: anthropic.Anthropic, research: str, today: str) -> str:
     prompt = f"""다음 리서치 파일을 읽고 한국 개발자 커뮤니티(벨로그, 티스토리)용 기술 블로그 포스트를 작성해라.
 
@@ -56,7 +66,7 @@ def generate_blog_post(client: anthropic.Anthropic, research: str, today: str) -
         max_tokens=4096,
         messages=[{"role": "user", "content": prompt}],
     )
-    return msg.content[0].text
+    return extract_text(msg)
 
 
 def generate_instagram_post(client: anthropic.Anthropic, research: str, today: str) -> str:
@@ -93,7 +103,7 @@ def generate_instagram_post(client: anthropic.Anthropic, research: str, today: s
         max_tokens=2048,
         messages=[{"role": "user", "content": prompt}],
     )
-    return msg.content[0].text
+    return extract_text(msg)
 
 
 def slugify(text: str) -> str:

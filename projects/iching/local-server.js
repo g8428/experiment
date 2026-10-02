@@ -111,6 +111,8 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`\n✦ 주역 로컬 서버 실행 중: http://localhost:${PORT}\n`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n✦ 주역 로컬 서버 실행 중`);
+  console.log(`  PC:      http://localhost:${PORT}`);
+  console.log(`  핸드폰:  http://192.168.0.6:${PORT}\n`);
 });

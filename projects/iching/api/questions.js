@@ -13,8 +13,11 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
 
-  const { prompt, model = 'claude-haiku-4-5-20251001', max_tokens = 700 } = req.body;
+  const { prompt, model = 'claude-haiku-4-5-20251001', max_tokens = 700, temperature, system } = req.body;
   if (!prompt) return res.status(400).json({ error: 'prompt is required' });
+  const payload = { model, max_tokens, messages: [{ role: 'user', content: prompt }] };
+  if (system) payload.system = system;
+  if (typeof temperature === 'number') payload.temperature = temperature;
 
   try {
     const controller = new AbortController();
@@ -28,7 +31,7 @@ export default async function handler(req, res) {
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify({ model, max_tokens, messages: [{ role: 'user', content: prompt }] }),
+      body: JSON.stringify(payload),
     });
 
     clearTimeout(timeout);
