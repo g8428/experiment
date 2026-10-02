@@ -77,6 +77,8 @@ try:
 except Exception as _tl_e:
     _TL = None; _TL_OK = False; _TL_ERR = str(_tl_e)
 _trend_saved = {}   # 재시작 복원용: persist.json의 심볼별 추세 포지션 컨텍스트
+_xslots_saved = {}  # 재시작 복원용: persist.json의 심볼별 추가 슬롯 목록
+_posid_saved = {}   # 재시작 복원용: 심볼별 주 포지션 posId
 
 # ── 환경변수 ───────────────────────────────────────────────────────
 _env = {}
@@ -187,6 +189,8 @@ def _persist_load():
             for sym, cb in (d.get("bot_states") or {}).items():
                 st = _bots_st.get(sym)
                 if cb.get("trend_ctx"): _trend_saved[sym] = cb["trend_ctx"]
+                if cb.get("extra_slots"): _xslots_saved[sym] = cb["extra_slots"]
+                if cb.get("pos_id"): _posid_saved[sym] = cb["pos_id"]
                 if not st or not cb.get("pos"): continue
                 st.update({
                     "position": cb["pos"], "entry": cb.get("entry", 0.0),
@@ -211,6 +215,8 @@ def _persist_save():
                 "tp_px":    st.get("tp_px"),
                 "sl_px":    st.get("sl_px"),
                 "trend_ctx": st.get("trend_ctx"),
+                "extra_slots": st.get("extra_slots") or [],
+                "pos_id": st.get("pos_id"),
             } for sym, st in _bots_st.items()
         }
         with open(_PERSIST, "w", encoding="utf-8") as f:
@@ -252,7 +258,10 @@ _claude_cfg = {
     "legacy_chain_enabled":   True,
     # 일봉+4시간봉 롱 추세돌파. risk_pct는 '1회 손절 시 계좌 손실 %' (기존 체인 risk_pct와 별개)
     "trend": {"enabled": False, "symbols": ["BTC-USDT-SWAP"], "risk_pct": 2.0,
-              "allow_short": False, "liq_mult": 2.0},
+              "allow_short": False, "liq_mult": 2.0,
+              "partial_tp_r": 1.0, "partial_tp_frac": 0.3, "partial_be": True},
+    # 같은 심볼에서 기존 체인(단타) 포지션을 추가 가상 슬롯으로 동시 보유 (거래소는 방향당 포지션 1개로 합쳐지므로 로컬 슬롯)
+    "multi_slot": {"enabled": False, "symbols": ["BTC-USDT-SWAP"], "max_slots": 3},
 }
 
 # ── tuning.json 자동 반영 ─────────────────────────────────────────
@@ -278,7 +287,7 @@ def _load_tuning():
                   "tp_min_margin_pct", "tp_min_margin_by_sym",
                   "sl_cap_pct_by_sym", "sl_min_atr_mult", "sl_min_atr_mult_by_sym",
                   "tp_max_atr_mult", "tp_max_atr_mult_by_sym", "tp_fvg_block",
-                  "legacy_chain_enabled", "trend"):
+                  "legacy_chain_enabled", "trend", "multi_slot"):
             if k in t: _claude_cfg[k] = t[k]
         if isinstance(t.get("active_symbols"), list):
             _active_syms_cfg = [s for s in t["active_symbols"] if s in _ACTIVE_SYMS]
@@ -402,7 +411,7 @@ def _can_trade(mode):
     return True, ""
 
 def _rec(mode, action, price, ind, reason, pnl=None, tp_px=None, sl_px=None,
-         signal_src=None, smc_ctx=None, sym="BTC-USDT-SWAP", size_pct=None):
+         signal_src=None, smc_ctx=None, sym="BTC-USDT-SWAP", size_pct=None, partial=False):
     global _pattern_stats
     day = _kst_day()
     ts  = datetime.now(timezone(timedelta(hours=9))).strftime("%m-%d %H:%M")
@@ -419,11 +428,12 @@ def _rec(mode, action, price, ind, reason, pnl=None, tp_px=None, sl_px=None,
         if size_pct is None: size_pct = _claude_cfg.get("size_pct", 40)
         cap_pnl  = round(pnl * (size_pct / 100.0), 6)
         s["pnl_pct"] = round(s["pnl_pct"] + cap_pnl, 6)
-        s["trades"] += 1
-        if pnl > 0: s["wins"]  += 1
-        else:       s["losses"] += 1
+        if not partial:   # 반익절은 일 P&L만 반영 — 거래수/승패/패턴통계는 최종 청산에서 1회
+            s["trades"] += 1
+            if pnl > 0: s["wins"]  += 1
+            else:       s["losses"] += 1
         # ── 패턴 통계 누적 학습 ─────────────────────────────────
-        if smc_ctx and smc_ctx.get("pattern_key"):
+        if not partial and smc_ctx and smc_ctx.get("pattern_key"):
             pk = smc_ctx["pattern_key"]
             _pattern_stats.setdefault(pk, {"trades": 0, "wins": 0, "total_pnl": 0.0})
             _pattern_stats[pk]["trades"] += 1
@@ -584,27 +594,53 @@ def _place_order(side, pos_side, sz, tp_px=None, sl_px=None, sym="BTC-USDT-SWAP"
         print(f"[주문실패] {side} {pos_side} → {r}")
     return r
 
-def _close_order(pos_side, mode, sz, sym="BTC-USDT-SWAP"):
-    if mode != "real": return
-    actual_sz = max(1, int(sz))
+def _dc_positions(sym):
+    """거래소 보유 포지션 목록(pos>0). split 모드라 주문 1건 = posId 1개(각자 TP/SL). 조회 실패 시 None."""
     try:
         r = _dc_request("GET", f"/deepcoin/account/positions?instId={sym}&instType=SWAP")
-        if r.get("code") in ("0", 0) and r.get("data"):
-            for p in r["data"]:
-                if p.get("posSide") == pos_side:
-                    dc_sz = int(float(p.get("pos", 0) or 0))
-                    if dc_sz > 0:
-                        actual_sz = dc_sz
-                    break
+        if r.get("code") in ("0", 0):
+            return [p for p in (r.get("data") or []) if int(float(p.get("pos", 0) or 0)) > 0]
     except Exception:
         pass
-    close_side = "sell" if pos_side == "long" else "buy"
-    return _dc_request("POST", "/deepcoin/trade/order", {
-        "instId": sym, "tdMode": "isolated",
-        "mrgPosition": "split", "side": close_side, "posSide": pos_side,
-        "ordType": "market", "sz": str(actual_sz),
-        "reduceOnly": True,
+    return None
+
+def _find_pos(plist, side, pid=None):
+    for p in plist or []:
+        if p.get("posSide") == side and (pid is None or p.get("posId") == pid):
+            return p
+    return None
+
+def _new_pid(sym, side, before_pids):
+    """주문 직후 새로 생긴 posId 탐지 (주문 전 posId 집합과 비교)."""
+    for _ in range(4):
+        time.sleep(1.5)
+        for p in _dc_positions(sym) or []:
+            if p.get("posSide") == side and p.get("posId") not in before_pids:
+                return p.get("posId")
+    return None
+
+def _close_pid(sym, side, pid, mode, frac=1.0):
+    """포지션(posId) 단위 시장가 청산 — split 모드는 closePosId 없으면 'NotEnoughPositionToClose'로 실패한다.
+    pid=None이면 해당 방향 첫 포지션. frac<1이면 일부만.
+    반환: True=청산됨(이미 없으면 True), None=수량 부족으로 생략, False=실패(재시도 필요)."""
+    if mode != "real": return True
+    pl = _dc_positions(sym)
+    if pl is None: return False
+    p = _find_pos(pl, side, pid)
+    if not p: return True
+    have = int(float(p["pos"]))
+    n = have if frac >= 1 else int(have * frac)
+    if n < 1 or (frac < 1 and have - n < 1): return None
+    r = _dc_request("POST", "/deepcoin/trade/order", {
+        "instId": sym, "tdMode": "isolated", "mrgPosition": "split",
+        "side": "sell" if side == "long" else "buy", "posSide": side,
+        "ordType": "market", "sz": str(n), "closePosId": p["posId"],
     })
+    item = r.get("data") if isinstance(r.get("data"), dict) else {}
+    ok = r.get("code") in ("0", 0) and str(item.get("sCode", "0")) in ("0", "")
+    if not ok:
+        print(f"[청산실패:{sym}] {side} pid={p['posId']} n={n} → {r}")
+    return ok
 
 # ── Claude 메인 봇 ────────────────────────────────────────────────
 def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
@@ -645,39 +681,53 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     _pos_lev       = None  # 이 포지션의 실제 레버리지 (추세 전략은 손절폭에 따라 거래별로 다름)
 
     # ── 실제 모드: DeepCoin 포지션 동기화 ─────────────────────────
+    _pos_id = None  # 주 포지션의 거래소 posId (split 모드: 주문 1건 = posId 1개, 청산도 posId 단위)
+    _xclaimed = {x.get("pid") for x in (_xslots_saved.get(sym) or []) if x.get("pid")}
     if mode == "real" and pos is None:
         try:
-            _r = _dc_request("GET", f"/deepcoin/account/positions?instId={sym}&instType=SWAP")
-            if _r.get("code") in ("0", 0) and _r.get("data"):
-                for _dp in _r["data"]:
-                    _dc_sz = int(float(_dp.get("pos", 0) or 0))
-                    if _dc_sz > 0:
-                        _dc_side = _dp.get("posSide")
-                        _dc_avg  = float(_dp.get("avgPx", 0) or 0)
-                        _dc_tp   = float(_dp.get("tpTriggerPx", 0) or 0) or None
-                        _dc_sl   = float(_dp.get("slTriggerPx", 0) or 0) or None
-                        pos = _dc_side; entry = _dc_avg
-                        tp_px = _dc_tp; sl_px = _dc_sl
-                        # 추세돌파 포지션이면 저장된 컨텍스트(추적 손절 등)를 복원 — 진입가가 1% 이내로 일치할 때만
-                        _sv = _trend_saved.get(sym)
-                        if _sv and _dc_avg and abs(_sv.get("entry", 0) - _dc_avg) / _dc_avg < 0.01:
-                            _trend_ctx = _sv
-                            _pos_lev = _sv.get("lev")
-                            _pos_opened_at = _sv.get("opened_ts", 0.0)
-                            _pos_size_pct = _sv.get("size_pct")
-                            _entry_ctx = {"strategy": "TREND-" + str(_sv.get("tag", "")),
-                                          "pattern_key": f"TREND+{_sv.get('tag','')}+{sym.split('-')[0]}"}
-                            _dc_sl = _sv.get("sl") or _dc_sl   # 추적 손절 반영
-                        st.update({"position": pos, "entry": entry,
-                                   "tp_px": tp_px, "sl_px": _dc_sl,
-                                   "watch_msg": f"[DC복원] {_dc_side.upper()} @ ${_pf(_dc_avg)} sz={_dc_sz}"
-                                                + (" [추세 컨텍스트 복원]" if _trend_ctx else "")})
-                        sl_px = _dc_sl
-                        print(f"[DC복원:{sym}] {_dc_side.upper()} {_dc_sz}계약 @ ${_pf(_dc_avg)}"
-                              + (f" 추세 컨텍스트 복원(sl={_dc_sl})" if _trend_ctx else ""))
-                        break
+            _dcl_all = _dc_positions(sym) or []
+            _cands = [p for p in _dcl_all if p.get("posId") not in _xclaimed]
+            _cands.sort(key=lambda p: p.get("posId") != _posid_saved.get(sym))   # 저장된 주 posId 우선
+            for _dp in _cands:
+                _dc_sz = int(float(_dp.get("pos", 0) or 0))
+                if _dc_sz > 0:
+                    _dc_side = _dp.get("posSide")
+                    _dc_avg  = float(_dp.get("avgPx", 0) or 0)
+                    _dc_tp   = float(_dp.get("tpTriggerPx", 0) or 0) or None
+                    _dc_sl   = float(_dp.get("slTriggerPx", 0) or 0) or None
+                    pos = _dc_side; entry = _dc_avg; _pos_id = _dp.get("posId")
+                    tp_px = _dc_tp; sl_px = _dc_sl
+                    # 추세돌파 포지션이면 저장된 컨텍스트(추적 손절 등)를 복원 — 진입가가 1% 이내로 일치할 때만
+                    _sv = _trend_saved.get(sym)
+                    if _sv and _dc_avg and abs(_sv.get("entry", 0) - _dc_avg) / _dc_avg < 0.01:
+                        _trend_ctx = _sv
+                        _pos_lev = _sv.get("lev")
+                        _pos_opened_at = _sv.get("opened_ts", 0.0)
+                        _pos_size_pct = _sv.get("size_pct")
+                        _entry_ctx = {"strategy": "TREND-" + str(_sv.get("tag", "")),
+                                      "pattern_key": f"TREND+{_sv.get('tag','')}+{sym.split('-')[0]}"}
+                        _dc_sl = _sv.get("sl") or _dc_sl   # 추적 손절 반영
+                    st.update({"position": pos, "entry": entry, "pos_id": _pos_id,
+                               "tp_px": tp_px, "sl_px": _dc_sl,
+                               "watch_msg": f"[DC복원] {_dc_side.upper()} @ ${_pf(_dc_avg)} sz={_dc_sz}"
+                                            + (" [추세 컨텍스트 복원]" if _trend_ctx else "")})
+                    sl_px = _dc_sl
+                    print(f"[DC복원:{sym}] {_dc_side.upper()} {_dc_sz}계약 @ ${_pf(_dc_avg)} pid={_pos_id}"
+                          + (f" 추세 컨텍스트 복원(sl={_dc_sl})" if _trend_ctx else ""))
+                    break
         except Exception as _e:
             print(f"[DC포지션복원] 오류: {_e}")
+
+    # ── 추가 슬롯 (같은 심볼 단타 동시 보유). split 모드라 슬롯마다 거래소 posId·TP/SL이 따로 있다 ──
+    _xs = []
+    for _s in (_xslots_saved.get(sym) or []):
+        if mode == "real" and not _find_pos(_dc_positions(sym), _s.get("side"), _s.get("pid")):
+            continue
+        if _s.get("mode", mode) != mode:
+            continue
+        _xs.append(_s)
+    if _xs:
+        print(f"[슬롯복원:{sym}] 추가 슬롯 {len(_xs)}개 복원")
 
     _KZ_NAMES = {
         "asian":   "아시안(10~14KST)",
@@ -706,10 +756,43 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
 
         cooldown_left = max(0, _last_close + _claude_cfg["cooldown"] - time.time())
 
-        if pos is None:
+        # ── 추가 슬롯 관리: 로컬 SL/TP 판정 + 거래소 외부 청산 동기화 ──────
+        for _x in list(_xs):
+            _xd  = 1 if _x["side"] == "long" else -1
+            _xlp = round((price - _x["entry"]) / _x["entry"] * 100 * _xd * _x["lev"], 4)
+            _xact, _xwhy = None, None
+            _xpl = _dc_positions(sym) if mode == "real" else None
+            if mode == "real" and _xpl is not None and time.time() - _x["opened_ts"] > 90 and not _find_pos(_xpl, _x["side"], _x.get("pid")):
+                _xact, _xwhy = "SL_HIT" if _xlp < 0 else f"CLOSE_{_x['side'].upper()}", f"슬롯 외부 청산 확인(거래소 포지션 없음) {_xlp:+.2f}% ({_x['lev']}x)"
+            elif _x.get("sl") and ((_xd == 1 and price <= _x["sl"]) or (_xd == -1 and price >= _x["sl"])):
+                _xact, _xwhy = "SL_HIT", f"슬롯 SL ${_pf(_x['sl'])} 터치 {_xlp:+.2f}% ({_x['lev']}x)"
+            elif _x.get("tp") and ((_xd == 1 and price >= _x["tp"]) or (_xd == -1 and price <= _x["tp"])):
+                _xact, _xwhy = f"CLOSE_{_x['side'].upper()}", f"슬롯 TP ${_pf(_x['tp'])} 달성 {_xlp:+.2f}% ({_x['lev']}x)"
+            if _xact:
+                if "외부 청산" not in _xwhy and not _close_pid(sym, _x["side"], _x.get("pid"), mode):
+                    print(f"[슬롯청산실패:{sym}] 다음 루프 재시도")
+                    continue
+                _rec(claude_mode, _xact, price, ind, f"[슬롯{_x['n']}] {_xwhy}",
+                     pnl=_xlp, signal_src="Claude", smc_ctx=_x.get("ctx"), sym=sym, size_pct=_x["size_pct"])
+                sess_pnl += _xlp; sess_tr += 1
+                _last_fail_sl = (_x.get("sl") or 0.0) if _xact == "SL_HIT" else 0.0
+                _xs.remove(_x)
+                _last_close = time.time(); st["last_close"] = _last_close
+
+        _ms         = _claude_cfg.get("multi_slot") or {}
+        _multi_on   = bool(_ms.get("enabled") and sym in (_ms.get("symbols") or []))
+        _max_slots  = int(_ms.get("max_slots", 3))
+        _slots_used = (1 if pos else 0) + len(_xs)
+        _can_slot   = _slots_used < _max_slots
+        _as_extra   = bool(pos and _multi_on and _can_slot)
+        _enter_prim = bool(pos is None and (not _xs or _can_slot))
+        _pos_before = pos   # 이번 루프에 새로 진입한 주 포지션은 같은 루프에서 홀딩 판정하지 않는다
+
+        if _enter_prim or _as_extra:
             # ── 추세돌파 (일봉+4시간봉, 롱). 1H 봉이 마감된 직후에만 판단 — 미완성 캔들로 판단하지 않는다 ──
             _tcfg     = _claude_cfg.get("trend") or {}
-            _trend_on = bool(_TL_OK and _tcfg.get("enabled") and sym in (_tcfg.get("symbols") or []))
+            _trend_on = bool(_TL_OK and _tcfg.get("enabled") and sym in (_tcfg.get("symbols") or [])
+                             and not _as_extra)   # 추가 슬롯은 단타 전용
             _legacy_on = bool(_claude_cfg.get("legacy_chain_enabled", True))
             _tres, _tsig = None, None
             if _trend_on:
@@ -769,7 +852,10 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                           f"| 손절 {_sd*100:.2f}% 레버리지 {_t_lev}x 증거금 {_t_marg:.1f}% (계좌리스크 {_t_risk}%) "
                           f"| 추적 {_tsig['trail_dist']:.6g} [SL:${_pf(_t_sl)}]")
                 _ok_entry = True
+                _t_pid = None
                 if mode == "real":
+                    _tpl0 = _dc_positions(sym)
+                    _tbefore = {p.get("posId") for p in (_tpl0 or [])}
                     _set_leverage(_t_lev, sym=sym)
                     _t_sz = _calc_sz(price, _t_marg, _t_lev, sym=sym)
                     print(f"[추세진입:{sym}] {sig} 손절{_sd*100:.2f}% lev={_t_lev}x 증거금{_t_marg:.2f}% → {_t_sz}계약")
@@ -780,8 +866,10 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                         reason += f" [주문실패:{ord_r.get('msg','')}]"
                         st["watch_msg"] = reason
                         time.sleep(60)
+                    else:
+                        _t_pid = _new_pid(sym, sig, _tbefore)
                 if _ok_entry:
-                    pos = sig; entry = price; sl_px = _t_sl; tp_px = None
+                    pos = sig; entry = price; sl_px = _t_sl; tp_px = None; _pos_id = _t_pid
                     _pos_opened_at = time.time(); _pos_lev = _t_lev; _pos_size_pct = _t_marg
                     _trend_ctx = _TL.new_ctx(_tsig, entry, _t_lev, size_pct=_t_marg)
                     _trend_ctx["sl"] = _trend_ctx["init_sl"] = sl_px
@@ -906,6 +994,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                         f"RR={_rr_now:.2f}<{_rr_min}"
                     )
                     time.sleep(30); continue
+                _sv_tp, _sv_sl = tp_px, sl_px   # 추가 슬롯 진입 시 주 포지션의 tp/sl 로컬 변수를 보존
                 if sig == "long":
                     tp_px = _px_round(price * (1 + _tp_dist), sym)
                     sl_px = _px_round(price * (1 - _sl_dist), sym)
@@ -964,51 +1053,77 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                           f"| 근거: {ev_summary} "
                           f"[TP:${_pf(tp_px)} SL:${_pf(sl_px)} RR={_rr_val:.1f}]")
 
+                _ent_ok, _ent_size, _ent_sz, _ent_pid = False, None, None, None
+                _ent_lev = _claude_cfg.get("leverage", 20)
+                _has_dc_side = False
                 if mode == "real":
                     _lev_now  = _claude_cfg.get("leverage", 20)
+                    # 같은 방향 포지션이 이미 있으면 그 레버리지를 그대로 쓴다(방향 단위 설정이라 바꾸면 기존 포지션에 영향)
+                    _pl0 = _dc_positions(sym)
+                    if _pl0 is None:
+                        st["watch_msg"] = "거래소 포지션 조회 실패 — 진입 보류"
+                        tp_px, sl_px = _sv_tp, _sv_sl
+                        time.sleep(30); continue
+                    _before_pids = {p.get("posId") for p in _pl0}
+                    _same = _find_pos(_pl0, sig)
+                    _has_dc_side = _same is not None
+                    try:
+                        if _has_dc_side and _same.get("lever"): _lev_now = int(float(_same["lever"]))
+                    except Exception:
+                        pass
+                    _ent_lev = _lev_now
                     _risk_pct = _claude_cfg.get("risk_pct", 10.0)
                     # 동적 사이징: risk_pct % / (SL거리 × 레버리지) → 증거금 비율
                     _dyn_size = min(80.0, _risk_pct / (_sl_dist * _lev_now)) if _sl_dist > 0 else _claude_cfg.get("size_pct", 40)
                     # 적응형 가중치 적용 (백테스트 승률 기반)
                     _wt = _get_weight(_pat_key) if _WEIGHTS_AVAILABLE else 1.0
                     _dyn_size = min(80.0, _dyn_size * _wt)
-                    _set_leverage(_lev_now, sym=sym)
+                    if not _has_dc_side:
+                        _set_leverage(_lev_now, sym=sym)
                     side  = "buy" if sig == "long" else "sell"
                     _sz   = _calc_sz(price, _dyn_size, _lev_now, sym=sym)
                     print(f"[사이징:{sym}] 리스크{_risk_pct}% SL={_sl_dist*100:.2f}% 레버리지={_lev_now}x 가중치={_wt:.2f} → {_dyn_size:.1f}% 증거금")
                     ord_r = _place_order(side, sig, _sz, tp_px=tp_px, sl_px=sl_px, sym=sym)
                     if ord_r.get("code") not in ("0", 0):
                         reason += f" [주문실패:{ord_r.get('msg','')}]"
-                        tp_px = None; sl_px = None
                         st["watch_msg"] = reason
+                        if _as_extra: tp_px, sl_px = _sv_tp, _sv_sl
+                        else:         tp_px = None; sl_px = None
                         time.sleep(60)   # 주문 실패 후 1분 대기 (즉시 재시도 방지)
                     else:
-                        pos = sig; entry = price
-                        _pos_opened_at = time.time()
-                        _pos_size_pct  = _dyn_size
+                        _ent_ok, _ent_size, _ent_sz = True, _dyn_size, _sz
+                        _ent_pid = _new_pid(sym, sig, _before_pids)
                 else:
-                    pos = sig; entry = price
-                    _pos_opened_at = time.time()
-                    _pos_size_pct  = _claude_cfg.get("size_pct", 40)
+                    _ent_ok, _ent_size, _ent_sz = True, _claude_cfg.get("size_pct", 40), 0
 
-                if pos:
+                if _ent_ok and _as_extra:
+                    _used = {x["n"] for x in _xs}
+                    _n = next(i for i in range(1, 10) if i not in _used)
+                    _xs.append({"n": _n, "side": sig, "entry": price, "sz": int(_ent_sz or 0), "pid": _ent_pid,
+                                "tp": tp_px, "sl": sl_px, "lev": _ent_lev, "size_pct": _ent_size,
+                                "opened_ts": time.time(), "mode": mode, "ctx": _smc_ctx})
+                    _rec(claude_mode, f"ENTER_{sig.upper()}", price, ind, f"[슬롯{_n}] " + reason,
+                         tp_px=tp_px, sl_px=sl_px, signal_src="Claude", smc_ctx=_smc_ctx, sym=sym)
+                    st["watch_msg"] = f"[슬롯{_n}] " + reason
+                    tp_px, sl_px = _sv_tp, _sv_sl
+                elif _ent_ok:
+                    pos = sig; entry = price; _pos_id = _ent_pid
+                    _pos_opened_at = time.time()
+                    _pos_size_pct  = _ent_size
+                    _pos_lev       = _ent_lev if mode == "real" else None
                     _entry_ctx = _smc_ctx   # 청산 시 패턴 학습에 사용
                     _rec(claude_mode, f"ENTER_{sig.upper()}", price, ind, reason,
                          tp_px=tp_px, sl_px=sl_px, signal_src="Claude", smc_ctx=_smc_ctx, sym=sym)
                     st["watch_msg"] = reason
 
-        elif pos:
+        if _pos_before:
             _lev = _pos_lev or _claude_cfg.get("leverage", 20)   # 추세 포지션은 거래별 레버리지
             # ── Real 모드: DeepCoin 실제 포지션 확인 (진입 후 90초 유예) ──
             if mode == "real" and time.time() - _pos_opened_at > 90:
                 try:
-                    _pr = _dc_request("GET", f"/deepcoin/account/positions?instId={sym}&instType=SWAP")
-                    if _pr.get("code") in ("0", 0):
-                        _dc_positions = _pr.get("data") or []
-                        _dc_has_pos = any(
-                            int(float(p.get("pos", 0) or 0)) > 0 and p.get("posSide") == pos
-                            for p in _dc_positions
-                        )
+                    _spl = _dc_positions(sym)
+                    if _spl is not None:
+                        _dc_has_pos = _find_pos(_spl, pos, _pos_id) is not None
                         if not _dc_has_pos:
                             # DeepCoin에 포지션 없음 → 외부 청산 (서버사이드 TP/SL)
                             raw_pct = ((price - entry) / entry * 100 if pos == "long"
@@ -1027,7 +1142,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                                  pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx,
                                  sym=sym, size_pct=_pos_size_pct)
                             sess_pnl += lev_pct; sess_tr += 1
-                            pos = None; entry = 0.0; tp_px = None; sl_px = None
+                            pos = None; entry = 0.0; tp_px = None; sl_px = None; _pos_id = None
                             _pos_opened_at = 0.0; _entry_ctx = None; _pos_size_pct = None
                             _last_close = time.time()
                             st["last_close"] = _last_close
@@ -1051,6 +1166,20 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     except Exception as _te:
                         print(f"[추세갱신:{sym}] 오류 {_te}")
                     _tkind, _tmsg = _TL.manage(_trend_ctx, price, h1=_TL.closed_h1(sym))
+                    _tcfg = _claude_cfg.get("trend") or {}
+                    _ptr = _tcfg.get("partial_tp_r")
+                    if not _tkind and _TL.partial_due(_trend_ctx, price, _ptr):
+                        _pf_frac = float(_tcfg.get("partial_tp_frac", 0.3))
+                        _pres = _close_pid(sym, pos, _pos_id, mode, frac=_pf_frac)
+                        _trend_ctx["partial_done"] = True   # 실패/수량부족이어도 재시도 폭주 방지
+                        if _pres:
+                            _psz = _pos_size_pct
+                            _rec(claude_mode, "PARTIAL_TP", price, ind,
+                                 f"반익절 {int(_pf_frac*100)}% @ {_ptr}R ${_pf(price)} {lev_pct:+.2f}% ({_lev}x)",
+                                 pnl=lev_pct * _pf_frac, signal_src="Claude", smc_ctx=_entry_ctx,
+                                 sym=sym, size_pct=_psz, partial=True)
+                            _TL.apply_partial(_trend_ctx, _pf_frac, be=bool(_tcfg.get("partial_be", True)))
+                            _pos_size_pct = _trend_ctx["size_pct"]
                     sl_px = _px_round(_trend_ctx["sl"], sym)
                     if _tkind:
                         close_reason = f"{_tmsg} {lev_pct:+.2f}% ({_lev}x)"
@@ -1068,7 +1197,9 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                     action = f"CLOSE_{pos.upper()}"
 
                 if close_reason:
-                    _close_order(pos, mode, _claude_cfg["size_pct"], sym=sym)
+                    if not _close_pid(sym, pos, _pos_id, mode):
+                        print(f"[청산실패:{sym}] 다음 루프 재시도")
+                        time.sleep(30); continue
                     _rec(claude_mode, action, price, ind, close_reason,
                          pnl=lev_pct, signal_src="Claude", smc_ctx=_entry_ctx,
                          sym=sym, size_pct=_pos_size_pct)
@@ -1077,7 +1208,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                         _last_fail_sl = sl_px
                     else:
                         _last_fail_sl = 0.0
-                    pos = None; entry = 0.0; tp_px = None; sl_px = None
+                    pos = None; entry = 0.0; tp_px = None; sl_px = None; _pos_id = None
                     _pos_opened_at = 0.0; _entry_ctx = None; _pos_size_pct = None
                     _last_close = time.time()
                     st["last_close"] = _last_close
@@ -1094,7 +1225,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
             _trend_ctx = None; _pos_lev = None   # 어떤 경로로 청산됐든 추세 컨텍스트 정리
 
         # tuning.json active_symbols에서 빠지면 포지션 없을 때 스레드 종료
-        if pos is None and sym not in _active_syms_cfg:
+        if pos is None and not _xs and sym not in _active_syms_cfg:
             st["watch_msg"] = "active_symbols 제외 — 정지"
             st["position"] = None
             break
@@ -1102,7 +1233,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
         st.update({
             "position": pos, "price": _px_round(price, sym),
             "entry": _px_round(entry, sym) if pos else None,
-            "tp_px": tp_px, "sl_px": sl_px, "trend_ctx": _trend_ctx,
+            "tp_px": tp_px, "sl_px": sl_px, "trend_ctx": _trend_ctx, "extra_slots": list(_xs), "pos_id": _pos_id,
             "pnl": round(sess_pnl, 2), "trades": sess_tr,
             "indicators": ind, "can_trade": ok, "stop_msg": stop_msg,
             "daily": _dst(_kst_day(), claude_mode),
