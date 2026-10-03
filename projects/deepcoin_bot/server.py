@@ -293,7 +293,9 @@ _claude_cfg = {
     # 일목균형표 A: 완결 일봉 종가가 현재 표시 구름 위=롱, 아래=숏, 안=무포지션. 손절 없음(상태 전환으로만 청산/반전).
     # 기존 전략과 별도 슬롯(별도 posId)으로 동시 보유. 2026-10-03 사용자 결정: 롱·숏, 3x, 증거금 10%, BTC·ETH·XRP
     "ichimoku": {"enabled": True, "symbols": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "XRP-USDT-SWAP"],
-                 "lev": 3, "size_pct": 10.0, "allow_short": True},
+                 "lev": 3, "size_pct": 10.0, "allow_short": True,
+                 # 2026-10-03 사용자 결정: ETH는 계좌가 작아 3x로는 최소 1계약(증거금 ~$89)이 불가 → 10x, 비중 한도 25%
+                 "lev_by_sym": {"ETH-USDT-SWAP": 10}, "size_pct_by_sym": {"ETH-USDT-SWAP": 25.0}},
 }
 
 # ── tuning.json 자동 반영 ─────────────────────────────────────────
@@ -739,7 +741,8 @@ def _ichi_step(sym, mode, claude_mode, slot, kl_1d, price, ind, can_enter):
             view["slot"] = None
             view["reason"] = f"{dec.get('reason')} — 일 한도로 진입 보류(다음 루프 재시도)"
             return None, view, realized
-        lev, size = int(cfg.get("lev", 3)), float(cfg.get("size_pct", 10.0))
+        lev = int((cfg.get("lev_by_sym") or {}).get(sym, cfg.get("lev", 3)))
+        size = float((cfg.get("size_pct_by_sym") or {}).get(sym, cfg.get("size_pct", 10.0)))
         pid, sz = None, None
         if mode == "real":
             avail = _avail_usdt()
