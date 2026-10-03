@@ -16,6 +16,7 @@ from strats2 import BUF, Book2, alive, deepest, gates, zones_by_avail, zones_by_
 from core import atr
 
 K_DEFAULT = 1.0
+LAST_AUDIT = {}   # 검증용: 마지막으로 확정된 셋업의 스윕·구조전환 정보
 
 
 def prep_b(c, k=K_DEFAULT):
@@ -122,17 +123,42 @@ class Setup:
     def step(self, c, B, i):
         """반환: None(계속) / 'dead' / 'order'(진입가 확정)."""
         if self.e is None:
-            if i - self.i0 > self.window or c["l"][i] < self.low:
+            if i - self.i0 > self.window:
                 return "dead"
+            if c["l"][i] < self.low:
+                # 11강: displacement 전 더 깊은 저점 → 더 깊은 유동성을 가져가는 중. 다음 15분봉이 꼬리 스윕 마감하면 스윕 갱신,
+                # 몸통으로 깨고 마감하면(스윕 아님) 셋업 소멸
+                self.pending_low = True
             cl = c["close_15m"][i]
+            if getattr(self, "pending_low", False) and not np.isnan(cl):
+                k = B["k15_at"][i]
+                if B["c15"][k] > self.low:          # 꼬리만 내려갔다 복귀 → 스윕 저점 갱신
+                    self.low, self.k_s = B["l15"][k], k
+                    self.ph = protected_high(B, i, k) or self.ph
+                    self.pending_low = False
+                else:
+                    return "dead"
+            cl = c["close_15m"][i]
+            if self.ph is None and getattr(self, "wait_after", None) is not None:
+                for p, a_, b in reversed(recent(B, "sh_15m", i, 50)):
+                    if b > self.wait_after:
+                        self.ph = p
+                        break
+                    if b <= self.wait_after:
+                        break
             if np.isnan(cl) or self.ph is None:
                 return None
             if cl > self.ph:
                 e = leg_entry_15(B, self.k_s, B["k15_at"][i])
                 if e is None:
-                    self.ph = max(self.ph, B["h15"][B["k15_at"][i]])   # displacement(15m FVG) 없음 → 다음 구조 대기
+                    # 6강: FVG 없는 돌파 = 가짜 레그 → 이후 새로 확정되는 유의미 15m 스윙 고점이 새 기준(그 전까지 대기)
+                    self.ph, self.wait_after = None, B["k15_at"][i]
                     return None
                 self.e, self.mb = e, i
+                self.audit = dict(sweep_k=self.k_s, low=self.low, ph=self.ph, mss_close=cl, mss_k=B["k15_at"][i], e=e,
+                                  level=getattr(self, "level", None), mss_i=i)
+                LAST_AUDIT.clear()
+                LAST_AUDIT.update(self.audit)
                 return "order"
             return None
         if i - self.mb > self.window or c["l"][i] < self.low:
@@ -165,7 +191,7 @@ def run_s3b(c, mode, window, kz_on=True, open_mode="strict", level="D", k=K_DEFA
             sw = sweep_15(c, B, i, lo_lv[i])
             if sw and (G["s3"][i] or G["counter"][i]):
                 st = Setup(sw[0], sw[1], i, protected_high(B, i, sw[1]), window)
-                st.ctr, st.tp = not G["s3"][i], hi_lv[i]
+                st.ctr, st.tp, st.level = not G["s3"][i], hi_lv[i], lo_lv[i]
                 last = kk
             continue
         r = st.step(c, B, i)
@@ -216,6 +242,7 @@ def run_s2b(c, mode, window, kz_on=True, open_mode="strict", k=K_DEFAULT):
                 cands = [p for p, a_, b in recent(B, "sl_15m", i, 300) if b < k15 and B["l15"][k15] < p < B["c15"][k15]]
                 if cands:   # 유의미 15m 스윙 저점을 꼬리로 쓸고 위에서 마감한 15분봉
                     st["setup"] = Setup(B["l15"][k15], k15, i, protected_high(B, i, k15), window)
+                    st["setup"].level = max(cands)
             continue
         s = st["setup"]
         r = s.step(c, B, i)
@@ -283,7 +310,7 @@ def run_s8ab(c, mode, window, kz_on=True, open_mode="strict", k=K_DEFAULT):
                     sw = sweep_15(c, B, i, lv)
                     if sw:
                         st = Setup(sw[0], sw[1], i, protected_high(B, i, sw[1]), window)
-                        st.ctr, st.d = not G["dir"][i], d
+                        st.ctr, st.d, st.level = not G["dir"][i], d, lv
                         break
             continue
         # 10강: 아시안 진입은 그 세션(+런던 지지)까지만 — 주문은 런던 킬존 종료(뉴욕 05시)에 만료
