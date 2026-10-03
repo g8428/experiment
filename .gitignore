@@ -58,3 +58,6 @@ credentials.*
 .mcp.json
 
 **/.claude/worktrees/
+
+# 딥코인봇 1분봉 캐시 (로컬 전용, 커밋 안 함)
+projects/deepcoin_bot/backtest/cache/*_1m/
