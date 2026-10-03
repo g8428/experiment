@@ -12,6 +12,7 @@ import numpy as np  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(__file__))
 import strats2 as S  # noqa: E402
+import strats_b as SB  # noqa: E402
 
 CACHE = os.path.join(os.path.dirname(__file__), "..", "backtest", "cache")
 OUT = os.path.join(os.path.dirname(__file__), "audit")
@@ -65,15 +66,27 @@ def draw(rec, name, extra):
 plt.rcParams["font.family"] = "Malgun Gothic"
 plt.rcParams["axes.unicode_minus"] = False
 rng = np.random.default_rng(7)
-CAP.clear()
-S.RUNNERS["S3d"][0](c, "structure", 3 * 1440, False, "daily")
-s3 = [r for r in CAP if r["tag"] == "S3D"] or CAP
-for k, r in enumerate(rng.choice(len(s3), size=min(6, len(s3)), replace=False)):
-    rec = s3[r]
-    draw(rec, f"S3d_{k}", [(c["pdl"][rec["i"]], "전일저점", "purple"), (c["pdh"][rec["i"]], "전일고점", "purple")])
-CAP.clear()
-S.RUNNERS["S2"][0](c, "structure", 3 * 1440, False, "daily")
-s2 = [r for r in CAP if r["tag"] == "S2"] or CAP
-for k, r in enumerate(rng.choice(len(s2), size=min(4, len(s2)), replace=False)):
-    draw(s2[r], f"S2_{k}", [])
-print("S3d", len(s3), "S2", len(s2), "→", sorted(os.listdir(OUT)))
+VER = sys.argv[1] if len(sys.argv) > 1 else "A"
+if VER == "B":
+    for name, tagp in (("S3d-B", "S3D-B"), ("S8a-B", "S8a-B")):
+        CAP.clear()
+        SB.RUNNERS_B[name](c, "structure", 3 * 1440, False, "daily")
+        recs = [r for r in CAP if r["tag"] == tagp] or CAP
+        for k, r in enumerate(rng.choice(len(recs), size=min(5, len(recs)), replace=False)):
+            rec = recs[r]
+            ex = [(c["pdl"][rec["i"]], "전일저점", "purple"), (c["pdh"][rec["i"]], "전일고점", "purple")] if "S3" in name else []
+            draw(rec, f"B_{name}_{k}", ex)
+        print(name, len(recs))
+else:
+    CAP.clear()
+    S.RUNNERS["S3d"][0](c, "structure", 3 * 1440, False, "daily")
+    s3 = [r for r in CAP if r["tag"] == "S3D"] or CAP
+    for k, r in enumerate(rng.choice(len(s3), size=min(6, len(s3)), replace=False)):
+        rec = s3[r]
+        draw(rec, f"S3d_{k}", [(c["pdl"][rec["i"]], "전일저점", "purple"), (c["pdh"][rec["i"]], "전일고점", "purple")])
+    CAP.clear()
+    S.RUNNERS["S2"][0](c, "structure", 3 * 1440, False, "daily")
+    s2 = [r for r in CAP if r["tag"] == "S2"] or CAP
+    for k, r in enumerate(rng.choice(len(s2), size=min(4, len(s2)), replace=False)):
+        draw(s2[r], f"S2_{k}", [])
+    print("S3d", len(s3), "S2", len(s2), "→", sorted(os.listdir(OUT)))
