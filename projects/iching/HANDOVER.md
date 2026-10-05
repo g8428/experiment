@@ -130,17 +130,37 @@ GD2[20] = {
 - `max_tokens=5000`에 `stop_reason`을 안 봐서 잘린 응답은 JSON 파싱 실패 → 재시도 → 운에 따라 결과가 달라짐.
 - 변효 개수별 원칙(`readingFocus`)이 3개와 4개를 한 분기로 묶은 채, 섹션4 지침은 개수와 무관하게 "변효 효사를 인용하라" → 변효 4개일 때 모순. 무료판(`buildLocalCards`)은 4~5개면 **불변효** 중심인데 유료판엔 그 규칙이 없었음.
 
-### 지금 구조 (`index.html`)
-| 함수/객체 | 역할 |
-|---|---|
-| `window.buildReadingSystem()` | 매 호출 동일한 고정 규칙 — 존댓말 절대 규칙, 7섹션 규격, 육효 처리, 금지/필수. `system` 필드로 전송 |
-| `window.buildReadingUser(ben,ji,state)` | 이번 점사 데이터만 — 괘사/대상전/변효 또는 불변효 효사/다산역/육효 타이밍/Q&A + `heartRule`(개수별 심장 섹션 규칙) |
-| `window.READING_TOOL` | `write_reading` 도구 JSON 스키마(7섹션 고정, tag enum). `tool_choice:{type:'tool'}`로 **강제** — "JSON만 써줘"가 아니라 구조적으로 못 벗어남 |
-| `parseReadingResponse(data)` | `tool_use` 블록 `input` 우선, 텍스트 JSON 폴백. 섹션을 `READING_TAGS` 순서로 재정렬, `meaning`은 렌더러가 GD로 채움 |
-| `generateReading(ben,ji,retry,compact)` | `temperature 0.35`, `max_tokens 8000`. `stop_reason==='max_tokens'`면 간결 모드(`compact=true`)로 1회 재요청 |
-| `window.buildReadingPrompt` | 하위호환 래퍼(system+user 합침). 현재 호출처 없음 |
+### 노드 그래프로 전환 (2026-10-05)
+**왜**: 7섹션을 한 번의 호출로 쓰면 괘 데이터·고민·문답·전 섹션 규칙을 한 맥락에 다 들고 가서 놓치는 게 많았고, 어느 단계에서 틀렸는지 볼 수 없었다. → 노드마다 역할과 JSON 출력 스키마를 정하고, **각 노드는 앞 노드 JSON 중 필요한 필드만** 받는다. Langfuse에 노드별 generation이 남는다.
 
-변효 개수별 규칙은 `buildReadingUser` 안의 `readingFocus`/`heartRule`이 **0 / 1 / 2 / 3 / 4~5 / 6** 으로 분기한다(무료판과 동일). 4~5개는 변효 효사를 프롬프트에 아예 넣지 않고 불변효 효사만 준다. `_autoMeaning('이 점괘의 심장')`도 4~5개면 불변효를 원전으로 표시.
+```
+analyze_hexagram ─▶ map_situation ─┬▶ write_frame  총평 · 괘의 형세 · 마무리 · headline
+(괘 데이터만)        (+ 고민·문답)   ├▶ write_core   대상전 — 지금 할 것 · 이 점괘의 심장
+                                    └▶ write_path   방향 · 시기
+                                              ▼ assemble(코드) → 7섹션
+```
+
+| 위치 | 역할 |
+|---|---|
+| `index.html` `window.buildReadingInput(ben,ji,state)` | 재료만 만든다: `hexagram`(괘사/대상전/변효·불변효 효사/다산역/육효 응기 텍스트 — 고민·문답 없음), `heartRule`, `name`, `today`, `question`, `qa[]`, `meta` |
+| `index.html` `generateReading` / `parseReadingResponse` | 재료를 `/api/reading`에 POST, 응답 `reading`을 `READING_TAGS` 순서로 받는다 |
+| `api/_lib/reading-graph.js` | 노드 정의(프롬프트·`tool_use` 스키마·temperature·timeout)와 실행기. **프롬프트 규칙은 이제 여기서 고친다** |
+| `api/reading.js` | 그래프 실행 + Langfuse 루트(`agent` 타입 `iching-reading`) |
+| `lib/langfuse.js` | NodeSDK + LangfuseSpanProcessor 초기화(`ensureTracing`/`flushTraces`), 단일 호출용 `traceAnthropicCall`(questions.js) |
+
+- 쓰기 노드 3개는 병렬. 평소 약 21초. Vercel 60초 한도 때문에 노드별 시도 timeout(분석 25초, 나머지 15초) + 전체 예산 55초로 끊고 재시도한다 — 한 호출만 30초 넘게 멈춘 사례가 트레이스로 확인됨.
+- **비용·시간 측정(2026-10-06, 같은 괘 2종 × 2회)**: 예전 단일 호출 20.6초·$0.0165·본문 1,741자 / 첫 그래프(쓰기 노드 5개) 27.5초·$0.042 / 현재(쓰기 3개) 21.3초·$0.028·본문 1,275자. 쓰기 노드마다 붙는 고정 규칙·도구 안내(노드당 ~1,700토큰)가 입력의 절반이었다 → 노드 수 줄이고 공통 규칙(STYLE) 압축, 분석·연결 메모는 필드당 한 문장, JSON 들여쓰기 제거. **STYLE은 쓰기 노드마다 반복되니 늘리지 말 것.**
+- 노드 실패 시 그 노드만 최대 3회 재시도(429/5xx/timeout/필드 누락/max_tokens). 시도마다 generation이 하나씩, 실패는 `ERROR`로 남는다.
+- **효사 한자 원문은 데이터에 없다**(GD.hy·GD2.hy2 모두 국문 의역). 예전 단일 호출은 "한자 원문 인용" 규칙 때문에 원문을 지어냈다 → 노드 프롬프트에 "주어진 문구 그대로, 한자를 만들지 않음"이 `heartRule`의 "한자 원문" 표현보다 우선한다고 명시. 진짜 원문을 넣으려면 GD에 효사 원문 필드를 추가해야 한다.
+- 화면의 효사 표시(1단계 `buildLocalCards`, 2단계 원전 카드·심장 의미, 괘 아래 요약)는 `focusYao(chg)` 하나로 정한다: 변효 1~3개 → 변효, 4~5개 → 불변효, 0·6개 → 개별 효 없음. 예전엔 원전 카드가 개수와 무관하게 변효를 보여줘서 4~5개일 때 풀이(불변효)와 어긋났다.
+- 섹션 tag 문자열은 서버 `READING_TAGS`와 클라이언트 `window.READING_TAGS`가 같아야 한다.
+- Langfuse 키: `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL`. 없으면 트레이싱만 꺼지고 점사는 동작한다. 트레이스 조회는 `npx langfuse-cli api observations list --trace-id <id>` (v4에서 legacy traces API는 막힘).
+- `.vercelignore`에서 `package.json`을 뺐다 — 들어 있으면 Vercel이 npm 패키지를 설치하지 않아 `@langfuse/*` import가 실패한다.
+
+### 이전 구조 (2026-09-28 ~ 10-05, 단일 호출)
+`buildReadingSystem`(고정 규칙) + `buildReadingUser`(데이터) + `READING_TOOL`(7섹션 스키마)로 한 번에 생성. 위 그래프로 대체되어 삭제됨. 아래 규칙들은 그래프 노드 프롬프트로 옮겨졌다.
+
+변효 개수별 규칙은 `buildReadingInput` 안의 `readingFocus`/`heartRule`이 **0 / 1 / 2 / 3 / 4~5 / 6** 으로 분기한다(무료판과 동일). 4~5개는 변효 효사를 프롬프트에 아예 넣지 않고 불변효 효사만 준다. `_autoMeaning('이 점괘의 심장')`도 4~5개면 불변효를 원전으로 표시.
 
 ### 시기(時期) 계산 (2026-09-28 수정)
 
@@ -154,16 +174,16 @@ GD2[20] = {
 | `detectYongsin(q)` | 질문 키워드 → 용신 육친 (관귀/부모/처재/자손/형제, 연애는 관귀·처재 둘 다) |
 | `buildEunggi(lyData,chg,q,date)` | 육효 응기. 세효·응효·용신·동효(변효 4~5개면 불변효, 6개면 세·응·용신만)의 지지별로 상태(동/정, 왕상휴수, 공망, 월파, 일진 충·합)와 응기 후보(값·합·충·출공)를 실제 달 범위 + 60일 내 가까운 날로 준다 |
 
-`buildReadingUser`는 `[추이 — 계절 국면]`과 `[시기 판단 근거 — 육효 응기]` 두 블록을 넣고, system 규칙 6번과 user 마지막 줄이 "이 두 블록에서만 시기를 가져오라, 근거 없는 달·어림 숫자·N개월 채우기 금지"로 바뀌었다.
+`buildReadingInput`의 hexagram 텍스트는 `[추이 — 계절 국면]`과 `[시기 판단 근거 — 육효 응기]` 두 블록을 넣고, analyze_hexagram·write_path 노드 규칙이 "이 두 블록에서만 시기를 가져오라, 근거 없는 달·어림 숫자·N개월 채우기 금지"로 바뀌었다.
 
-원칙은 `interpretation_methodology_guide.md` "시기 판단" 절 참고. **검증 방법**: `buildReadingUser`를 node에서 서로 다른 괘·질문으로 호출해 두 블록이 괘마다 달라지는지 본다(같은 날 모든 괘가 같은 달을 받으면 퇴행).
+원칙은 `interpretation_methodology_guide.md` "시기 판단" 절 참고. **검증 방법**: `buildReadingInput`을 node에서 서로 다른 괘·질문으로 호출해 두 블록이 괘마다 달라지는지 본다(같은 날 모든 괘가 같은 달을 받으면 퇴행).
 
 ### 서버 (`api/reading.js`, `api/questions.js`)
-Anthropic Messages API 프록시. 클라이언트가 보낸 `system / messages / tools / tool_choice / temperature / max_tokens`를 그대로 전달한다(구버전 `prompt`만 와도 동작). `local-server.js`가 같은 핸들러를 동적 import하므로 로컬/Vercel 동작이 같다.
+`api/reading.js`는 위 노드 그래프 실행기. `api/questions.js`는 Anthropic Messages API 프록시(클라이언트가 보낸 `system / messages / ...`를 그대로 전달, `traceAnthropicCall`로 1회 호출 트레이스). `local-server.js`가 같은 핸들러를 동적 import하므로 로컬/Vercel 동작이 같다(`.env` 값의 따옴표는 벗겨서 읽음).
 
 ### 유지 원칙
-- 규칙을 바꿀 땐 `buildReadingSystem`(모든 점사 공통)인지 `buildReadingUser`(이번 점사 데이터)인지 구분해서 넣을 것. 다시 한 덩어리로 합치지 말 것.
-- 출력 형식은 `READING_TOOL.input_schema`가 원본. 섹션을 추가/삭제하면 스키마·`READING_TAGS`·`buildReadingHtmlV2`의 `TAG_LABELS`를 같이 바꿀 것.
+- 규칙을 바꿀 땐 고정 규칙은 `api/_lib/reading-graph.js`의 해당 노드에, 이번 점사 데이터는 `buildReadingInput`에 넣을 것. 노드를 다시 한 덩어리로 합치지 말 것.
+- 섹션을 추가/삭제하면 그래프의 쓰기 노드·`assemble`·양쪽 `READING_TAGS`·`buildReadingHtmlV2`의 `TAG_LABELS`를 같이 바꿀 것.
 - `temperature`를 올리면 톤이 다시 흔들린다. 0.3~0.4 유지.
 
 ---

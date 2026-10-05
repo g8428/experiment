@@ -12,7 +12,7 @@ try {
   const envText = await readFile('.env', 'utf8');
   for (const line of envText.split('\n')) {
     const [k, ...v] = line.split('=');
-    if (k && k.trim() && !k.startsWith('#')) process.env[k.trim()] = v.join('=').trim();
+    if (k && k.trim() && !k.startsWith('#')) process.env[k.trim()] = v.join('=').trim().replace(/^(['"])(.*)\1$/, '$2');
   }
 } catch {}
 

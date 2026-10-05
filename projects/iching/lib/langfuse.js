@@ -23,11 +23,26 @@ function init() {
   process.env.LANGFUSE_TRACING_ENVIRONMENT ??= process.env.VERCEL_ENV || 'development';
   if (process.env.VERCEL_GIT_COMMIT_SHA) process.env.LANGFUSE_RELEASE ??= process.env.VERCEL_GIT_COMMIT_SHA;
 
-  processor = new LangfuseSpanProcessor({
-    exportMode: 'immediate', // 서버리스: 응답 후 프로세스가 freeze 되어도 유실되지 않게 즉시 전송
-    ...(process.env.LANGFUSE_MASK_IO === '1' ? { mask: () => '[MASKED]' } : {}),
-  });
-  new NodeSDK({ spanProcessors: [processor] }).start();
+  // 트레이싱 설정 오류(잘못된 URL 등)가 점사 자체를 막으면 안 된다 — 경고만 남기고 끈다
+  try {
+    const p = new LangfuseSpanProcessor({
+      exportMode: 'immediate', // 서버리스: 응답 후 프로세스가 freeze 되어도 유실되지 않게 즉시 전송
+      ...(process.env.LANGFUSE_MASK_IO === '1' ? { mask: () => '[MASKED]' } : {}),
+    });
+    new NodeSDK({ spanProcessors: [p] }).start();
+    processor = p;
+  } catch (err) {
+    console.warn('[langfuse] 초기화 실패 — 트레이싱 없이 진행:', err.message);
+  }
+}
+
+// 직접 startObservation으로 계측하는 코드(점사 그래프 등)용 — 같은 NodeSDK/processor를 공유한다
+export function ensureTracing() {
+  init();
+}
+
+export async function flushTraces() {
+  try { await processor?.forceFlush(); } catch { /* noop */ }
 }
 
 // Anthropic content 블록 → Langfuse가 읽기 좋은 OpenAI 스타일 assistant 메시지 (+ thinking 분리)

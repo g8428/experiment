@@ -559,6 +559,15 @@ function calcGuas(){
 }
 
 /* ─────────────────── GUA RENDER ─────────────────── */
+// 해석 중심 효: 변효 1~3개면 변효, 4~5개면 불변효, 0·6개면 개별 효 없음(괘사·용구/용육·지괘 중심).
+// AI 그래프의 heartRule, 무료 카드, 원전 카드가 모두 이 규칙을 따라야 화면과 풀이가 어긋나지 않는다.
+function focusYao(chg){
+  const n=(chg||[]).length;
+  if(n>=4&&n<=5)return{idxs:[0,1,2,3,4,5].filter(i=>!chg.includes(i)),kind:'불변효'};
+  if(n>=1&&n<=3)return{idxs:chg.slice(),kind:'변효'};
+  return{idxs:[],kind:''};
+}
+
 function renderGua(cid,iid){
   const nats=getNats(),chgd=getChgNats();
   const ben=S.benGua,ji=S.jiGua;
@@ -583,7 +592,8 @@ function renderGua(cid,iid){
   if(ji&&S.chg.length>0)html+=`<div class="garw">→</div><div class="gblk">${lines(chgd,null)}<p class="gname">${ji.n}</p><p class="gsub">${ji&&ji.no!=null?ji.no+'번':''}</p></div>`;
   document.getElementById(cid).innerHTML=html;
   const iel=document.getElementById(iid);
-  if(S.chg.length>0)iel.innerHTML=`변효: <span>${S.chg.map(i=>i+1+'효').join(' · ')}</span>`;
+  const fy=focusYao(S.chg);
+  if(S.chg.length>0)iel.innerHTML=`변효: <span>${S.chg.map(i=>i+1+'효').join(' · ')}</span>${fy.kind==='불변효'?` · 중심은 불변효 <span>${fy.idxs.map(i=>i+1+'효').join(' · ')}</span>`:''}`;
   else iel.textContent='변효 없음';
 }
 
@@ -744,7 +754,10 @@ function showHexResult(){
   const ben=S.benGua?GD[S.benGua.no]:null;
   const ji=S.jiGua?GD[S.jiGua.no]:null;
   document.getElementById('hexTitle').textContent=S.benGua?(S.jiGua?`${S.benGua.n} → ${S.jiGua.n}`:S.benGua.n):'';
-  document.getElementById('hexSub').textContent=S.chg.length>0?`변효 ${S.chg.map(i=>i+1+'효').join('·')} · ${S.benGua?.no||'??'}번 괘`:`변효 없음 · ${S.benGua?.no||'??'}번 괘`;
+  const fy=focusYao(S.chg);
+  document.getElementById('hexSub').textContent=S.chg.length>0
+    ?`변효 ${S.chg.map(i=>i+1+'효').join('·')}${fy.kind==='불변효'?` → 불변효 ${fy.idxs.map(i=>i+1+'효').join('·')} 중심`:''} · ${S.benGua?.no||'??'}번 괘`
+    :`변효 없음 · ${S.benGua?.no||'??'}번 괘`;
   renderGua('s2gua','s2chgi');
   document.getElementById('hexDesc').textContent=ben?`${(GD2?.[S.benGua?.no]?.k2||ben.k)} ${ben.v}`:'';
   // 해석 카드 렌더링
@@ -1141,10 +1154,12 @@ function buildLocalCards(ben,ji,chg){
     const _unchangedIdxs=chgN>=4?[0,1,2,3,4,5].filter(i=>!chg.includes(i)):[];
     const _unchangedText=chgN>=4?_unchangedIdxs.map(i=>LABELS[i]).join(', '):'';
     html+=`<div class="scard">
-      <span class="stag">변효 · 變爻 (${chg.length}개)</span>
+      <span class="stag">${chgN>=4?`불변효 · 不變爻 (${_unchangedIdxs.length}개)`:`변효 · 變爻 (${chg.length}개)`}</span>
       <h2 class="stit">${_cardStit}</h2>
       <div class="sbody">
-        <p style="font-size:.75rem;color:var(--t3)">변효: <strong style="color:var(--t1)">${chgText}</strong>${chgN>=4?` · 불변효: <strong style="color:var(--t1)">${_unchangedText}</strong>`:''}</p>
+        <p style="font-size:.75rem;color:var(--t3)">${chgN>=4
+          ?`변효가 ${chgN}개(${chgText})라 움직이지 않는 <strong style="color:var(--t1)">${_unchangedText}</strong>를 읽습니다.`
+          :`변효: <strong style="color:var(--t1)">${chgText}</strong>`}</p>
         ${hyosaParts}
         ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--t2)">→ 지괘 <strong style="color:var(--t1)">${jiName}</strong>으로 흘러가고 있습니다.</p>`:''}
       </div>
@@ -1216,9 +1231,10 @@ function buildReadingHtmlV2(r,ben,ji){
     '마무리':'마무리',
   };
 
-  // ── 원전 카드: 본괘 괘사 + 변효 효사(각각) + 지괘 괘사 ──
+  // ── 원전 카드: 본괘 괘사 + 해석 중심 효의 효사(focusYao: 1~3개 변효 / 4~5개 불변효 / 0·6개 없음) + 지괘 괘사 ──
   const _LABELS=['초효','이효','삼효','사효','오효','상효'];
   const _chg=S.chg||[];
+  const _fy=focusYao(_chg);
   const _ben2=GD2?.[S.benGua?.no]||{};
   const _ji2=GD2?.[S.jiGua?.no]||{};
   const _benK=_ben2.k2||ben?.k||'';
@@ -1228,15 +1244,18 @@ function buildReadingHtmlV2(r,ben,ji){
   {
     let src=`<div class="scard"><span class="stag">원전 · 原典</span><div class="sbody">`;
     src+=`<div style="margin-bottom:.85rem"><p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">본괘 · ${_benName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_benK}</p></div>`;
-    if(_chg.length>0){
-      _chg.forEach(idx=>{
-        const hy=_ben2.hy2?.[idx]||ben?.hy?.[idx]||'';
-        if(!hy)return;
-        src+=`<div style="margin-bottom:.7rem;padding:.65rem .9rem;border-left:1.5px solid rgba(196,154,42,.45);background:rgba(196,154,42,.04)">`;
-        src+=`<p style="font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${_LABELS[idx]}</p>`;
-        src+=`<p style="font-size:.85rem;line-height:1.8;color:var(--t1)">${hy}</p></div>`;
-      });
+    if(_fy.kind==='불변효'){
+      src+=`<p style="font-size:.75rem;color:var(--t3);margin-bottom:.6rem">변효가 ${_chg.length}개라 움직이지 않는 자리(${_fy.idxs.map(i=>_LABELS[i]).join(', ')})를 읽습니다.</p>`;
+    }else if(_chg.length===6){
+      src+=`<p style="font-size:.75rem;color:var(--t3);margin-bottom:.6rem">여섯 효가 모두 변해 개별 효사보다 ${S.benGua?.no===1?'용구(用九)':S.benGua?.no===2?'용육(用六)':'지괘 괘사'}가 중심입니다.</p>`;
     }
+    _fy.idxs.forEach(idx=>{
+      const hy=_ben2.hy2?.[idx]||ben?.hy?.[idx]||'';
+      if(!hy)return;
+      src+=`<div style="margin-bottom:.7rem;padding:.65rem .9rem;border-left:1.5px solid rgba(196,154,42,.45);background:rgba(196,154,42,.04)">`;
+      src+=`<p style="font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${_fy.kind==='불변효'?'불변효 · ':''}${_LABELS[idx]}</p>`;
+      src+=`<p style="font-size:.85rem;line-height:1.8;color:var(--t1)">${hy}</p></div>`;
+    });
     if(ji&&_jiK){
       src+=`<div style="margin-top:.2rem"><p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">지괘 · ${_jiName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_jiK}</p></div>`;
     }
@@ -1258,11 +1277,8 @@ function buildReadingHtmlV2(r,ben,ji){
       return parts.filter(Boolean).join('\n');
     }
     if(tag==='이 점괘의 심장'){
-      if(_chg.length===0)return'';
-      // 변효 4~5개면 무료판(buildLocalCards)과 동일하게 불변효가 중심 — 원전 표시도 그쪽으로
-      const focus=(_chg.length>=4&&_chg.length<=5)?[0,1,2,3,4,5].filter(i=>!_chg.includes(i)):_chg;
-      const prefix=(_chg.length>=4&&_chg.length<=5)?'불변효 ':'';
-      return focus.map(i=>{
+      const prefix=_fy.kind==='불변효'?'불변효 ':'';
+      return _fy.idxs.map(i=>{
         const hy=_ben2.hy2?.[i]||ben?.hy?.[i]||'';
         return hy?`${prefix}${_LABELS[i]}: ${hy}`:'';
       }).filter(Boolean).join('\n');
@@ -1796,15 +1812,12 @@ ${[missStr,yongNone].filter(Boolean).join('\n')}
 }
 const OHAENG_KR={'木':'木','火':'火','土':'土','金':'金','水':'水','Water':'水','Fire':'火'};
 
-/* ── 점사 프롬프트 빌더 (3층 섹션 구조) ── */
-/* ── AI 점사 프롬프트: system(고정 규칙) + user(이번 점사 데이터) + write_reading 도구 스키마 ──
-   왜 이렇게 나눴나: 한 덩어리 user 프롬프트에 규칙까지 다 넣고 "JSON만 출력"을 부탁하던 방식은
-   존댓말/반말이 오락가락하고 섹션이 빠지고 코드블록으로 감싸는 등 일관성이 없었음(2026-09-28).
-   고정 규칙은 system으로, 출력은 tool_choice 강제 스키마로, temperature는 0.35로 고정. */
+/* ── AI 점사 재료: 클라이언트는 계산된 괘 데이터·심장 규칙·고민·문답만 만든다.
+   프롬프트·노드 구성·출력 스키마는 서버 api/_lib/reading-graph.js 에 있다(2026-10-05 그래프 전환). */
 const POS_MEAN=['씨앗·시작','내부 판단','경계·전환','외부 진입','군위·중심','완성·마무리'];
 window.READING_TAGS=['총평','괘의 형세','대상전 — 지금 할 것','이 점괘의 심장','방향','시기','마무리'];
 
-window.buildReadingUser=function(ben,ji,state){
+window.buildReadingInput=function(ben,ji,state){
   const name=state.name||'상담자';
   const nats=(state.throws||[]).map(t=>t&&(t.sum===9||t.sum===7)?'양':'음');
   const dasan=nats.length===6?calcDasanYeok(nats,state.benGua?.no,state.chg||[]):null;
@@ -1893,7 +1906,6 @@ ${yong?`본괘가 ${benName}이므로 ${yong}로 읽는다.`:'지괘 괘사가 �
     lyStr=buildEunggi(lyData,chg,state.q||'',lyData.date||new Date());
   }
 
-  const qap=(state.q5||[]).map((q,i)=>`Q${i+1}. ${q}\nA. ${(state.a5||[])[i]||'(답변 없음)'}`).join('\n\n');
   const today=new Date();
   const todayStr=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
 
@@ -1902,124 +1914,40 @@ ${yong?`본괘가 ${benName}이므로 ${yong}로 읽는다.`:'지괘 괘사가 �
   if(chgN>=1&&chgN<=3)hyosaBlock=`변효 효사:\n${chg.map(i=>`  ${LABELS[i]}: ${benHy(i)}`).join('\n')}`;
   else if(chgN>=4&&chgN<=5)hyosaBlock=`불변효 효사(이 점의 중심 — 변효 효사는 제공하지 않음):\n${unchanged.map(i=>`  ${LABELS[i]}: ${benHy(i)}`).join('\n')}`;
 
-  return`━━━━━━━━━━━━━━━━━━
-이름: ${name}
-고민: ${state.q||'(없음)'}
-오늘: ${todayStr}
-
-본괘: ${benName}(${state.benGua?.no||'?'}번)
+  // hexagram 텍스트에는 괘 데이터만 — 고민·문답은 따로 보내서 서버 그래프의 첫 노드(괘 분석)가 고민 없이 괘만 읽게 한다
+  const hexagram=`본괘: ${benName}(${state.benGua?.no||'?'}번)
 괘사: ${benK}${benDt2?`\n단전(괘 해석 근거): ${benDt2}`:''}
 대상전: ${benDst}
 본괘 핵심: ${ben?.v||''}
 ${jiName?`\n지괘: ${jiName}(${state.jiGua?.no}번)\n지괘 괘사: ${jiK}\n지괘 대상전: ${jiDst}`:''}
 변효: ${chgN>0?chg.map(i=>LABELS[i]).join(', '):'없음'}
 ${hyosaBlock}
-${readingFocus}${dasanStr}${lyStr}
+${readingFocus}${dasanStr}${lyStr}`;
 
-추가 질문·답변:
-${qap}
-━━━━━━━━━━━━━━━━━━
-
-[이번 점사의 "이 점괘의 심장" 섹션 규칙 — 이 규칙이 다른 모든 지침보다 우선]
-${heartRule}
-
-위 데이터로 ${name}님의 점사를 write_reading 도구로 작성하세요.
-"시기" 섹션은 오늘(${todayStr}) 기준으로, [추이 — 계절 국면]에서 큰 흐름을, [시기 판단 근거 — 육효 응기]의 후보에서만 구체적인 달·날을 가져와 씁니다. 그 밖의 달이나 "몇 달 뒤" 같은 어림 숫자는 쓰지 않습니다.`;
-};
-
-/* ── system: 매 호출 동일한 고정 규칙 (문체·구조·금지) ── */
-window.buildReadingSystem=function(){
-  return`당신은 수십 년 경력의 주역 점술가입니다. 상담자의 이름·고민·괘 데이터를 받아 점사를 씁니다.
-
-[문체 — 절대 규칙]
-- 모든 문장은 존댓말로 끝냅니다: "-습니다", "-ㅂ니다", "-입니다", "-지요", "-까요". "-다", "-어", "-아", "-지", "-야", "-네" 같은 반말 종결은 단 한 문장도 쓰지 않습니다.
-- 짧고 힘있는 문단. 감성적이되 담담한 톤. 전통 점술가가 말하듯, AI 티 없이.
-- 상담자 이름을 각 섹션에 한 번 이상 자연스럽게.
-- 단정적 지시("~하세요", "~해야 합니다") 금지 — 방향을 보여주되 최종 선택은 본인 몫이라는 여지.
-
-[출력 — write_reading 도구만 사용]
-- 결과는 반드시 write_reading 도구 호출로만 넣습니다. 도구 밖에 텍스트를 쓰지 않습니다.
-- sections는 정확히 7개, 아래 tag 순서 그대로. 각 reading은 4문장 이상.
-1. "총평" — title: 이 점괘 전체를 관통하는 한 문장. reading: 2~3문장 도입, 길흉 방향 포함.
-2. "괘의 형세" — 다산역 3원리(물상·추이·호체)를 항목 나열 없이 하나의 서사로. 물상=상괘·하괘의 자연 상징으로 지금 상황을 그림처럼. 추이=12벽괘 흐름에서 성장기인지 쇠락기인지. 호체 데이터가 있으면 "겉은 ~이지만 안에 ~가 숨어있습니다" 구조로.
-3. "대상전 — 지금 할 것" — 대상전의 실천 지침을 상담자 상황에 구체 적용. 변효 있으면 본괘 대상전(지금 당장) + 지괘 대상전(흘러가며 갖출 태도). 추상적 덕목 나열 금지.
-4. "이 점괘의 심장" — 사용자 메시지 끝의 [심장 섹션 규칙]을 그대로 따릅니다. 길흉 기조("전반적으로 길한 흐름" / "조심이 필요한 국면")를 먼저 명확히. 육효점의 세효·응효·육친·공망은 서사에 녹여서.
-5. "방향" — 지괘(없으면 본괘)가 가리키는 방향·태도·기운. 현대식 액션플랜 금지.
-6. "시기" — 사용자 메시지의 [추이 — 계절 국면]과 [시기 판단 근거 — 육효 응기] 블록에서만 시기를 가져옵니다. 추이로 지금이 자라는 국면인지 거두는 국면인지, 그리고 변효 위치가 가까운 일인지 먼 일인지를 먼저 말하고, 응기 후보(값·합·충·출공) 가운데 세효·용신·동효에 해당하는 것을 골라 실제 달·날로 씁니다("~월 초순은 ~, ~일 무렵은 ~"). 가까운 일은 일 단위, 먼 일은 월 단위. 응기가 하나면 하나만 씁니다. 근거 블록에 없는 달, 앞으로 몇 달을 무조건 채워 쓰는 방식, "몇 달 뒤" 같은 어림 숫자는 금지입니다.
-7. "마무리" — 한두 문장 응축, 응원과 위로. 날짜·시간·서명·낙관 금지.
-- title은 "총평" 외에는 빈 문자열이어도 됩니다.
-- headline: 점사 전체를 한 줄로. closing_line: 마지막 여운 한 문장.
-
-[육효점 데이터 처리]
-- 계산값을 날 것으로 나열하지 않습니다("세효는 壬午이고 응효는 甲子입니다" 금지). 의미로 녹입니다: 공망→"아직 결과가 차지 않은 시기", 충→"이 달에 변화가 발동", 세효 공망→"지금 내가 비어있는 상태".
-
-[금지]
-- 항목 병렬 나열("이건 이렇고 저건 저렇고"), 원론적 설명 과다("~라는 것은 ~라는 뜻입니다"), 모든 결론이 "중심을 지켜라"로 수렴, 효사 외 한자 나열("風行水上" 같은 표기 금지 — 국문만), 마무리 뒤 날짜·서명, AI 티 나는 표현.
-
-[필수]
-- 효사를 인용할 때는 한자 원문을 먼저 쓰고 바로 국문 풀이를 잇습니다.
-- 전체 분량은 유료 리포트 수준으로 충분히, 단 각 섹션은 4~8문장 안에서.`;
-};
-
-/* ── write_reading 도구 스키마: 출력 구조를 모델에게 "부탁"하지 않고 강제한다 ── */
-window.READING_TOOL={
-  name:'write_reading',
-  description:'주역 점사 결과를 정해진 7섹션 구조로 기록한다. 모든 문장은 존댓말.',
-  input_schema:{
-    type:'object',
-    properties:{
-      headline:{type:'string',description:'점사 전체를 관통하는 한 줄'},
-      sections:{
-        type:'array',minItems:7,maxItems:7,
-        description:'총평, 괘의 형세, 대상전 — 지금 할 것, 이 점괘의 심장, 방향, 시기, 마무리 순서',
-        items:{
-          type:'object',
-          properties:{
-            tag:{type:'string',enum:window.READING_TAGS},
-            title:{type:'string',description:'소제목. 총평 외에는 빈 문자열 가능'},
-            reading:{type:'string',description:'상담자 상황에 녹인 해석. 존댓말, 4문장 이상'}
-          },
-          required:['tag','title','reading']
-        }
-      },
-      closing_line:{type:'string',description:'마지막 여운 한 문장'}
+  return{
+    name,
+    today:todayStr,
+    question:state.q||'(없음)',
+    qa:(state.q5||[]).map((q,i)=>({q,a:(state.a5||[])[i]||'(답변 없음)'})),
+    hexagram,
+    heartRule,
+    meta:{
+      ben:benName?`${benName}(${state.benGua?.no})`:'',
+      ji:jiName?`${jiName}(${state.jiGua?.no})`:'',
+      changed:chg.map(i=>LABELS[i]),
     },
-    required:['headline','sections','closing_line']
-  }
+  };
 };
 
-/* 하위호환: 예전처럼 한 덩어리 프롬프트가 필요하면 */
-window.buildReadingPrompt=function(ben,ji,state){
-  return window.buildReadingSystem()+'\n\n'+window.buildReadingUser(ben,ji,state);
-};
-
-/* 응답 파싱: tool_use 블록 우선, 없으면 텍스트 JSON 폴백. 섹션은 고정 순서로 재정렬. */
+/* 응답 파싱: 서버 그래프가 7섹션을 READING_TAGS 순서·이름 그대로 조립해 보낸다. meaning은 렌더러가 GD로 채움. */
 function parseReadingResponse(data){
-  const blocks=data?.content||[];
-  const tu=blocks.find(b=>b.type==='tool_use'&&b.input&&typeof b.input==='object');
-  let r=tu?tu.input:null;
-  if(!r){
-    const raw=blocks.filter(b=>b.type==='text').map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
-    r=JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||'{}');
-  }
-  // tag enum은 API가 강제하지 않아 모델이 "관의 형세"처럼 오타를 내기도 함(2026-09-28 스모크에서 실제 발생).
-  // → 키워드로 정규화하고, 못 맞추면 남는 슬롯에 순서대로 배정.
-  const KEY=[['총평','총평'],['형세','괘의 형세'],['대상전','대상전 — 지금 할 것'],['심장','이 점괘의 심장'],['방향','방향'],['시기','시기'],['마무리','마무리']];
-  const canon=t=>{const s=String(t||'');for(const[k,v]of KEY)if(s.includes(k))return v;return null;};
-  const byTag={},unmatched=[];
-  (r.sections||[]).forEach(s=>{
-    if(!s)return;
-    const c=canon(s.tag);
-    if(c&&!byTag[c])byTag[c]=s;else unmatched.push(s);
-  });
-  window.READING_TAGS.forEach(tag=>{if(!byTag[tag]&&unmatched.length)byTag[tag]=unmatched.shift();});
-  r.sections=window.READING_TAGS.map(tag=>{
-    const s=byTag[tag]||{};
-    return{tag,title:s.title||'',meaning:'',reading:s.reading||''};   // meaning은 렌더러가 GD로 채움
-  });
-  r.headline=r.headline||'';
-  r.closing_line=r.closing_line||'';
-  return r;
+  const r=data?.reading||{};
+  const byTag=Object.fromEntries((r.sections||[]).map(s=>[s.tag,s]));
+  return{
+    headline:r.headline||'',
+    closing_line:r.closing_line||'',
+    sections:window.READING_TAGS.map(tag=>({tag,title:byTag[tag]?.title||'',meaning:'',reading:byTag[tag]?.reading||''})),
+  };
 }
 
 // 지지 합 관계 (삼합·육합)
@@ -2034,22 +1962,11 @@ function getHab(branchIdx){
   return result;
 }
 
-/* ── generateReading: 서버 + 직접 API 듀얼 모드 ── */
-async function generateReading(ben,ji,retryCount=0,compact=false){
-  if(retryCount===0&&!compact)showLoading();
-  const system=window.buildReadingSystem();
-  let user=window.buildReadingUser(ben,ji,S);
-  if(compact)user+='\n\n[분량 조정] 직전 응답이 길이 제한에 걸렸습니다. 각 섹션 reading을 4~6문장으로 간결하게 씁니다.';
+/* ── generateReading: 재료를 /api/reading(서버 그래프)에 보내고 7섹션을 받는다 ── */
+async function generateReading(ben,ji,retryCount=0){
+  if(retryCount===0)showLoading();
   const headers={'Content-Type':'application/json'};
-  const body=JSON.stringify({
-    model:'claude-haiku-4-5-20251001',
-    max_tokens:8000,
-    temperature:0.35,
-    system,
-    messages:[{role:'user',content:user}],
-    tools:[window.READING_TOOL],
-    tool_choice:{type:'tool',name:'write_reading'},
-  });
+  const body=JSON.stringify(window.buildReadingInput(ben,ji,S));
   try{
     const ctrl=new AbortController();
     const to=setTimeout(()=>ctrl.abort(),130000);
@@ -2062,15 +1979,9 @@ async function generateReading(ben,ji,retryCount=0,compact=false){
       document.getElementById('loSub').textContent=`잠시 후 다시 시도합니다... (${retryCount+1}/3)`;
       document.getElementById('loadingOverlay').classList.add('show');
       await new Promise(r=>setTimeout(r,wait));
-      return generateReading(ben,ji,retryCount+1,compact);
+      return generateReading(ben,ji,retryCount+1);
     }
-    if(!res.ok)throw new Error(data?.error?.message||res.status);
-    // 길이 제한에 걸려 잘린 응답은 조용히 넘기지 않고 간결 모드로 1회 재요청
-    if(data.stop_reason==='max_tokens'&&!compact){
-      console.warn('[점사] max_tokens 도달 — 간결 모드로 재요청');
-      document.getElementById('loSub').textContent='분량을 조정해 다시 씁니다...';
-      return generateReading(ben,ji,retryCount,true);
-    }
+    if(!res.ok)throw new Error(data?.error||res.status);
     const result=parseReadingResponse(data);
     if(!result.sections.some(s=>s.reading))throw new Error('빈 응답');
     hideLoading();
