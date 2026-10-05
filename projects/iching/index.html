@@ -4,204 +4,228 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>周易占 · 주역점</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* ── 토큰 ── */
+/* ── 토큰 — 옻칠 바탕 위의 점서(占書): 한지색 글, 금니(金泥) 선, 주사(朱砂) 인주 ──
+   이름(--t1, --gold …)은 JS 템플릿 인라인 스타일이 그대로 쓰므로 바꾸지 말 것. 값만 바꾼다. */
 :root{
-  --bg:#0d0b09;--sf:#181410;--sf2:#201b14;--sf3:#2a231a;
-  --t1:#eee0c6;--t2:#9c8468;--t3:#5a4838;
-  --red:#bf3d28;--redl:#d85a3a;--redd:rgba(191,61,40,.14);
-  --gold:#9a7828;--goldl:#c09840;--goldd:rgba(154,120,40,.15);
-  --bl:#304870;--bll:#5478a0;--bld:rgba(48,72,112,.2);
-  --bdr:rgba(154,120,40,.18);--bdrh:rgba(191,61,40,.4);
-  --tr:.3s cubic-bezier(.4,0,.2,1);
+  --bg:#141012;--sf:#1c1719;--sf2:#241e20;--sf3:#2f2729;
+  --t1:#efe6d6;--t2:#b9ab95;--t3:#8c7f6d;
+  --red:#b5312a;--redl:#d0493d;--redd:rgba(181,49,42,.14);
+  --gold:#c2a062;--goldl:#d9bc84;--goldd:rgba(194,160,98,.09);
+  --bl:#4b5560;--bll:#9aa5b0;--bld:rgba(154,165,176,.12);
+  --bdr:rgba(194,160,98,.24);--bdrh:rgba(194,160,98,.5);
+  --ink:#e6dcc8;
+  --f-disp:'Song Myung','Gowun Batang',serif;
+  --f-han:'Noto Serif TC','Song Myung',serif;
+  --f-body:'Gowun Batang','Noto Serif KR',serif;
+  --f-ui:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --tr:.25s cubic-bezier(.4,0,.2,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{-webkit-text-size-adjust:100%;}
-body{background:var(--bg);color:var(--t1);font-family:'Noto Sans KR',sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
-.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:2rem 1.25rem;overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transform:translateY(14px);transition:opacity var(--tr),transform var(--tr);background:var(--bg);}
+html{-webkit-text-size-adjust:100%;background:var(--bg);}
+body{background:var(--bg);color:var(--t1);font-family:var(--f-ui);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere;}
+button{font:inherit;}
+:focus-visible{outline:2px solid var(--goldl);outline-offset:3px;}
+
+.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:2rem 1.25rem calc(10rem + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity var(--tr),transform var(--tr);background:var(--bg);background-image:radial-gradient(120% 60% at 50% 0%,rgba(194,160,98,.06),transparent 60%);}
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
-.screen.exit{opacity:0;transform:translateY(-14px);}
+.screen.exit{opacity:0;transform:translateY(-10px);}
 .inner{width:100%;max-width:440px;display:flex;flex-direction:column;padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px));}
-.stepbar{display:flex;gap:5px;justify-content:center;margin-bottom:1.5rem;}
-.step{width:28px;height:3px;background:var(--sf3);border-radius:2px;transition:background .3s,width .3s;}
+
+/* 단계 표시 */
+.stepbar{display:flex;gap:6px;justify-content:center;margin-bottom:1.6rem;}
+.step{width:26px;height:2px;background:var(--sf3);transition:background .3s,width .3s;}
 .step.done{background:var(--gold);}
-.step.cur{background:var(--red);width:38px;}
-.orn{display:flex;align-items:center;gap:.7rem;margin:1.4rem 0 1rem;color:var(--t3);font-size:.7rem;letter-spacing:.2em;}
-.orn::before,.orn::after{content:'';flex:1;height:.5px;background:var(--bdr);}
-.orn span{font-family:'Noto Serif SC',serif;font-size:.95rem;color:var(--t3);}
-.stitle{font-family:'Noto Serif KR',serif;font-size:1.3rem;font-weight:500;color:var(--t1);text-align:center;letter-spacing:.08em;margin-bottom:.5rem;}
-.ssub{font-size:.88rem;color:var(--t2);text-align:center;letter-spacing:.06em;margin-bottom:1.2rem;line-height:1.7;}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.9rem 2rem;background:var(--red);border:none;border-radius:2px;color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:.95rem;font-weight:500;letter-spacing:.07em;cursor:pointer;transition:background var(--tr),opacity var(--tr);min-height:48px;white-space:nowrap;position:relative;overflow:hidden;}
-.btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);opacity:0;transition:opacity .2s;}
-.btn:hover::before{opacity:1;}
-.btn span{position:relative;z-index:1;}
-.btn:active{opacity:.87;}
-.btns{background:transparent;border:.5px solid var(--bdrh);border-radius:2px;display:inline-flex;overflow:hidden;}
-.btns .btn-s{flex:1;padding:.65rem 1.2rem;border:none;border-radius:0;background:transparent;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.88rem;letter-spacing:.08em;cursor:pointer;transition:all .2s;min-height:44px;}
-.btns .btn-s:hover{color:var(--t1);background:var(--redd);}
-.btns .btn-s+.btn-s{border-left:.5px solid var(--bdrh);}
-.btn-ghost{display:inline-flex;align-items:center;justify-content:center;padding:.72rem 1.2rem;background:transparent;border:.5px solid var(--bdr);border-radius:2px;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.88rem;letter-spacing:.06em;cursor:pointer;transition:border-color var(--tr),color var(--tr);min-height:44px;white-space:nowrap;}
+.step.cur{background:var(--red);width:40px;}
+
+/* 구분선 — 옛 책 판심의 어미(魚尾)처럼 가운데 작은 마름모 */
+.orn{display:flex;align-items:center;gap:.8rem;margin:1.5rem 0 1.1rem;}
+.orn::before,.orn::after{content:'';flex:1;height:1px;background:var(--bdr);}
+.orn span{display:none;}
+.orn{--d:6px;}
+.orn>i{display:block;width:var(--d);height:var(--d);background:var(--gold);transform:rotate(45deg);opacity:.8;}
+
+.stitle{font-family:var(--f-disp);font-size:1.45rem;font-weight:400;color:var(--t1);text-align:center;letter-spacing:.04em;margin-bottom:.45rem;text-wrap:balance;}
+.ssub{font-family:var(--f-ui);font-size:.9rem;color:var(--t2);text-align:center;margin-bottom:1.2rem;line-height:1.7;text-wrap:balance;}
+
+/* 인장(낙관) */
+.seal{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--red);color:#f6ead8;font-family:var(--f-han);font-weight:600;font-size:1.7rem;line-height:1;border-radius:4px;box-shadow:inset 0 0 0 3px var(--red),inset 0 0 0 4px rgba(246,234,216,.55);transform:rotate(-3deg);}
+.seal.sm{width:30px;height:30px;font-size:1rem;border-radius:3px;box-shadow:inset 0 0 0 2px var(--red),inset 0 0 0 3px rgba(246,234,216,.5);}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.9rem 1.9rem;background:var(--red);border:none;border-radius:3px;color:#f6ead8;font-family:var(--f-ui);font-size:.98rem;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:background var(--tr),transform .12s;min-height:48px;white-space:nowrap;}
+.btn:hover{background:var(--redl);}
+.btn:active{transform:translateY(1px);}
+.btn span{position:relative;}
+.btns{background:transparent;border:1px solid var(--bdr);border-radius:3px;display:inline-flex;overflow:hidden;cursor:pointer;}
+.btns .btn-s{flex:1;padding:.7rem 1.1rem;color:var(--t1);font-family:var(--f-ui);font-size:.9rem;letter-spacing:.02em;transition:background .2s;min-height:44px;display:flex;align-items:center;}
+.btns:hover .btn-s{background:var(--goldd);}
+.btns:disabled{opacity:.4;cursor:not-allowed;}
+.btn-ghost{display:inline-flex;align-items:center;justify-content:center;padding:.72rem 1.1rem;background:transparent;border:1px solid var(--bdr);border-radius:3px;color:var(--t2);font-family:var(--f-ui);font-size:.9rem;cursor:pointer;transition:border-color var(--tr),color var(--tr);min-height:44px;white-space:nowrap;}
 .btn-ghost:hover{border-color:var(--bdrh);color:var(--t1);}
 .brow{display:flex;gap:.6rem;justify-content:space-between;align-items:center;margin-top:1.4rem;flex-wrap:wrap;}
-.inp{display:block;width:100%;padding:.85rem 1rem;background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;color:var(--t1);font-family:'Noto Serif KR',serif;font-size:1rem;line-height:1.75;transition:border-color var(--tr),background var(--tr);-webkit-appearance:none;resize:none;outline:none;}
+
+/* 입력 */
+.inp{display:block;width:100%;padding:.9rem 1rem;background:var(--sf);border:1px solid var(--bdr);border-radius:3px;color:var(--t1);font-family:var(--f-body);font-size:1rem;line-height:1.75;transition:border-color var(--tr),background var(--tr);-webkit-appearance:none;resize:none;outline:none;}
 .inp::placeholder{color:var(--t3);}
-.inp:focus{border-color:var(--red);background:var(--sf2);}
+.inp:focus{border-color:var(--gold);background:var(--sf2);}
 textarea.inp{min-height:140px;resize:vertical;}
-input.inp{resize:none;}
+.fld{display:block;font-family:var(--f-ui);font-size:.8rem;color:var(--t2);margin:0 0 .4rem .1rem;}
+.hint{font-family:var(--f-ui);font-size:.8rem;color:var(--t3);margin-top:.45rem;}
 
-/* ── S0 인트로 ── */
+/* ── 표지(S0) ── */
 #s0{justify-content:center;text-align:center;}
-.logo{font-family:'Noto Serif SC',serif;font-size:clamp(2.8rem,11vw,4rem);font-weight:300;letter-spacing:.3em;color:var(--t1);line-height:1;margin-bottom:.6rem;}
-.trigs{display:flex;gap:1rem;justify-content:center;font-size:1.15rem;color:var(--t3);letter-spacing:.4em;animation:bth 3.5s ease-in-out infinite;margin:1rem 0 1.5rem;}
-@keyframes bth{0%,100%{opacity:.22;}50%{opacity:.52;}}
-.intro-p{max-width:340px;font-family:'Noto Serif KR',serif;font-size:.88rem;color:var(--t2);line-height:2;margin:0 auto 2rem;}
+.cover{display:flex;flex-direction:column;align-items:center;gap:1rem;max-width:340px;}
+.logo{font-family:var(--f-han);font-size:clamp(3.4rem,15vw,4.6rem);font-weight:400;letter-spacing:.18em;color:var(--t1);line-height:1;margin-right:-.18em;}
+.logo-ko{font-family:var(--f-disp);font-size:1.05rem;color:var(--goldl);letter-spacing:.5em;margin-right:-.5em;}
+.intro-p{font-family:var(--f-body);font-size:1rem;color:var(--t2);line-height:1.9;text-wrap:pretty;}
+.facts{display:flex;gap:1.1rem;justify-content:center;font-family:var(--f-ui);font-size:.8rem;color:var(--t3);margin-top:1.6rem;}
+.facts b{display:block;font-family:var(--f-disp);font-weight:400;font-size:1.15rem;color:var(--t1);margin-bottom:.1rem;}
 
-/* ── 투전 ── */
-.ptrak{height:2px;background:var(--sf3);border-radius:1px;overflow:hidden;margin-bottom:1rem;}
-.pfill{height:100%;background:var(--red);transition:width .4s ease;border-radius:1px;}
-.trows{display:flex;flex-direction:column;gap:.45rem;}
-.trow{display:flex;align-items:center;gap:.55rem;padding:.7rem .8rem;background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;transition:border-color .2s;}
-.trow.ar{border-color:var(--bdrh);}
-.ylbl{font-family:'Noto Sans KR',sans-serif;font-size:.74rem;color:var(--t3);letter-spacing:.04em;width:36px;text-align:right;flex-shrink:0;}
-.cwrap{display:flex;gap:5px;align-items:center;}
-.cn{width:38px;height:38px;border-radius:50%;border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-size:11px;cursor:pointer;transition:all .2s;background:var(--sf2);color:var(--t3);flex-shrink:0;-webkit-tap-highlight-color:transparent;user-select:none;}
-.cn:hover{border-color:var(--bdrh);color:var(--t2);}
-.cn.fl{animation:flip .55s ease-out;}
-@keyframes flip{0%{transform:rotateY(0);}50%{transform:rotateY(360deg) scale(1.1);}100%{transform:rotateY(720deg);}}
-.cn.yang{background:var(--goldd);border-color:var(--gold);color:var(--goldl);}
-.cn.yin{background:var(--bld);border-color:var(--bll);color:var(--bll);}
+/* ── 동전 던지기(S2) ── */
+.ptrak{height:2px;background:var(--sf3);overflow:hidden;margin-bottom:1rem;}
+.pfill{height:100%;background:var(--gold);transition:width .4s ease;}
+.trows{display:flex;flex-direction:column-reverse;gap:.45rem;}
+.trow{display:flex;align-items:center;gap:.6rem;padding:.65rem .8rem;background:var(--sf);border:1px solid var(--bdr);border-radius:3px;transition:border-color .2s,background .2s;}
+.trow.done{background:var(--sf2);}
+.trow.ar{border-color:rgba(181,49,42,.55);}
+.ylbl{font-family:var(--f-ui);font-size:.8rem;color:var(--t2);width:40px;flex-shrink:0;}
+.cwrap{display:flex;gap:6px;align-items:center;}
+/* 엽전: 테두리 안쪽에 한 겹 더 그은 원 */
+.cn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--f-ui);font-size:.75rem;font-weight:500;cursor:pointer;transition:transform .2s,background .2s,color .2s;background:var(--sf3);color:var(--t3);border:1px solid var(--bdr);box-shadow:inset 0 0 0 4px var(--sf3),inset 0 0 0 5px rgba(194,160,98,.18);flex-shrink:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+.cn.fl{animation:flip .5s ease-out;}
+@keyframes flip{0%{transform:rotateY(0);}100%{transform:rotateY(720deg);}}
+.cn.yang{background:radial-gradient(circle at 35% 30%,#e3c88f,#a8823f 70%);color:#2a1e10;border-color:#d9bc84;box-shadow:inset 0 0 0 4px rgba(0,0,0,0),inset 0 0 0 5px rgba(42,30,16,.35);}
+.cn.yin{background:radial-gradient(circle at 35% 30%,#7d6a52,#4a3d2f 70%);color:#efe6d6;border-color:#8c7f6d;box-shadow:inset 0 0 0 5px rgba(239,230,214,.18);}
 .cn.locked{cursor:default;}
-.cn.locked:hover{border-color:inherit;}
-.lpv{flex:1;display:flex;align-items:center;gap:5px;}
-.ly{height:5px;width:70px;background:var(--goldl);border-radius:1px;}
-.ln{height:5px;width:29px;background:var(--bll);border-radius:1px;}
-.lchg{outline:1.5px solid var(--red);outline-offset:2px;}
-.ltyp{font-family:'Noto Sans KR',sans-serif;font-size:.7rem;color:var(--t3);letter-spacing:.05em;min-width:68px;}
-.ltyp.c{color:var(--red);}
-.tbtn{flex-shrink:0;padding:.42rem .7rem;background:transparent;border:.5px solid var(--bdrh);border-radius:2px;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.76rem;letter-spacing:.06em;cursor:pointer;transition:all .2s;min-height:36px;}
-.tbtn:hover{border-color:var(--red);color:var(--t1);}
-.tbtn:disabled{opacity:.3;cursor:not-allowed;}
+.lpv{flex:1;display:flex;align-items:center;gap:6px;}
+.ly{height:6px;width:70px;background:var(--ink);}
+.ln{height:6px;width:30px;background:var(--ink);}
+.lchg{background:var(--redl);}
+.ltyp{font-family:var(--f-ui);font-size:.75rem;color:var(--t3);min-width:64px;}
+.ltyp.c{color:var(--redl);}
+.tbtn{flex-shrink:0;padding:.45rem .75rem;background:transparent;border:1px solid var(--bdr);border-radius:3px;color:var(--t1);font-family:var(--f-ui);font-size:.8rem;cursor:pointer;transition:all .2s;min-height:40px;}
+.tbtn:hover{border-color:var(--bdrh);background:var(--goldd);}
+.tbtn:disabled{opacity:.35;cursor:not-allowed;}
 
-/* ── 괘 표시 ── */
-.gwrap{display:flex;align-items:flex-start;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin:1rem 0;}
-.gblk{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.glines{display:flex;flex-direction:column;gap:5px;}
-.gy{height:8px;width:80px;background:var(--goldl);border-radius:1.5px;}
-.gnw{display:flex;gap:7px;}
-.gn{height:8px;width:34px;background:var(--bll);border-radius:1.5px;}
-.gchg{box-shadow:0 0 0 2px var(--red);border-radius:2px;}
-.gdiv{width:.5px;background:var(--bdr);align-self:stretch;margin:0 .25rem;}
-.gname{font-family:'Noto Serif SC',serif;font-size:.82rem;color:var(--goldl);letter-spacing:.12em;margin-top:4px;text-align:center;}
-.gsub{font-size:.72rem;color:var(--t3);letter-spacing:.07em;text-align:center;}
-.garw{font-size:1.1rem;color:var(--t3);align-self:center;padding-top:1rem;}
-.chgi{font-family:'Noto Serif KR',serif;font-size:.82rem;color:var(--t2);text-align:center;margin-bottom:.5rem;line-height:1.9;}
-.chgi span{color:var(--red);}
+/* ── 괘 그림 ── */
+.gwrap{display:flex;align-items:flex-start;gap:1.4rem;justify-content:center;flex-wrap:wrap;margin:1.1rem 0;}
+.gblk{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.glines{display:flex;flex-direction:column;gap:6px;}
+.glines>div[style]{display:none;}
+.gy{height:9px;width:84px;background:var(--ink);}
+.gnw{display:flex;gap:10px;}
+.gn{height:9px;width:37px;background:var(--ink);}
+.gchg,.gnw .gchg{background:var(--redl);}
+.gdiv{height:2px;}
+.gname{font-family:var(--f-disp);font-size:1rem;color:var(--t1);letter-spacing:.06em;margin-top:6px;text-align:center;}
+.gsub{font-family:var(--f-ui);font-size:.75rem;color:var(--t3);text-align:center;}
+.garw{font-size:1.1rem;color:var(--gold);align-self:center;padding-bottom:2rem;}
+.chgi{font-family:var(--f-ui);font-size:.85rem;color:var(--t2);text-align:center;margin-bottom:.5rem;line-height:1.8;text-wrap:balance;}
+.chgi span{color:var(--redl);}
 
-/* ── 추가 질문 (S3) ── */
+/* ── 추가 질문(S3) ── */
 .q5lst{display:flex;flex-direction:column;gap:.8rem;margin-top:1rem;}
-.q5it{background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;padding:.9rem 1rem;transition:border-color .2s;}
-.q5it:focus-within{border-color:var(--red);}
-.q5lb{display:block;font-family:'Noto Serif KR',serif;font-size:.85rem;color:var(--t2);letter-spacing:.05em;margin-bottom:.5rem;line-height:1.65;}
-.q5in{display:block;width:100%;background:transparent;border:none;border-top:.5px solid var(--bdr);padding:.5rem 0 0;color:var(--t1);font-family:'Noto Serif KR',serif;font-size:1rem;line-height:1.65;outline:none;resize:none;}
+.q5it{background:var(--sf);border:1px solid var(--bdr);border-radius:3px;padding:1rem;transition:border-color .2s;}
+.q5it:focus-within{border-color:var(--gold);}
+.q5lb{display:block;font-family:var(--f-body);font-size:.95rem;color:var(--t1);margin-bottom:.55rem;line-height:1.7;}
+.q5in{display:block;width:100%;background:transparent;border:none;border-top:1px solid var(--bdr);padding:.6rem 0 0;color:var(--t1);font-family:var(--f-body);font-size:1rem;line-height:1.7;outline:none;resize:none;}
 .q5in::placeholder{color:var(--t3);}
-.aibox{background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;padding:1.2rem;margin-bottom:.8rem;text-align:center;}
-.aild{font-family:'Noto Sans KR',sans-serif;font-size:.83rem;color:var(--t3);letter-spacing:.12em;animation:pulse 1.4s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+.aibox{background:var(--sf);border:1px solid var(--bdr);border-radius:3px;padding:1.3rem;margin-bottom:.8rem;text-align:center;}
+.aild{font-family:var(--f-ui);font-size:.88rem;color:var(--t2);animation:pulse 1.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
 
-/* ── 해석 카드 ── */
+/* ── 풀이 카드 — 옛 책의 광곽(匡郭)처럼 두 겹 테두리. 왼쪽 강조 막대는 쓰지 않는다 ── */
 #s4{justify-content:flex-start;padding-top:1.8rem;}
-.rhero{text-align:center;padding:1rem 0;}
-.rhtl{font-family:'Noto Serif SC',serif;font-size:1.5rem;font-weight:300;color:var(--goldl);letter-spacing:.2em;margin-bottom:.4rem;}
-.rhsb{font-family:'Noto Sans KR',sans-serif;font-size:.78rem;color:var(--t3);letter-spacing:.16em;}
-.scard{border:.5px solid var(--bdr);border-left:2px solid var(--red);background:var(--sf);padding:1.4rem 1.2rem;margin-bottom:.75rem;border-radius:2px;}
-.stag{display:block;font-family:'Noto Sans KR',sans-serif;font-size:.68rem;color:var(--red);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.45rem;opacity:.85;}
-.stit{font-family:'Noto Serif KR',serif;font-size:1.02rem;font-weight:500;line-height:1.55;margin-bottom:.8rem;color:var(--t1);}
-.sbody{font-family:'Noto Serif KR',serif;font-size:.9rem;line-height:2.05;color:var(--t2);letter-spacing:.03em;}
+.rhero{text-align:center;padding:.6rem 0 .2rem;}
+.rhtl{font-family:var(--f-disp);font-size:1.6rem;color:var(--t1);letter-spacing:.06em;margin-bottom:.3rem;text-wrap:balance;}
+.rhsb{font-family:var(--f-ui);font-size:.82rem;color:var(--t3);}
+.scard{position:relative;border:1px solid var(--bdr);background:var(--sf);padding:1.5rem 1.25rem;margin-bottom:.8rem;border-radius:2px;}
+.scard::after{content:'';position:absolute;inset:4px;border:1px solid rgba(194,160,98,.1);pointer-events:none;}
+.stag{display:block;font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.12em;margin-bottom:.5rem;}
+.stit{font-family:var(--f-disp);font-size:1.2rem;font-weight:400;line-height:1.5;margin-bottom:.85rem;color:var(--t1);text-wrap:balance;}
+.sbody{font-family:var(--f-body);font-size:1rem;line-height:1.95;color:var(--t2);}
 .sbody p{margin-bottom:.9rem;}
 .sbody p:last-child{margin-bottom:0;}
-.sbody strong{color:var(--t1);font-weight:500;}
-.sbody h3{font-family:'Noto Sans KR',sans-serif;font-size:.74rem;color:var(--red);letter-spacing:.18em;font-weight:400;margin:1.1rem 0 .4rem;opacity:.85;}
-.ccard{border:.5px solid rgba(154,120,40,.35);background:var(--goldd);padding:1.4rem 1.2rem;margin-bottom:.75rem;text-align:center;border-radius:2px;}
-.ccard .sbody{font-size:.92rem;margin-bottom:1rem;}
-.wnr{font-family:'Noto Serif KR',serif;font-size:1rem;color:var(--goldl);font-weight:500;letter-spacing:.05em;border-top:.5px solid var(--bdr);padding-top:1rem;margin-top:.5rem;}
+.sbody strong{color:var(--t1);font-weight:700;}
+.sbody h3{font-family:var(--f-ui);font-size:.8rem;color:var(--gold);letter-spacing:.1em;font-weight:500;margin:1.1rem 0 .4rem;}
+.ccard{position:relative;border:1px solid var(--bdrh);background:var(--goldd);padding:1.6rem 1.25rem;margin-bottom:.8rem;text-align:center;border-radius:2px;}
+.ccard .sbody{font-size:1rem;margin-bottom:1rem;}
+.wnr{font-family:var(--f-disp);font-size:1.1rem;color:var(--goldl);letter-spacing:.03em;border-top:1px solid var(--bdr);padding-top:1rem;margin-top:.6rem;text-wrap:balance;}
 .ldful{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;padding:3.5rem 1rem;min-height:280px;}
-.ldgl{font-size:2.4rem;color:var(--red);animation:spin 8s linear infinite;opacity:.45;}
-@keyframes spin{100%{transform:rotate(360deg);}}
-.ldmsg{font-family:'Noto Serif KR',serif;font-size:.85rem;color:var(--t2);letter-spacing:.14em;}
-.ldsb{font-size:.72rem;color:var(--t3);letter-spacing:.1em;}
+.ldgl{display:none;}
+.ldmsg{font-family:var(--f-body);font-size:.95rem;color:var(--t2);}
+.ldsb{font-family:var(--f-ui);font-size:.8rem;color:var(--t3);}
 
-/* ── API 모달 동전 ── */
-.mbtn{flex:1;padding:.6rem 0;border:.5px solid var(--bdr);background:transparent;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
+/* ── 동전 직접 입력 모달 ── */
+.mbtn{flex:1;padding:.65rem 0;border:1px solid var(--bdr);background:transparent;color:var(--t2);font-family:var(--f-ui);font-size:.88rem;cursor:pointer;transition:all .2s;min-height:44px;border-radius:3px;}
 .mbtn:hover{border-color:var(--bdrh);color:var(--t1);}
-.mbtn.sel.yang{background:var(--goldd);border-color:var(--gold);color:var(--goldl);}
-.mbtn.sel.yin{background:var(--bld);border-color:var(--bll);color:var(--bll);}
-.mcn{width:36px;height:36px;border-radius:50%;border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:11px;background:var(--sf2);color:var(--t3);}
-.mcn.yang{background:var(--goldd);border-color:var(--gold);color:var(--goldl);}
-.mcn.yin{background:var(--bld);border-color:var(--bll);color:var(--bll);}
+.mbtn.sel.yang{background:radial-gradient(circle at 35% 30%,#e3c88f,#a8823f 75%);border-color:#d9bc84;color:#2a1e10;}
+.mbtn.sel.yin{background:radial-gradient(circle at 35% 30%,#7d6a52,#4a3d2f 75%);border-color:#8c7f6d;color:#efe6d6;}
+.mcn{width:36px;height:36px;border-radius:50%;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:.75rem;background:var(--sf2);color:var(--t3);}
+.mcn.yang{background:radial-gradient(circle at 35% 30%,#e3c88f,#a8823f 70%);color:#2a1e10;}
+.mcn.yin{background:radial-gradient(circle at 35% 30%,#7d6a52,#4a3d2f 70%);color:#efe6d6;}
 #coinModal.open{display:flex;}
 
 /* ── 하단 탭 ── */
-.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;height:58px;background:var(--sf);border-top:.5px solid var(--bdr);padding-bottom:env(safe-area-inset-bottom,0px);}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--t3);font-family:'Noto Sans KR',sans-serif;font-size:.68rem;letter-spacing:.08em;transition:color .2s;border:none;background:none;min-height:44px;}
-.tab-item.active{color:var(--red);}
-.tab-item .tab-ico{font-size:1.05rem;line-height:1;}
-.screen{padding-bottom:calc(10rem + env(safe-area-inset-bottom,0px));}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;height:calc(60px + env(safe-area-inset-bottom,0px));background:rgba(20,16,18,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--bdr);padding-bottom:env(safe-area-inset-bottom,0px);}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--t3);font-family:var(--f-ui);font-size:.72rem;transition:color .2s;border:none;background:none;min-height:44px;}
+.tab-item.active{color:var(--goldl);}
+.tab-item .tab-ico{width:22px;height:22px;display:block;}
 
-/* ── 보관함 탭 ── */
+/* ── 보관함 ── */
 #tab-archive{justify-content:flex-start;padding-top:3rem;}
-.archive-empty{text-align:center;padding:4rem 1rem;color:var(--t3);font-size:.88rem;line-height:2;}
-.archive-list{display:flex;flex-direction:column;gap:.5rem;width:100%;max-width:440px;margin:0 auto;}
-.archive-item{background:var(--sf);border:.5px solid var(--bdr);border-radius:2px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
+.archive-empty{text-align:center;padding:4rem 1rem;color:var(--t3);font-family:var(--f-body);font-size:.95rem;line-height:2;}
+.archive-list{display:flex;flex-direction:column;gap:.55rem;width:100%;max-width:440px;margin:0 auto;}
+.archive-item{background:var(--sf);border:1px solid var(--bdr);border-radius:3px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
 .archive-item:hover{border-color:var(--bdrh);}
-.arch-date{font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--t3);letter-spacing:.1em;margin-bottom:.25rem;}
-.arch-gua{font-family:'Noto Serif SC',serif;font-size:.95rem;color:var(--goldl);letter-spacing:.1em;margin-bottom:.2rem;}
-.arch-q{font-size:.8rem;color:var(--t2);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.arch-del{float:right;background:none;border:none;color:var(--t3);cursor:pointer;font-size:.78rem;padding:.2rem .4rem;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}
-.arch-del:hover{color:#c04040;}
+.arch-date{font-family:var(--f-ui);font-size:.78rem;color:var(--t3);margin-bottom:.25rem;font-variant-numeric:tabular-nums;}
+.arch-gua{font-family:var(--f-disp);font-size:1.05rem;color:var(--t1);margin-bottom:.2rem;}
+.arch-q{font-family:var(--f-body);font-size:.9rem;color:var(--t2);line-height:1.6;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.arch-del{float:right;background:none;border:none;color:var(--t3);cursor:pointer;font-size:.8rem;padding:.2rem .4rem;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;}
+.arch-del:hover{color:var(--redl);}
 
-/* ── 로딩 풀팝업 ── */
-#loadingOverlay{display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+/* ── 풀이 대기 화면: 여섯 효가 아래부터 하나씩 그어진다 ── */
+#loadingOverlay{display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;padding:2rem;text-align:center;}
 #loadingOverlay.show{display:flex;}
-.lo-sym{font-size:3.5rem;color:var(--red);opacity:.45;animation:spin 6s linear infinite;}
-.lo-title{font-family:'Noto Serif SC',serif;font-size:1.2rem;font-weight:300;letter-spacing:.3em;color:var(--t1);}
-.lo-sub{font-family:'Noto Sans KR',sans-serif;font-size:.82rem;color:var(--t2);letter-spacing:.18em;animation:pulse 2s ease-in-out infinite;}
-.lo-secs{font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--t3);letter-spacing:.12em;}
+.lo-gua{display:flex;flex-direction:column-reverse;gap:8px;}
+.lo-gua i{display:block;width:96px;height:9px;background:var(--ink);opacity:.12;animation:draw 3.6s ease-in-out infinite;}
+.lo-gua i:nth-child(2n){background:linear-gradient(90deg,var(--ink) 0 42%,transparent 42% 58%,var(--ink) 58%);}
+.lo-gua i:nth-child(1){animation-delay:0s}.lo-gua i:nth-child(2){animation-delay:.3s}.lo-gua i:nth-child(3){animation-delay:.6s}
+.lo-gua i:nth-child(4){animation-delay:.9s}.lo-gua i:nth-child(5){animation-delay:1.2s}.lo-gua i:nth-child(6){animation-delay:1.5s}
+@keyframes draw{0%,8%{opacity:.12;}22%,70%{opacity:1;}90%,100%{opacity:.12;}}
+.lo-sym{display:none;}
+.lo-title{font-family:var(--f-disp);font-size:1.3rem;color:var(--t1);}
+.lo-sub{font-family:var(--f-ui);font-size:.88rem;color:var(--t2);max-width:280px;line-height:1.7;}
+.lo-secs{font-family:var(--f-ui);font-size:.8rem;color:var(--t3);font-variant-numeric:tabular-nums;}
 
-/* ── S4 버튼 ── */
+/* ── 풀이 화면 버튼 ── */
 .s4btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;}
-.lock-btn{padding:.7rem 1.4rem;border:.5px solid var(--bdrh);background:transparent;border-radius:2px;color:var(--t2);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;letter-spacing:.1em;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:.4rem;min-height:44px;}
-.lock-btn:hover{border-color:var(--red);color:var(--t1);}
-.lock-icon{font-size:.78rem;opacity:.6;}
+.lock-btn{padding:.72rem 1.3rem;border:1px solid var(--bdr);background:transparent;border-radius:3px;color:var(--t1);font-family:var(--f-ui);font-size:.9rem;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:.4rem;min-height:44px;}
+.lock-btn:hover{border-color:var(--bdrh);background:var(--goldd);}
 
 /* ── 모바일 ── */
 @media(max-width:640px){
-  .inp,.q5in,input.inp,textarea.inp{font-size:1rem!important;}
   .screen{padding-left:1rem;padding-right:1rem;}
-  .inner{padding:0;}
-  .lpv{display:none;}
-  .ltyp{display:none;}
-  .cn{width:34px;height:34px;font-size:10px;}
-  .cwrap{gap:4px;}
-  .ylbl{width:32px;font-size:.72rem;}
-  .trow{padding:.65rem .7rem;gap:.4rem;}
-  .tbtn{padding:.38rem .6rem;font-size:.74rem;min-height:36px;}
-  .scard{padding:1.2rem 1rem;}
-  .ccard{padding:1.2rem 1rem;}
-  .btn{padding:.88rem 1.8rem;font-size:.92rem;}
-  .btn-ghost{padding:.68rem 1rem;}
-  .btns .btn-s{padding:.6rem 1rem;font-size:.84rem;}
-  .lock-btn{padding:.68rem 1.1rem;}
-  .stepbar{margin-bottom:1.2rem;}
-  .gwrap{gap:.7rem;}
-  .gy{width:64px;}
-  .gn{width:27px;}
-  .logo{font-size:clamp(2.6rem,10vw,3.6rem);}
-  .archive-item{padding:.9rem 1rem;}
-  .arch-del{min-width:36px;min-height:36px;}
+  .inner{padding-left:0;padding-right:0;}
+  .lpv,.ltyp{display:none;}
+  .cn{width:38px;height:38px;}
+  .cwrap{gap:5px;}
+  .trow{padding:.6rem .7rem;gap:.45rem;}
+  .tbtn{padding:.42rem .62rem;}
+  .scard,.ccard{padding:1.3rem 1.05rem;}
+  .gwrap{gap:.9rem;}
+  .gy{width:68px;}
+  .gn{width:29px;}
+  .gnw{gap:10px;}
 }
-
-/* ── iPhone safe-area 상단 ── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+  .lo-gua i{opacity:1;}
+}
 @supports(padding-top:env(safe-area-inset-top)){
   .screen{padding-top:calc(2rem + env(safe-area-inset-top,0px));}
 }
@@ -209,17 +233,20 @@ input.inp{resize:none;}
 </head>
 <body>
 
-<!-- S0 인트로 -->
+<!-- S0 표지 -->
 <div class="screen active" id="s0">
-  <div style="font-family:'Noto Serif SC',serif;font-size:2.8rem;color:var(--gold);opacity:.06;position:absolute;top:4%;left:4%;writing-mode:vertical-rl;line-height:1.2;pointer-events:none">周易六十四卦</div>
-  <div class="trigs">☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷</div>
-  <h1 class="logo">周易占</h1>
-  <p style="font-family:'Noto Sans KR',sans-serif;font-size:.84rem;color:var(--t2);letter-spacing:.22em;margin:.4rem 0 1.5rem">주역점 · 육효투전법</p>
-  <div class="orn"><span>卦</span></div>
-  <p class="intro-p">동전 셋을 여섯 번 던져 하늘의 뜻을 묻는다.<br>괘상이 뽑히면 몇 가지 질문을 드립니다. 그 대답이 더 깊은 점사의 바탕이 됩니다.<br>그 대답 위에서 비로소 진짜 점사가 펼쳐진다.</p>
-  <button class="btn" onclick="goTo('s1')"><span>점괘 보기</span></button>
-  <div style="margin-top:2.5rem;display:flex;gap:1.5rem;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.68rem;color:var(--t3);letter-spacing:.14em">
-    <span>왕필 주역주</span><span style="color:var(--bdr)">·</span><span>정이천 역전</span><span style="color:var(--bdr)">·</span><span>주희 주역본의</span>
+  <div class="cover">
+    <span class="seal" aria-hidden="true">占</span>
+    <h1 class="logo">周易</h1>
+    <p class="logo-ko">주역점</p>
+    <div class="orn" style="width:100%"><i></i></div>
+    <p class="intro-p">동전 세 개를 여섯 번 던져 괘를 얻습니다.<br>괘가 나오면 몇 가지만 더 여쭙고,<br>그 답에 맞춰 풀이해 드립니다.</p>
+    <button class="btn" onclick="goTo('s1')" style="margin-top:.6rem"><span>점 보기</span></button>
+    <div class="facts">
+      <span><b>3</b>동전</span>
+      <span><b>6</b>번 던지기</span>
+      <span><b>3분</b>남짓</span>
+    </div>
   </div>
 </div>
 
@@ -227,50 +254,50 @@ input.inp{resize:none;}
 <div class="screen" id="s1">
   <div class="inner">
     <div class="stepbar" id="sb1"></div>
-    <p class="stitle">무엇을 묻고자 하는가</p>
-    <p class="ssub">먼저 이름을 알려주세요. 더 깊이 읽을 수 있습니다.</p>
-    <div class="orn"><span>問</span></div>
-    <input class="inp" id="nameIn" placeholder="이름 (예: 재영)" maxlength="10" style="margin-bottom:.8rem">
-    <textarea class="inp" id="qIn" rows="5" placeholder="지금 마음에 걸리는 것을 솔직하게 적어주세요.&#10;구체적일수록 점괘의 해석이 깊어집니다.&#10;&#10;예: 올해 안에 이직을 해야 할지 고민입니다. 지금 회사가 안정적이긴 한데 성장이 없어서 답답하고, 새로운 곳에서 도전해보고 싶은데 두렵기도 해요."></textarea>
-    <p style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--t3);text-align:right;margin-top:.4rem">비워두면 일반 운세로 해석됩니다</p>
+    <p class="stitle">무엇이 궁금하세요</p>
+    <p class="ssub">한두 줄이면 충분합니다. 구체적일수록 풀이가 그 고민에 가까워집니다.</p>
+    <label class="fld" for="nameIn">이름</label>
+    <input class="inp" id="nameIn" placeholder="풀이에서 부를 이름" maxlength="10" autocomplete="given-name" style="margin-bottom:1rem">
+    <label class="fld" for="qIn">고민</label>
+    <textarea class="inp" id="qIn" rows="5" placeholder="예: 지금 회사에 남을지, 올해 안에 옮길지 고민입니다."></textarea>
+    <p class="hint">비워 두면 요즘의 흐름 전반을 봅니다.</p>
     <div class="brow">
-      <button class="btn-ghost" onclick="goTo('s0')">← 뒤로</button>
-      <button class="btn" onclick="startThrow()"><span>동전을 던진다 →</span></button>
+      <button class="btn-ghost" onclick="goTo('s0')">뒤로</button>
+      <button class="btn" onclick="startThrow()"><span>동전 던지러 가기</span></button>
     </div>
   </div>
 </div>
 
-<!-- S2 투전 -->
+<!-- S2 동전 던지기 -->
 <div class="screen" id="s2">
   <div class="inner">
     <div class="stepbar" id="sb2"></div>
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.8rem">
-      <div><p class="stitle" style="text-align:left;margin:0">투전 · 投錢</p><p class="ssub" style="text-align:left;margin:0">동전 셋을 여섯 번 던진다</p></div>
-      <span style="font-family:'Noto Sans KR',sans-serif;font-size:.76rem;color:var(--t3)" id="tcnt">0 / 6효</span>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-bottom:.8rem">
+      <div>
+        <p class="stitle" style="text-align:left;margin:0">동전 던지기</p>
+        <p class="ssub" style="text-align:left;margin:.2rem 0 0">맨 아래 초효부터 한 줄씩 위로 쌓입니다.</p>
+      </div>
+      <span style="font-family:var(--f-ui);font-size:.85rem;color:var(--t2);font-variant-numeric:tabular-nums;white-space:nowrap" id="tcnt">0 / 6효</span>
     </div>
     <div class="ptrak"><div class="pfill" id="tprog" style="width:0%"></div></div>
     <div class="trows" id="trows"></div>
-    <div style="display:flex;gap:.7rem;justify-content:flex-end;margin-top:1rem">
-      <button class="btn-ghost" onclick="goTo('s1')">← 다시 묻기</button>
-      <button class="btns" id="autoBtn" style="border:.5px solid var(--bdrh)" onclick="autoAll()">
-        <span class="btn-s">전체 자동 투전</span>
+    <div style="display:flex;gap:.6rem;justify-content:space-between;flex-wrap:wrap;margin-top:1rem">
+      <button class="btn-ghost" onclick="goTo('s1')">고민 다시 쓰기</button>
+      <button class="btns" id="autoBtn" onclick="autoAll()">
+        <span class="btn-s">남은 줄 한 번에 던지기</span>
       </button>
     </div>
-    <!-- 6효 완료 후 괘상 결과 -->
+    <!-- 여섯 줄을 다 던진 뒤 -->
     <div id="hexResult" style="display:none;margin-top:1.5rem">
-      <div class="orn"><span>卦</span></div>
+      <div class="orn"><i></i></div>
       <p class="stitle" style="margin-bottom:.3rem" id="hexTitle"></p>
       <p class="ssub" id="hexSub"></p>
       <div class="gwrap" id="s2gua"></div>
       <p class="chgi" id="s2chgi"></p>
-      <div style="margin-top:.5rem;padding:.9rem 1rem;background:var(--sf);border:.5px solid var(--bdr);border-radius:2px">
-        <p style="font-family:'Noto Serif KR',serif;font-size:.85rem;color:var(--t2);line-height:1.9" id="hexDesc"></p>
-      </div>
-      <!-- 해석 카드 -->
-      <div id="hexInterpret" style="margin-top:.8rem"></div>
+      <div id="hexInterpret"></div>
       <div class="brow" style="margin-top:1.2rem">
-        <button class="btn-ghost" onclick="resetThrow()">← 다시 던지기</button>
-        <button class="btn" onclick="proceedToQ5()"><span>질문에 답하기 →</span></button>
+        <button class="btn-ghost" onclick="resetThrow()">다시 던지기</button>
+        <button class="btn" onclick="proceedToQ5()"><span>질문에 답하기</span></button>
       </div>
     </div>
   </div>
@@ -282,20 +309,20 @@ input.inp{resize:none;}
     <div class="stepbar" id="sb3"></div>
     <div class="gwrap" id="s3gua"></div>
     <p class="chgi" id="s3chgi"></p>
-    <div class="orn"><span>問</span></div>
-    <p class="stitle">더 깊이 읽기 위한 질문</p>
+    <div class="orn"><i></i></div>
+    <p class="stitle">몇 가지만 더 여쭐게요</p>
     <p class="ssub" id="s3sub">몇 가지 여쭤볼게요</p>
     <div id="q5area">
-      <div class="aibox"><p class="aild" id="q5ld">✦ 준비하는 중...</p></div>
+      <div class="aibox"><p class="aild" id="q5ld">질문을 고르는 중입니다</p></div>
     </div>
     <div class="brow" id="s3btns" style="display:none">
-      <button class="btn-ghost" onclick="goTo('s2')">← 괘상 보기</button>
-      <button class="btn" onclick="submitAnswers()"><span>답변 완료, 점사 받기 →</span></button>
+      <button class="btn-ghost" onclick="goTo('s2')">괘 다시 보기</button>
+      <button class="btn" onclick="submitAnswers()"><span>풀이 받기</span></button>
     </div>
   </div>
 </div>
 
-<!-- S4 점사 -->
+<!-- S4 풀이 -->
 <div class="screen" id="s4">
   <div class="inner">
     <div class="stepbar" id="sb4"></div>
@@ -305,65 +332,64 @@ input.inp{resize:none;}
     </div>
     <div class="gwrap" id="s4gua"></div>
     <p class="chgi" id="s4chgi"></p>
-    <div class="orn"><span>占</span></div>
+    <div class="orn"><i></i></div>
     <div id="rdarea">
       <div class="ldful">
-        <div class="ldgl">☯</div>
-        <p class="ldmsg">점사를 풀어내는 중...</p>
+        <p class="ldmsg">풀이를 쓰고 있습니다</p>
         <p class="ldsb" id="ldsb"></p>
       </div>
     </div>
     <div class="s4btns" id="s4btns" style="display:none">
       <button class="btn-ghost" onclick="restart()">처음부터 다시</button>
-      <button class="lock-btn" onclick="goBackToQ5()">✎ 답변 수정 후 재해석</button>
+      <button class="lock-btn" onclick="goBackToQ5()">답을 고쳐 다시 풀기</button>
     </div>
   </div>
 </div>
 
-<!-- 점괘 탭: 보관함 항목 읽기 전용 뷰 -->
+<!-- 보관함 항목 읽기 화면 -->
 <div class="screen" id="tab-reading" style="justify-content:flex-start;padding-top:2rem">
   <div class="inner">
     <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1.2rem">
-      <button class="btn-ghost" onclick="switchTab('arc')" style="padding:.3rem 0">← 보관함</button>
+      <button class="btn-ghost" onclick="switchTab('arc')">보관함으로</button>
     </div>
     <div class="rhero">
       <p class="rhtl" id="tr-title"></p>
       <p class="rhsb" id="tr-date"></p>
     </div>
-    <div class="orn"><span>占</span></div>
+    <div class="orn"><i></i></div>
     <div id="tr-area"></div>
   </div>
 </div>
 
-<!-- 보관함 탭 화면 -->
+<!-- 보관함 -->
 <div class="screen" id="tab-archive">
   <div class="inner" style="padding-top:1rem">
     <p class="stitle" style="margin-bottom:.3rem">보관함</p>
-    <p class="ssub" style="margin-bottom:1.5rem">저장된 점사</p>
+    <p class="ssub" style="margin-bottom:1.5rem">받은 풀이가 이 기기에 저장됩니다</p>
     <div id="archiveList" class="archive-list"></div>
   </div>
 </div>
 
-<!-- 점사 로딩 풀팝업 -->
-<div id="loadingOverlay">
-  <div class="lo-sym">☯</div>
-  <p class="lo-title">運命을 점치는 중</p>
-  <p class="lo-sub" id="loSub">하늘의 뜻을 읽고 있습니다</p>
+<!-- 풀이 대기 화면 -->
+<div id="loadingOverlay" role="status" aria-live="polite">
+  <div class="lo-gua" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <p class="lo-title">풀이를 쓰고 있습니다</p>
+  <p class="lo-sub" id="loSub">괘를 읽고, 남겨 주신 답에 맞춰 정리하는 중입니다. 보통 20초쯤 걸립니다.</p>
   <p class="lo-secs" id="loSecs"></p>
 </div>
 
-<!-- 하단 탭바 -->
-<div class="tab-bar">
+<!-- 하단 탭 -->
+<nav class="tab-bar" aria-label="주요 메뉴">
   <button class="tab-item active" id="tabHome" onclick="switchTab('home')">
-    <span class="tab-ico">☰</span><span>홈</span>
+    <svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>처음</span>
   </button>
   <button class="tab-item" id="tabGua" onclick="switchTab('gua')">
-    <span class="tab-ico">☲</span><span>점괘</span>
+    <svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="5" width="16" height="2.2"/><rect x="4" y="10.9" width="6.8" height="2.2"/><rect x="13.2" y="10.9" width="6.8" height="2.2"/><rect x="4" y="16.8" width="16" height="2.2"/></svg><span>점괘</span>
   </button>
   <button class="tab-item" id="tabArc" onclick="switchTab('arc')">
-    <span class="tab-ico">☷</span><span>보관함</span>
+    <svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></svg><span>보관함</span>
   </button>
-</div>
+</nav>
 
 
 <script>
@@ -561,6 +587,20 @@ function calcGuas(){
 /* ─────────────────── GUA RENDER ─────────────────── */
 // 해석 중심 효: 변효 1~3개면 변효, 4~5개면 불변효, 0·6개면 개별 효 없음(괘사·용구/용육·지괘 중심).
 // AI 그래프의 heartRule, 무료 카드, 원전 카드가 모두 이 규칙을 따라야 화면과 풀이가 어긋나지 않는다.
+// 조사 고르기: josa('수화기제','이/가') → '가'. 앞이 받침 있는 말, 뒤가 없는 말. '으로/로'는 ㄹ받침도 '로'.
+// 끝의 괄호('용구(用九)')는 떼고 보고, 숫자는 읽는 소리(1=일, 6=육 …)로 본다.
+function josa(w,pair){
+  const [withB,noB]=pair.split('/');
+  const t=String(w??'').trim().replace(/\s*\([^()]*\)$/,'');
+  const c=t.slice(-1);
+  let jong;
+  if(/[가-힣]/.test(c))jong=(c.charCodeAt(0)-0xAC00)%28;
+  else if(/[0-9]/.test(c))jong={0:21,1:8,3:16,6:1,7:8,8:8}[c]||0;
+  else return withB+'('+noB+')';
+  if(withB==='으로'&&jong===8)return noB;
+  return jong>0?withB:noB;
+}
+
 function focusYao(chg){
   const n=(chg||[]).length;
   if(n>=4&&n<=5)return{idxs:[0,1,2,3,4,5].filter(i=>!chg.includes(i)),kind:'불변효'};
@@ -606,7 +646,7 @@ function startThrow(){
   initRows();goTo('s2');
 }
 function initRows(){
-  const lbs=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  const lbs=['초효','이효','삼효','사효','오효','상효'];
   const c=document.getElementById('trows');c.innerHTML='';
   for(let i=0;i<6;i++)c.innerHTML+=`<div class="trow" id="tr${i}">
     <span class="ylbl">${lbs[i]}</span>
@@ -616,9 +656,9 @@ function initRows(){
       <div class="cn" id="c${i}2">?</div>
     </div>
     <div class="lpv" id="lp${i}"><div style="width:78px;height:6px;background:var(--bdr);border-radius:1px;opacity:.3"></div></div>
-    <span class="ltyp" id="lt${i}">미투전</span>
-    <button class="tbtn" id="tb${i}" onclick="throwYao(${i})">${i===0?'▶ 던지기':'던지기'}</button>
-    <button class="tbtn" id="mb${i}" onclick="openModal(${i})" style="border-color:var(--bdr);color:var(--t3)">입력</button>
+    <span class="ltyp" id="lt${i}"></span>
+    <button class="tbtn" id="tb${i}" onclick="throwYao(${i})">던지기</button>
+    <button class="tbtn" id="mb${i}" onclick="openModal(${i})" style="color:var(--t2)" aria-label="${lbs[i]} 실제 동전 결과 입력">직접</button>
   </div>`;
   document.getElementById('tprog').style.width='0%';
   document.getElementById('tcnt').textContent='0 / 6효';
@@ -633,7 +673,7 @@ function openModal(rowIdx){
   if(S.throws[rowIdx])return;
   M.rowIdx=rowIdx;
   M.coins=[null,null,null];
-  const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  const LABELS=['초효','이효','삼효','사효','오효','상효'];
   document.getElementById('modalYaoLabel').textContent=LABELS[rowIdx];
   [0,1,2].forEach(j=>{
     ['y','n'].forEach(t=>{document.getElementById('mb'+j+t).className='mbtn';});
@@ -739,7 +779,7 @@ function renderRow(idx,sum){
   document.getElementById('tprog').style.width=(done/6*100)+'%';
   document.getElementById('tcnt').textContent=`${done} / 6효`;
   const nxt=[0,1,2,3,4,5].find(i=>!S.throws[i]);
-  if(nxt!==undefined)document.getElementById('tb'+nxt).textContent='▶ 던지기';
+  if(nxt!==undefined)document.getElementById('tb'+nxt).textContent='던지기';
   if(done===6)setTimeout(showHexResult,600);
 }
 function autoAll(){
@@ -759,7 +799,6 @@ function showHexResult(){
     ?`변효 ${S.chg.map(i=>i+1+'효').join('·')}${fy.kind==='불변효'?` → 불변효 ${fy.idxs.map(i=>i+1+'효').join('·')} 중심`:''} · ${S.benGua?.no||'??'}번 괘`
     :`변효 없음 · ${S.benGua?.no||'??'}번 괘`;
   renderGua('s2gua','s2chgi');
-  document.getElementById('hexDesc').textContent=ben?`${(GD2?.[S.benGua?.no]?.k2||ben.k)} ${ben.v}`:'';
   // 해석 카드 렌더링
   document.getElementById('hexInterpret').innerHTML=buildLocalCards(ben,ji,S.chg);
   const hr=document.getElementById('hexResult');
@@ -777,7 +816,7 @@ function resetThrow(){
 async function proceedToQ5(){
   renderGua('s3gua','s3chgi');
   document.getElementById('s3sub').textContent='몇 가지 여쭤볼게요';
-  document.getElementById('q5area').innerHTML=`<div class="aibox"><p class="aild">✦ 준비하는 중...</p></div>`;
+  document.getElementById('q5area').innerHTML=`<div class="aibox"><p class="aild">질문을 고르는 중입니다</p></div>`;
   document.getElementById('s3btns').style.display='none';
   goTo('s3');
   const ben=S.benGua?GD[S.benGua.no]:null;
@@ -905,7 +944,7 @@ function buildReadingHtml(r,ben,ji){
   const benName=S.benGua?.n||'';
   const jiName=S.jiGua?.n||'';
   const chg=S.chg;
-  const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  const LABELS=['초효','이효','삼효','사효','오효','상효'];
   const _b2=GD2?.[S.benGua?.no]||{};const _j2=GD2?.[S.jiGua?.no]||{};
   const _bk=_b2.k2||ben?.k||'';const _bdst=_b2.dst2||ben?.dst||'';
   const _bhy=i=>_b2.hy2?.[i]||ben?.hy?.[i]||'';
@@ -914,13 +953,13 @@ function buildReadingHtml(r,ben,ji){
   // ① 형세
   const aiXS=getAi(secs,'형세',0);
   html+=`<div class="scard">
-    <span class="stag">형세 · 形勢</span>
-    <h2 class="stit">지금 ${name}이 서 있는 자리</h2>
+    <span class="stag">형세</span>
+    <h2 class="stit">${ben.v}</h2>
     <div class="sbody">
       <p>오늘 뽑힌 괘는 <strong>${benName}${S.benGua?.no?'('+S.benGua.no+'번)':''}</strong>입니다.</p>
       <p>${ben.v}</p>
       ${S.q?`<p>지금 마음에 두고 있는 것과 이 괘를 함께 놓고 보면, 지금은 무턱대고 밀어붙이기보다는 괘가 가리키는 방향을 먼저 읽는 것이 중요한 시절입니다.</p>`:''}
-      ${jiName?`<p>변효가 있어 상황이 움직이고 있습니다. <strong>${benName}</strong>에서 <strong>${jiName}</strong>으로 흘러가는 흐름 위에 서 있어요.</p>`:'<p>변효가 없습니다. 지금 이 자리의 괘기(卦氣)가 그대로 당신의 현재입니다.</p>'}
+      ${jiName?`<p>변효가 있어 상황이 움직이고 있습니다. <strong>${benName}</strong>에서 <strong>${jiName}</strong>${josa(jiName,'으로/로')} 흘러가는 흐름 위에 서 있어요.</p>`:'<p>변효가 없습니다. 지금 이 자리의 괘기(卦氣)가 그대로 당신의 현재입니다.</p>'}
     </div>
     ${aiBlock('해석',aiXS?.title,aiXS?.content)}
   </div>`;
@@ -928,8 +967,8 @@ function buildReadingHtml(r,ben,ji){
   // ② 본괘
   const aiBen=getAi(secs,'본괘',1);
   html+=`<div class="scard">
-    <span class="stag">본괘 · ${benName}</span>
-    <h2 class="stit">${benName}이 전하는 말</h2>
+    <span class="stag">본괘</span>
+    <h2 class="stit">${benName} 괘가 전하는 말</h2>
     <div class="sbody">
       <p><strong>${ben.gs}</strong></p>
       <p>${_bk}</p>
@@ -959,7 +998,7 @@ function buildReadingHtml(r,ben,ji){
       <span class="stag">변효 · 變爻</span>
       <h2 class="stit">지금 움직이고 있는 것들</h2>
       <div class="sbody">
-        <p><strong>${chgText}</strong>가 변하고 있습니다. 변효는 지금 이 순간 삶 속에서 실제로 작동 중인 힘입니다.</p>
+        <p><strong>${chgText}</strong>${josa(chgText,'이/가')} 변하고 있습니다. 변효는 지금 이 순간 삶 속에서 실제로 작동 중인 힘입니다.</p>
       </div>
       ${aiBlock('변효 풀이',aiChg?.title,aiChg?.content)}
       <div class="sbody" style="margin-top:.8rem;border-top:.5px solid var(--bdr);padding-top:.8rem">
@@ -975,7 +1014,7 @@ function buildReadingHtml(r,ben,ji){
   if(ji&&chg&&chg.length>0){
     const aiJi=getAi(secs,'흐름',3)||getAi(secs,'지괘',3)||getAi(secs,'앞으로',3);
     html+=`<div class="scard">
-      <span class="stag">지괘 · ${jiName}</span>
+      <span class="stag">지괘 — 흘러가는 쪽</span>
       <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
       <div class="sbody">
         <p>지금 이 상황은 <strong>${jiName}${S.jiGua?.no?'('+S.jiGua.no+'번)':''}</strong>을 향해 나아가고 있습니다.</p>
@@ -990,20 +1029,20 @@ function buildReadingHtml(r,ben,ji){
   // ⑤ 점사 요약 + 조언
   const aiAdv=getAi(secs,'조언',4);
   html+=`<div class="scard">
-    <span class="stag">점사 · 占辭</span>
+    <span class="stag">한눈에</span>
     <h2 class="stit">형세 · 활로 · 경계</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);margin-top:.5rem">
       <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">形勢 · 형세</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">형세</p>
         <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${ben.v}</p>
       </div>
       <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">활로</p>
         <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>=4&&ji)?_jk:_bk}</p>
       </div>
       <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
-        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>0&&ji)?jiName+'을 향해 가는 길에서 바름을 잃지 말라.':benName+'의 경계를 잊지 말라.'}</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">경계</p>
+        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>0&&ji)?jiName+josa(jiName,'을/를')+' 향해 가는 길에서 바름을 잃지 말라.':benName+'의 경계를 잊지 말라.'}</p>
       </div>
     </div>
     ${aiBlock('조언',aiAdv?.title,aiAdv?.content)}
@@ -1013,7 +1052,7 @@ function buildReadingHtml(r,ben,ji){
   if(r.closing||r.encouragement){
     const cps=(r.closing||'').split(/\n+/).filter(p=>p.trim())
       .map(p=>`<p>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</p>`).join('');
-    html+=`<div class="ccard"><span class="stag" style="display:block;margin-bottom:.5rem">總評</span><div class="sbody">${cps}</div>${r.encouragement?`<p class="wnr">${r.encouragement}</p>`:''}</div>`;
+    html+=`<div class="ccard"><span class="stag" style="display:block;margin-bottom:.5rem">총평</span><div class="sbody">${cps}</div>${r.encouragement?`<p class="wnr">${r.encouragement}</p>`:''}</div>`;
   }
 
   return html;
@@ -1032,7 +1071,7 @@ function buildLocalCards(ben,ji,chg){
   const name=S.name||'당신';
   const benName=S.benGua?.n||'';
   const jiName=S.jiGua?.n||'';
-  const LABELS=['초효(初爻)','이효(二爻)','삼효(三爻)','사효(四爻)','오효(五爻)','상효(上爻)'];
+  const LABELS=['초효','이효','삼효','사효','오효','상효'];
   const _b2=GD2?.[S.benGua?.no]||{};const _j2=GD2?.[S.jiGua?.no]||{};
   const _bk=_b2.k2||ben?.k||'';const _bdst=_b2.dst2||ben?.dst||'';const _bdt2=_b2.dt2||ben?.dt||'';
   const _bhy=i=>_b2.hy2?.[i]||ben?.hy?.[i]||'';
@@ -1044,27 +1083,26 @@ function buildLocalCards(ben,ji,chg){
   const chgN=chg?chg.length:0;
 
   html+=`<div class="scard">
-    <span class="stag">형세 · 形勢</span>
-    <h2 class="stit">지금 ${name}이 서 있는 자리</h2>
+    <span class="stag">형세</span>
+    <h2 class="stit">${ben.v}</h2>
     <div class="sbody">
       <p>뽑힌 괘: <strong>${benName}(${S.benGua?.no||'?'}번)</strong>${jiName?` → <strong>${jiName}(${S.jiGua?.no||'?'}번)</strong>`:''}</p>
-      <p>${ben.v}</p>
     </div>
   </div>`;
 
   html+=`<div class="scard">
-    <span class="stag">본괘 · ${benName}</span>
-    <h2 class="stit">${benName}이 전하는 말</h2>
+    <span class="stag">본괘</span>
+    <h2 class="stit">${benName} 괘가 전하는 말</h2>
     <div class="sbody">
-      <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
+      <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">괘사</p>
       <p style="font-size:.88rem;color:var(--t1);line-height:1.8">${_bk}</p>
       ${ben.p?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
         <p style="font-size:.86rem;line-height:1.85;color:var(--t1)">${ben.p}</p>
       </div>`:''}
       <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
-        <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">대상전</p>
         <p style="font-size:.84rem;color:var(--t2);line-height:1.75">${_bdst}</p>
-        <p style="margin-top:.55rem;font-size:.76rem;color:var(--t3);font-style:italic">이 실천 지침이 지금 상황에서 구체적으로 무엇을 뜻하는지는 AI 풀이에서 풀어드립니다.</p>
+        <p style="margin-top:.55rem;font-family:var(--f-ui);font-size:.82rem;color:var(--t3)">이 지침이 지금 고민에서 무엇을 뜻하는지는 풀이에서 이어집니다.</p>
       </div>
     </div>
   </div>`;
@@ -1072,9 +1110,9 @@ function buildLocalCards(ben,ji,chg){
   if(chgN===0){
     // 변효 없음 — 六位 카드: 초(1-2효)/중(3-4효)/종(5-6효) 관점
     const sixSecs=[
-      {label:'始 · 처음',sub:'씨앗과 기초',idxs:[0,1]},
-      {label:'中 · 중간',sub:'진행과 전환',idxs:[2,3]},
-      {label:'終 · 끝',sub:'완성과 마무리',idxs:[4,5]},
+      {label:'처음',sub:'씨앗과 기초',idxs:[0,1]},
+      {label:'가운데',sub:'진행과 전환',idxs:[2,3]},
+      {label:'끝',sub:'완성과 마무리',idxs:[4,5]},
     ];
     let secHtml='';
     sixSecs.forEach(({label,sub,idxs})=>{
@@ -1094,7 +1132,7 @@ function buildLocalCards(ben,ji,chg){
       </div>`;
     });
     if(secHtml)html+=`<div class="scard">
-      <span class="stag">六位 · 육위</span>
+      <span class="stag">여섯 자리</span>
       <h2 class="stit">이 괘의 여섯 자리</h2>
       <div class="sbody">${secHtml}</div>
     </div>`;
@@ -1105,9 +1143,9 @@ function buildLocalCards(ben,ji,chg){
       ?'모든 효가 양으로 변했습니다. 용구(用九) — 뭇 용이 앞서지 않고 함께하는 기운입니다. 강건함을 쓰되 독식하지 않을 때 길합니다.'
       :benNo===2
       ?'모든 효가 음으로 변했습니다. 용육(用六) — 오래도록 바름을 지키면 이롭습니다. 유순함이 가장 강한 힘인 시절입니다.'
-      :`여섯 효가 모두 변했습니다. 본괘 <strong>${benName}</strong>은 이미 지나가는 배경이고, 지괘 <strong>${jiName}</strong>이 지금의 실질적 현실입니다. 지괘 괘사를 깊이 새기세요.`;
+      :`여섯 효가 모두 변했습니다. 본괘 <strong>${benName}</strong>${josa(benName,'은/는')} 이미 지나가는 배경이고, 지괘 <strong>${jiName}</strong>${josa(jiName,'이/가')} 지금의 실질적 현실입니다. 지괘 괘사를 깊이 새기세요.`;
     html+=`<div class="scard">
-      <span class="stag">변효 · 變爻 (6개 전변)</span>
+      <span class="stag">변효 여섯 — 모두 바뀜</span>
       <h2 class="stit">완전한 전환</h2>
       <div class="sbody"><p>${fullChgMsg}</p></div>
     </div>`;
@@ -1154,30 +1192,30 @@ function buildLocalCards(ben,ji,chg){
     const _unchangedIdxs=chgN>=4?[0,1,2,3,4,5].filter(i=>!chg.includes(i)):[];
     const _unchangedText=chgN>=4?_unchangedIdxs.map(i=>LABELS[i]).join(', '):'';
     html+=`<div class="scard">
-      <span class="stag">${chgN>=4?`불변효 · 不變爻 (${_unchangedIdxs.length}개)`:`변효 · 變爻 (${chg.length}개)`}</span>
+      <span class="stag">${chgN>=4?`불변효 — 움직이지 않는 자리`:`변효 ${chg.length}개 — 움직이는 자리`}</span>
       <h2 class="stit">${_cardStit}</h2>
       <div class="sbody">
         <p style="font-size:.75rem;color:var(--t3)">${chgN>=4
-          ?`변효가 ${chgN}개(${chgText})라 움직이지 않는 <strong style="color:var(--t1)">${_unchangedText}</strong>를 읽습니다.`
+          ?`변효가 ${chgN}개(${chgText})라 움직이지 않는 <strong style="color:var(--t1)">${_unchangedText}</strong>${josa(_unchangedText,'을/를')} 읽습니다.`
           :`변효: <strong style="color:var(--t1)">${chgText}</strong>`}</p>
         ${hyosaParts}
-        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--t2)">→ 지괘 <strong style="color:var(--t1)">${jiName}</strong>으로 흘러가고 있습니다.</p>`:''}
+        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--t2)">지괘 <strong style="color:var(--t1)">${jiName}</strong>${josa(jiName,'으로/로')} 흘러가고 있습니다.</p>`:''}
       </div>
     </div>`;
   }
 
   if(ji&&chgN>0){
     html+=`<div class="scard">
-      <span class="stag">지괘 · ${jiName}</span>
+      <span class="stag">지괘 — 흘러가는 쪽</span>
       <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
       <div class="sbody">
-        <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">卦辭 · 괘사</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">괘사</p>
         <p style="font-size:.88rem;color:var(--t1);line-height:1.8">${_jk}</p>
         ${(_jpj||ji.p)?`<div style="margin-top:.9rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
           <p style="font-size:.86rem;line-height:1.85;color:var(--t1)">${_jpj||ji.p}</p>
         </div>`:''}
         <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
-          <p style="font-size:.67rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.3rem">大象傳 · 대상전</p>
+          <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">대상전</p>
           <p style="font-size:.84rem;color:var(--t2);line-height:1.75">${_jdst}</p>
         </div>
       </div>
@@ -1185,19 +1223,19 @@ function buildLocalCards(ben,ji,chg){
   }
 
   html+=`<div class="scard">
-    <span class="stag">점사 · 占辭</span>
+    <span class="stag">한눈에</span>
     <h2 class="stit">형세 · 활로 · 경계</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);margin-top:.5rem">
       <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">形勢 · 형세</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">형세</p>
         <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${ben.v}</p>
       </div>
       <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">活路 · 활로</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">활로</p>
         <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>=3&&ji)?_jk:_bk}</p>
       </div>
       <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-size:.66rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem">警戒 · 경계</p>
+        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">경계</p>
         <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chgN>0&&ji)?(ji.v||_jdst):(_bdt2||_bdst)}</p>
       </div>
     </div>
@@ -1216,7 +1254,7 @@ function buildReadingHtmlV2(r,ben,ji){
   // 헤드라인
   if(r.headline){
     html+=`<div class="ccard" style="margin-bottom:1.2rem">
-      <p style="font-size:.66rem;color:var(--gold);letter-spacing:.2em;margin-bottom:.5rem">✦ 占</p>
+      <span class="seal sm" aria-hidden="true" style="margin-bottom:.8rem">占</span>
       <h2 style="font-size:1.05rem;font-weight:500;color:var(--t1);line-height:1.6">${mdp(r.headline)}</h2>
     </div>`;
   }
@@ -1242,22 +1280,22 @@ function buildReadingHtmlV2(r,ben,ji){
   const _benName=S.benGua?.n||'';
   const _jiName=S.jiGua?.n||'';
   {
-    let src=`<div class="scard"><span class="stag">원전 · 原典</span><div class="sbody">`;
-    src+=`<div style="margin-bottom:.85rem"><p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">본괘 · ${_benName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_benK}</p></div>`;
+    let src=`<div class="scard"><span class="stag">원문</span><div class="sbody">`;
+    src+=`<div style="margin-bottom:.85rem"><p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.35rem">본괘 · ${_benName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_benK}</p></div>`;
     if(_fy.kind==='불변효'){
       src+=`<p style="font-size:.75rem;color:var(--t3);margin-bottom:.6rem">변효가 ${_chg.length}개라 움직이지 않는 자리(${_fy.idxs.map(i=>_LABELS[i]).join(', ')})를 읽습니다.</p>`;
     }else if(_chg.length===6){
-      src+=`<p style="font-size:.75rem;color:var(--t3);margin-bottom:.6rem">여섯 효가 모두 변해 개별 효사보다 ${S.benGua?.no===1?'용구(用九)':S.benGua?.no===2?'용육(用六)':'지괘 괘사'}가 중심입니다.</p>`;
+      src+=`<p style="font-size:.75rem;color:var(--t3);margin-bottom:.6rem">여섯 효가 모두 변해 개별 효사보다 ${(w=>w+josa(w,'이/가'))(S.benGua?.no===1?'용구(用九)':S.benGua?.no===2?'용육(用六)':'지괘 괘사')} 중심입니다.</p>`;
     }
     _fy.idxs.forEach(idx=>{
       const hy=_ben2.hy2?.[idx]||ben?.hy?.[idx]||'';
       if(!hy)return;
       src+=`<div style="margin-bottom:.7rem;padding:.65rem .9rem;border-left:1.5px solid rgba(196,154,42,.45);background:rgba(196,154,42,.04)">`;
-      src+=`<p style="font-size:.68rem;color:var(--gold);letter-spacing:.12em;margin-bottom:.3rem">${_fy.kind==='불변효'?'불변효 · ':''}${_LABELS[idx]}</p>`;
+      src+=`<p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">${_fy.kind==='불변효'?'불변효 · ':''}${_LABELS[idx]}</p>`;
       src+=`<p style="font-size:.85rem;line-height:1.8;color:var(--t1)">${hy}</p></div>`;
     });
     if(ji&&_jiK){
-      src+=`<div style="margin-top:.2rem"><p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">지괘 · ${_jiName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_jiK}</p></div>`;
+      src+=`<div style="margin-top:.2rem"><p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.35rem">지괘 · ${_jiName}</p><p style="font-size:.86rem;line-height:1.8;color:var(--t1)">${_jiK}</p></div>`;
     }
     src+=`</div></div>`;
     html+=src;
@@ -1301,14 +1339,14 @@ function buildReadingHtmlV2(r,ben,ji){
       // 내포된 의미
       if(sec.meaning&&sec.meaning.trim()){
         body+=`<div style="margin-bottom:.9rem">
-          <p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">意 · 의미</p>
+          <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.35rem">괘의 말</p>
           <div class="sbody" style="color:var(--t2)">${paras(sec.meaning)}</div>
         </div>`;
       }
       // 질문에 맞는 해석
       if(sec.reading&&sec.reading.trim()){
         body+=`<div style="padding-top:.6rem;border-top:.5px solid var(--bdr)">
-          <p style="font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:.35rem">↳ ${S.name||'당신'}에게</p>
+          <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.35rem">${S.name?S.name+'님께':'지금 고민에'}</p>
           <div class="sbody">${paras(sec.reading)}</div>
         </div>`;
       }
@@ -1353,7 +1391,7 @@ function renderFallback(ben,ji,err){
 
   html+=buildLocalCards(ben,ji,S.chg);
   html+=`<div class="ccard">
-    <span class="stag" style="display:block;margin-bottom:.5rem">總評</span>
+    <span class="stag" style="display:block;margin-bottom:.5rem">총평</span>
     <div class="sbody">
       <p>위는 주역 원문을 바탕으로 한 기본 점사입니다.</p>
       <p>API 키를 설정하고 질문에 답하면 ${name}의 고민을 직접 반영한 더 깊은 해석을 받으실 수 있습니다.</p>
@@ -1372,7 +1410,7 @@ function showLoading(){
   S._tm=setInterval(()=>{
     secs++;
     const el=document.getElementById('loSecs');
-    if(el)el.textContent=secs+'초째 읽는 중...';
+    if(el)el.textContent=secs+'초';
   },1000);
   document.getElementById('loadingOverlay').classList.add('show');
 }
@@ -1386,7 +1424,7 @@ function hideLoading(){
 function goBackToQ5(){
   // 기존 질문·답변 유지한 채 S3으로 복귀
   renderGua('s3gua','s3chgi');
-  document.getElementById('s3sub').textContent='답변을 수정하고 다시 점사를 받아보세요';
+  document.getElementById('s3sub').textContent='답을 고친 뒤 다시 풀이를 받으세요';
   // 질문 폼 다시 렌더링 (기존 답변 채워 넣기)
   let html='<div class="q5lst">';
   S.q5.forEach((q,i)=>{
@@ -1413,7 +1451,7 @@ function renderArchive(){
   const records=JSON.parse(localStorage.getItem('ich_arc')||'[]');
   const container=document.getElementById('archiveList');
   if(records.length===0){
-    container.innerHTML='<div class="archive-empty"><p>아직 저장된 점사가 없어요.</p><p style="margin-top:.5rem;font-size:.78rem">점사를 받으면 자동으로 여기에 저장됩니다.</p></div>';
+    container.innerHTML='<div class="archive-empty"><p>아직 받은 풀이가 없습니다.</p><p style="margin-top:.5rem;font-size:.85rem">풀이를 받으면 여기에 남습니다.</p></div>';
     return;
   }
   container.innerHTML=records.map(r=>`
@@ -1421,7 +1459,7 @@ function renderArchive(){
       <button class="arch-del" onclick="event.stopPropagation();deleteArchive(${r.id})">✕</button>
       <p class="arch-date">${r.date}</p>
       <p class="arch-gua">${r.gua}</p>
-      ${r.q?`<p class="arch-q">"${r.q}"</p>`:'<p class="arch-q" style="color:var(--t3)">일반 운세</p>'}
+      ${r.q?`<p class="arch-q">"${r.q}"</p>`:'<p class="arch-q" style="color:var(--t3)">고민 없이 본 점</p>'}
     </div>`).join('');
 }
 function viewArchive(id){
@@ -1801,7 +1839,7 @@ function buildEunggi(lyData,chg,question,refDate){
     const l=lines[pos-1];
     return`${rs.join(' = ')}: ${l.pos}효 ${l.branch}${OHAENG_KR[l.element]||''} · ${l.liuqin} · ${l.state}\n  ${l.mode}\n  응기 달: ${l.months}${l.days?`\n  가까운 날: ${l.days}`:''}`;
   }).join('\n');
-  const missStr=missing.map(y=>`용신(${y.qin}) 불현(伏神) — 이 괘에 ${y.qin}이 드러나지 않음. 일이 더디고 실체가 늦게 나타나는 신호. 세효로 대신 읽되 시기는 넉넉히.`).join('\n');
+  const missStr=missing.map(y=>`용신(${y.qin}) 불현(伏神) — 이 괘에 ${y.qin}${josa(y.qin,'이/가')} 드러나지 않음. 일이 더디고 실체가 늦게 나타나는 신호. 세효로 대신 읽되 시기는 넉넉히.`).join('\n');
   const yongNone=yongsin.length===0?'용신: 주제가 특정되지 않아 세효 중심으로 읽는다.':'';
 
   return`\n[시기 판단 근거 — 육효 응기] 오늘 ${lyData.ilJin}일 · 월건 ${BRANCHES_HAN[wb]}月(${branchToCalStr(wb,today,true)})
@@ -1877,8 +1915,8 @@ window.buildReadingInput=function(ben,ji,state){
   }else{
     const yong=benNo===1?'용구(用九) — 뭇 용이 앞서지 않고 함께하는 기운':benNo===2?'용육(用六) — 오래도록 바름을 지키면 이롭다':null;
     readingFocus=`[변효 6개 — 완전한 전환]
-${yong?`본괘가 ${benName}이므로 ${yong}로 읽는다.`:'지괘 괘사가 메인이다. 본괘는 지나가는 배경, 지괘가 실질적 현재이자 미래.'}`;
-    heartRule=yong?`${yong}를 중심으로. 개별 효사 인용 없음.`:`지괘 괘사를 중심으로. 개별 효사 인용 없음.`;
+${yong?`본괘가 ${benName}이므로 ${yong}${josa(yong,'으로/로')} 읽는다.`:'지괘 괘사가 메인이다. 본괘는 지나가는 배경, 지괘가 실질적 현재이자 미래.'}`;
+    heartRule=yong?`${yong}${josa(yong,'을/를')} 중심으로. 개별 효사 인용 없음.`:`지괘 괘사를 중심으로. 개별 효사 인용 없음.`;
   }
 
   // ── 다산역 참고 ──
