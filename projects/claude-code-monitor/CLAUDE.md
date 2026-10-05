@@ -52,7 +52,8 @@ Cowork/클라우드 루틴은 GitHub 조회가 안 되어 Actions로 이전했�
 워크플로: `.github/workflows/claude-code-monitor.yml` (VS Code는 GitHub Actions 확장으로 실행 상태 확인)
 
 - 주기: 매주 월요일 오전 9시 (KST), `workflow_dispatch`로 수동 실행 가능
-- 단계: `monitor.py` → `generate_content.py`(Anthropic API) → research/content 커밋 → `slack_notify.py`
+- 단계: `monitor.py` → `generate_content.py`(Anthropic API) → research 커밋 → `slack_notify.py`
+- 컨텐츠(블로그/인스타)는 GitHub에 커밋하지 않고 Slack #성과보고 스레드로만 전달 (Actions 러너는 로컬 PC에 파일을 쓸 수 없음)
 - Slack: 웹훅 대신 Bot Token(`chat.postMessage`)으로 #성과보고에 보고
 
 필요한 리포지토리 Secrets (Settings → Secrets and variables → Actions):
