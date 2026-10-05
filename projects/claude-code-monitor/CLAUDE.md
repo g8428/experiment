@@ -62,6 +62,7 @@ Cowork/클라우드 루틴은 GitHub 조회가 안 되어 Actions로 이전했�
 | `ANTHROPIC_API_KEY` | 컨텐츠 생성용 |
 | `SLACK_BOT_STAFF1_TOKEN` | `xoxb-...` (slack-staff1 봇), 스코프 `chat:write` |
 | `SLACK_CHANNEL_ID` | #성과보고 채널 ID (`C...`). 봇을 채널에 `/invite` 해야 함 |
+| `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_BASE_URL` | (선택) Langfuse 트레이싱. 없으면 자동으로 꺼짐 — `shared/utils/README.md` 참고 |
 
 ## 서브에이전트
 

@@ -24,7 +24,7 @@ jobs:
           cache: 'pip'
 
       - name: 패키지 설치
-        run: pip install requests anthropic
+        run: pip install requests anthropic "langfuse>=4,<5" opentelemetry-instrumentation-anthropic
 
       - name: GitHub 트렌드 수집
         env:
@@ -34,6 +34,12 @@ jobs:
       - name: 블로그 + 인스타 컨텐츠 생성
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Langfuse 트레이싱 (Secrets 미설정 시 자동으로 꺼짐)
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_BASE_URL: ${{ secrets.LANGFUSE_BASE_URL }}
+          LANGFUSE_TRACING_ENVIRONMENT: production
+          LANGFUSE_RELEASE: ${{ github.sha }}
         run: python projects/claude-code-monitor/generate_content.py
 
       - name: 결과 파일 커밋 & 푸시

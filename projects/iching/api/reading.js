@@ -3,6 +3,8 @@
 // 클라이언트가 system / messages / tools / tool_choice / temperature 를 그대로 보내면 전달한다.
 // (구버전 호환: prompt만 오면 user 메시지 하나로 감싼다)
 
+import { traceAnthropicCall } from '../lib/langfuse.js';
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -35,23 +37,28 @@ export default async function handler(req, res) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 120000);
 
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+    const { status, ok, data } = await traceAnthropicCall(
+      { name: 'generate-reading', payload, tags: ['iching', 'reading'] },
+      async () => {
+        const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify(payload),
+        });
+        return { status: anthropicRes.status, ok: anthropicRes.ok, data: await anthropicRes.json() };
       },
-      body: JSON.stringify(payload),
-    });
+    );
 
     clearTimeout(timeout);
-    const data = await anthropicRes.json();
 
-    if (!anthropicRes.ok) {
+    if (!ok) {
       // 429/529 rate limit은 그대로 전달해서 클라이언트가 재시도하게
-      return res.status(anthropicRes.status).json({ error: data?.error?.message || anthropicRes.status });
+      return res.status(status).json({ error: data?.error?.message || status });
     }
 
     // stop_reason(max_tokens 여부)과 content(tool_use 블록)를 그대로 넘긴다

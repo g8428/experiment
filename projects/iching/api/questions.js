@@ -1,6 +1,8 @@
 // Vercel Serverless Function: /api/questions
 // 주역 5가지 질문 생성 - Claude Haiku 사용
 
+import { traceAnthropicCall } from '../lib/langfuse.js';
+
 export default async function handler(req, res) {
   // CORS 헤더
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,22 +25,27 @@ export default async function handler(req, res) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 25000);
 
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+    const { status, ok, data } = await traceAnthropicCall(
+      { name: 'generate-questions', payload, tags: ['iching', 'questions'] },
+      async () => {
+        const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify(payload),
+        });
+        return { status: anthropicRes.status, ok: anthropicRes.ok, data: await anthropicRes.json() };
       },
-      body: JSON.stringify(payload),
-    });
+    );
 
     clearTimeout(timeout);
-    const data = await anthropicRes.json();
 
-    if (!anthropicRes.ok) {
-      return res.status(anthropicRes.status).json({ error: data?.error?.message || anthropicRes.status });
+    if (!ok) {
+      return res.status(status).json({ error: data?.error?.message || status });
     }
 
     return res.status(200).json(data);

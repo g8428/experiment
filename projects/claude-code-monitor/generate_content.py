@@ -4,15 +4,28 @@ Anthropic Python SDK 직접 호출 (Claude Code 없이 Actions/로컬 모두 동
 
 실행: python projects/claude-code-monitor/generate_content.py [research_file_path]
 의존성: anthropic (pip install anthropic)
+트레이싱(선택): LANGFUSE_* 환경변수가 있으면 Langfuse로 전송 (shared/utils/langfuse_tracing.py 참고)
 """
 
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+try:  # 로컬 실행 시 레포 루트 .env 로드 (Langfuse 초기화보다 먼저여야 한다)
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).parent.parent.parent / ".env")
+except ImportError:
+    pass
+
 import anthropic
 
 ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(ROOT / "shared" / "utils"))
+from langfuse_tracing import TRACING_ENABLED, flush, get_client, observe, propagate_attributes, setup_tracing  # noqa: E402
+
+setup_tracing()  # Anthropic SDK 호출을 generation(모델/토큰/입출력)으로 자동 수집
+
 RESEARCH_DIR = ROOT / "research"
 BLOG_DIR = ROOT / "content" / "blog"
 INSTAGRAM_DIR = ROOT / "content" / "instagram"
@@ -35,6 +48,7 @@ def extract_text(msg) -> str:
     return "\n".join(parts)
 
 
+@observe(name="generate-blog-post", capture_input=False)  # 입력(리서치 전문)은 하위 generation에 이미 기록됨
 def generate_blog_post(client: anthropic.Anthropic, research: str, today: str) -> str:
     prompt = f"""다음 리서치 파일을 읽고 한국 개발자 커뮤니티(벨로그, 티스토리)용 기술 블로그 포스트를 작성해라.
 
@@ -69,6 +83,7 @@ def generate_blog_post(client: anthropic.Anthropic, research: str, today: str) -
     return extract_text(msg)
 
 
+@observe(name="generate-instagram-post", capture_input=False)
 def generate_instagram_post(client: anthropic.Anthropic, research: str, today: str) -> str:
     prompt = f"""다음 리서치 파일에서 가장 임팩트 있는 내용 1~2개를 골라 개발자 인스타그램 카드뉴스 포스팅을 작성해라.
 
@@ -121,12 +136,11 @@ def extract_title(blog_md: str) -> str:
     return "claude-code-trends"
 
 
-def main():
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
-    research_path = Path(sys.argv[1]) if len(sys.argv) > 1 else latest_research_file()
-    print(f"리서치 파일: {research_path}")
+@observe(name="generate-weekly-content", capture_input=False)  # 1회 실행 = 1 trace
+def run(research_path: Path, today: str) -> dict:
     research = research_path.read_text(encoding="utf-8")
+    if TRACING_ENABLED:
+        get_client().update_current_span(input={"research_file": research_path.name})
 
     client = anthropic.Anthropic()  # ANTHROPIC_API_KEY env var 자동 사용
 
@@ -148,6 +162,20 @@ def main():
     print("\n=== 컨텐츠 생성 완료 ===")
     print(f"블로그: {blog_path}")
     print(f"인스타: {ig_path}")
+    return {"blog": str(blog_path.relative_to(ROOT)), "instagram": str(ig_path.relative_to(ROOT))}
+
+
+def main():
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    research_path = Path(sys.argv[1]) if len(sys.argv) > 1 else latest_research_file()
+    print(f"리서치 파일: {research_path}")
+
+    try:
+        with propagate_attributes(tags=["claude-code-monitor", "weekly-content"], metadata={"research_date": today}):
+            run(research_path, today)
+    finally:
+        flush()  # 짧게 끝나는 스크립트라 종료 전 전송 필수
 
 
 if __name__ == "__main__":
