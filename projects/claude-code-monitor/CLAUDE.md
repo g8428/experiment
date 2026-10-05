@@ -46,12 +46,22 @@ content/
     YYYY-MM-DD-*.md   # 인스타 캡션 + 슬라이드 구성
 ```
 
-## Cowork 스케줄
+## GitHub Actions 스케줄
 
-- 주기: 매주 월요일 오전 9시 (KST)
-- 태스크: `python projects/claude-code-monitor/monitor.py` 실행 후
-  content-blog-writer, content-instagram-writer 서브에이전트 순차 호출
-- 결과: #성과보고 채널에 링크 보고
+Cowork/클라우드 루틴은 GitHub 조회가 안 되어 Actions로 이전했다.
+워크플로: `.github/workflows/claude-code-monitor.yml` (VS Code는 GitHub Actions 확장으로 실행 상태 확인)
+
+- 주기: 매주 월요일 오전 9시 (KST), `workflow_dispatch`로 수동 실행 가능
+- 단계: `monitor.py` → `generate_content.py`(Anthropic API) → research/content 커밋 → `slack_notify.py`
+- Slack: 웹훅 대신 Bot Token(`chat.postMessage`)으로 #성과보고에 보고
+
+필요한 리포지토리 Secrets (Settings → Secrets and variables → Actions):
+
+| Secret | 설명 |
+|--------|------|
+| `ANTHROPIC_API_KEY` | 컨텐츠 생성용 |
+| `SLACK_BOT_STAFF1_TOKEN` | `xoxb-...` (slack-staff1 봇), 스코프 `chat:write` |
+| `SLACK_CHANNEL_ID` | #성과보고 채널 ID (`C...`). 봇을 채널에 `/invite` 해야 함 |
 
 ## 서브에이전트
 

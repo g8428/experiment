@@ -2,7 +2,7 @@ name: Claude Code 트렌드 모니터 & 컨텐츠 생성
 
 on:
   schedule:
-    # 매주 월요일 오전 9시 KST = UTC 일요일 00:00
+    # 매주 월요일 오전 9시 KST = UTC 월요일 00:00
     - cron: '0 0 * * 1'
   workflow_dispatch:  # 수동 실행 버튼
 
@@ -44,29 +44,11 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: Claude Code 트렌드 리포트 + 컨텐츠 자동 생성 $(date +%Y-%m-%d)"
           git push
 
-      - name: Slack 보고 (#성과보고)
+      - name: Slack 보고 (#성과보고, Bot Token)
         if: always()
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          if [ -z "$SLACK_WEBHOOK_URL" ]; then
-            echo "SLACK_WEBHOOK_URL 미설정 — 보고 스킵"
-            exit 0
-          fi
-
-          STATUS="${{ job.status }}"
-          DATE=$(date +%Y-%m-%d)
-
-          if [ "$STATUS" = "success" ]; then
-            BLOG_FILE=$(ls content/blog/${DATE}-*.md 2>/dev/null | head -1 || echo "없음")
-            IG_FILE=$(ls content/instagram/${DATE}-*.md 2>/dev/null | head -1 || echo "없음")
-            TREND_FILE="research/claude-code-trends-${DATE}.md"
-
-            MSG="✅ Claude Code 트렌드 모니터 완료 (${DATE})\n블로그: ${BLOG_FILE}\n인스타: ${IG_FILE}\n트렌드: ${TREND_FILE}"
-          else
-            MSG="❌ Claude Code 트렌드 모니터 실패 (${DATE})\n로그: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          fi
-
-          curl -s -X POST "$SLACK_WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d "{\"text\": \"${MSG}\"}"
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_STAFF1_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python projects/claude-code-monitor/slack_notify.py
