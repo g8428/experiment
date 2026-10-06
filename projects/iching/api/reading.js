@@ -25,6 +25,9 @@ export default async function handler(req, res) {
     qa: (Array.isArray(body.qa) ? body.qa : []).map((x) => ({ q: String(x?.q ?? ''), a: String(x?.a || '(답변 없음)') })),
     hexagram: String(body.hexagram),
     heartRule: String(body.heartRule),
+    src: Object.fromEntries(
+      ['ben', 'ji', 'lines', 'focus', 'hoche', 'tui', 'eunggi'].map((k) => [k, String(body.src?.[k] ?? '')]),
+    ),
   };
   const meta = {
     ben: String(body.meta?.ben ?? ''),

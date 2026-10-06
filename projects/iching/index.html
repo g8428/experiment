@@ -209,6 +209,8 @@ input.inp{resize:none;}
 /* ── 2026-10-06 추가: 문구 정리 후 새로 생긴 요소들 (디자인은 위 금색 버전 그대로) ── */
 :root{--f-ui:'Noto Sans KR',sans-serif;--f-body:'Noto Serif KR',serif;--f-disp:'Noto Serif KR',serif;--f-han:'Noto Serif SC',serif;}
 body{word-break:keep-all;overflow-wrap:anywhere;}
+.part-h{display:flex;align-items:center;gap:.7rem;margin:1.8rem 0 .8rem;font-family:var(--f-ui);font-size:.82rem;font-weight:500;color:var(--goldl);letter-spacing:.12em;white-space:nowrap;}
+.part-h::before,.part-h::after{content:'';flex:1;height:.5px;background:var(--bdr);}
 .orn>i{display:block;width:5px;height:5px;background:var(--t3);transform:rotate(45deg);}
 .fld{display:block;font-family:var(--f-ui);font-size:.78rem;color:var(--t2);margin:0 0 .4rem .1rem;letter-spacing:.04em;}
 .hint{font-family:var(--f-ui);font-size:.75rem;color:var(--t3);text-align:right;margin-top:.4rem;}
@@ -1314,15 +1316,38 @@ function buildReadingHtmlV2(r,ben,ji){
         return hy?`${prefix}${_LABELS[i]}: ${hy}`:'';
       }).filter(Boolean).join('\n');
     }
-    if(tag==='방향') return _jiK?`${_jiName} — ${_jiK}`:'';
+    if(tag==='방향') return _jiK?`${_jiName} — ${_jiK}`:_benV;
     return'';
   }
+
+  // 풀이를 1단계 카드와 같은 흐름(본괘 → 중심 효 → 지괘)으로 묶어, 각 카드가 괘의 어디를 읽는지 머리글로 보여 준다
+  const _midPart=_fy.kind?`${_fy.kind} · ${_fy.idxs.map(i=>_LABELS[i]).join('·')}`
+    :_chg.length===6?'여섯 효 모두 변함':'변효 없음 · 여섯 자리';
+  const PART={
+    '괘의 형세':`본괘 · ${_benName}`,
+    '대상전 — 지금 할 것':`본괘 · ${_benName}`,
+    '이 점괘의 심장':_midPart,
+    '방향':_jiName?`지괘 · ${_jiName}`:`본괘 · ${_benName}`,
+  };
+  const SRC_LABEL={
+    '총평':`본괘 ${_benName} 괘사`,
+    '괘의 형세':`본괘 ${_benName}`,
+    '대상전 — 지금 할 것':'대상전',
+    '이 점괘의 심장':_fy.kind?`${_fy.kind} 효사`:'괘의 말',
+    '방향':_jiName?`지괘 ${_jiName} 괘사`:`본괘 ${_benName}`,
+  };
+  let _lastPart='';
 
   r.sections.forEach(sec=>{
     if(!sec)return;
     sec.meaning=_autoMeaning(sec.tag); // GD 데이터로 덮어씀
     const tag=TAG_LABELS[sec.tag]||sec.tag||'';
     const isFinal=sec.tag==='마무리';
+    const part=PART[sec.tag]||'';
+    if(part!==_lastPart){
+      html+=part?`<p class="part-h">${part}</p>`:(_lastPart?`<div class="orn"><i></i></div>`:'');
+      _lastPart=part;
+    }
 
     // 2층 구조: meaning / reading (quote는 원전 카드로 이동)
     const hasLayers=sec.meaning||sec.reading;
@@ -1332,7 +1357,7 @@ function buildReadingHtmlV2(r,ben,ji){
       // 내포된 의미
       if(sec.meaning&&sec.meaning.trim()){
         body+=`<div style="margin-bottom:.9rem">
-          <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.35rem">괘의 말</p>
+          <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.35rem">${SRC_LABEL[sec.tag]||'괘의 말'}</p>
           <div class="sbody" style="color:var(--t2)">${paras(sec.meaning)}</div>
         </div>`;
       }
@@ -1861,12 +1886,7 @@ window.buildReadingInput=function(ben,ji,state){
   // GD2: 쉬운말+단전 버전 (있으면 사용, 없으면 원본 폴백)
   const ben2=GD2?.[state.benGua?.no]||{};
   const ji2=GD2?.[state.jiGua?.no]||{};
-  const benK=ben2.k2||ben?.k||'';
-  const benDst=ben2.dst2||ben?.dst||'';
-  const benDt2=ben2.dt2||'';
   const benHy=i=>ben2.hy2?.[i]||ben?.hy?.[i]||'(없음)';
-  const jiK=ji2.k2||ji?.k||'';
-  const jiDst=ji2.dst2||ji?.dst||'';
 
   // ── 변효 개수별 해석 중심 — 무료판 buildLocalCards와 같은 규칙 (0/1/2/3/4~5/6 분기) ──
   // 예전엔 3개와 4개를 한 분기로 묶고, 섹션4 지침은 개수와 무관하게 "변효 효사를 인용하라"고 해서
@@ -1913,22 +1933,19 @@ ${yong?`본괘가 ${benName}이므로 ${yong}${josa(yong,'으로/로')} 읽는�
   }
 
   // ── 다산역 참고 ──
-  let dasanStr='';
+  const jiNats=nats.map((n,i)=>chg.includes(i)?(n==='양'?'음':'양'):n);
+  let hocheStr='',tuiStr='';
   if(dasan){
-    const{hoche,isBiguai,biguaiName,chgMeanings}=dasan;
+    const{hoche,chgMeanings}=dasan;
     if(hoche.inner||hoche.outer){
-      dasanStr+='\n[호체 — 숨은 내부 구조]\n';
-      if(hoche.inner)dasanStr+=`내호(2·3·4효): ${hoche.inner.n}(${hoche.inner.nat})\n`;
-      if(hoche.outer)dasanStr+=`외호(3·4·5효): ${hoche.outer.n}(${hoche.outer.nat})\n`;
+      hocheStr='[호체 — 숨은 내부 구조]\n';
+      if(hoche.inner)hocheStr+=`내호(2·3·4효): ${hoche.inner.n}(${hoche.inner.nat})\n`;
+      if(hoche.outer)hocheStr+=`외호(3·4·5효): ${hoche.outer.n}(${hoche.outer.nat})\n`;
     }
     // 추이: 12벽괘 절기 위치 + 변효 방향(성장기/수렴기) + 효변 단계. 특정 달을 찍는 근거가 아니라 계절 국면의 근거.
-    const jiNats=nats.map((n,i)=>chg.includes(i)?(n==='양'?'음':'양'):n);
     const tui=buildDasanTiming(nats,benNo,benName,state.jiGua?.no?jiNats:null,state.jiGua?.no,jiName,chg,state.throws||[]);
-    if(tui)dasanStr+=`\n[추이 — 계절 국면]\n${tui}\n`;
-    if(chgMeanings.length>0){
-      dasanStr+='\n[효 위치 의미]\n';
-      chgMeanings.forEach(c=>dasanStr+=`${LABELS[c.pos-1]}: ${c.meaning}\n`);
-    }
+    if(tui)tuiStr=`[추이 — 계절 국면]\n${tui}\n`;
+    if(chgMeanings.length>0&&chgN<=3)tuiStr+='[효 위치 의미]\n'+chgMeanings.map(c=>`${LABELS[c.pos-1]}: ${c.meaning}`).join('\n')+'\n';
   }
 
   // ── 육효 응기(시기) — 효의 지지 기준. 일진 자체의 충·합·공망 달은 쓰지 않는다 ──
@@ -1940,20 +1957,37 @@ ${yong?`본괘가 ${benName}이므로 ${yong}${josa(yong,'으로/로')} 읽는�
   const today=new Date();
   const todayStr=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
 
-  // 변효 1~3개: 변효 효사 제공 / 4~5개: 불변효 효사만 제공(변효 효사는 일부러 안 줘서 인용을 막는다)
-  let hyosaBlock='';
-  if(chgN>=1&&chgN<=3)hyosaBlock=`변효 효사:\n${chg.map(i=>`  ${LABELS[i]}: ${benHy(i)}`).join('\n')}`;
-  else if(chgN>=4&&chgN<=5)hyosaBlock=`불변효 효사(이 점의 중심 — 변효 효사는 제공하지 않음):\n${unchanged.map(i=>`  ${LABELS[i]}: ${benHy(i)}`).join('\n')}`;
-
-  // hexagram 텍스트에는 괘 데이터만 — 고민·문답은 따로 보내서 서버 그래프의 첫 노드(괘 분석)가 고민 없이 괘만 읽게 한다
-  const hexagram=`본괘: ${benName}(${state.benGua?.no||'?'}번)
-괘사: ${benK}${benDt2?`\n단전(괘 해석 근거): ${benDt2}`:''}
-대상전: ${benDst}
-본괘 핵심: ${ben?.v||''}
-${jiName?`\n지괘: ${jiName}(${state.jiGua?.no}번)\n지괘 괘사: ${jiK}\n지괘 대상전: ${jiDst}`:''}
-변효: ${chgN>0?chg.map(i=>LABELS[i]).join(', '):'없음'}
-${hyosaBlock}
-${readingFocus}${dasanStr}${lyStr}`;
+  // ── 원문 조각: 서버 그래프의 작가들은 분석 메모만이 아니라 자기 섹션에 필요한 원문을 직접 받는다(2026-10-06).
+  //    메모만 넘겼을 때 괘 이름·효 위치·자연 상징이 풀이에서 사라지고 일반론만 남았다.
+  const trig=ns=>{const t=TRIG_MAP[ns.join('')];return t?`${t.n} — ${t.nat}`:'';};
+  const guaBlock=(label,g,gd,gd2,ns)=>!g?.n?'':[
+    `[${label}] ${g.n}(${g.no}번)`,
+    `상괘(위): ${trig(ns.slice(3))} / 하괘(아래): ${trig(ns.slice(0,3))}`,
+    gd?.gs?`괘사 원문: ${gd.gs}`:'',
+    `괘사 풀이: ${gd2.k2||gd?.k||''}`,
+    (gd2.dt2||gd?.dt)?`단전: ${gd2.dt2||gd?.dt}`:'',
+    gd?.dst?`대상전 원문: ${gd.dst}`:'',
+    `대상전 풀이: ${gd2.dst2||gd?.dst||''}`,
+    gd?.v?`핵심: ${gd.v}`:'',
+  ].filter(Boolean).join('\n');
+  // 변효 1~3개: 변효 효사 / 4~5개: 불변효 효사만(변효 효사는 일부러 안 줘서 인용을 막는다) / 0·6개: 개별 효사 없음
+  const fy=focusYao(chg);
+  const yongName=benNo===1?'용구(用九)':benNo===2?'용육(用六)':'';
+  const linesStr=fy.kind
+    ?`[${fy.kind} — 이 점의 중심 자리]\n`+fy.idxs.map(i=>`${LABELS[i]}(${POS_MEAN[i]}): ${benHy(i)}${ben2.hy_detail?.[i]?`\n  자리 풀이: ${ben2.hy_detail[i]}`:''}`).join('\n')
+    :chgN===0?'[변효 없음 — 본괘 여섯 자리를 처음(초·이효)·가운데(삼·사효)·끝(오·상효)으로 읽음]'
+    :`[여섯 효 모두 변함 — 개별 효사 대신 ${yongName||'지괘 괘사'} 중심]`;
+  const src={
+    ben:guaBlock('본괘',state.benGua,ben,ben2,nats),
+    ji:guaBlock('지괘',state.jiGua,ji,ji2,jiNats),
+    lines:linesStr,
+    focus:readingFocus,
+    hoche:hocheStr,
+    tui:tuiStr,
+    eunggi:lyStr,
+  };
+  // 첫 노드(괘 분석)는 고민 없이 괘 데이터 전체만 읽는다 — 고민·문답은 따로 보낸다
+  const hexagram=[src.ben,src.ji,src.lines,src.focus,src.hoche,src.tui,src.eunggi].filter(Boolean).join('\n\n');
 
   return{
     name,
@@ -1962,6 +1996,7 @@ ${readingFocus}${dasanStr}${lyStr}`;
     qa:(state.q5||[]).map((q,i)=>({q,a:(state.a5||[])[i]||'(답변 없음)'})),
     hexagram,
     heartRule,
+    src,
     meta:{
       ben:benName?`${benName}(${state.benGua?.no})`:'',
       ji:jiName?`${jiName}(${state.jiGua?.no})`:'',
