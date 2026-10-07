@@ -180,20 +180,62 @@ def find_strong_weak(kl, highs, lows, bos):
     }
 
 
+# 킬존은 각 시장의 '현지 시각'으로 정의하고, 서머타임은 IANA 시간대 DB(tzdata)가 날짜별로 자동 적용한다.
+# 2026-10-08 변경 전에는 UTC 고정(런던 07~10, 뉴욕 13~16)이었는데, 이는 서머타임 기간 값이라
+# 겨울(표준시)에는 실제 세션보다 1시간 일렀다. 현지 시각은 그 서머타임 값과 같게 맞췄다(여름엔 동작 동일).
+#   Asian:   서울 10~14시 (UTC 01~05, 한국은 서머타임 없음) — Accumulation, 신규 진입 제외
+#   London:  런던 08~11시 (BST면 UTC 07~10 / GMT면 UTC 08~11) — Manipulation/진입 가능
+#   NY:      뉴욕 09~12시 (EDT면 UTC 13~16 / EST면 UTC 14~17) — Distribution/진입 가능
+KILL_ZONES = (
+    ("asian",   "Asia/Seoul",       10, 14),
+    ("london",  "Europe/London",     8, 11),
+    ("newyork", "America/New_York",  9, 12),
+)
+
+
 def get_kill_zone(dt_utc=None):
-    """ICT Kill Zone 판별 (UTC 기준)
-    Asian:   UTC 01~05 (KST 10~14) — Accumulation, 신규 진입 제외
-    London:  UTC 07~10 (KST 16~19) — Manipulation/진입 가능
-    NY:      UTC 13~16 (KST 22~01) — Distribution/진입 가능
+    """ICT Kill Zone 판별 (현지 시각 기준, 서머타임 자동 반영)
     반환: "asian" | "london" | "newyork" | None (킬존 외)"""
     from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
     if dt_utc is None:
         dt_utc = datetime.now(timezone.utc)
-    h = dt_utc.hour + dt_utc.minute / 60
-    if  1 <= h <  5: return "asian"
-    if  7 <= h < 10: return "london"
-    if 13 <= h < 16: return "newyork"
+    for name, tz, start, end in KILL_ZONES:
+        loc = dt_utc.astimezone(ZoneInfo(tz))
+        if start <= loc.hour + loc.minute / 60 < end:
+            return name
     return None
+
+
+def kill_zone_schedule(dt_utc=None, horizon_days=400):
+    """현재 킬존의 UTC 시간대·서머타임 여부와 다음 서머타임 전환일 (대시보드·로그 표시용).
+    전환일은 tzdata에서 직접 계산하므로 별도 등록 없이 매년 자동으로 맞는다."""
+    from datetime import datetime, timedelta, timezone
+    from zoneinfo import ZoneInfo
+    if dt_utc is None:
+        dt_utc = datetime.now(timezone.utc)
+    out = {}
+    for name, tz, start, end in KILL_ZONES:
+        z = ZoneInfo(tz)
+        loc = dt_utc.astimezone(z)
+        off = loc.utcoffset()
+        dst = bool(loc.dst())
+        nxt = None
+        prev_off = off
+        for d in range(1, horizon_days):   # 다음 오프셋 변화(서머타임 시작/종료) 탐색
+            day = (dt_utc + timedelta(days=d)).astimezone(z)
+            if day.utcoffset() != prev_off:
+                lo, hi = dt_utc + timedelta(days=d - 1), dt_utc + timedelta(days=d)
+                while hi - lo > timedelta(seconds=30):
+                    mid = lo + (hi - lo) / 2
+                    if mid.astimezone(z).utcoffset() == prev_off: lo = mid
+                    else: hi = mid
+                nxt = {"utc": hi.strftime("%Y-%m-%d %H:%M"), "to": "서머타임 시작" if hi.astimezone(z).dst() else "서머타임 종료"}
+                break
+        h = off.total_seconds() / 3600
+        out[name] = {"tz": tz, "local": f"{start:02d}~{end:02d}시", "dst": dst,
+                     "utc": f"{(start - h) % 24:02.0f}~{(end - h) % 24:02.0f}시", "next_change": nxt}
+    return out
 
 
 def get_asian_range(kl_1h):

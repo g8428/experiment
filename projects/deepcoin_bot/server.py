@@ -17,12 +17,13 @@ try:
     from ict_engine import (get_ict_signal, get_htf_trend, get_market_regime,
                              get_ote_signal, get_mtf_signal, get_killzone_signal,
                              get_breaker_signal)
-    from smc_engine import find_swings, get_kill_zone, get_asian_range, find_fvg
+    from smc_engine import find_swings, get_kill_zone, get_asian_range, find_fvg, kill_zone_schedule
     get_smc_signal = get_ict_signal  # ICT가 SMC superset
     _SMC_AVAILABLE = True
 except ImportError:
     _SMC_AVAILABLE = False
     def get_kill_zone(*a, **kw): return None
+    def kill_zone_schedule(*a, **kw): return {}
     def get_asian_range(*a, **kw): return None
     def find_fvg(*a, **kw): return ([], [])
     def get_ict_signal(*a, **kw): return {"signal": None}
@@ -777,6 +778,31 @@ def _ichi_step(sym, mode, claude_mode, slot, kl_1d, price, ind, can_enter):
     return slot, view, realized
 
 
+# ── 킬존 표시 (서머타임 자동 반영, smc_engine.kill_zone_schedule) ──────
+_KZ_KO = {"asian": "아시안", "london": "런던", "newyork": "뉴욕"}
+
+
+def _kz_label(kz):
+    """상태 메시지용 킬존 이름 + 현재 KST 시간대 (서머타임에 따라 1시간씩 바뀐다)."""
+    if kz not in _KZ_KO:
+        return "킬존외"
+    s = kill_zone_schedule().get(kz) or {}
+    try:
+        a, b = (int(x) for x in s["utc"].rstrip("시").split("~"))
+        return f"{_KZ_KO[kz]}({(a + 9) % 24:02d}~{(b + 9) % 24:02d}KST)"
+    except Exception:
+        return _KZ_KO[kz]
+
+
+def _kz_schedule_text():
+    parts = []
+    for k, s in kill_zone_schedule().items():
+        t = f"{_KZ_KO.get(k, k)} {s['utc']}{'(서머타임)' if s['dst'] else ''}"
+        if s.get("next_change"):
+            t += f" → {s['next_change']['utc']} UTC {s['next_change']['to']}"
+        parts.append(t)
+    return " / ".join(parts)
+
 # ── Claude 메인 봇 ────────────────────────────────────────────────
 def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     """
@@ -873,11 +899,6 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     if _xs:
         print(f"[슬롯복원:{sym}] 추가 슬롯 {len(_xs)}개 복원")
 
-    _KZ_NAMES = {
-        "asian":   "아시안(10~14KST)",
-        "london":  "런던(16~19KST)",
-        "newyork": "뉴욕(22~01KST)",
-    }
 
     while st["running"] and gen == _bots_gen[sym]:
         kl    = _klines(sym=sym, n=60)
@@ -893,7 +914,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
 
         # ── ICT 킬존 & AMD 아시안 레인지 ──────────────────────────
         kz          = get_kill_zone()
-        kz_name     = _KZ_NAMES.get(kz, "킬존외")
+        kz_name     = _kz_label(kz)
         asian_rng   = get_asian_range(kl_1h) if kl_1h else None
         asian_tag   = (f" | 아시안레인지 H={_pf(asian_rng['high'])}/L={_pf(asian_rng['low'])}"
                        if asian_rng else "")
@@ -1576,6 +1597,7 @@ class Handler(BaseHTTPRequestHandler):
                      "value": f"잔여 {int(cooldown_left//60)}분 {int(cooldown_left%60)}초" if cooldown_left > 0 else "없음"},
                     {"name": "킬존(참고)", "pass": True,
                      "value": {"london":"런던","newyork":"뉴욕","asian":"아시안"}.get(get_kill_zone(), "킬존외") + " — MTF·킬존NY 전략만 영향"},
+                    {"name": "킬존 시간(UTC)", "pass": True, "value": _kz_schedule_text()},
                 ],
                 "limits": {"rr_min": _claude_cfg.get("rr_min"), "sl_cap_pct": _claude_cfg.get("sl_cap_pct"),
                            "tp_max_pct": _claude_cfg.get("tp_max_pct"),
@@ -1723,6 +1745,7 @@ if __name__ == "__main__":
     ThreadingHTTPServer.allow_reuse_address = False   # 운영 서버와 같은 포트에 겹쳐 붙는 사고 방지
     srv  = ThreadingHTTPServer(("0.0.0.0",port), Handler)
     print(f"\n{'='*52}\n  Deepcoin Bot — Claude SMC 메인봇\n  http://localhost:{port}\n  Stop: Ctrl+C\n{'='*52}\n")
+    print(f"[킬존] {_kz_schedule_text()}")
     try: srv.serve_forever()
     except KeyboardInterrupt:
         _persist_save()
