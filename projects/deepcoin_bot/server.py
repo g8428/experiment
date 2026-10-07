@@ -76,6 +76,13 @@ try:
     _TL_ERR = _TL.IMPORT_ERROR
 except Exception as _tl_e:
     _TL = None; _TL_OK = False; _TL_ERR = str(_tl_e)
+# ── 일목균형표 A (일봉 구름 상태 전환, 2026-10-03 코덱스 모듈 ichimoku_cloud_state.py) ──
+try:
+    import ichimoku_cloud_state as _ICHI
+    _ICHI_OK, _ICHI_ERR = True, ""
+except Exception as _ie:
+    _ICHI = None; _ICHI_OK = False; _ICHI_ERR = str(_ie)
+_ichi_saved = {}    # 재시작 복원용: persist.json의 심볼별 일목 슬롯
 _trend_saved = {}   # 재시작 복원용: persist.json의 심볼별 추세 포지션 컨텍스트
 _xslots_saved = {}  # 재시작 복원용: persist.json의 심볼별 추가 슬롯 목록
 _posid_saved = {}   # 재시작 복원용: 심볼별 주 포지션 posId
@@ -191,6 +198,7 @@ def _persist_load():
                 if cb.get("trend_ctx"): _trend_saved[sym] = cb["trend_ctx"]
                 if cb.get("extra_slots"): _xslots_saved[sym] = cb["extra_slots"]
                 if cb.get("pos_id"): _posid_saved[sym] = cb["pos_id"]
+                if cb.get("ichimoku_slot"): _ichi_saved[sym] = cb["ichimoku_slot"]
                 if not st or not cb.get("pos"): continue
                 st.update({
                     "position": cb["pos"], "entry": cb.get("entry", 0.0),
@@ -203,7 +211,15 @@ def _persist_load():
         except Exception as e:
             print(f"[persist] 로드 실패: {e}")
 
+_persist_lock = threading.Lock()
+
+
 def _persist_save():
+    with _persist_lock:
+        _persist_save_locked()
+
+
+def _persist_save_locked():
     try:
         bot_states = {
             sym: {
@@ -217,12 +233,24 @@ def _persist_save():
                 "trend_ctx": st.get("trend_ctx"),
                 "extra_slots": st.get("extra_slots") or [],
                 "pos_id": st.get("pos_id"),
+                "ichimoku_slot": st.get("ichimoku_slot"),
             } for sym, st in _bots_st.items()
         }
-        with open(_PERSIST, "w", encoding="utf-8") as f:
+        _tmp = _PERSIST + ".tmp"
+        with open(_tmp, "w", encoding="utf-8") as f:
             json.dump({"logs": _logs[-500:], "daily": _daily,
                        "bot_states": bot_states,
                        "pattern_stats": _pattern_stats}, f, ensure_ascii=False)
+        for _k in range(5):   # 윈도우: 다른 프로세스가 읽는 중이면 교체가 거부됨 → 잠깐 뒤 재시도
+            try:
+                os.replace(_tmp, _PERSIST)
+                break
+            except PermissionError:
+                time.sleep(0.2)
+        else:
+            with open(_PERSIST, "w", encoding="utf-8") as f:   # 최후: 직접 덮어쓰기
+                with open(_tmp, encoding="utf-8") as g:
+                    f.write(g.read())
     except Exception as e:
         print(f"[persist] 저장 실패: {e}")
 
@@ -262,6 +290,12 @@ _claude_cfg = {
               "partial_tp_r": 1.0, "partial_tp_frac": 0.3, "partial_be": True},
     # 같은 심볼에서 기존 체인(단타) 포지션을 추가 가상 슬롯으로 동시 보유 (거래소는 방향당 포지션 1개로 합쳐지므로 로컬 슬롯)
     "multi_slot": {"enabled": False, "symbols": ["BTC-USDT-SWAP"], "max_slots": 3},
+    # 일목균형표 A: 완결 일봉 종가가 현재 표시 구름 위=롱, 아래=숏, 안=무포지션. 손절 없음(상태 전환으로만 청산/반전).
+    # 기존 전략과 별도 슬롯(별도 posId)으로 동시 보유. 2026-10-03 사용자 결정: 롱·숏, 3x, 증거금 10%, BTC·ETH·XRP
+    "ichimoku": {"enabled": True, "symbols": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "XRP-USDT-SWAP"],
+                 "lev": 3, "size_pct": 10.0, "allow_short": True,
+                 # 2026-10-03 사용자 결정: ETH는 계좌가 작아 3x로는 최소 1계약(증거금 ~$89)이 불가 → 10x, 비중 한도 25%
+                 "lev_by_sym": {"ETH-USDT-SWAP": 10}, "size_pct_by_sym": {"ETH-USDT-SWAP": 25.0}},
 }
 
 # ── tuning.json 자동 반영 ─────────────────────────────────────────
@@ -287,7 +321,7 @@ def _load_tuning():
                   "tp_min_margin_pct", "tp_min_margin_by_sym",
                   "sl_cap_pct_by_sym", "sl_min_atr_mult", "sl_min_atr_mult_by_sym",
                   "tp_max_atr_mult", "tp_max_atr_mult_by_sym", "tp_fvg_block",
-                  "legacy_chain_enabled", "trend", "multi_slot"):
+                  "legacy_chain_enabled", "trend", "multi_slot", "ichimoku"):
             if k in t: _claude_cfg[k] = t[k]
         if isinstance(t.get("active_symbols"), list):
             _active_syms_cfg = [s for s in t["active_symbols"] if s in _ACTIVE_SYMS]
@@ -642,6 +676,107 @@ def _close_pid(sym, side, pid, mode, frac=1.0):
         print(f"[청산실패:{sym}] {side} pid={p['posId']} n={n} → {r}")
     return ok
 
+# ── 일목균형표 A 슬롯 ─────────────────────────────────────────────
+_ichi_done = {}   # 심볼별 마지막으로 처리한 일봉 시각 (무포지션 유지 시 중복 처리 방지)
+
+
+def _avail_usdt():
+    try:
+        r = _dc_request("GET", "/deepcoin/account/balances?instType=SWAP")
+        if r.get("code") in ("0", 0):
+            for a in r.get("data") or []:
+                if a.get("ccy") == "USDT":
+                    return float(a.get("availBal", 0) or 0)
+    except Exception:
+        pass
+    return None
+
+
+def _ichi_pnl(slot, price):
+    d = 1 if slot["side"] == "long" else -1
+    return round((price - slot["entry"]) / slot["entry"] * 100 * d * slot["lev"], 4)
+
+
+def _ichi_step(sym, mode, claude_mode, slot, kl_1d, price, ind, can_enter):
+    """일목 A 슬롯 1회 처리. 반환 (slot, view, 실현 pnl 목록).
+    - 완결 일봉이 새로 생겼을 때만 목표 상태를 따른다(같은 봉은 한 번만 처리, 실패 시 다음 루프 재시도).
+    - 청산·반전은 일 한도와 무관하게 항상 실행, 신규 진입만 일 한도(can_enter)를 따른다.
+    - 실거래: 별도 posId로 주문/청산, 거래소에서 사라졌으면 외부 청산으로 기록."""
+    cfg = _claude_cfg.get("ichimoku") or {}
+    realized = []
+    pf = lambda v: _px_fmt(v, sym)
+    ctx = {"strategy": "ICHIMOKU_A", "pattern_key": f"ICHIMOKU_A+{sym.split('-')[0]}"}
+    if slot and mode == "real" and time.time() - slot.get("opened_ts", 0) > 90:
+        pl = _dc_positions(sym)
+        if pl is not None and not _find_pos(pl, slot["side"], slot.get("pid")):
+            pnl = _ichi_pnl(slot, price)
+            _rec(claude_mode, "SL_HIT" if pnl < 0 else f"CLOSE_{slot['side'].upper()}", price, ind,
+                 f"[일목] 외부 청산 확인(거래소 포지션 없음) {pnl:+.2f}% ({slot['lev']}x)",
+                 pnl=pnl, signal_src="Ichimoku", smc_ctx=ctx, sym=sym, size_pct=slot["size_pct"])
+            realized.append(pnl)
+            slot = None
+    dec = _ICHI.evaluate(kl_1d or [], sym, position=slot["side"] if slot else None)
+    view = {k: dec.get(k) for k in ("signal", "action", "reason", "close", "cloud_top", "cloud_bottom", "candle_time")}
+    target = dec.get("signal")
+    if target == "SHORT" and not cfg.get("allow_short", True):
+        target = None
+    ct = dec.get("candle_time")
+    if ct is None or (slot or {}).get("ct_done") == ct or (slot is None and _ichi_done.get(sym) == ct):
+        view["slot"] = slot
+        return slot, view, realized
+    want = target.lower() if target else None
+    if slot and slot["side"] != want:
+        if not _close_pid(sym, slot["side"], slot.get("pid"), mode):
+            print(f"[일목청산실패:{sym}] 다음 루프 재시도")
+            view["slot"] = slot
+            return slot, view, realized
+        pnl = _ichi_pnl(slot, price)
+        _rec(claude_mode, f"CLOSE_{slot['side'].upper()}", price, ind,
+             f"[일목] {dec.get('reason')} → {slot['side'].upper()} 청산 {pnl:+.2f}% ({slot['lev']}x)",
+             pnl=pnl, signal_src="Ichimoku", smc_ctx=ctx, sym=sym, size_pct=slot["size_pct"])
+        realized.append(pnl)
+        slot = None
+    if want and slot is None:
+        if not can_enter:
+            view["slot"] = None
+            view["reason"] = f"{dec.get('reason')} — 일 한도로 진입 보류(다음 루프 재시도)"
+            return None, view, realized
+        lev = int((cfg.get("lev_by_sym") or {}).get(sym, cfg.get("lev", 3)))
+        size = float((cfg.get("size_pct_by_sym") or {}).get(sym, cfg.get("size_pct", 10.0)))
+        pid, sz = None, None
+        if mode == "real":
+            avail = _avail_usdt()
+            need = _MIN_SZ.get(sym, 1) * price * _CONTRACT_SZ.get(sym, 0.001) / lev
+            if avail is not None and need > avail * size / 100.0:
+                _ichi_done[sym] = ct   # 이 일봉에서는 다시 시도하지 않음
+                view["slot"] = None
+                view["reason"] = (f"{dec.get('reason')} — 최소 1계약 증거금 ${need:.2f}가 가용잔고 ${avail:.2f}의 "
+                                  f"{size:.0f}%(${avail*size/100:.2f})를 넘어 진입 안 함")
+                return None, view, realized
+            before = {p.get("posId") for p in (_dc_positions(sym) or [])}
+            _set_leverage(lev, sym=sym)
+            sz = _calc_sz(price, size, lev, sym=sym)
+            r = _place_order("buy" if want == "long" else "sell", want, sz, sym=sym)
+            if r.get("code") not in ("0", 0):
+                print(f"[일목진입실패:{sym}] {r.get('msg')} — 다음 일봉까지 재시도 안 함")
+                _ichi_done[sym] = ct
+                view["slot"] = None
+                view["reason"] = f"{dec.get('reason')} — 주문 실패 {r.get('msg', '')}"
+                return None, view, realized
+            pid = _new_pid(sym, want, before)
+        slot = {"side": want, "entry": price, "pid": pid, "sz": sz, "lev": lev, "size_pct": size,
+                "opened_ts": time.time(), "mode": mode, "ct_done": ct}
+        _rec(claude_mode, f"ENTER_{want.upper()}", price, ind,
+             f"[일목] {dec.get('reason')} (구름 {pf(dec.get('cloud_bottom'))}~{pf(dec.get('cloud_top'))}) "
+             f"| {lev}x 증거금 {size}% · 손절 없음(구름 상태로만 청산)",
+             signal_src="Ichimoku", smc_ctx=ctx, sym=sym)
+    if slot:
+        slot["ct_done"] = ct
+    _ichi_done[sym] = ct
+    view["slot"] = slot
+    return slot, view, realized
+
+
 # ── Claude 메인 봇 ────────────────────────────────────────────────
 def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     """
@@ -683,6 +818,15 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     # ── 실제 모드: DeepCoin 포지션 동기화 ─────────────────────────
     _pos_id = None  # 주 포지션의 거래소 posId (split 모드: 주문 1건 = posId 1개, 청산도 posId 단위)
     _xclaimed = {x.get("pid") for x in (_xslots_saved.get(sym) or []) if x.get("pid")}
+    _ichi = _ichi_saved.get(sym)
+    if _ichi and _ichi.get("mode", mode) != mode:
+        _ichi = None
+    if _ichi and mode == "real" and not _find_pos(_dc_positions(sym), _ichi.get("side"), _ichi.get("pid")):
+        print(f"[일목복원:{sym}] 거래소에 포지션 없음 — 슬롯 폐기")
+        _ichi = None
+    if _ichi:
+        if _ichi.get("pid"): _xclaimed.add(_ichi["pid"])   # 주 포지션 복원 후보에서 제외
+        print(f"[일목복원:{sym}] {_ichi['side'].upper()} @ {_ichi['entry']} pid={_ichi.get('pid')}")
     if mode == "real" and pos is None:
         try:
             _dcl_all = _dc_positions(sym) or []
@@ -778,6 +922,25 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                 _last_fail_sl = (_x.get("sl") or 0.0) if _xact == "SL_HIT" else 0.0
                 _xs.remove(_x)
                 _last_close = time.time(); st["last_close"] = _last_close
+
+        # ── 일목균형표 A 슬롯 (별도 posId, 완결 일봉 기준 상태 전환) ──
+        _icfg = _claude_cfg.get("ichimoku") or {}
+        if _ichi or (_ICHI_OK and _icfg.get("enabled") and sym in (_icfg.get("symbols") or [])):
+            if not _ICHI_OK:
+                st["ichimoku"] = {"reason": f"일목 모듈 비활성: {_ICHI_ERR}", "slot": _ichi}
+            else:
+                try:
+                    _ichi, _iview, _irl = _ichi_step(sym, mode, claude_mode, _ichi, kl_1d, price, ind, ok)
+                    for _ip in _irl:
+                        sess_pnl += _ip; sess_tr += 1
+                    _iview["enabled"] = bool(_icfg.get("enabled") and sym in (_icfg.get("symbols") or []))
+                    if _ichi:
+                        _iview["pnl_now"] = _ichi_pnl(_ichi, price)
+                    st["ichimoku"] = _iview
+                except Exception as _ie:
+                    print(f"[일목:{sym}] 오류 {_ie}")
+                    st["ichimoku"] = {"reason": f"오류 {_ie}", "slot": _ichi}
+        st["ichimoku_slot"] = _ichi
 
         _ms         = _claude_cfg.get("multi_slot") or {}
         _multi_on   = bool(_ms.get("enabled") and sym in (_ms.get("symbols") or []))
@@ -1225,7 +1388,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
             _trend_ctx = None; _pos_lev = None   # 어떤 경로로 청산됐든 추세 컨텍스트 정리
 
         # tuning.json active_symbols에서 빠지면 포지션 없을 때 스레드 종료
-        if pos is None and not _xs and sym not in _active_syms_cfg:
+        if pos is None and not _xs and not _ichi and sym not in _active_syms_cfg:
             st["watch_msg"] = "active_symbols 제외 — 정지"
             st["position"] = None
             break

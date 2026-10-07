@@ -1,0 +1,192 @@
+﻿strat,mode,kind,reason,count
+S1,structure,결과,주·월 시가 위,30
+S1,structure,결과,일봉 시가 위,9
+S1,structure,결과,킬존 밖,24
+S1,structure,게이트 세부,일봉OB 휴식,1
+S1,structure,게이트 세부,4H 반대확정,6
+S1,structure,게이트 세부,1H 구조≠상승,1
+S1,structure,결과,게이트,6
+S1,structure,게이트 세부,데일리바이어스=하락,2
+S1,narrative,결과,주·월 시가 위,8
+S1,narrative,결과,킬존 밖,6
+S1,narrative,결과,일봉 시가 위,3
+S1,narrative,게이트 세부,일봉 방향≠상승,13
+S1,narrative,게이트 세부,1H 구조≠상승,12
+S1,narrative,결과,게이트,24
+S1,narrative,게이트 세부,4H 반대확정,7
+S1,narrative,게이트 세부,데일리바이어스=하락,12
+S1,narrative,게이트 세부,4H 3캔들 미확정,8
+S2,structure,게이트 세부,일봉OB 휴식,151
+S2,structure,게이트 세부,4H 3캔들 미확정,130
+S2,structure,게이트 세부,1H 구조≠상승,97
+S2,structure,결과,게이트,227
+S2,structure,게이트 세부,데일리바이어스=하락,86
+S2,structure,결과,주·월 시가 위,54
+S2,structure,결과,가격≤손절,37
+S2,structure,게이트 세부,4H 반대확정,40
+S2,structure,결과,킬존 밖,159
+S2,structure,결과,체결,45
+S2,structure,결과,일봉 시가 위,48
+S2,narrative,게이트 세부,일봉 방향≠상승,91
+S2,narrative,게이트 세부,데일리바이어스=하락,52
+S2,narrative,게이트 세부,일봉OB 휴식,118
+S2,narrative,게이트 세부,4H 3캔들 미확정,41
+S2,narrative,게이트 세부,1H 구조≠상승,110
+S2,narrative,결과,게이트,179
+S2,narrative,게이트 세부,4H 반대확정,31
+S2,narrative,결과,가격≤손절,36
+S2,narrative,결과,킬존 밖,105
+S2,narrative,결과,일봉 시가 위,13
+S2,narrative,결과,체결,22
+S2,narrative,결과,주·월 시가 위,27
+S3d,structure,결과,체결,78
+S3d,structure,결과,주·월 시가 위,51
+S3d,structure,결과,킬존 밖,67
+S3d,structure,게이트 세부,4H 반대확정,12
+S3d,structure,결과,게이트,19
+S3d,structure,게이트 세부,일봉 방향≠상승,16
+S3d,structure,게이트 세부,데일리바이어스=하락,8
+S3d,structure,게이트 세부,일봉OB 휴식,16
+S3d,structure,게이트 세부,4H 3캔들 미확정,14
+S3d,structure,게이트 세부,1H 구조≠상승,18
+S3d,structure,게이트 세부,주간바이어스=하락,7
+S3d,structure,게이트 세부,월 방향≠상승,12
+S3d,structure,결과,일봉 시가 위,1
+S3d,narrative,결과,체결,42
+S3d,narrative,결과,주·월 시가 위,67
+S3d,narrative,결과,킬존 밖,57
+S3d,narrative,게이트 세부,일봉 방향≠상승,9
+S3d,narrative,게이트 세부,데일리바이어스=하락,6
+S3d,narrative,게이트 세부,일봉OB 휴식,8
+S3d,narrative,게이트 세부,4H 반대확정,9
+S3d,narrative,결과,게이트,11
+S3d,narrative,게이트 세부,주간바이어스=하락,5
+S3d,narrative,게이트 세부,1H 구조≠상승,10
+S3d,narrative,게이트 세부,4H 3캔들 미확정,7
+S3d,narrative,게이트 세부,월 방향≠상승,4
+S3d,narrative,결과,일봉 시가 위,1
+S3w,structure,결과,체결,9
+S3w,structure,결과,킬존 밖,6
+S3w,structure,게이트 세부,월 방향≠상승,4
+S3w,structure,게이트 세부,일봉 방향≠상승,5
+S3w,structure,게이트 세부,데일리바이어스=하락,3
+S3w,structure,게이트 세부,일봉OB 휴식,5
+S3w,structure,게이트 세부,4H 3캔들 미확정,4
+S3w,structure,게이트 세부,1H 구조≠상승,5
+S3w,structure,게이트 세부,장애물,1
+S3w,structure,결과,게이트,5
+S3w,structure,게이트 세부,주간바이어스=하락,4
+S3w,structure,게이트 세부,4H 반대확정,2
+S3w,narrative,결과,체결,3
+S3w,narrative,게이트 세부,월 방향≠상승,3
+S3w,narrative,게이트 세부,일봉 방향≠상승,2
+S3w,narrative,게이트 세부,주간바이어스=하락,2
+S3w,narrative,게이트 세부,데일리바이어스=하락,2
+S3w,narrative,게이트 세부,일봉OB 휴식,2
+S3w,narrative,게이트 세부,4H 반대확정,2
+S3w,narrative,게이트 세부,4H 3캔들 미확정,3
+S3w,narrative,게이트 세부,1H 구조≠상승,3
+S3w,narrative,결과,게이트,3
+S3w,narrative,결과,킬존 밖,3
+S3w,narrative,결과,주·월 시가 위,2
+S4,structure,게이트 세부,4H 반대확정,10
+S4,structure,게이트 세부,4H 3캔들 미확정,17
+S4,structure,게이트 세부,1H 구조≠상승,17
+S4,structure,결과,게이트,20
+S4,structure,게이트 세부,주간바이어스=하락,2
+S4,structure,게이트 세부,데일리바이어스=하락,10
+S4,structure,게이트 세부,일봉OB 휴식,13
+S4,structure,게이트 세부,월 방향≠상승,11
+S4,structure,게이트 세부,일봉 방향≠상승,7
+S4,narrative,게이트 세부,일봉 방향≠상승,12
+S4,narrative,게이트 세부,4H 반대확정,10
+S4,narrative,게이트 세부,4H 3캔들 미확정,17
+S4,narrative,게이트 세부,1H 구조≠상승,17
+S4,narrative,결과,게이트,20
+S4,narrative,게이트 세부,주간바이어스=하락,2
+S4,narrative,게이트 세부,데일리바이어스=하락,10
+S4,narrative,게이트 세부,일봉OB 휴식,13
+S4,narrative,게이트 세부,월 방향≠상승,11
+S5,structure,게이트 세부,일봉OB 휴식,1
+S5,structure,게이트 세부,4H 반대확정,1
+S5,structure,게이트 세부,4H 3캔들 미확정,1
+S5,structure,게이트 세부,1H 구조≠상승,1
+S5,structure,결과,게이트,1
+S6,structure,결과,주·월 시가 위,20
+S6,structure,게이트 세부,4H 반대확정,4
+S6,structure,게이트 세부,1H 구조≠상승,5
+S6,structure,결과,게이트,5
+S6,structure,결과,일봉 시가 위,13
+S6,structure,결과,킬존 밖,33
+S6,structure,게이트 세부,데일리바이어스=하락,1
+S6,structure,결과,체결,3
+S6,structure,게이트 세부,4H 3캔들 미확정,2
+S6,narrative,결과,킬존 밖,19
+S6,narrative,결과,일봉 시가 위,11
+S6,narrative,결과,체결,1
+S6,narrative,게이트 세부,주간바이어스=하락,1
+S6,narrative,게이트 세부,데일리바이어스=하락,1
+S6,narrative,결과,게이트,1
+S6,narrative,결과,주·월 시가 위,5
+S8a,structure,결과,일봉 시가 위,49
+S8a,structure,결과,체결,183
+S8a,structure,결과,킬존 밖,116
+S8a,structure,결과,목표 없음,6
+S8a,structure,결과,주·월 시가 위,301
+S8a,structure,게이트 세부,일봉OB 휴식,11
+S8a,structure,게이트 세부,4H 반대확정,6
+S8a,structure,게이트 세부,1H 구조≠상승,12
+S8a,structure,결과,게이트,13
+S8a,structure,게이트 세부,일봉 방향≠상승,9
+S8a,structure,게이트 세부,데일리바이어스=하락,4
+S8a,structure,게이트 세부,4H 3캔들 미확정,6
+S8a,structure,게이트 세부,월 방향≠상승,7
+S8a,structure,게이트 세부,장애물,1
+S8a,structure,게이트 세부,주간바이어스=하락,2
+S8a,narrative,결과,킬존 밖,107
+S8a,narrative,결과,체결,97
+S8a,narrative,결과,주·월 시가 위,326
+S8a,narrative,결과,일봉 시가 위,42
+S8a,narrative,게이트 세부,일봉 방향≠상승,12
+S8a,narrative,게이트 세부,일봉OB 휴식,11
+S8a,narrative,게이트 세부,4H 반대확정,6
+S8a,narrative,게이트 세부,1H 구조≠상승,8
+S8a,narrative,결과,게이트,13
+S8a,narrative,게이트 세부,장애물,1
+S8a,narrative,게이트 세부,주간바이어스=하락,4
+S8a,narrative,게이트 세부,데일리바이어스=하락,4
+S8a,narrative,결과,목표 없음,1
+S8a,narrative,게이트 세부,4H 3캔들 미확정,4
+S8a,narrative,게이트 세부,월 방향≠상승,6
+S8b,structure,결과,킬존 밖,8
+S8b,structure,결과,주·월 시가 위,11
+S8b,structure,결과,체결,1
+S8b,structure,게이트 세부,일봉OB 휴식,1
+S8b,structure,게이트 세부,4H 반대확정,1
+S8b,structure,게이트 세부,4H 3캔들 미확정,1
+S8b,structure,게이트 세부,1H 구조≠상승,1
+S8b,structure,결과,게이트,1
+S8b,narrative,결과,주·월 시가 위,3
+S8b,narrative,결과,킬존 밖,2
+S8b,narrative,결과,체결,3
+S8b,narrative,게이트 세부,일봉 방향≠상승,1
+S8b,narrative,게이트 세부,데일리바이어스=하락,1
+S8b,narrative,게이트 세부,1H 구조≠상승,1
+S8b,narrative,결과,게이트,1
+S8c,structure,결과,일봉 시가 위,316
+S8c,structure,결과,킬존 밖,1030
+S8c,structure,결과,주·월 시가 위,389
+S8c,structure,결과,체결,9
+S8c,narrative,결과,킬존 밖,492
+S8c,narrative,결과,일봉 시가 위,168
+S8c,narrative,결과,체결,11
+S8c,narrative,결과,주·월 시가 위,132
+S9,structure,결과,킬존 밖,1268
+S9,structure,결과,주·월 시가 위,765
+S9,structure,결과,일봉 시가 위,603
+S9,structure,결과,목표 없음,29
+S9,structure,결과,체결,61
+S9,narrative,결과,체결,99
+S9,narrative,결과,킬존 밖,697
+S9,narrative,결과,일봉 시가 위,276
+S9,narrative,결과,주·월 시가 위,239
