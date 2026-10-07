@@ -1,0 +1,7 @@
+[mcp_servers.obsidian-vault]
+command = "npx"
+args = [
+    "-y",
+    "mcp-obsidian",
+    'E:\Users\g8428\experiment\vault',
+]

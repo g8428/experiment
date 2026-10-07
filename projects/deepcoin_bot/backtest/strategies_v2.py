@@ -46,13 +46,16 @@ class LegacyChain:
     base_tf = "15m"
 
     def __init__(self, sym, tuning, chain=("OTE", "MTF"), m15_confirm_n=2,
-                 n15=60, n1h=25, n1d=120, n5=20, name=None):
+                 n15=60, n1h=25, n1d=120, n5=20, name=None,
+                 m5_structure_lookback=0):
         import ict_engine as ie
         self.ie = ie
         self.sym = sym
         self.chain = chain
         self.m15 = m15_confirm_n
-        self.n15, self.n1h, self.n1d, self.n5 = n15, n1h, n1d, n5
+        self.n15, self.n1h, self.n1d = n15, n1h, n1d
+        self.m5_structure_lookback = max(0, int(m5_structure_lookback))
+        self.n5 = max(n5, self.m5_structure_lookback)
         self.name = name or "legacy_" + "+".join(chain)
         lev = tuning.get("leverage", 20)
         self.tp_cap = tuning.get("tp_max_pct", 15.0) / 100
@@ -62,11 +65,15 @@ class LegacyChain:
         self.sl_mult = tuning.get("sl_min_atr_mult_by_sym", {}).get(sym, tuning.get("sl_min_atr_mult", 0.8))
         self.rr_min = tuning.get("rr_min", 2.5)
         self.fns = {
-            "OTE": lambda kl, h1, d1, m5: ie.get_ote_signal(kl, h1_kl=h1, d1_kl=d1, m15_confirm_n=self.m15),
-            "MTF": lambda kl, h1, d1, m5: ie.get_mtf_signal(kl, h1_kl=h1, d1_kl=d1, m5_kl=m5,
-                                                            m15_confirm_n=self.m15),
-            "KZ": lambda kl, h1, d1, m5: ie.get_killzone_signal(kl, h1_kl=h1, d1_kl=d1, m15_confirm_n=self.m15),
-            "BRK": lambda kl, h1, d1, m5: ie.get_breaker_signal(kl, h1_kl=h1, d1_kl=d1, m15_confirm_n=self.m15),
+            "SMC": lambda kl, h1, d1, m5, struct: ie.get_smc_signal(kl, h1_kl=h1, structure_kl=struct),
+            "OTE": lambda kl, h1, d1, m5, struct: ie.get_ote_signal(
+                kl, h1_kl=h1, d1_kl=d1, m15_confirm_n=self.m15, structure_kl=struct),
+            "MTF": lambda kl, h1, d1, m5, struct: ie.get_mtf_signal(
+                kl, h1_kl=h1, d1_kl=d1, m5_kl=m5, m15_confirm_n=self.m15, structure_kl=struct),
+            "KZ": lambda kl, h1, d1, m5, struct: ie.get_killzone_signal(
+                kl, h1_kl=h1, d1_kl=d1, m15_confirm_n=self.m15, structure_kl=struct),
+            "BRK": lambda kl, h1, d1, m5, struct: ie.get_breaker_signal(
+                kl, h1_kl=h1, d1_kl=d1, m15_confirm_n=self.m15),
         }
 
     def prepare(self, data):
@@ -85,10 +92,12 @@ class LegacyChain:
         """server.py _run_claude_bot 진입 블록과 동일한 SL/TP/RR 게이트."""
         if len(kl) < 30:
             return None
+        structure = (m5[-self.m5_structure_lookback:]
+                     if self.m5_structure_lookback and m5 else None)
         smc, src = None, None
         for name in self.chain:
             try:
-                r = self.fns[name](kl, h1, d1, m5)
+                r = self.fns[name](kl, h1, d1, m5, structure)
             except Exception:
                 continue
             if r.get("signal"):

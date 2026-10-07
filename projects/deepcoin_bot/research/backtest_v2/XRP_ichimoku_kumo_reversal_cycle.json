@@ -1,0 +1,160 @@
+{
+  "sym": "XRP-USDT-SWAP",
+  "strategy": "user_defined_ichimoku_future_kumo_cycle",
+  "range": {
+    "from": "2024-09-13",
+    "to": "2026-09-30",
+    "daily_bars": 748
+  },
+  "rules": {
+    "future_cloud": "current raw Senkou A/B plotted 26 bars ahead; A=(Tenkan9+Kijun26)/2, B=midpoint of 52-bar high/low",
+    "downtrend_setup": "future cloud bearish (Span A < Span B) and a daily close below cloud bottom arms the long setup",
+    "long_entry": "after close breaks above cloud, enter only when daily close >= cloud top +4.0%; next open, cancel if open is below threshold",
+    "long_exit": "daily close returns to/touches cloud top; exit at next open",
+    "short_entry": "after long exit, wait for close below cloud then enter only when daily close <= cloud bottom -4.0%; next open, cancel if open is above threshold",
+    "short_exit": "after a post-entry close below cloud, daily close returns to/touches cloud bottom; exit at next open",
+    "same_bar_reversal": false,
+    "fee_per_side_pct": 0.06,
+    "slippage_per_side_pct": 0.02,
+    "funding_included": false
+  },
+  "summary": {
+    "net_return_pct": 122.57,
+    "max_drawdown_pct": 58.56,
+    "closed_trades": 14,
+    "long_trades": 7,
+    "short_trades": 7,
+    "win_rate_pct": 28.6,
+    "canceled_gap_entries": 0,
+    "position_exposure_pct": 23.0,
+    "buy_hold_same_period_pct": 161.38
+  },
+  "trades": [
+    {
+      "side": "long",
+      "entry_date": "2024-11-10",
+      "exit_date": "2024-12-10",
+      "entry": 0.6019,
+      "exit": 2.0357,
+      "net_pnl_pct_on_trade_start_equity": 237.862,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2025-02-06",
+      "exit_date": "2025-02-11",
+      "entry": 2.327,
+      "exit": 2.4684,
+      "net_pnl_pct_on_trade_start_equity": -6.241,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2025-02-14",
+      "exit_date": "2025-02-18",
+      "entry": 2.7241,
+      "exit": 2.5393,
+      "net_pnl_pct_on_trade_start_equity": -6.938,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2025-02-25",
+      "exit_date": "2025-03-02",
+      "entry": 2.2056,
+      "exit": 2.5962,
+      "net_pnl_pct_on_trade_start_equity": -17.884,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2025-04-27",
+      "exit_date": "2025-05-05",
+      "entry": 2.227,
+      "exit": 2.1137,
+      "net_pnl_pct_on_trade_start_equity": -5.243,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2025-06-01",
+      "exit_date": "2025-06-08",
+      "entry": 2.1511,
+      "exit": 2.2765,
+      "net_pnl_pct_on_trade_start_equity": -5.994,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2025-07-07",
+      "exit_date": "2025-07-25",
+      "entry": 2.3382,
+      "exit": 3.0361,
+      "net_pnl_pct_on_trade_start_equity": 29.664,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2025-08-29",
+      "exit_date": "2025-09-08",
+      "entry": 2.8333,
+      "exit": 2.9847,
+      "net_pnl_pct_on_trade_start_equity": -5.508,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2025-10-11",
+      "exit_date": "2025-11-06",
+      "entry": 2.4775,
+      "exit": 2.2328,
+      "net_pnl_pct_on_trade_start_equity": -10.029,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2025-11-21",
+      "exit_date": "2025-11-25",
+      "entry": 1.9103,
+      "exit": 2.1872,
+      "net_pnl_pct_on_trade_start_equity": -14.667,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2026-01-05",
+      "exit_date": "2026-01-10",
+      "entry": 2.1655,
+      "exit": 2.0934,
+      "net_pnl_pct_on_trade_start_equity": -3.487,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2026-01-19",
+      "exit_date": "2026-02-14",
+      "entry": 1.9816,
+      "exit": 1.4688,
+      "net_pnl_pct_on_trade_start_equity": 25.739,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2026-08-20",
+      "exit_date": "2026-08-29",
+      "entry": 1.2607,
+      "exit": 1.3924,
+      "net_pnl_pct_on_trade_start_equity": 10.278,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2026-09-16",
+      "exit_date": "2026-09-30",
+      "entry": 1.2656,
+      "exit": 1.4913,
+      "net_pnl_pct_on_trade_start_equity": -18.008,
+      "exit_reason": "데이터 종료 강제청산"
+    }
+  ]
+}

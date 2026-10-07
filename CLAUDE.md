@@ -85,3 +85,13 @@ AI Agent Teams로 운영되는 가상 기업 프로젝트의 첫 시도. 캐릭�
 - #인사팀장실 — 사장님 ↔ 인사팀장 소통
 - #실무팀 — 사원들 협업 및 진행상황 공유
 - #성과보고 — 주간/월간 성과 보고 전용
+
+---
+
+## Claude Code 확장 툴 (권장 설치)
+
+| 툴 | GitHub | 역할 |
+|---|---|---|
+| Ponytail | DietrichGebert/ponytail | 불필요한 파일 생성 방지 |
+| Graphify | Graphify-Labs/graphify | 코드 지식 그래프 → 토큰 절약 |
+| OmniRoute | diegosouzapw/OmniRoute | 멀티모델 자동 폴백 라우팅 |

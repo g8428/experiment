@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-24 15:39",
-  "total_patterns": 25,
+  "generated_at": "2026-10-04 21:00",
+  "total_patterns": 32,
   "patterns": [
     {
       "key": "london+BOS+OB재터치+OB2+FVG0+sweep",
@@ -38,6 +38,20 @@
       "pnl": 9.2
     },
     {
+      "key": "OTE+newyork+없음+no_poi+OB0+FVG0+sweep",
+      "trades": 2,
+      "wins": 1,
+      "win_rate": 0.5,
+      "pnl": -3.91
+    },
+    {
+      "key": "BRK+newyork+없음+no_poi+OB0+FVG0+no_sweep+BTC",
+      "trades": 2,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -25.7
+    },
+    {
       "key": "newyork+BOS+OB재터치+OB1+FVG0+sweep",
       "trades": 1,
       "wins": 1,
@@ -64,6 +78,13 @@
       "wins": 1,
       "win_rate": 1.0,
       "pnl": 11.77
+    },
+    {
+      "key": "MTF+london+BOS+OB재터치+OB1+FVG1+sweep",
+      "trades": 1,
+      "wins": 1,
+      "win_rate": 1.0,
+      "pnl": 17.98
     },
     {
       "key": "london+없음+OB재터치+OB2+FVG1+sweep",
@@ -176,6 +197,34 @@
       "wins": 0,
       "win_rate": 0.0,
       "pnl": -4.17
+    },
+    {
+      "key": "BRK+no_kz+없음+no_poi+OB0+FVG0+no_sweep",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -6.2
+    },
+    {
+      "key": "OTE+newyork+없음+no_poi+OB0+FVG0+sweep+BTC",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -4.77
+    },
+    {
+      "key": "KZ-NY+newyork+없음+OB재터치+OB2+FVG0+sweep+ETH",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -5.88
+    },
+    {
+      "key": "KZ-NY+newyork+BOS+FVG진입+OB2+FVG3+sweep+XRP",
+      "trades": 1,
+      "wins": 0,
+      "win_rate": 0.0,
+      "pnl": -10.39
     }
   ],
   "pending_updates": [
@@ -187,7 +236,7 @@
     }
   ],
   "summary": {
-    "total_trades": 33,
+    "total_trades": 42,
     "patterns_with_5plus": 0,
     "high_win_patterns": 0,
     "low_win_patterns": 0

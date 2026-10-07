@@ -1,0 +1,27 @@
+{
+  "sym": "BTC-USDT-SWAP",
+  "long_only": {
+    "return_pct": 78.8,
+    "mdd_pct": 23.41,
+    "position_changes_including_final_exit": 28,
+    "exposure_pct": 43.9
+  },
+  "long_short_cash": {
+    "return_pct": 74.42,
+    "mdd_pct": 32.26,
+    "position_changes_including_final_exit": 72,
+    "exposure_pct": 83.1
+  },
+  "buy_hold": {
+    "return_pct": 34.27
+  },
+  "range": {
+    "from": "2024-10-09",
+    "to": "2026-09-30",
+    "daily_bars": 722,
+    "fee_per_side_pct": 0.06,
+    "slippage_per_side_pct": 0.02,
+    "ma": "Ichimoku 9/26/52, displacement 26",
+    "state_rule": "close above cloud top=long; below cloud bottom=short; inside=flat"
+  }
+}

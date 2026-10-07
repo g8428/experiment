@@ -1,0 +1,134 @@
+[
+ {
+  "label": "0 옛 엔진 재현 (15m 101/1H 50/D1 50봉, 미래누수, 수수료0, 종가체결, 일한도 없음)",
+  "trades": 3,
+  "mdd_pct": 16.37,
+  "return_pct": 0.56,
+  "win_rate": 33.3,
+  "pf": 1.034,
+  "exp_r": 0.256,
+  "fees_pct": 0.0,
+  "avg_bars": 15.0,
+  "longs": 3,
+  "shorts": 0,
+  "by_regime": {
+   "횡보": {
+    "n": 2,
+    "win_rate": 0.0,
+    "sum_r": -2.0,
+    "avg_r": -1.0
+   },
+   "하락": {
+    "n": 1,
+    "win_rate": 100.0,
+    "sum_r": 2.77,
+    "avg_r": 2.769
+   }
+  }
+ },
+ {
+  "label": "1 + 라이브와 같은 캔들 개수 (15m 60/1H 25/D1 120 → D1 레짐 필터 실제 작동)",
+  "trades": 2,
+  "mdd_pct": 20.53,
+  "return_pct": -15.4,
+  "win_rate": 0.0,
+  "pf": 0.0,
+  "exp_r": -1.0,
+  "fees_pct": 0.0,
+  "avg_bars": 19.0,
+  "longs": 2,
+  "shorts": 0,
+  "by_regime": {
+   "횡보": {
+    "n": 2,
+    "win_rate": 0.0,
+    "sum_r": -2.0,
+    "avg_r": -1.0
+   }
+  }
+ },
+ {
+  "label": "2 + 미래 데이터 누수 제거 (완결된 1H/D1만)",
+  "trades": 2,
+  "mdd_pct": 20.8,
+  "return_pct": -15.69,
+  "win_rate": 0.0,
+  "pf": 0.0,
+  "exp_r": -1.0,
+  "fees_pct": 0.0,
+  "avg_bars": 15.0,
+  "longs": 1,
+  "shorts": 1,
+  "by_regime": {
+   "횡보": {
+    "n": 2,
+    "win_rate": 0.0,
+    "sum_r": -2.0,
+    "avg_r": -1.0
+   }
+  }
+ },
+ {
+  "label": "3 + 수수료 0.06%×2 + 슬리피지 0.02%",
+  "trades": 2,
+  "mdd_pct": 24.98,
+  "return_pct": -20.52,
+  "win_rate": 0.0,
+  "pf": 0.0,
+  "exp_r": -1.316,
+  "fees_pct": 3.95,
+  "avg_bars": 15.0,
+  "longs": 1,
+  "shorts": 1,
+  "by_regime": {
+   "횡보": {
+    "n": 2,
+    "win_rate": 0.0,
+    "sum_r": -2.63,
+    "avg_r": -1.316
+   }
+  }
+ },
+ {
+  "label": "4 + 다음 봉 시가 체결",
+  "trades": 2,
+  "mdd_pct": 24.98,
+  "return_pct": -20.52,
+  "win_rate": 0.0,
+  "pf": 0.0,
+  "exp_r": -1.316,
+  "fees_pct": 3.95,
+  "avg_bars": 15.0,
+  "longs": 1,
+  "shorts": 1,
+  "by_regime": {
+   "횡보": {
+    "n": 2,
+    "win_rate": 0.0,
+    "sum_r": -2.63,
+    "avg_r": -1.316
+   }
+  }
+ },
+ {
+  "label": "5 + 라이브 일한도/쿨다운 (= 정직한 현재 라이브)",
+  "trades": 2,
+  "mdd_pct": 24.98,
+  "return_pct": -20.52,
+  "win_rate": 0.0,
+  "pf": 0.0,
+  "exp_r": -1.316,
+  "fees_pct": 3.95,
+  "avg_bars": 15.0,
+  "longs": 1,
+  "shorts": 1,
+  "by_regime": {
+   "횡보": {
+    "n": 2,
+    "win_rate": 0.0,
+    "sum_r": -2.63,
+    "avg_r": -1.316
+   }
+  }
+ }
+]

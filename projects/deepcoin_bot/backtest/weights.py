@@ -6,33 +6,38 @@ weights.py — 패턴별 승률 기반 가중치 자동 조정
 import json
 import os
 
-WEIGHTS_PATH = os.path.join(os.path.dirname(__file__), "pattern_weights.json")
+# 실거래 전용 — get_weight()이 읽는 파일, 라이브 포지션 사이징에 직결됨.
+# sync_live_stats()만 이 파일에 쓴다. backtest/run.py를 아무리 돌려도 여기엔 안 남는다.
+WEIGHTS_PATH          = os.path.join(os.path.dirname(__file__), "pattern_weights.json")
+# 백테스트 전용 — update_weights()가 여기에만 쓴다. 라이브 사이징에 영향 없음.
+BACKTEST_WEIGHTS_PATH = os.path.join(os.path.dirname(__file__), "backtest_pattern_weights.json")
 MIN_TRADES   = 5    # 가중치 반영 최소 거래 수
 MIN_WEIGHT   = 0.25
 MAX_WEIGHT   = 2.0
 
 
-def _load():
-    if os.path.exists(WEIGHTS_PATH):
-        with open(WEIGHTS_PATH) as f:
+def _load(path=WEIGHTS_PATH):
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
-def _save(data):
-    with open(WEIGHTS_PATH, "w") as f:
+def _save(data, path=WEIGHTS_PATH):
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 def get_weight(pattern_key: str) -> float:
-    """패턴의 현재 가중치 반환 (기본 1.0)"""
-    data = _load()
+    """패턴의 현재 가중치 반환 (기본 1.0) — 실거래 파일만 본다."""
+    data = _load(WEIGHTS_PATH)
     return data.get(pattern_key, {}).get("weight", 1.0)
 
 
 def update_weights(trades: list, sym: str = ""):
-    """백테스트 trades 결과로 패턴별 승률 갱신 후 가중치 재계산"""
-    data = _load()
+    """백테스트 trades 결과로 패턴별 승률 갱신 — backtest_pattern_weights.json 전용,
+    실거래 가중치(WEIGHTS_PATH)는 절대 건드리지 않는다."""
+    data = _load(BACKTEST_WEIGHTS_PATH)
     stats = {}
 
     for t in trades:
@@ -78,18 +83,18 @@ def update_weights(trades: list, sym: str = ""):
             "weight":   weight,
         }
 
-    _save(data)
+    _save(data, BACKTEST_WEIGHTS_PATH)
     return data
 
 
 def sync_live_stats(pattern_stats: dict, sym: str = ""):
-    """서버 실거래 _pattern_stats를 pattern_weights.json에 반영.
+    """서버 실거래 _pattern_stats를 pattern_weights.json(실거래 전용)에 반영.
     pattern_stats: {key: {"trades": int, "wins": int, "total_pnl": float}}
     서버가 거래 청산할 때마다 호출 — 실거래 학습 루프의 핵심.
     """
     if not pattern_stats:
-        return _load()
-    data = _load()
+        return _load(WEIGHTS_PATH)
+    data = _load(WEIGHTS_PATH)
 
     for key, s in pattern_stats.items():
         full_key = f"{key}_{sym.split('-')[0]}" if sym else key
@@ -120,12 +125,12 @@ def sync_live_stats(pattern_stats: dict, sym: str = ""):
             "weight":   weight,
         }
 
-    _save(data)
+    _save(data, WEIGHTS_PATH)
     return data
 
 
 def print_weights():
-    data = _load()
+    data = _load(WEIGHTS_PATH)
     if not data:
         print("가중치 데이터 없음")
         return

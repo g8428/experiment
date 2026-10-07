@@ -1,0 +1,133 @@
+{
+  "sym": "ETH-USDT-SWAP",
+  "strategy": "user_defined_ichimoku_future_kumo_cycle",
+  "range": {
+    "from": "2024-09-13",
+    "to": "2026-09-30",
+    "daily_bars": 748
+  },
+  "rules": {
+    "future_cloud": "current raw Senkou A/B plotted 26 bars ahead; A=(Tenkan9+Kijun26)/2, B=midpoint of 52-bar high/low",
+    "downtrend_setup": "future cloud bearish (Span A < Span B) and a daily close below cloud bottom arms the long setup",
+    "long_entry": "after close breaks above cloud, enter only when daily close >= cloud top +4.0%; next open, cancel if open is below threshold",
+    "long_exit": "daily close returns to/touches cloud top; exit at next open",
+    "short_entry": "after long exit, wait for close below cloud then enter only when daily close <= cloud bottom -4.0%; next open, cancel if open is above threshold",
+    "short_exit": "after a post-entry close below cloud, daily close returns to/touches cloud bottom; exit at next open",
+    "same_bar_reversal": false,
+    "fee_per_side_pct": 0.06,
+    "slippage_per_side_pct": 0.02,
+    "funding_included": false
+  },
+  "summary": {
+    "net_return_pct": -98.9,
+    "max_drawdown_pct": 100.0,
+    "closed_trades": 11,
+    "long_trades": 6,
+    "short_trades": 5,
+    "win_rate_pct": 36.4,
+    "canceled_gap_entries": 0,
+    "position_exposure_pct": 37.2,
+    "buy_hold_same_period_pct": 11.94
+  },
+  "trades": [
+    {
+      "side": "long",
+      "entry_date": "2024-09-25",
+      "exit_date": "2024-10-02",
+      "entry": 2601.37,
+      "exit": 2456.85,
+      "net_pnl_pct_on_trade_start_equity": -5.711,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2024-10-03",
+      "exit_date": "2024-10-12",
+      "entry": 2337.17,
+      "exit": 2471.15,
+      "net_pnl_pct_on_trade_start_equity": -5.897,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2024-10-14",
+      "exit_date": "2024-10-23",
+      "entry": 2637.5,
+      "exit": 2536.34,
+      "net_pnl_pct_on_trade_start_equity": -3.992,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2024-12-30",
+      "exit_date": "2025-01-03",
+      "entry": 3321.83,
+      "exit": 3566.01,
+      "net_pnl_pct_on_trade_start_equity": -7.517,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2025-05-01",
+      "exit_date": "2025-06-05",
+      "entry": 1852.36,
+      "exit": 2587.98,
+      "net_pnl_pct_on_trade_start_equity": 39.521,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2025-06-22",
+      "exit_date": "2025-10-01",
+      "entry": 2173.39,
+      "exit": 4325.09,
+      "net_pnl_pct_on_trade_start_equity": -99.241,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2026-01-06",
+      "exit_date": "2026-01-20",
+      "entry": 3270.94,
+      "exit": 3031.05,
+      "net_pnl_pct_on_trade_start_equity": -7.488,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2026-01-22",
+      "exit_date": "2026-03-02",
+      "entry": 2940.46,
+      "exit": 2046.4,
+      "net_pnl_pct_on_trade_start_equity": 30.27,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2026-04-11",
+      "exit_date": "2026-04-27",
+      "entry": 2248.41,
+      "exit": 2273.63,
+      "net_pnl_pct_on_trade_start_equity": 0.961,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    },
+    {
+      "side": "short",
+      "entry_date": "2026-05-18",
+      "exit_date": "2026-06-15",
+      "entry": 2106.64,
+      "exit": 1844.78,
+      "net_pnl_pct_on_trade_start_equity": 12.28,
+      "exit_reason": "일봉 종가 구름 하단 재터치"
+    },
+    {
+      "side": "long",
+      "entry_date": "2026-07-15",
+      "exit_date": "2026-07-31",
+      "entry": 1930.94,
+      "exit": 1861.97,
+      "net_pnl_pct_on_trade_start_equity": -3.729,
+      "exit_reason": "일봉 종가 구름 상단 재터치"
+    }
+  ]
+}

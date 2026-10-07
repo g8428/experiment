@@ -1,0 +1,1307 @@
+[
+  {
+    "symbol": "BTC",
+    "strategy": "Turtle20",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 57,
+    "mdd_pct": 16.78,
+    "return_pct": 24.48,
+    "win_rate": 36.8,
+    "pf": 1.396,
+    "exp_r": 0.217,
+    "fees_pct": 2.4,
+    "avg_bars": 309.8,
+    "longs": 36,
+    "shorts": 21,
+    "by_regime": {
+      "-": {
+        "n": 57,
+        "win_rate": 36.8,
+        "sum_r": 12.37,
+        "avg_r": 0.217
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "Turtle20",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 31,
+    "mdd_pct": 8.67,
+    "return_pct": 15.43,
+    "win_rate": 41.9,
+    "pf": 1.526,
+    "exp_r": 0.258,
+    "fees_pct": 1.23,
+    "avg_bars": 318.7,
+    "longs": 20,
+    "shorts": 11,
+    "by_regime": {
+      "-": {
+        "n": 31,
+        "win_rate": 41.9,
+        "sum_r": 7.98,
+        "avg_r": 0.258
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "Turtle20",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 26,
+    "mdd_pct": 16.65,
+    "return_pct": 9.15,
+    "win_rate": 30.8,
+    "pf": 1.335,
+    "exp_r": 0.191,
+    "fees_pct": 1.03,
+    "avg_bars": 293.5,
+    "longs": 16,
+    "shorts": 10,
+    "by_regime": {
+      "-": {
+        "n": 26,
+        "win_rate": 30.8,
+        "sum_r": 4.98,
+        "avg_r": 0.191
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "DualThrust",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 459,
+    "mdd_pct": 70.9,
+    "return_pct": -58.47,
+    "win_rate": 33.8,
+    "pf": 0.856,
+    "exp_r": -0.072,
+    "fees_pct": 76.36,
+    "avg_bars": 8.4,
+    "longs": 236,
+    "shorts": 223,
+    "by_regime": {
+      "-": {
+        "n": 459,
+        "win_rate": 33.8,
+        "sum_r": -33.03,
+        "avg_r": -0.072
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "DualThrust",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 222,
+    "mdd_pct": 39.44,
+    "return_pct": -26.26,
+    "win_rate": 32.0,
+    "pf": 0.897,
+    "exp_r": -0.04,
+    "fees_pct": 47.57,
+    "avg_bars": 8.5,
+    "longs": 115,
+    "shorts": 107,
+    "by_regime": {
+      "-": {
+        "n": 222,
+        "win_rate": 32.0,
+        "sum_r": -8.87,
+        "avg_r": -0.04
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "DualThrust",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 237,
+    "mdd_pct": 61.42,
+    "return_pct": -43.68,
+    "win_rate": 35.4,
+    "pf": 0.786,
+    "exp_r": -0.102,
+    "fees_pct": 39.04,
+    "avg_bars": 8.2,
+    "longs": 121,
+    "shorts": 116,
+    "by_regime": {
+      "-": {
+        "n": 237,
+        "win_rate": 35.4,
+        "sum_r": -24.16,
+        "avg_r": -0.102
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "RSI2_EMA200",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 1112,
+    "mdd_pct": 91.53,
+    "return_pct": -91.25,
+    "win_rate": 57.4,
+    "pf": 0.779,
+    "exp_r": -0.102,
+    "fees_pct": 95.6,
+    "avg_bars": 11.3,
+    "longs": 583,
+    "shorts": 529,
+    "by_regime": {
+      "-": {
+        "n": 1112,
+        "win_rate": 57.4,
+        "sum_r": -113.32,
+        "avg_r": -0.102
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "RSI2_EMA200",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 531,
+    "mdd_pct": 71.66,
+    "return_pct": -70.25,
+    "win_rate": 56.9,
+    "pf": 0.769,
+    "exp_r": -0.106,
+    "fees_pct": 70.31,
+    "avg_bars": 11.7,
+    "longs": 285,
+    "shorts": 246,
+    "by_regime": {
+      "-": {
+        "n": 531,
+        "win_rate": 56.9,
+        "sum_r": -56.53,
+        "avg_r": -0.106
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "RSI2_EMA200",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 580,
+    "mdd_pct": 75.68,
+    "return_pct": -70.99,
+    "win_rate": 57.8,
+    "pf": 0.804,
+    "exp_r": -0.099,
+    "fees_pct": 83.74,
+    "avg_bars": 11.0,
+    "longs": 298,
+    "shorts": 282,
+    "by_regime": {
+      "-": {
+        "n": 580,
+        "win_rate": 57.8,
+        "sum_r": -57.45,
+        "avg_r": -0.099
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "BollingerReentry",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 690,
+    "mdd_pct": 98.01,
+    "return_pct": -98.01,
+    "win_rate": 44.3,
+    "pf": 0.509,
+    "exp_r": -0.273,
+    "fees_pct": 49.55,
+    "avg_bars": 7.8,
+    "longs": 326,
+    "shorts": 364,
+    "by_regime": {
+      "-": {
+        "n": 690,
+        "win_rate": 44.3,
+        "sum_r": -188.41,
+        "avg_r": -0.273
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "BollingerReentry",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 690,
+    "mdd_pct": 98.01,
+    "return_pct": -98.01,
+    "win_rate": 44.3,
+    "pf": 0.509,
+    "exp_r": -0.273,
+    "fees_pct": 49.55,
+    "avg_bars": 7.8,
+    "longs": 326,
+    "shorts": 364,
+    "by_regime": {
+      "-": {
+        "n": 690,
+        "win_rate": 44.3,
+        "sum_r": -188.41,
+        "avg_r": -0.273
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "BollingerReentry",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 905,
+    "mdd_pct": 97.97,
+    "return_pct": -97.9,
+    "win_rate": 46.7,
+    "pf": 0.636,
+    "exp_r": -0.202,
+    "fees_pct": 63.12,
+    "avg_bars": 7.9,
+    "longs": 461,
+    "shorts": 444,
+    "by_regime": {
+      "-": {
+        "n": 905,
+        "win_rate": 46.7,
+        "sum_r": -183.0,
+        "avg_r": -0.202
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "ZScore24Reversion",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 709,
+    "mdd_pct": 98.05,
+    "return_pct": -98.02,
+    "win_rate": 43.7,
+    "pf": 0.504,
+    "exp_r": -0.266,
+    "fees_pct": 49.61,
+    "avg_bars": 8.2,
+    "longs": 330,
+    "shorts": 379,
+    "by_regime": {
+      "-": {
+        "n": 709,
+        "win_rate": 43.7,
+        "sum_r": -188.59,
+        "avg_r": -0.266
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "ZScore24Reversion",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 709,
+    "mdd_pct": 98.05,
+    "return_pct": -98.02,
+    "win_rate": 43.7,
+    "pf": 0.504,
+    "exp_r": -0.266,
+    "fees_pct": 49.61,
+    "avg_bars": 8.2,
+    "longs": 330,
+    "shorts": 379,
+    "by_regime": {
+      "-": {
+        "n": 709,
+        "win_rate": 43.7,
+        "sum_r": -188.59,
+        "avg_r": -0.266
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "BTC",
+    "strategy": "ZScore24Reversion",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 851,
+    "mdd_pct": 98.02,
+    "return_pct": -98.01,
+    "win_rate": 44.9,
+    "pf": 0.606,
+    "exp_r": -0.218,
+    "fees_pct": 56.08,
+    "avg_bars": 8.3,
+    "longs": 425,
+    "shorts": 426,
+    "by_regime": {
+      "-": {
+        "n": 851,
+        "win_rate": 44.9,
+        "sum_r": -185.77,
+        "avg_r": -0.218
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "Turtle20",
+    "period": "전체",
+    "from": "2022-12-30",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 53,
+    "mdd_pct": 20.59,
+    "return_pct": 12.22,
+    "win_rate": 39.6,
+    "pf": 1.254,
+    "exp_r": 0.126,
+    "fees_pct": 1.5,
+    "avg_bars": 298.7,
+    "longs": 32,
+    "shorts": 21,
+    "by_regime": {
+      "-": {
+        "n": 53,
+        "win_rate": 39.6,
+        "sum_r": 6.7,
+        "avg_r": 0.126
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "Turtle20",
+    "period": "전반(IS)",
+    "from": "2022-12-30",
+    "to": "2024-11-15",
+    "label": "전반(IS)",
+    "trades": 32,
+    "mdd_pct": 20.59,
+    "return_pct": -9.04,
+    "win_rate": 31.2,
+    "pf": 0.742,
+    "exp_r": -0.133,
+    "fees_pct": 0.97,
+    "avg_bars": 238.1,
+    "longs": 19,
+    "shorts": 13,
+    "by_regime": {
+      "-": {
+        "n": 32,
+        "win_rate": 31.2,
+        "sum_r": -4.25,
+        "avg_r": -0.133
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "Turtle20",
+    "period": "후반(OOS)",
+    "from": "2024-11-15",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 21,
+    "mdd_pct": 6.79,
+    "return_pct": 23.37,
+    "win_rate": 52.4,
+    "pf": 2.622,
+    "exp_r": 0.521,
+    "fees_pct": 0.58,
+    "avg_bars": 391.1,
+    "longs": 13,
+    "shorts": 8,
+    "by_regime": {
+      "-": {
+        "n": 21,
+        "win_rate": 52.4,
+        "sum_r": 10.95,
+        "avg_r": 0.521
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "DualThrust",
+    "period": "전체",
+    "from": "2022-12-30",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 405,
+    "mdd_pct": 47.0,
+    "return_pct": 32.99,
+    "win_rate": 39.5,
+    "pf": 1.066,
+    "exp_r": 0.061,
+    "fees_pct": 83.97,
+    "avg_bars": 9.0,
+    "longs": 208,
+    "shorts": 197,
+    "by_regime": {
+      "-": {
+        "n": 405,
+        "win_rate": 39.5,
+        "sum_r": 24.79,
+        "avg_r": 0.061
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "DualThrust",
+    "period": "전반(IS)",
+    "from": "2022-12-30",
+    "to": "2024-11-15",
+    "label": "전반(IS)",
+    "trades": 204,
+    "mdd_pct": 47.0,
+    "return_pct": 8.91,
+    "win_rate": 40.2,
+    "pf": 1.042,
+    "exp_r": 0.041,
+    "fees_pct": 41.64,
+    "avg_bars": 9.1,
+    "longs": 107,
+    "shorts": 97,
+    "by_regime": {
+      "-": {
+        "n": 204,
+        "win_rate": 40.2,
+        "sum_r": 8.4,
+        "avg_r": 0.041
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "DualThrust",
+    "period": "후반(OOS)",
+    "from": "2024-11-15",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 201,
+    "mdd_pct": 20.46,
+    "return_pct": 22.12,
+    "win_rate": 38.8,
+    "pf": 1.084,
+    "exp_r": 0.082,
+    "fees_pct": 38.87,
+    "avg_bars": 8.9,
+    "longs": 101,
+    "shorts": 100,
+    "by_regime": {
+      "-": {
+        "n": 201,
+        "win_rate": 38.8,
+        "sum_r": 16.4,
+        "avg_r": 0.082
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "RSI2_EMA200",
+    "period": "전체",
+    "from": "2022-12-30",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 1044,
+    "mdd_pct": 92.71,
+    "return_pct": -91.33,
+    "win_rate": 55.3,
+    "pf": 0.747,
+    "exp_r": -0.109,
+    "fees_pct": 61.53,
+    "avg_bars": 10.9,
+    "longs": 533,
+    "shorts": 511,
+    "by_regime": {
+      "-": {
+        "n": 1044,
+        "win_rate": 55.3,
+        "sum_r": -114.26,
+        "avg_r": -0.109
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "RSI2_EMA200",
+    "period": "전반(IS)",
+    "from": "2022-12-30",
+    "to": "2024-11-15",
+    "label": "전반(IS)",
+    "trades": 507,
+    "mdd_pct": 73.42,
+    "return_pct": -71.03,
+    "win_rate": 55.8,
+    "pf": 0.742,
+    "exp_r": -0.114,
+    "fees_pct": 50.28,
+    "avg_bars": 10.7,
+    "longs": 277,
+    "shorts": 230,
+    "by_regime": {
+      "-": {
+        "n": 507,
+        "win_rate": 55.8,
+        "sum_r": -58.04,
+        "avg_r": -0.114
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "RSI2_EMA200",
+    "period": "후반(OOS)",
+    "from": "2024-11-15",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 537,
+    "mdd_pct": 74.64,
+    "return_pct": -70.09,
+    "win_rate": 54.7,
+    "pf": 0.763,
+    "exp_r": -0.105,
+    "fees_pct": 38.84,
+    "avg_bars": 11.0,
+    "longs": 256,
+    "shorts": 281,
+    "by_regime": {
+      "-": {
+        "n": 537,
+        "win_rate": 54.7,
+        "sum_r": -56.22,
+        "avg_r": -0.105
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "BollingerReentry",
+    "period": "전체",
+    "from": "2022-12-30",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 1444,
+    "mdd_pct": 98.08,
+    "return_pct": -98.04,
+    "win_rate": 50.3,
+    "pf": 0.742,
+    "exp_r": -0.126,
+    "fees_pct": 89.86,
+    "avg_bars": 7.6,
+    "longs": 714,
+    "shorts": 730,
+    "by_regime": {
+      "-": {
+        "n": 1444,
+        "win_rate": 50.3,
+        "sum_r": -181.42,
+        "avg_r": -0.126
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "BollingerReentry",
+    "period": "전반(IS)",
+    "from": "2022-12-30",
+    "to": "2024-11-15",
+    "label": "전반(IS)",
+    "trades": 893,
+    "mdd_pct": 93.67,
+    "return_pct": -93.53,
+    "win_rate": 51.0,
+    "pf": 0.737,
+    "exp_r": -0.143,
+    "fees_pct": 86.11,
+    "avg_bars": 7.6,
+    "longs": 446,
+    "shorts": 447,
+    "by_regime": {
+      "-": {
+        "n": 893,
+        "win_rate": 51.0,
+        "sum_r": -127.96,
+        "avg_r": -0.143
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "BollingerReentry",
+    "period": "후반(OOS)",
+    "from": "2024-11-15",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 851,
+    "mdd_pct": 90.94,
+    "return_pct": -88.98,
+    "win_rate": 48.5,
+    "pf": 0.803,
+    "exp_r": -0.118,
+    "fees_pct": 69.48,
+    "avg_bars": 7.8,
+    "longs": 421,
+    "shorts": 430,
+    "by_regime": {
+      "-": {
+        "n": 851,
+        "win_rate": 48.5,
+        "sum_r": -100.82,
+        "avg_r": -0.118
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "ZScore24Reversion",
+    "period": "전체",
+    "from": "2022-12-30",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 1627,
+    "mdd_pct": 97.8,
+    "return_pct": -97.67,
+    "win_rate": 49.7,
+    "pf": 0.789,
+    "exp_r": -0.104,
+    "fees_pct": 102.11,
+    "avg_bars": 8.0,
+    "longs": 804,
+    "shorts": 823,
+    "by_regime": {
+      "-": {
+        "n": 1627,
+        "win_rate": 49.7,
+        "sum_r": -169.74,
+        "avg_r": -0.104
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "ZScore24Reversion",
+    "period": "전반(IS)",
+    "from": "2022-12-30",
+    "to": "2024-11-15",
+    "label": "전반(IS)",
+    "trades": 833,
+    "mdd_pct": 89.95,
+    "return_pct": -89.71,
+    "win_rate": 49.8,
+    "pf": 0.777,
+    "exp_r": -0.126,
+    "fees_pct": 92.38,
+    "avg_bars": 7.9,
+    "longs": 415,
+    "shorts": 418,
+    "by_regime": {
+      "-": {
+        "n": 833,
+        "win_rate": 49.8,
+        "sum_r": -104.71,
+        "avg_r": -0.126
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "ETH",
+    "strategy": "ZScore24Reversion",
+    "period": "후반(OOS)",
+    "from": "2024-11-15",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 794,
+    "mdd_pct": 83.33,
+    "return_pct": -77.48,
+    "win_rate": 49.5,
+    "pf": 0.868,
+    "exp_r": -0.082,
+    "fees_pct": 94.01,
+    "avg_bars": 8.0,
+    "longs": 389,
+    "shorts": 405,
+    "by_regime": {
+      "-": {
+        "n": 794,
+        "win_rate": 49.5,
+        "sum_r": -65.31,
+        "avg_r": -0.082
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "Turtle20",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 56,
+    "mdd_pct": 12.34,
+    "return_pct": 3.46,
+    "win_rate": 35.7,
+    "pf": 1.069,
+    "exp_r": 0.046,
+    "fees_pct": 1.36,
+    "avg_bars": 235.5,
+    "longs": 31,
+    "shorts": 25,
+    "by_regime": {
+      "-": {
+        "n": 56,
+        "win_rate": 35.7,
+        "sum_r": 2.59,
+        "avg_r": 0.046
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "Turtle20",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 29,
+    "mdd_pct": 11.5,
+    "return_pct": -6.32,
+    "win_rate": 34.5,
+    "pf": 0.747,
+    "exp_r": -0.102,
+    "fees_pct": 0.69,
+    "avg_bars": 235.7,
+    "longs": 15,
+    "shorts": 14,
+    "by_regime": {
+      "-": {
+        "n": 29,
+        "win_rate": 34.5,
+        "sum_r": -2.96,
+        "avg_r": -0.102
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "Turtle20",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 28,
+    "mdd_pct": 9.99,
+    "return_pct": 7.74,
+    "win_rate": 32.1,
+    "pf": 1.273,
+    "exp_r": 0.154,
+    "fees_pct": 0.72,
+    "avg_bars": 211.8,
+    "longs": 16,
+    "shorts": 12,
+    "by_regime": {
+      "-": {
+        "n": 28,
+        "win_rate": 32.1,
+        "sum_r": 4.32,
+        "avg_r": 0.154
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "DualThrust",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 433,
+    "mdd_pct": 79.71,
+    "return_pct": -59.14,
+    "win_rate": 34.9,
+    "pf": 0.784,
+    "exp_r": -0.078,
+    "fees_pct": 35.07,
+    "avg_bars": 8.1,
+    "longs": 223,
+    "shorts": 210,
+    "by_regime": {
+      "-": {
+        "n": 433,
+        "win_rate": 34.9,
+        "sum_r": -33.65,
+        "avg_r": -0.078
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "DualThrust",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 208,
+    "mdd_pct": 74.53,
+    "return_pct": -70.36,
+    "win_rate": 31.2,
+    "pf": 0.643,
+    "exp_r": -0.274,
+    "fees_pct": 24.75,
+    "avg_bars": 7.7,
+    "longs": 110,
+    "shorts": 98,
+    "by_regime": {
+      "-": {
+        "n": 208,
+        "win_rate": 31.2,
+        "sum_r": -56.9,
+        "avg_r": -0.274
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "DualThrust",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 225,
+    "mdd_pct": 44.62,
+    "return_pct": 37.84,
+    "win_rate": 38.2,
+    "pf": 1.146,
+    "exp_r": 0.103,
+    "fees_pct": 34.79,
+    "avg_bars": 8.4,
+    "longs": 113,
+    "shorts": 112,
+    "by_regime": {
+      "-": {
+        "n": 225,
+        "win_rate": 38.2,
+        "sum_r": 23.26,
+        "avg_r": 0.103
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "RSI2_EMA200",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 1084,
+    "mdd_pct": 85.53,
+    "return_pct": -83.85,
+    "win_rate": 56.5,
+    "pf": 0.82,
+    "exp_r": -0.077,
+    "fees_pct": 66.77,
+    "avg_bars": 11.4,
+    "longs": 470,
+    "shorts": 614,
+    "by_regime": {
+      "-": {
+        "n": 1084,
+        "win_rate": 56.5,
+        "sum_r": -82.94,
+        "avg_r": -0.077
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "RSI2_EMA200",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 544,
+    "mdd_pct": 66.08,
+    "return_pct": -62.06,
+    "win_rate": 56.6,
+    "pf": 0.811,
+    "exp_r": -0.081,
+    "fees_pct": 48.35,
+    "avg_bars": 11.1,
+    "longs": 243,
+    "shorts": 301,
+    "by_regime": {
+      "-": {
+        "n": 544,
+        "win_rate": 56.6,
+        "sum_r": -44.31,
+        "avg_r": -0.081
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "RSI2_EMA200",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 540,
+    "mdd_pct": 66.23,
+    "return_pct": -58.04,
+    "win_rate": 56.3,
+    "pf": 0.837,
+    "exp_r": -0.073,
+    "fees_pct": 47.85,
+    "avg_bars": 11.7,
+    "longs": 227,
+    "shorts": 313,
+    "by_regime": {
+      "-": {
+        "n": 540,
+        "win_rate": 56.3,
+        "sum_r": -39.36,
+        "avg_r": -0.073
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "BollingerReentry",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 1266,
+    "mdd_pct": 98.04,
+    "return_pct": -98.0,
+    "win_rate": 49.1,
+    "pf": 0.727,
+    "exp_r": -0.144,
+    "fees_pct": 61.25,
+    "avg_bars": 7.6,
+    "longs": 683,
+    "shorts": 583,
+    "by_regime": {
+      "-": {
+        "n": 1266,
+        "win_rate": 49.1,
+        "sum_r": -182.53,
+        "avg_r": -0.144
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "BollingerReentry",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 922,
+    "mdd_pct": 94.75,
+    "return_pct": -94.64,
+    "win_rate": 49.9,
+    "pf": 0.727,
+    "exp_r": -0.149,
+    "fees_pct": 59.57,
+    "avg_bars": 7.7,
+    "longs": 499,
+    "shorts": 423,
+    "by_regime": {
+      "-": {
+        "n": 922,
+        "win_rate": 49.9,
+        "sum_r": -136.99,
+        "avg_r": -0.149
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "BollingerReentry",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 927,
+    "mdd_pct": 94.51,
+    "return_pct": -93.71,
+    "win_rate": 47.9,
+    "pf": 0.734,
+    "exp_r": -0.138,
+    "fees_pct": 48.46,
+    "avg_bars": 7.6,
+    "longs": 484,
+    "shorts": 443,
+    "by_regime": {
+      "-": {
+        "n": 927,
+        "win_rate": 47.9,
+        "sum_r": -128.2,
+        "avg_r": -0.138
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "ZScore24Reversion",
+    "period": "전체",
+    "from": "2022-10-08",
+    "to": "2026-10-01",
+    "label": "전체",
+    "trades": 1324,
+    "mdd_pct": 98.06,
+    "return_pct": -98.02,
+    "win_rate": 47.0,
+    "pf": 0.768,
+    "exp_r": -0.137,
+    "fees_pct": 70.89,
+    "avg_bars": 8.2,
+    "longs": 705,
+    "shorts": 619,
+    "by_regime": {
+      "-": {
+        "n": 1324,
+        "win_rate": 47.0,
+        "sum_r": -181.15,
+        "avg_r": -0.137
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "ZScore24Reversion",
+    "period": "전반(IS)",
+    "from": "2022-10-08",
+    "to": "2024-10-04",
+    "label": "전반(IS)",
+    "trades": 857,
+    "mdd_pct": 91.49,
+    "return_pct": -91.28,
+    "win_rate": 48.3,
+    "pf": 0.77,
+    "exp_r": -0.131,
+    "fees_pct": 67.7,
+    "avg_bars": 8.3,
+    "longs": 466,
+    "shorts": 391,
+    "by_regime": {
+      "-": {
+        "n": 857,
+        "win_rate": 48.3,
+        "sum_r": -112.6,
+        "avg_r": -0.131
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  },
+  {
+    "symbol": "XRP",
+    "strategy": "ZScore24Reversion",
+    "period": "후반(OOS)",
+    "from": "2024-10-04",
+    "to": "2026-10-01",
+    "label": "후반(OOS)",
+    "trades": 859,
+    "mdd_pct": 94.56,
+    "return_pct": -94.17,
+    "win_rate": 45.2,
+    "pf": 0.736,
+    "exp_r": -0.154,
+    "fees_pct": 47.73,
+    "avg_bars": 8.0,
+    "longs": 444,
+    "shorts": 415,
+    "by_regime": {
+      "-": {
+        "n": 859,
+        "win_rate": 45.2,
+        "sum_r": -132.11,
+        "avg_r": -0.154
+      }
+    },
+    "fee_each_side": 0.0006,
+    "slippage_each_side": 0.0002,
+    "risk_pct": 2.0
+  }
+]

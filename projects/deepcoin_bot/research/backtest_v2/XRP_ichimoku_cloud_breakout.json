@@ -1,0 +1,27 @@
+{
+  "sym": "XRP-USDT-SWAP",
+  "long_only": {
+    "return_pct": 218.03,
+    "mdd_pct": 49.15,
+    "position_changes_including_final_exit": 36,
+    "exposure_pct": 30.3
+  },
+  "long_short_cash": {
+    "return_pct": 51.22,
+    "mdd_pct": 68.6,
+    "position_changes_including_final_exit": 79,
+    "exposure_pct": 81.3
+  },
+  "buy_hold": {
+    "return_pct": 180.21
+  },
+  "range": {
+    "from": "2024-10-09",
+    "to": "2026-09-30",
+    "daily_bars": 722,
+    "fee_per_side_pct": 0.06,
+    "slippage_per_side_pct": 0.02,
+    "ma": "Ichimoku 9/26/52, displacement 26",
+    "state_rule": "close above cloud top=long; below cloud bottom=short; inside=flat"
+  }
+}

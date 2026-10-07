@@ -234,7 +234,7 @@ def get_confluence_score(kl, h1_kl, direction, sig):
     return score
 
 
-def get_ict_signal(kl, h1_kl=None, d1_kl=None):
+def get_ict_signal(kl, h1_kl=None, d1_kl=None, structure_kl=None):
     """ICT 종합 시그널 — get_smc_signal() 확장
     반환: smc_signal dict + {
         "premium_discount", "ote_zone", "bull_breakers", "bear_breakers",
@@ -242,7 +242,7 @@ def get_ict_signal(kl, h1_kl=None, d1_kl=None):
     }
     """
     # 1. 기본 SMC 시그널 획득
-    smc_sig = get_smc_signal(kl, h1_kl=h1_kl)
+    smc_sig = get_smc_signal(kl, h1_kl=h1_kl, structure_kl=structure_kl)
 
     if len(kl) < 30:
         smc_sig.update({
@@ -265,7 +265,12 @@ def get_ict_signal(kl, h1_kl=None, d1_kl=None):
     # 3. OTE zone (최근 스윙 기준)
     ote_zone = None
     if highs and lows:
-        bos = find_bos_choch(kl, highs, lows)
+        if structure_kl is None:
+            bos = find_bos_choch(kl, highs, lows)
+        else:
+            struct_highs, struct_lows = find_swings(structure_kl, n=3)
+            bos = find_bos_choch(structure_kl, struct_highs, struct_lows,
+                                 lookback=len(structure_kl))
         bos_dir = bos.get("direction")
         if bos_dir == "bullish" and len(lows) >= 2:
             # 불리쉬 BOS: 직전 저점 → 고점 스윙의 되돌림 구간
@@ -377,7 +382,8 @@ _EMPTY_SIGNAL = {
 
 
 def get_ote_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
-                    m15_confirm_n: int = 0, require_h1_trend: bool = True):
+                    m15_confirm_n: int = 0, require_h1_trend: bool = True,
+                    structure_kl=None):
     """OTE(Optimal Trade Entry) — 유동성 스윕 후 0.618~0.786 되돌림 재진입.
     조건: 1H 추세 확정(neutral 제외) + D1 레짐 허용 + 스윕 + OTE 구간 + RR≥1.5. 킬존 조건 없음.
 
@@ -400,7 +406,16 @@ def get_ote_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
     if not highs or not lows:
         result["reason"] = "OTE 스윙 탐지 실패"
         return result
-    sweep_dir, sweep_lvl = find_liquidity_sweep(kl, highs, lows)
+    if structure_kl is None:
+        # Preserve the existing live scan (15m swings and the helper's default 8-bar event scan).
+        sweep_dir, sweep_lvl = find_liquidity_sweep(kl, highs, lows)
+    else:
+        sweep_highs, sweep_lows = find_swings(structure_kl, n=3)
+        if not sweep_highs or not sweep_lows:
+            result["reason"] = "OTE 구조 스윙 탐지 실패"
+            return result
+        sweep_dir, sweep_lvl = find_liquidity_sweep(
+            structure_kl, sweep_highs, sweep_lows, lookback=len(structure_kl))
     result.update({"sweep": bool(sweep_dir), "sweep_dir": sweep_dir, "sweep_lvl": sweep_lvl})
     if not sweep_dir:
         result["reason"] = f"OTE 스윕 없음 (1H:{h1_trend})"
@@ -446,7 +461,8 @@ def get_ote_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
 
 
 def get_mtf_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
-                    m15_confirm_n: int = 0, require_h1_trend: bool = True):
+                    m15_confirm_n: int = 0, require_h1_trend: bool = True,
+                    structure_kl=None):
     """MTF 컨플루언스 — 가장 엄격한 전략.
     조건: 킬존(런던/뉴욕) + D1 레짐 허용 + 1H 추세와 15m OB/FVG 시그널 방향 일치
           + 컨플루언스 점수 ≥3 + RR≥2.0 + 5m 확인봉 역방향 아님.
@@ -463,7 +479,7 @@ def get_mtf_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
     if require_h1_trend and h1_trend == "neutral":
         return dict(_EMPTY_SIGNAL, reason="MTF 1H추세 중립", kz=kz)
 
-    base = get_ict_signal(kl, h1_kl=h1_kl, d1_kl=d1_kl)
+    base = get_ict_signal(kl, h1_kl=h1_kl, d1_kl=d1_kl, structure_kl=structure_kl)
     base["kz"] = kz
     raw_dir = base.get("signal")
     if (not require_h1_trend or h1_trend == "bullish") and raw_dir == "long" and _regime_allows(regime, "long"):
@@ -495,7 +511,8 @@ def get_mtf_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
 
 
 def get_killzone_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
-                         m15_confirm_n: int = 0, require_h1_trend: bool = True):
+                         m15_confirm_n: int = 0, require_h1_trend: bool = True,
+                         structure_kl=None):
     """킬존(NY전용) — OB/FVG 시그널을 뉴욕 세션 + 1H 추세 정렬 + D1 레짐으로 한정.
     조건: 뉴욕 킬존 + 1H 추세 확정·방향 일치 + D1 레짐 허용 + RR≥1.5.
 
@@ -510,7 +527,7 @@ def get_killzone_signal(kl, h1_kl=None, d1_kl=None, m5_kl=None,
     h1_trend = get_htf_trend(h1_kl) if h1_kl else "neutral"
     if require_h1_trend and h1_trend == "neutral":
         return dict(_EMPTY_SIGNAL, reason="KZ 1H추세 중립", kz=kz)
-    base = get_ict_signal(kl, h1_kl=h1_kl, d1_kl=d1_kl)
+    base = get_ict_signal(kl, h1_kl=h1_kl, d1_kl=d1_kl, structure_kl=structure_kl)
     base["kz"] = kz
     direction = base.get("signal")
     if direction not in ("long", "short"):

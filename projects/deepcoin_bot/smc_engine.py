@@ -327,7 +327,7 @@ def _ema_s(cl, n):
     return e
 
 
-def get_smc_signal(kl, swing_n=3, h1_kl=None):
+def get_smc_signal(kl, swing_n=3, h1_kl=None, structure_kl=None):
     """SMC 종합 분석 → 진입 시그널 + SL/TP 자동 계산
     SMC 진입 원칙:
       Long:  Bullish BOS/ChoCh or Bullish Sweep + Bullish OB 존재
@@ -352,16 +352,27 @@ def get_smc_signal(kl, swing_n=3, h1_kl=None):
             h1_trend = "bearish"
 
     price = kl[-1]["c"]
+    # Optional bounded structure feed. SMC/ICT research can use recent 5m candles
+    # for BOS/ChoCh and sweeps while keeping OB/FVG zones on the execution candles.
+    structure = structure_kl if structure_kl is not None else kl
+    struct_highs, struct_lows = find_swings(structure, swing_n)
     highs, lows = find_swings(kl, swing_n)
-    if not highs or not lows:
+    if not highs or not lows or not struct_highs or not struct_lows:
         return {"signal": None, "reason": "스윙 탐지 실패"}
 
-    bos              = find_bos_choch(kl, highs, lows)
+    # Keep legacy scan lengths unless a bounded structure feed was explicitly supplied.
+    # In research mode, candidate pivots and event scans are both limited to that feed.
+    if structure_kl is None:
+        bos = find_bos_choch(kl, highs, lows)
+        sweep_dir, sweep_lvl = find_liquidity_sweep(kl, highs, lows)
+    else:
+        bos = find_bos_choch(structure, struct_highs, struct_lows, lookback=len(structure))
+        sweep_dir, sweep_lvl = find_liquidity_sweep(
+            structure, struct_highs, struct_lows, lookback=len(structure))
     b_obs, d_obs     = find_order_blocks(kl, highs, lows)
     b_fvg, d_fvg     = find_fvg(kl, lookback=20)
-    sweep_dir, sweep_lvl = find_liquidity_sweep(kl, highs, lows)
     buy_liq, sell_liq    = find_liquidity(kl, highs, lows)
-    sw               = find_strong_weak(kl, highs, lows, bos)
+    sw               = find_strong_weak(structure, struct_highs, struct_lows, bos)
 
     result = {
         "signal": None, "entry_low": None, "entry_high": None,

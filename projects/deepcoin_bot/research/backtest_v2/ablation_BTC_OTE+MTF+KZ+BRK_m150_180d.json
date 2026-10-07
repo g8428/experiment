@@ -1,0 +1,200 @@
+[
+ {
+  "label": "0 옛 엔진 재현 (15m 101/1H 50/D1 50봉, 미래누수, 수수료0, 종가체결, 일한도 없음)",
+  "trades": 44,
+  "mdd_pct": 55.77,
+  "return_pct": 3.02,
+  "win_rate": 29.5,
+  "pf": 1.01,
+  "exp_r": 0.195,
+  "fees_pct": 0.0,
+  "avg_bars": 11.5,
+  "longs": 34,
+  "shorts": 10,
+  "by_regime": {
+   "횡보": {
+    "n": 19,
+    "win_rate": 36.8,
+    "sum_r": 7.35,
+    "avg_r": 0.387
+   },
+   "상승": {
+    "n": 16,
+    "win_rate": 18.8,
+    "sum_r": -4.84,
+    "avg_r": -0.303
+   },
+   "하락": {
+    "n": 9,
+    "win_rate": 33.3,
+    "sum_r": 6.07,
+    "avg_r": 0.675
+   }
+  }
+ },
+ {
+  "label": "1 + 라이브와 같은 캔들 개수 (15m 60/1H 25/D1 120 → D1 레짐 필터 실제 작동)",
+  "trades": 34,
+  "mdd_pct": 43.53,
+  "return_pct": 19.16,
+  "win_rate": 32.4,
+  "pf": 1.097,
+  "exp_r": 0.398,
+  "fees_pct": 0.0,
+  "avg_bars": 10.4,
+  "longs": 28,
+  "shorts": 6,
+  "by_regime": {
+   "횡보": {
+    "n": 19,
+    "win_rate": 42.1,
+    "sum_r": 11.41,
+    "avg_r": 0.601
+   },
+   "상승": {
+    "n": 12,
+    "win_rate": 25.0,
+    "sum_r": 5.14,
+    "avg_r": 0.428
+   },
+   "하락": {
+    "n": 3,
+    "win_rate": 0.0,
+    "sum_r": -3.0,
+    "avg_r": -1.0
+   }
+  }
+ },
+ {
+  "label": "2 + 미래 데이터 누수 제거 (완결된 1H/D1만)",
+  "trades": 37,
+  "mdd_pct": 63.68,
+  "return_pct": -37.16,
+  "win_rate": 27.0,
+  "pf": 0.744,
+  "exp_r": 0.057,
+  "fees_pct": 0.0,
+  "avg_bars": 8.3,
+  "longs": 29,
+  "shorts": 8,
+  "by_regime": {
+   "횡보": {
+    "n": 17,
+    "win_rate": 29.4,
+    "sum_r": 1.83,
+    "avg_r": 0.108
+   },
+   "상승": {
+    "n": 16,
+    "win_rate": 31.2,
+    "sum_r": 4.28,
+    "avg_r": 0.268
+   },
+   "하락": {
+    "n": 4,
+    "win_rate": 0.0,
+    "sum_r": -4.0,
+    "avg_r": -1.0
+   }
+  }
+ },
+ {
+  "label": "3 + 수수료 0.06%×2 + 슬리피지 0.02%",
+  "trades": 37,
+  "mdd_pct": 84.92,
+  "return_pct": -79.37,
+  "win_rate": 27.0,
+  "pf": 0.398,
+  "exp_r": -0.363,
+  "fees_pct": 36.77,
+  "avg_bars": 8.3,
+  "longs": 29,
+  "shorts": 8,
+  "by_regime": {
+   "횡보": {
+    "n": 17,
+    "win_rate": 29.4,
+    "sum_r": -5.63,
+    "avg_r": -0.331
+   },
+   "상승": {
+    "n": 16,
+    "win_rate": 31.2,
+    "sum_r": -2.48,
+    "avg_r": -0.155
+   },
+   "하락": {
+    "n": 4,
+    "win_rate": 0.0,
+    "sum_r": -5.31,
+    "avg_r": -1.328
+   }
+  }
+ },
+ {
+  "label": "4 + 다음 봉 시가 체결",
+  "trades": 37,
+  "mdd_pct": 84.92,
+  "return_pct": -79.37,
+  "win_rate": 27.0,
+  "pf": 0.398,
+  "exp_r": -0.363,
+  "fees_pct": 36.77,
+  "avg_bars": 8.3,
+  "longs": 29,
+  "shorts": 8,
+  "by_regime": {
+   "횡보": {
+    "n": 17,
+    "win_rate": 29.4,
+    "sum_r": -5.63,
+    "avg_r": -0.331
+   },
+   "상승": {
+    "n": 16,
+    "win_rate": 31.2,
+    "sum_r": -2.48,
+    "avg_r": -0.155
+   },
+   "하락": {
+    "n": 4,
+    "win_rate": 0.0,
+    "sum_r": -5.31,
+    "avg_r": -1.328
+   }
+  }
+ },
+ {
+  "label": "5 + 라이브 일한도/쿨다운 (= 정직한 현재 라이브)",
+  "trades": 36,
+  "mdd_pct": 84.77,
+  "return_pct": -77.04,
+  "win_rate": 27.8,
+  "pf": 0.407,
+  "exp_r": -0.334,
+  "fees_pct": 36.54,
+  "avg_bars": 7.9,
+  "longs": 28,
+  "shorts": 8,
+  "by_regime": {
+   "횡보": {
+    "n": 17,
+    "win_rate": 29.4,
+    "sum_r": -5.66,
+    "avg_r": -0.333
+   },
+   "상승": {
+    "n": 15,
+    "win_rate": 33.3,
+    "sum_r": -1.05,
+    "avg_r": -0.07
+   },
+   "하락": {
+    "n": 4,
+    "win_rate": 0.0,
+    "sum_r": -5.31,
+    "avg_r": -1.328
+   }
+  }
+ }
+]

@@ -1,0 +1,27 @@
+{
+  "sym": "ETH-USDT-SWAP",
+  "long_only": {
+    "return_pct": 74.36,
+    "mdd_pct": 33.2,
+    "position_changes_including_final_exit": 28,
+    "exposure_pct": 38.6
+  },
+  "long_short_cash": {
+    "return_pct": 234.97,
+    "mdd_pct": 33.53,
+    "position_changes_including_final_exit": 53,
+    "exposure_pct": 80.7
+  },
+  "buy_hold": {
+    "return_pct": 9.59
+  },
+  "range": {
+    "from": "2024-10-09",
+    "to": "2026-09-30",
+    "daily_bars": 722,
+    "fee_per_side_pct": 0.06,
+    "slippage_per_side_pct": 0.02,
+    "ma": "Ichimoku 9/26/52, displacement 26",
+    "state_rule": "close above cloud top=long; below cloud bottom=short; inside=flat"
+  }
+}

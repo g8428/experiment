@@ -1,0 +1,28 @@
+{
+  "sym": "BTC-USDT-SWAP",
+  "long_only": {
+    "return_pct": -5.63,
+    "mdd_pct": 18.33,
+    "position_changes_including_final_exit": 8,
+    "exposure_pct": 26.0
+  },
+  "long_short_cash": {
+    "return_pct": -11.34,
+    "mdd_pct": 27.47,
+    "position_changes_including_final_exit": 18,
+    "exposure_pct": 57.3
+  },
+  "buy_hold": {
+    "return_pct": -20.23
+  },
+  "range": {
+    "from": "2025-01-19",
+    "to": "2026-09-30",
+    "daily_bars": 620,
+    "fee_per_side_pct": 0.06,
+    "slippage_per_side_pct": 0.02,
+    "commission_plus_slippage_per_side_pct": 0.07999999999999999,
+    "ma": "SMA 20/60/180",
+    "neutral_state": "flat/cash"
+  }
+}

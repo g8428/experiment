@@ -1,182 +1,278 @@
 {
-  "ict_killzone_long_newyork_BTC": {
-    "wins": 143,
-    "total": 412,
-    "win_rate": 34.7,
-    "weight": 0.5
-  },
-  "ict_killzone_short_newyork_BTC": {
-    "wins": 42,
-    "total": 209,
-    "win_rate": 20.1,
-    "weight": 0.25
-  },
-  "ict_ote_short_BTC": {
-    "wins": 181,
-    "total": 384,
-    "win_rate": 47.1,
+  "london+BOS+FVG진입+OB3+FVG2+no_sweep+BTC": {
+    "wins": 1,
+    "total": 1,
+    "win_rate": 100.0,
     "weight": 1.0
   },
-  "ict_ote_long_BTC": {
-    "wins": 261,
-    "total": 826,
-    "win_rate": 31.6,
-    "weight": 0.5
-  },
-  "ict_breaker_long_BTC": {
-    "wins": 274,
-    "total": 990,
-    "win_rate": 27.7,
-    "weight": 0.25
-  },
-  "ict_breaker_short_BTC": {
-    "wins": 84,
-    "total": 180,
-    "win_rate": 46.7,
-    "weight": 1.0
-  },
-  "ict_mtf_long_london_BTC": {
-    "wins": 40,
-    "total": 171,
-    "win_rate": 23.4,
-    "weight": 0.25
-  },
-  "ict_mtf_long_newyork_BTC": {
-    "wins": 46,
-    "total": 59,
-    "win_rate": 78.0,
-    "weight": 1.5
-  },
-  "ict_mtf_short_london_BTC": {
-    "wins": 37,
-    "total": 129,
-    "win_rate": 28.7,
-    "weight": 0.25
-  },
-  "ict_mtf_short_newyork_BTC": {
+  "newyork+BOS+FVG진입+OB3+FVG3+no_sweep+BTC": {
     "wins": 0,
-    "total": 24,
+    "total": 1,
     "win_rate": 0.0,
-    "weight": 0.25
+    "weight": 1.0
   },
-  "ict_killzone_short_newyork_ETH": {
-    "wins": 60,
-    "total": 236,
-    "win_rate": 25.4,
-    "weight": 0.25
+  "london+BOS+OB재터치+OB2+FVG0+sweep+BTC": {
+    "wins": 0,
+    "total": 2,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "ict_killzone_long_newyork_ETH": {
-    "wins": 80,
-    "total": 332,
-    "win_rate": 24.1,
-    "weight": 0.25
+  "london+없음+OB재터치+OB3+FVG0+sweep+BTC": {
+    "wins": 1,
+    "total": 3,
+    "win_rate": 33.3,
+    "weight": 1.0
   },
-  "ict_ote_short_ETH": {
-    "wins": 39,
-    "total": 152,
-    "win_rate": 25.7,
-    "weight": 0.25
+  "newyork+BOS+OB재터치+OB3+FVG2+sweep+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "ict_ote_long_ETH": {
-    "wins": 81,
-    "total": 329,
-    "win_rate": 24.6,
-    "weight": 0.25
+  "london+없음+FVG진입+OB3+FVG2+sweep+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "ict_breaker_short_ETH": {
-    "wins": 40,
-    "total": 121,
-    "win_rate": 33.1,
-    "weight": 0.5
+  "london+없음+OB재터치+OB3+FVG3+sweep+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "ict_breaker_long_ETH": {
-    "wins": 178,
-    "total": 523,
-    "win_rate": 34.0,
-    "weight": 0.5
+  "newyork+BOS+FVG진입+OB3+FVG1+sweep+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "ict_mtf_short_london_ETH": {
-    "wins": 9,
-    "total": 79,
-    "win_rate": 11.4,
-    "weight": 0.25
+  "newyork+BOS+OB재터치+OB2+FVG0+sweep+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "ict_mtf_long_newyork_ETH": {
-    "wins": 25,
-    "total": 140,
-    "win_rate": 17.9,
-    "weight": 0.25
+  "MTF+london+BOS+OB재터치+OB1+FVG1+sweep+ETH": {
+    "wins": 1,
+    "total": 1,
+    "win_rate": 100.0,
+    "weight": 1.0
   },
-  "ict_mtf_short_newyork_ETH": {
-    "wins": 11,
-    "total": 40,
-    "win_rate": 27.5,
-    "weight": 0.25
+  "OTE+newyork+없음+no_poi+OB0+FVG0+sweep+XRP": {
+    "wins": 1,
+    "total": 2,
+    "win_rate": 50.0,
+    "weight": 1.0
   },
-  "ict_mtf_long_london_ETH": {
-    "wins": 52,
-    "total": 148,
-    "win_rate": 35.1,
-    "weight": 0.5
+  "BRK+no_kz+없음+no_poi+OB0+FVG0+no_sweep+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "ict_killzone_long_newyork_XRP": {
-    "wins": 3,
-    "total": 21,
-    "win_rate": 14.3,
-    "weight": 0.25
+  "london+BOS+FVG진입+OB3+FVG2+no_sweep": {
+    "wins": 1,
+    "total": 1,
+    "win_rate": 100.0,
+    "weight": 1.0
   },
-  "ict_killzone_short_newyork_XRP": {
+  "newyork+BOS+FVG진입+OB3+FVG3+no_sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "london+BOS+OB재터치+OB2+FVG0+sweep": {
+    "wins": 1,
+    "total": 3,
+    "win_rate": 33.3,
+    "weight": 1.0
+  },
+  "london+없음+OB재터치+OB3+FVG0+sweep": {
+    "wins": 1,
+    "total": 3,
+    "win_rate": 33.3,
+    "weight": 1.0
+  },
+  "newyork+BOS+OB재터치+OB3+FVG2+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "london+없음+FVG진입+OB3+FVG2+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "london+없음+OB재터치+OB3+FVG3+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "newyork+BOS+FVG진입+OB3+FVG1+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "newyork+BOS+OB재터치+OB2+FVG0+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "MTF+london+BOS+OB재터치+OB1+FVG1+sweep": {
+    "wins": 1,
+    "total": 1,
+    "win_rate": 100.0,
+    "weight": 1.0
+  },
+  "OTE+newyork+없음+no_poi+OB0+FVG0+sweep": {
+    "wins": 1,
+    "total": 2,
+    "win_rate": 50.0,
+    "weight": 1.0
+  },
+  "BRK+no_kz+없음+no_poi+OB0+FVG0+no_sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "OTE+newyork+없음+no_poi+OB0+FVG0+sweep+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "KZ-NY+newyork+없음+OB재터치+OB2+FVG0+sweep+ETH": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "KZ-NY+newyork+BOS+FVG진입+OB2+FVG3+sweep+XRP": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "BRK+newyork+없음+no_poi+OB0+FVG0+no_sweep+BTC": {
+    "wins": 0,
+    "total": 2,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "OTE+no_kz+없음+no_poi+OB0+FVG0+sweep+XRP": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "london+없음+OB재터치+OB2+FVG0+sweep": {
     "wins": 0,
     "total": 3,
     "win_rate": 0.0,
     "weight": 1.0
   },
-  "ict_ote_short_XRP": {
-    "wins": 48,
-    "total": 125,
-    "win_rate": 38.4,
-    "weight": 0.5
+  "newyork+없음+OB재터치+OB3+FVG0+sweep": {
+    "wins": 1,
+    "total": 2,
+    "win_rate": 50.0,
+    "weight": 1.0
   },
-  "ict_ote_long_XRP": {
-    "wins": 51,
-    "total": 258,
-    "win_rate": 19.8,
-    "weight": 0.25
+  "newyork+BOS+OB재터치+OB3+FVG1+sweep": {
+    "wins": 1,
+    "total": 2,
+    "win_rate": 50.0,
+    "weight": 1.0
   },
-  "ict_breaker_short_XRP": {
-    "wins": 102,
-    "total": 403,
-    "win_rate": 25.3,
-    "weight": 0.25
+  "newyork+BOS+OB재터치+OB1+FVG0+sweep": {
+    "wins": 1,
+    "total": 1,
+    "win_rate": 100.0,
+    "weight": 1.0
   },
-  "ict_breaker_long_XRP": {
-    "wins": 126,
-    "total": 648,
-    "win_rate": 19.4,
-    "weight": 0.25
+  "london+없음+OB재터치+OB3+FVG2+sweep": {
+    "wins": 1,
+    "total": 1,
+    "win_rate": 100.0,
+    "weight": 1.0
   },
-  "ict_mtf_long_newyork_XRP": {
+  "london+BOS+FVG진입+OB2+FVG3+no_sweep": {
+    "wins": 1,
+    "total": 1,
+    "win_rate": 100.0,
+    "weight": 1.0
+  },
+  "london+없음+OB재터치+OB2+FVG1+sweep": {
     "wins": 0,
-    "total": 13,
+    "total": 1,
     "win_rate": 0.0,
-    "weight": 0.25
+    "weight": 1.0
   },
-  "ict_mtf_short_newyork_XRP": {
+  "london+없음+FVG진입+OB2+FVG2+sweep": {
     "wins": 0,
-    "total": 13,
+    "total": 1,
     "win_rate": 0.0,
-    "weight": 0.25
+    "weight": 1.0
   },
-  "wonyotti_fade_long_BTC": {
-    "wins": 6,
-    "total": 26,
-    "win_rate": 23.1,
-    "weight": 0.25
+  "london+BOS+OB재터치+OB1+FVG1+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   },
-  "wonyotti_fade_short_BTC": {
-    "wins": 6,
-    "total": 42,
-    "win_rate": 14.3,
-    "weight": 0.25
+  "london+BOS+FVG진입+OB3+FVG1+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "newyork+ChoCh+OB재터치+OB2+FVG4+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "newyork+없음+OB재터치+OB2+FVG1+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "newyork+없음+FVG진입+OB2+FVG3+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "london+BOS+OB재터치+OB3+FVG1+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "newyork+BOS+OB재터치+OB3+FVG0+sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "london+BOS+OB재터치+OB3+FVG4+no_sweep": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
+  },
+  "TREND+DON+BTC": {
+    "wins": 0,
+    "total": 1,
+    "win_rate": 0.0,
+    "weight": 1.0
   }
 }

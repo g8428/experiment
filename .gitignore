@@ -61,3 +61,6 @@ credentials.*
 
 # 딥코인봇 1분봉 캐시 (로컬 전용, 커밋 안 함)
 projects/deepcoin_bot/backtest/cache/*_1m/
+
+# 슬랙 웹훅·토큰 보관 폴더 (비밀값, 커밋 금지)
+channel/
