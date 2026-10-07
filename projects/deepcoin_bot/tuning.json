@@ -35,7 +35,7 @@
   "legacy_chain_enabled": true,
   "multi_slot": {
     "enabled": true,
-    "symbols": ["BTC-USDT-SWAP"],
+    "symbols": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "XRP-USDT-SWAP"],
     "max_slots": 3
   },
   "trend": {
