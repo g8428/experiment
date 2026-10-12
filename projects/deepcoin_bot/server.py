@@ -291,6 +291,8 @@ _claude_cfg = {
               "partial_tp_r": 1.0, "partial_tp_frac": 0.3, "partial_be": True},
     # 같은 심볼에서 기존 체인(단타) 포지션을 추가 가상 슬롯으로 동시 보유 (거래소는 방향당 포지션 1개로 합쳐지므로 로컬 슬롯)
     "multi_slot": {"enabled": False, "symbols": ["BTC-USDT-SWAP"], "max_slots": 3},
+    # 사용자가 거래소에서 직접 연 포지션의 posId — 봇이 주 포지션으로 복원·청산·동기화하지 않는다(레버리지 맞추기만 참고)
+    "ignore_pos_ids": [],
     # 일목균형표 A: 완결 일봉 종가가 현재 표시 구름 위=롱, 아래=숏, 안=무포지션. 손절 없음(상태 전환으로만 청산/반전).
     # 기존 전략과 별도 슬롯(별도 posId)으로 동시 보유. 2026-10-03 사용자 결정: 롱·숏, 3x, 증거금 10%, BTC·ETH·XRP
     "ichimoku": {"enabled": True, "symbols": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "XRP-USDT-SWAP"],
@@ -322,7 +324,7 @@ def _load_tuning():
                   "tp_min_margin_pct", "tp_min_margin_by_sym",
                   "sl_cap_pct_by_sym", "sl_min_atr_mult", "sl_min_atr_mult_by_sym",
                   "tp_max_atr_mult", "tp_max_atr_mult_by_sym", "tp_fvg_block",
-                  "legacy_chain_enabled", "trend", "multi_slot", "ichimoku"):
+                  "legacy_chain_enabled", "trend", "multi_slot", "ichimoku", "ignore_pos_ids"):
             if k in t: _claude_cfg[k] = t[k]
         if isinstance(t.get("active_symbols"), list):
             _active_syms_cfg = [s for s in t["active_symbols"] if s in _ACTIVE_SYMS]
@@ -639,9 +641,20 @@ def _dc_positions(sym):
         pass
     return None
 
-def _find_pos(plist, side, pid=None):
+def _ignored_pid(pid):
+    """사용자가 직접 관리하는 포지션(tuning.json ignore_pos_ids) — 봇이 복원·청산·동기화 대상으로 잡지 않는다."""
+    return bool(pid) and str(pid) in {str(x) for x in (_claude_cfg.get("ignore_pos_ids") or [])}
+
+def _find_pos(plist, side, pid=None, include_ignored=False):
+    """pid=None(방향만으로 찾기)일 때는 사용자 관리 포지션을 건너뛴다.
+    include_ignored=True는 레버리지 맞추기처럼 '같은 방향 포지션이 있는지'만 볼 때 쓴다."""
     for p in plist or []:
-        if p.get("posSide") == side and (pid is None or p.get("posId") == pid):
+        if p.get("posSide") != side:
+            continue
+        if pid is not None:
+            if p.get("posId") == pid:
+                return p
+        elif include_ignored or not _ignored_pid(p.get("posId")):
             return p
     return None
 
@@ -856,7 +869,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
     if mode == "real" and pos is None:
         try:
             _dcl_all = _dc_positions(sym) or []
-            _cands = [p for p in _dcl_all if p.get("posId") not in _xclaimed]
+            _cands = [p for p in _dcl_all if p.get("posId") not in _xclaimed and not _ignored_pid(p.get("posId"))]
             _cands.sort(key=lambda p: p.get("posId") != _posid_saved.get(sym))   # 저장된 주 posId 우선
             for _dp in _cands:
                 _dc_sz = int(float(_dp.get("pos", 0) or 0))
@@ -1249,7 +1262,7 @@ def _run_claude_bot(mode, gen=0, sym="BTC-USDT-SWAP"):
                         tp_px, sl_px = _sv_tp, _sv_sl
                         time.sleep(30); continue
                     _before_pids = {p.get("posId") for p in _pl0}
-                    _same = _find_pos(_pl0, sig)
+                    _same = _find_pos(_pl0, sig, include_ignored=True)   # 레버리지는 방향 단위라 사용자 포지션도 본다
                     _has_dc_side = _same is not None
                     try:
                         if _has_dc_side and _same.get("lever"): _lev_now = int(float(_same["lever"]))

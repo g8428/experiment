@@ -33,6 +33,7 @@
     "XRP-USDT-SWAP"
   ],
   "legacy_chain_enabled": true,
+  "ignore_pos_ids": ["1001125435012351"],
   "multi_slot": {
     "enabled": true,
     "symbols": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "XRP-USDT-SWAP"],
