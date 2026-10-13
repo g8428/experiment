@@ -45,8 +45,9 @@ const STYLE = `[읽는 법 — 가장 중요]
 - 모든 문장을 존댓말(-습니다/-ㅂ니다/-입니다/-지요/-까요)로 끝냅니다. 반말 종결은 한 문장도 없습니다.
 - 담담하고 힘 있는 전통 점술가의 말투. 상담자는 "이름+님"으로만 부르고 "당신"이라고 쓰지 않습니다.
 - "~하세요/~해야 합니다" 같은 지시 대신 방향을 보여 주고 선택은 본인 몫으로 둡니다.
-- 한자는 괘사·대상전 원문을 인용할 때만 쓰고 바로 풀이를 잇습니다. 효사는 주어진 국문 문구를 따옴표로 그대로 인용하고, 없는 한자 원문을 만들지 않습니다.
-- 육효 계산값(壬午 같은 간지)은 나열하지 않고 의미로 녹입니다.
+- 한자는 한 글자도 쓰지 않습니다. 괄호 속 한자("감(坎)"), 한자 인용, 지지·간지(子丑寅卯辰巳午未申酉戌亥, 壬午 등)도 모두 금지입니다. 괘 이름·자연 상징·절기는 한글로만 씁니다.
+- 괘사·대상전·효사는 입력에 적힌 국문 풀이를 따옴표로 그대로 인용합니다. 입력에 없는 원문을 만들어 붙이지 않습니다.
+- 시기는 "10월 14일", "2027년 4월"처럼 숫자 날짜·달로만 씁니다. 지지의 한글 읽기도 달·날 이름으로 쓰지 않습니다("술월", "자일", "진월", "유월" 같은 표현 금지). 육효 계산값은 나열하지 않고 의미로 녹입니다.
 - 금지: 항목 나열, 원론 설명("~라는 것은 ~라는 뜻입니다"), "중심을 지켜라"식 결론, 날짜·서명.
 - 분량은 유료 리포트 수준으로 충분히. 섹션마다 정해진 문장 수를 채웁니다.`;
 
@@ -68,7 +69,7 @@ const ANALYZE = {
 - 메모입니다. 꾸미지 않되 판단의 근거(어느 괘·어느 효·어느 상징)를 이름으로 남깁니다. 각 필드 1~2문장.
 - 데이터에 없으면 빈 문자열이나 빈 배열로 둡니다.
 - 변효 개수별 [해석 원칙]을 따르고, 어떤 효를 읽을지는 [심장 규칙]이 정합니다.
-- 효사는 데이터의 문구 그대로 옮깁니다. 한자 원문이 데이터에 없으면 만들지 않습니다(심장 규칙의 "한자 원문" 표현보다 우선).
+- 효사는 데이터의 국문 문구 그대로 옮기고, 한자를 만들어 붙이지 않습니다. 메모에는 한자를 쓰지 않습니다. 지지·간지(酉, 戌 같은 한자도, "술월"·"자일" 같은 한글 읽기도)는 어느 필드에도 쓰지 말고 "10월 14일"처럼 숫자 날짜·달로만 적습니다.
 - 시기는 [추이 — 계절 국면]과 [시기 판단 근거 — 육효 응기]에서만 고릅니다. 세효·용신·동효의 응기 후보만, 가까운 일은 날짜, 먼 일은 달로. 블록에 없는 달·어림 숫자 금지.`,
   tool: tool('record_hexagram', '괘 데이터만으로 해석 재료를 메모한다', {
     fortune: { type: 'string', enum: ['길', '소길', '평', '조심', '흉'], description: '전체 길흉 기조' },
@@ -86,7 +87,7 @@ const ANALYZE = {
       maxItems: 3,
       description: '응기에서 고른 시기 창. 근거 없으면 빈 배열',
       items: obj({
-        when: str('실제 날짜·달. 예: "10월 17일 무렵", "2027년 4월"'),
+        when: str('숫자 날짜·달만. 예: "10월 17일 무렵", "2027년 4월". 지지·간지 한자(酉일, 辰月 등)는 쓰지 않음'),
         why: str('근거. 예: "세효 값", "용신 합"'),
         what: str('그때 움직이는 일'),
       }),
@@ -128,7 +129,7 @@ const WRITE_FRAME = {
   maxTokens: 2200,
   system: writerSystem('「총평」「괘의 형세」「마무리」', 'write_frame', `- title: 이 점괘 전체를 관통하는 한 문장.
 - overview(총평) 4~5문장: 본괘에서 (중심 효를 거쳐) 지괘로 가는 큰 흐름을 괘 이름으로 짚고, 길흉 방향과 고민에 대한 괘의 답을 밝힙니다.
-- shape(괘의 형세) 5~8문장: 본괘 원문을 바탕으로 씁니다. 상괘·하괘의 자연 상징이 겹친 장면을 그림처럼 먼저 그리고(예: "물이 불 위에 놓인 형상입니다…"), 그 그림이 상담자의 지금과 어떻게 겹치는지 잇습니다. 이어 추이(자라는 국면인지 거두는 국면인지)와 호체("겉은 ~이지만 안에 ~가 숨어 있습니다")를 항목 나열 없이 한 서사로 녹입니다. 괘사 원문을 한 번 인용해도 좋습니다.
+- shape(괘의 형세) 5~8문장: 본괘 원문을 바탕으로 씁니다. 상괘·하괘의 자연 상징이 겹친 장면을 그림처럼 먼저 그리고(예: "물이 불 위에 놓인 형상입니다…"), 그 그림이 상담자의 지금과 어떻게 겹치는지 잇습니다. 이어 추이(자라는 국면인지 거두는 국면인지)와 호체("겉은 ~이지만 안에 ~가 숨어 있습니다")를 항목 나열 없이 한 서사로 녹입니다. 괘사 풀이를 한 번 인용해도 좋습니다.
   · 호체는 [호체] 블록의 내호·외호 괘와 그 상징으로만 말합니다. 지괘와 섞지 않습니다(지괘는 "흘러가는 곳", 호체는 "본괘 안에 숨은 구조").
   · 계절·절기 이름은 [추이] 블록에 적힌 것만 씁니다.
 - closing(마무리) 2~3문장: 응축한 응원과 위로.
@@ -158,7 +159,7 @@ const WRITE_CORE = {
   temperature: 0.35,
   timeoutMs: 25000,
   maxTokens: 2200,
-  system: writerSystem('「대상전 — 지금 할 것」과 「이 점괘의 심장」', 'write_core', `- action(대상전 — 지금 할 것) 4~6문장: 본괘 대상전 원문을 인용하고 풀이한 뒤, 그 태도가 상담자의 지금에서 무엇인지 비춥니다. 지괘가 있으면 지괘 대상전을 "흘러가며 갖출 태도"로 이어 씁니다. 추상적 덕목 나열이나 실행 체크리스트는 쓰지 않습니다.
+  system: writerSystem('「대상전 — 지금 할 것」과 「이 점괘의 심장」', 'write_core', `- action(대상전 — 지금 할 것) 4~6문장: 본괘 대상전 풀이를 인용하고 이어 설명한 뒤, 그 태도가 상담자의 지금에서 무엇인지 비춥니다. 지괘가 있으면 지괘 대상전을 "흘러가며 갖출 태도"로 이어 씁니다. 추상적 덕목 나열이나 실행 체크리스트는 쓰지 않습니다.
 - heart(이 점괘의 심장) 5~8문장: 점사의 중심입니다. 첫머리에 길흉 기조를 분명히 합니다("전반적으로 길한 흐름입니다" / "조심이 필요한 국면입니다").
   [중심 자리]에 효가 있으면 그 효를 위치로 짚고("오효는 …"), 효사 문구를 따옴표로 그대로 인용한 뒤, 그 자리의 의미(군위·중심, 완성·마무리 등)가 상담자의 갈등에 무엇을 말하는지 풉니다. 효가 여럿이면 [해석 원칙]의 순서대로 잇습니다.
   [중심 자리]가 비어 있으면(변효 없음·여섯 효 모두 변함) [해석 원칙]대로 괘사나 여섯 자리 흐름으로 읽습니다.
@@ -244,8 +245,28 @@ async function callClaude({ system, user, tool: t, temperature, maxTokens, timeo
 }
 
 // 노드 하나 실행 = 시도마다 Langfuse generation 하나. 실패한 시도도 ERROR로 남는다.
+// 쓰기 노드 결과에 한자가 섞이면(없는 한자 원문을 지어내거나 지지 한자를 베끼는 일이 실제로 있었다) 한글로 다시 쓰게 한다.
+// 끝까지 남으면 한자만 걷어내고 진행한다 — 점사 전체를 실패시키지는 않는다.
+const HANJA = /[㐀-䶿一-鿿]+/g;
+const stringsOf = (v) => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(stringsOf) : v && typeof v === 'object' ? Object.values(v).flatMap(stringsOf) : []);
+const stripHanja = (v) => {
+  if (typeof v === 'string') {
+    return v
+      .replace(/\s?[(（][^()（）]*[㐀-鿿][^()（）]*[)）]/g, '')
+      .replace(HANJA, '')
+      .replace(/(["“'‘「『])[\s,，、·.\-—]*(["”'’」』])/g, '')
+      .replace(/[ \t]{2,}/g, ' ')
+      .replace(/\s+([,.])/g, '$1');
+  }
+  if (Array.isArray(v)) return v.map(stripHanja);
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, stripHanja(x)]));
+  return v;
+};
+
 async function runNode(node, state, parent, deadline) {
-  const user = node.user(state);
+  const baseUser = node.user(state);
+  const noHanja = WRITERS.includes(node);
+  let user = baseUser;
   let maxTokens = node.maxTokens;
   let lastErr;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
@@ -267,6 +288,18 @@ async function runNode(node, state, parent, deadline) {
       const out = data.content?.find((b) => b.type === 'tool_use')?.input;
       const missing = node.tool.input_schema.required.filter((k) => out?.[k] == null);
       if (missing.length) throw new NodeError(`필드 누락: ${missing.join(', ')}`);
+      const found = noHanja ? stringsOf(out).join(' ').match(HANJA) : null;
+      if (found) {
+        const sample = [...new Set(found)].slice(0, 6).join(' ');
+        if (attempt < MAX_ATTEMPTS) {
+          gen.update({ output: out, level: 'WARNING', statusMessage: `한자 섞임: ${sample} — 한글로 다시 쓰게 함` }).end();
+          user = `${baseUser}\n\n[다시 쓰기] 직전 글에 한자(${sample})가 섞였습니다. 한자를 한 글자도 쓰지 말고 모두 한글로 다시 쓰세요. 지지는 "10월 14일"처럼 숫자 날짜로만 씁니다.`;
+          continue;
+        }
+        const clean = stripHanja(out);
+        gen.update({ output: clean, level: 'WARNING', statusMessage: `한자 섞임: ${sample} — 걷어내고 진행` }).end();
+        return clean;
+      }
       gen.update({ output: out }).end();
       return out;
     } catch (err) {

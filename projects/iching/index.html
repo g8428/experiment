@@ -1883,6 +1883,9 @@ window.buildReadingInput=function(ben,ji,state){
   const LABELS=['초효','이효','삼효','사효','오효','상효'];
   const benName=state.benGua?.n||'';
   const jiName=state.jiGua?.n||'';
+  // 작가에게 가는 원문 조각에는 한자를 넣지 않는다 — 한자가 보이면 모델이 따라 쓰고, 없는 한자 원문까지 지어낸다(2026-10-13).
+  const NAT_KO={'天':'하늘','澤':'못','火':'불','雷':'우레','風':'바람','水':'물','山':'산','地':'땅','Water':'물','Fire':'불'};
+  const ko=t=>String(t||'').replace(/\s?[(（][^()（）]*[\u4e00-\u9fff][^()（）]*[)）]/g,'').replace(/[子丑寅卯辰巳午未申酉戌亥][月日]·?/g,'').replace(/[\u4e00-\u9fff]/g,c=>NAT_KO[c]||'');
   // GD2: 쉬운말+단전 버전 (있으면 사용, 없으면 원본 폴백)
   const ben2=GD2?.[state.benGua?.no]||{};
   const ji2=GD2?.[state.jiGua?.no]||{};
@@ -1905,26 +1908,26 @@ window.buildReadingInput=function(ben,ji,state){
 변효(${LABELS[chg[0]]}) 효사가 이 점의 핵심 메시지다. 질문의 직접적인 답은 여기서 꺼낸다.
 본괘 괘사는 배경·상황 설명용.
 지괘는 이 흐름의 귀결 방향.`;
-    heartRule=`변효 ${LABELS[chg[0]]} 효사의 한자 원문을 먼저 인용하고 바로 국문 풀이. 이 자리(${POS_MEAN[chg[0]]})가 ${name}님에게 무엇을 말하는지.`;
+    heartRule=`변효 ${LABELS[chg[0]]} 효사 문구를 그대로 인용하고 바로 풀이. 이 자리(${POS_MEAN[chg[0]]})가 ${name}님에게 무엇을 말하는지.`;
   }else if(chgN===2){
     readingFocus=`[변효 2개 — 해석 원칙]
 위 효(${LABELS[chg[1]]}) 효사가 중심, 아래 효(${LABELS[chg[0]]}) 효사는 보조.
 두 효의 메시지를 하나의 흐름으로 연결해서 읽는다.
 지괘는 귀결 방향.`;
-    heartRule=`위 효(${LABELS[chg[1]]}) 효사 원문을 인용해 중심으로, 아래 효(${LABELS[chg[0]]})는 보조로 짧게. 두 자리의 의미(${POS_MEAN[chg[1]]} / ${POS_MEAN[chg[0]]})를 하나의 흐름으로.`;
+    heartRule=`위 효(${LABELS[chg[1]]}) 효사 문구를 인용해 중심으로, 아래 효(${LABELS[chg[0]]})는 보조로 짧게. 두 자리의 의미(${POS_MEAN[chg[1]]} / ${POS_MEAN[chg[0]]})를 하나의 흐름으로.`;
   }else if(chgN===3){
     readingFocus=`[변효 3개 — 해석 원칙]
 효사보다 본괘↔지괘 괘사 대비가 핵심.
 "지금(본괘)은 이런 상황, 향하는 곳(지괘)은 저런 환경"으로 읽는다.
 변효 효사는 참고 수준.`;
-    heartRule=`본괘 괘사와 지괘 괘사의 대비를 중심에 두고, 세 변효 효사는 원문 인용 없이 참고로만 짧게.`;
+    heartRule=`본괘 괘사와 지괘 괘사의 대비를 중심에 두고, 세 변효 효사는 인용 없이 참고로만 짧게.`;
   }else if(chgN<=5){
     const unLabels=unchanged.map(i=>LABELS[i]).join(', ');
     readingFocus=`[변효 ${chgN}개 — 해석 원칙: 변하지 않는 자리가 중심]
 변효가 ${chgN}개면 움직이는 효가 아니라 불변효(${unLabels})를 읽는다.
 변효 효사는 인용하지 않는다. 불변효 효사가 이 점의 중심 메시지.
 지괘 괘사는 귀결 방향.`;
-    heartRule=`반드시 불변효(${unLabels})의 효사 한자 원문을 인용하고 국문 풀이. 변효 효사는 절대 인용하지 말 것. 불변효 자리의 의미(${unchanged.map(i=>POS_MEAN[i]).join(' / ')})가 ${name}님에게 무엇을 말하는지.`;
+    heartRule=`반드시 불변효(${unLabels})의 효사 문구를 그대로 인용하고 풀이. 변효 효사는 절대 인용하지 말 것. 불변효 자리의 의미(${unchanged.map(i=>POS_MEAN[i]).join(' / ')})가 ${name}님에게 무엇을 말하는지.`;
   }else{
     const yong=benNo===1?'용구(用九) — 뭇 용이 앞서지 않고 함께하는 기운':benNo===2?'용육(用六) — 오래도록 바름을 지키면 이롭다':null;
     readingFocus=`[변효 6개 — 완전한 전환]
@@ -1939,12 +1942,12 @@ ${yong?`본괘가 ${benName}이므로 ${yong}${josa(yong,'으로/로')} 읽는�
     const{hoche,chgMeanings}=dasan;
     if(hoche.inner||hoche.outer){
       hocheStr='[호체 — 숨은 내부 구조]\n';
-      if(hoche.inner)hocheStr+=`내호(2·3·4효): ${hoche.inner.n}(${hoche.inner.nat})\n`;
-      if(hoche.outer)hocheStr+=`외호(3·4·5효): ${hoche.outer.n}(${hoche.outer.nat})\n`;
+      if(hoche.inner)hocheStr+=`내호(2·3·4효): ${ko(hoche.inner.n)} — ${ko(hoche.inner.nat)}\n`;
+      if(hoche.outer)hocheStr+=`외호(3·4·5효): ${ko(hoche.outer.n)} — ${ko(hoche.outer.nat)}\n`;
     }
     // 추이: 12벽괘 절기 위치 + 변효 방향(성장기/수렴기) + 효변 단계. 특정 달을 찍는 근거가 아니라 계절 국면의 근거.
     const tui=buildDasanTiming(nats,benNo,benName,state.jiGua?.no?jiNats:null,state.jiGua?.no,jiName,chg,state.throws||[]);
-    if(tui)tuiStr=`[추이 — 계절 국면]\n${tui}\n`;
+    if(tui)tuiStr=`[추이 — 계절 국면]\n${ko(tui)}\n`;
     if(chgMeanings.length>0&&chgN<=3)tuiStr+='[효 위치 의미]\n'+chgMeanings.map(c=>`${LABELS[c.pos-1]}: ${c.meaning}`).join('\n')+'\n';
   }
 
@@ -1959,16 +1962,14 @@ ${yong?`본괘가 ${benName}이므로 ${yong}${josa(yong,'으로/로')} 읽는�
 
   // ── 원문 조각: 서버 그래프의 작가들은 분석 메모만이 아니라 자기 섹션에 필요한 원문을 직접 받는다(2026-10-06).
   //    메모만 넘겼을 때 괘 이름·효 위치·자연 상징이 풀이에서 사라지고 일반론만 남았다.
-  const trig=ns=>{const t=TRIG_MAP[ns.join('')];return t?`${t.n} — ${t.nat}`:'';};
+  const trig=ns=>{const t=TRIG_MAP[ns.join('')];return t?`${ko(t.n)} — ${NAT_KO[t.nat]||''}`:'';};
   const guaBlock=(label,g,gd,gd2,ns)=>!g?.n?'':[
     `[${label}] ${g.n}(${g.no}번)`,
     `상괘(위): ${trig(ns.slice(3))} / 하괘(아래): ${trig(ns.slice(0,3))}`,
-    gd?.gs?`괘사 원문: ${gd.gs}`:'',
-    `괘사 풀이: ${gd2.k2||gd?.k||''}`,
-    (gd2.dt2||gd?.dt)?`단전: ${gd2.dt2||gd?.dt}`:'',
-    gd?.dst?`대상전 원문: ${gd.dst}`:'',
-    `대상전 풀이: ${gd2.dst2||gd?.dst||''}`,
-    gd?.v?`핵심: ${gd.v}`:'',
+    `괘사 풀이: ${ko(gd2.k2||gd?.k||'')}`,
+    (gd2.dt2||gd?.dt)?`단전: ${ko(gd2.dt2||gd?.dt)}`:'',
+    `대상전 풀이: ${ko(gd2.dst2||gd?.dst||'')}`,
+    gd?.v?`핵심: ${ko(gd.v)}`:'',
   ].filter(Boolean).join('\n');
   // 변효 1~3개: 변효 효사 / 4~5개: 불변효 효사만(변효 효사는 일부러 안 줘서 인용을 막는다) / 0·6개: 개별 효사 없음
   const fy=focusYao(chg);
