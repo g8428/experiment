@@ -1,14 +1,25 @@
 """
-리서치 파일을 읽어 블로그 포스트 + 인스타그램 포스팅을 자동 생성.
-Anthropic Python SDK 직접 호출 (Claude Code 없이 Actions/로컬 모두 동작).
+모니터 결과에서 소식 1개를 골라 블로그 소개글 + 인스타 카드뉴스를 생성한다 (Anthropic API 직접 호출).
 
-실행: python projects/claude-code-monitor/generate_content.py [research_file_path]
-의존성: anthropic (pip install anthropic)
+글쓰기 규칙은 이 파일에 두지 않는다. `.claude/agents/content-blog-writer.md`, `content-instagram-writer.md`
+본문을 그대로 시스템 프롬프트로 읽어 쓴다 (v1은 이 파일 안에 별도 프롬프트가 있어서 에이전트 파일을 고쳐도
+Actions 결과물이 바뀌지 않았다 — HANDOVER.md 참고).
+
+실행:
+  python projects/claude-code-monitor/generate_content.py                # research/state/latest-top.json 기준
+  python projects/claude-code-monitor/generate_content.py research/claude-code-trends-2026-10-12.md
+  python projects/claude-code-monitor/generate_content.py --dry-run      # API 호출 없이 프롬프트만 출력
+의존성: anthropic (dry-run은 불필요)
 트레이싱(선택): LANGFUSE_* 환경변수가 있으면 Langfuse로 전송 (shared/utils/langfuse_tracing.py 참고)
 """
 
+from __future__ import annotations
+
+import argparse
+import json
+import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 try:  # 로컬 실행 시 레포 루트 .env 로드 (Langfuse 초기화보다 먼저여야 한다)
@@ -18,24 +29,65 @@ try:  # 로컬 실행 시 레포 루트 .env 로드 (Langfuse 초기화보다 �
 except ImportError:
     pass
 
-import anthropic
-
 ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(ROOT / "shared" / "utils"))
 from langfuse_tracing import TRACING_ENABLED, flush, get_client, observe, propagate_attributes, setup_tracing  # noqa: E402
 
-setup_tracing()  # Anthropic SDK 호출을 generation(모델/토큰/입출력)으로 자동 수집
-
+KST = timezone(timedelta(hours=9))
 RESEARCH_DIR = ROOT / "research"
+TOP_PATH = RESEARCH_DIR / "state" / "latest-top.json"
+AGENTS_DIR = ROOT / ".claude" / "agents"
 BLOG_DIR = ROOT / "content" / "blog"
 INSTAGRAM_DIR = ROOT / "content" / "instagram"
+MODEL = "claude-opus-5"
+CANDIDATES = 5  # 에이전트가 이 중에서 1개를 고른다
+
+FACT_RULE = """# 이번 작업의 사실 범위
+- 아래 '후보 소식'과 '모니터 리포트'에 적힌 내용만 사실로 쓴다. 그 밖의 수치·날짜·가격·기능은 쓰지 않는다.
+- 후보의 summary가 짧아 설명이 부족하면, 모르는 부분은 "공식 페이지에서 확인하세요"로 처리한다.
+- 출처 목록에는 후보의 url과 리포트에 있는 URL만 넣는다.
+- 지금은 API 호출이라 파일을 저장할 수 없다. 완성된 마크다운 전체만 출력하고 다른 말은 붙이지 않는다."""
+
+
+def agent_prompt(name: str) -> str:
+    """에이전트 정의 파일에서 YAML 프론트매터를 떼고 본문만 반환."""
+    text = (AGENTS_DIR / f"{name}.md").read_text(encoding="utf-8")
+    return re.sub(r"\A---\n.*?\n---\n", "", text, count=1, flags=re.S).strip()
 
 
 def latest_research_file() -> Path:
-    files = sorted(RESEARCH_DIR.glob("claude-code-*.md"), reverse=True)
+    files = sorted(RESEARCH_DIR.glob("claude-code-trends-*.md"), reverse=True)
     if not files:
-        raise FileNotFoundError(f"research/ 폴더에 claude-code-*.md 파일이 없습니다.")
+        raise FileNotFoundError("research/ 폴더에 claude-code-trends-*.md 파일이 없습니다.")
     return files[0]
+
+
+def load_inputs(research_arg: str | None) -> tuple[dict, Path]:
+    top = json.loads(TOP_PATH.read_text(encoding="utf-8")) if TOP_PATH.exists() else {"top": []}
+    if research_arg:
+        path = Path(research_arg)
+    elif top.get("date") and (RESEARCH_DIR / f"claude-code-trends-{top['date']}.md").exists():
+        path = RESEARCH_DIR / f"claude-code-trends-{top['date']}.md"
+    else:
+        path = latest_research_file()
+    return top, path
+
+
+def build_user_prompt(kind: str, top: dict, research: str, today: str, research_path: Path) -> str:
+    cands = json.dumps(top.get("top", [])[:CANDIDATES], ensure_ascii=False, indent=2)
+    task = ("블로그 소개글 1편을 써라. 프론트매터의 date는 " + today
+            + f", source_report는 {research_path.relative_to(ROOT) if research_path.is_relative_to(ROOT) else research_path}.")
+    if kind == "instagram":
+        task = "카드뉴스 1개를 써라. 가능하면 블로그와 같은 기준으로 고른 소식 1개."
+    return f"""{task}
+
+{FACT_RULE}
+
+# 후보 소식 (점수순, 이 중 1개만 고른다)
+{cands}
+
+# 모니터 리포트 ({research_path.name})
+{research}"""
 
 
 def extract_text(msg) -> str:
@@ -49,134 +101,96 @@ def extract_text(msg) -> str:
 
 
 @observe(name="generate-blog-post", capture_input=False)  # 입력(리서치 전문)은 하위 generation에 이미 기록됨
-def generate_blog_post(client: anthropic.Anthropic, research: str, today: str) -> str:
-    prompt = f"""다음 리서치 파일을 읽고 한국 개발자 커뮤니티(벨로그, 티스토리)용 기술 블로그 포스트를 작성해라.
-
-# 작성 원칙
-- 구어체 + 존댓말 혼용 ("~입니다", "~해요" 자연스럽게)
-- 기술 용어는 영어 원문 유지, 처음 등장 시 한국어 설명 병기
-- 코드 블록: 실제 동작하는 코드만, 인라인 주석 한국어
-- 단락: 3~5줄. 긴 단락 금지
-- 이모지: 소제목 앞에 1개씩만
-- 3,000자 이내
-- "혁신적인", "패러다임 전환" 같은 buzzword 금지
-
-# 구조
-1. 제목 (클릭 유도 + 키워드, 30자 이내)
-2. 한 줄 요약
-3. 들어가며 (왜 지금 이 글이 필요한지)
-4. 본문 섹션 2~4개 (소제목 + 설명 + 코드/링크/표)
-5. 바로 써먹기 (오늘 당장 실행할 3단계 액션)
-6. 마치며 (한 문장 + 다음 편 예고)
-
-마크다운 형식으로 전체 포스트만 출력. 설명이나 메타 코멘트 없이.
-
----
-
-{research}"""
-
-    msg = client.messages.create(
-        model="claude-opus-5",
-        max_tokens=4096,
-        messages=[{"role": "user", "content": prompt}],
-    )
+def generate_blog_post(client, system: str, user: str) -> str:
+    msg = client.messages.create(model=MODEL, max_tokens=6000, system=system,
+                                 messages=[{"role": "user", "content": user}])
     return extract_text(msg)
 
 
 @observe(name="generate-instagram-post", capture_input=False)
-def generate_instagram_post(client: anthropic.Anthropic, research: str, today: str) -> str:
-    prompt = f"""다음 리서치 파일에서 가장 임팩트 있는 내용 1~2개를 골라 개발자 인스타그램 카드뉴스 포스팅을 작성해라.
-
-# 작성 원칙
-- 반말 + 친근한 어투 ("알아두면 개이득" 류)
-- 숫자로 신뢰 구축: 스타 수, 설치 시간, 무료 여부 명시
-- 슬라이드당 텍스트: 50자 이내
-- 캡션: 700자 이내
-- 이모지: 슬라이드당 1~2개, 캡션에 5개 이내
-
-# 출력 형식
-## 슬라이드 구성 (최대 10장)
-각 슬라이드:
-- [표지] 제목(20자), 서브(숫자 강조), 배경 컨셉
-- [본문N] 헤드라인(10자), 설명(2~3줄), 시각 요소 제안
-- [마무리] CTA
-
-## 캡션
-🔥 첫 줄 (임팩트, 여기서 끊김)
-
-[더보기 후 본문: 핵심 3~5줄 + 액션 1가지]
-
-## 해시태그 (10~15개)
-#개발자 #ClaudeCode #AI에이전트 ... (실제 내용에 맞게)
-
----
-
-{research}"""
-
-    msg = client.messages.create(
-        model="claude-opus-5",
-        max_tokens=2048,
-        messages=[{"role": "user", "content": prompt}],
-    )
+def generate_instagram_post(client, system: str, user: str) -> str:
+    msg = client.messages.create(model=MODEL, max_tokens=3000, system=system,
+                                 messages=[{"role": "user", "content": user}])
     return extract_text(msg)
 
 
 def slugify(text: str) -> str:
-    import re
     text = text.lower().strip()
     text = re.sub(r"[^\w\s-]", "", text, flags=re.UNICODE)
     text = re.sub(r"[\s_]+", "-", text)
-    return text[:60]
+    return text[:60] or "post"
 
 
-def extract_title(blog_md: str) -> str:
-    for line in blog_md.splitlines():
-        if line.startswith("# "):
-            return line[2:].strip()
-    return "claude-code-trends"
+def front_value(md: str, key: str) -> str | None:
+    m = re.search(rf"^{key}:\s*\"?([^\"\n]+)\"?\s*$", md, re.M)
+    return m.group(1).strip() if m else None
 
 
 @observe(name="generate-weekly-content", capture_input=False)  # 1회 실행 = 1 trace
-def run(research_path: Path, today: str) -> dict:
+def run(top: dict, research_path: Path, today: str) -> dict:
+    import anthropic  # dry-run에서는 필요 없도록 지연 import
+
     research = research_path.read_text(encoding="utf-8")
     if TRACING_ENABLED:
         get_client().update_current_span(input={"research_file": research_path.name})
-
     client = anthropic.Anthropic()  # ANTHROPIC_API_KEY env var 자동 사용
+    result = {}
 
-    print("블로그 포스트 생성 중...")
-    blog = generate_blog_post(client, research, today)
-    title_slug = slugify(extract_title(blog))
-    BLOG_DIR.mkdir(parents=True, exist_ok=True)
-    blog_path = BLOG_DIR / f"{today}-{title_slug}.md"
-    blog_path.write_text(blog, encoding="utf-8")
-    print(f"블로그 저장: {blog_path}")
+    print("블로그 소개글 생성 중...")
+    blog = generate_blog_post(client, agent_prompt("content-blog-writer"),
+                              build_user_prompt("blog", top, research, today, research_path))
+    if not blog.lstrip().startswith("---"):
+        print("블로그: 프론트매터 없는 응답(글감 없음 판단 등) — 저장하지 않음\n" + blog[:300])
+    else:
+        slug = front_value(blog, "slug") or slugify(front_value(blog, "title") or "claude-code-news")
+        BLOG_DIR.mkdir(parents=True, exist_ok=True)
+        blog_path = BLOG_DIR / f"{today}-{slugify(slug)}.md"
+        blog_path.write_text(blog, encoding="utf-8")
+        print(f"블로그 저장: {blog_path}")
+        result["blog"] = str(blog_path.relative_to(ROOT))
 
-    print("인스타그램 포스팅 생성 중...")
-    instagram = generate_instagram_post(client, research, today)
+    print("인스타그램 카드뉴스 생성 중...")
+    insta = generate_instagram_post(client, agent_prompt("content-instagram-writer"),
+                                    build_user_prompt("instagram", top, research, today, research_path))
     INSTAGRAM_DIR.mkdir(parents=True, exist_ok=True)
     ig_path = INSTAGRAM_DIR / f"{today}-instagram.md"
-    ig_path.write_text(instagram, encoding="utf-8")
+    ig_path.write_text(insta, encoding="utf-8")
     print(f"인스타 저장: {ig_path}")
-
-    print("\n=== 컨텐츠 생성 완료 ===")
-    print(f"블로그: {blog_path}")
-    print(f"인스타: {ig_path}")
-    return {"blog": str(blog_path.relative_to(ROOT)), "instagram": str(ig_path.relative_to(ROOT))}
+    result["instagram"] = str(ig_path.relative_to(ROOT))
+    return result
 
 
-def main():
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("research", nargs="?", help="리포트 경로 (생략 시 latest-top.json 날짜 또는 최신 리포트)")
+    ap.add_argument("--dry-run", action="store_true", help="API 호출 없이 프롬프트만 출력")
+    args = ap.parse_args(argv)
 
-    research_path = Path(sys.argv[1]) if len(sys.argv) > 1 else latest_research_file()
-    print(f"리서치 파일: {research_path}")
+    today = datetime.now(KST).strftime("%Y-%m-%d")
+    top, research_path = load_inputs(args.research)
+    print(f"리서치 파일: {research_path} / 후보 {len(top.get('top', []))}개")
 
+    if not top.get("top"):
+        print("오늘 새로 올라온 소식이 없어 컨텐츠 생성을 건너뜁니다 (latest-top.json의 top이 비어 있음).")
+        return 0
+
+    if args.dry_run:
+        research = research_path.read_text(encoding="utf-8")
+        system = agent_prompt("content-blog-writer")
+        user = build_user_prompt("blog", top, research, today, research_path)
+        print(f"\n=== system (content-blog-writer.md 본문, {len(system):,}자) ===\n{system[:600]}…")
+        print(f"\n=== user ({len(user):,}자) ===\n{user[:1500]}…")
+        print(f"\n=== instagram system ({len(agent_prompt('content-instagram-writer')):,}자) 로드 OK ===")
+        return 0
+
+    setup_tracing()  # Anthropic SDK 호출을 generation(모델/토큰/입출력)으로 자동 수집
     try:
-        with propagate_attributes(tags=["claude-code-monitor", "weekly-content"], metadata={"research_date": today}):
-            run(research_path, today)
+        with propagate_attributes(tags=["claude-code-monitor", "daily-content"], metadata={"research_date": today}):
+            run(top, research_path, today)
     finally:
         flush()  # 짧게 끝나는 스크립트라 종료 전 전송 필수
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
