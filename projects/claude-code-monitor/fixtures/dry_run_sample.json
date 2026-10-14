@@ -176,6 +176,9 @@
  "search::remotion claude": {
   "items": []
  },
+ "search::remotion skills": {
+  "items": []
+ },
  "search::claude-code": {
   "items": [
    {

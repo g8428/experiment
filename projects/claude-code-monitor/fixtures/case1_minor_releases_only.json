@@ -1,0 +1,148 @@
+{
+ "_설명": "케이스 ① 사소한 릴리스 노트 3개만 있는 주. 릴리스 줄은 2026-10-14 실제 테스트 실행의 v2.1.286/292/299 노트를 본떠 줄였다(일부 줄은 지어냄). 다른 소스는 전부 '새 소식 없음'. 기대: 후보 0개, 리포트에 '이번 주 릴리스: 글감급 변경 없음(사소한 개선 N건)' 한 줄, latest-top.json top 비어 있음.",
+ "__now__": "2026-10-19T09:00:00+09:00",
+ "__defaults__": {
+  "search::": {
+   "items": []
+  },
+  "hn::": {
+   "nbHits": 0,
+   "hits": []
+  },
+  "reddit::": {
+   "data": {
+    "children": []
+   }
+  },
+  "watch_gh::": {
+   "total_count": 0,
+   "items": []
+  },
+  "watch_hn::": {
+   "nbHits": 0
+  }
+ },
+ "__state__": {
+  "changelog_last": "2.1.285",
+  "dirs": {
+   "anthropics/skills/skills": [
+    "docx",
+    "pdf",
+    "pptx",
+    "xlsx"
+   ],
+   "anthropics/claude-code/plugins": [
+    "example-plugin"
+   ],
+   "anthropics/claude-plugins-official/plugins": [
+    "example-official"
+   ]
+  },
+  "links": {
+   "anthropic_news": [
+    "https://www.anthropic.com/news/example-old-post"
+   ],
+   "claude_code_docs": [
+    "https://code.claude.com/docs/en/overview"
+   ],
+   "claude_docs": [
+    "https://docs.claude.com/en/home"
+   ]
+  },
+  "items": {
+   "gh:example-org/big-old-harness": {
+    "first_seen": "2026-09-01",
+    "last_seen": "2026-10-12",
+    "title": "example-org/big-old-harness",
+    "url": "https://github.com/example-org/big-old-harness",
+    "kw_text": "agent harness",
+    "reported": [
+     "2026-09-07"
+    ],
+    "last_reported_stars": 100000,
+    "last_reported_mentions": 0,
+    "stars_hist": [
+     [
+      "2026-10-12",
+      100500
+     ]
+    ]
+   }
+  },
+  "releases_seen": [
+   "anthropics/claude-code@v2.1.285"
+  ]
+ },
+ "releases::anthropics/claude-code": [
+  {
+   "tag_name": "v2.1.299",
+   "html_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.299",
+   "published_at": "2026-10-17T00:00:00Z",
+   "body": "## What's changed\n- Added `CLAUDE_CODE_DISABLE_FILE_MENTIONS` environment variable: Claude gets the paths of `@` file mentions, not the files' contents\n- Added idle compaction in the terminal: a long conversation left idle is compacted before you return\n- Fixed a crash when resizing the terminal during a long response\n"
+  },
+  {
+   "tag_name": "v2.1.292",
+   "html_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.292",
+   "published_at": "2026-10-15T00:00:00Z",
+   "body": "## What's changed\n- Added `--marketplace <source>` to `claude plugin install`: adds the marketplace if needed, then installs the plugin from it\n- Added an `effort` parameter to the Agent tool, so Claude runs a sub-agent at the effort level you pick\n- Improved startup time when many plugins are installed\n"
+  },
+  {
+   "tag_name": "v2.1.286",
+   "html_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.286",
+   "published_at": "2026-10-13T00:00:00Z",
+   "body": "## What's changed\n- Added a count such as \"2 of 5\" to the permission prompt when several permission requests stack up\n- Added mouse support for the \"N more\" rows of lists in fullscreen mode: click one to jump to that end of the list, with hover and pressed states\n- Fixed several Claude Code processes staying alive after the terminal closed\n"
+  },
+  {
+   "tag_name": "v2.1.285",
+   "html_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.285",
+   "published_at": "2026-10-10T00:00:00Z",
+   "body": "- 지난 주기에 이미 판정한 릴리스(releases_seen) — 다시 세지 않아야 한다"
+  }
+ ],
+ "changelog::anthropics/claude-code": "# Changelog\n\n## 2.1.299\n\n- Added `CLAUDE_CODE_DISABLE_FILE_MENTIONS` environment variable: Claude gets the paths of `@` file mentions, not the files' contents\n- Added idle compaction in the terminal: a long conversation left idle is compacted before you return\n- Fixed a crash when resizing the terminal during a long response\n\n## 2.1.292\n\n- Added `--marketplace <source>` to `claude plugin install`: adds the marketplace if needed, then installs the plugin from it\n- Added an `effort` parameter to the Agent tool, so Claude runs a sub-agent at the effort level you pick\n- Improved startup time when many plugins are installed\n\n## 2.1.286\n\n- Added a count such as \"2 of 5\" to the permission prompt when several permission requests stack up\n- Added mouse support for the \"N more\" rows of lists in fullscreen mode: click one to jump to that end of the list, with hover and pressed states\n- Fixed several Claude Code processes staying alive after the terminal closed\n\n## 2.1.285\n\n- old\n",
+ "contents::anthropics/skills/skills": [
+  {
+   "name": "docx",
+   "type": "dir"
+  },
+  {
+   "name": "pdf",
+   "type": "dir"
+  },
+  {
+   "name": "pptx",
+   "type": "dir"
+  },
+  {
+   "name": "xlsx",
+   "type": "dir"
+  }
+ ],
+ "contents::anthropics/claude-code/plugins": [
+  {
+   "name": "example-plugin",
+   "type": "dir"
+  }
+ ],
+ "contents::anthropics/claude-plugins-official/plugins": [
+  {
+   "name": "example-official",
+   "type": "dir"
+  }
+ ],
+ "page::anthropic_news": "<a href=\"/news/example-old-post\">old</a>",
+ "page::claude_code_docs": "- [Overview](https://code.claude.com/docs/en/overview)\n",
+ "page::claude_docs": "- [Home](https://docs.claude.com/en/home)\n",
+ "search::claude-code": {
+  "items": [
+   {
+    "full_name": "example-org/big-old-harness",
+    "html_url": "https://github.com/example-org/big-old-harness",
+    "description": "(예시) agent harness",
+    "stargazers_count": 100700,
+    "created_at": "2025-01-01T00:00:00Z",
+    "topics": []
+   }
+  ]
+ }
+}

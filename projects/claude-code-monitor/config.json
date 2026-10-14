@@ -79,8 +79,67 @@
   },
 
   "watchlist": {
-    "_설명": "주 1회(월요일 KST 또는 --watchlist) 점검. 리포트에 안 올라왔는데 바깥 반응이 있으면 경고한다.",
+    "_설명": "주 1회(월요일 KST 또는 --watchlist) 점검. 키워드에 걸린 항목은 '리포트 미반영'으로 끝내지 않고 후보 풀에 올려 글감 점수를 가산한다(promote_bonus). 감시 검색에서 처음 나온 레포도 후보로 넣는다. 그래도 리포트에 안 올라왔는데 바깥 반응이 있으면 경고한다.",
     "weekday_kst": 0,
-    "keywords": ["remotion", "video", "motion graphics", "slides", "pptx", "google workspace", "design", "excel"]
+    "keywords": ["remotion", "video", "motion graphics", "slides", "pptx", "google workspace", "design", "excel"],
+    "promote_bonus": 10,
+    "_promote_bonus_by_keyword": "뜻이 넓어 엉뚱한 레포에도 걸리는 키워드는 가산점을 낮춘다. 여기 없는 키워드는 promote_bonus.",
+    "promote_bonus_by_keyword": {"design": 4, "video": 8},
+    "weak_evidence_min_summary": 30,
+    "weak_evidence_penalty": -8,
+    "_weak_evidence": "감시 키워드로 승격됐지만 인지도(value_rules.popularity.unofficial_min) 미달이면 '확인 필요' + 순위용 감점. 설명이 weak_evidence_min_summary자 미만이어도 '확인 필요'."
+  },
+
+  "value_rules": {
+    "_설명": "글감 가치 판정(규칙 기반, LLM 호출 없음). 항목 텍스트(릴리스는 What's changed 한 줄)에 positive/negative 패턴(정규식, 대소문자 무시)을 대 보고 그룹별 weight를 한 번씩 더한다. value >= min_value 인 항목만 '글감급'으로 후보(상위 목록·핵심 3줄·블로그 후보)에 오른다. 최종 순위 = 중요도 점수(scoring) + value.",
+    "min_value": 10,
+    "_min_value": "글감 최소 점수. 올리면 더 엄격(후보 감소), 내리면 느슨. 강한 그룹 하나(weight 10 이상)만 걸려도 통과하는 수준이 기본값.",
+
+    "positive": [
+      {"name": "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인)", "weight": 10,
+       "patterns": ["\\bvideos?\\b", "remotion", "motion[ -]?graphics?", "\\banimation", "\\bslides?\\b", "presentation", "powerpoint", "\\bpptx\\b", "\\bexcel\\b", "spreadsheet", "\\bxlsx\\b", "\\bdocx\\b", "word documents?", "google (workspace|docs|sheets|slides|drive)", "\\bcanva\\b", "\\bfigma\\b", "image generation", "영상", "동영상", "슬라이드", "엑셀", "문서 작성"]},
+      {"name": "자동화·새 연동", "weight": 8,
+       "patterns": ["automat", "scheduled tasks?", "\\bschedul(e|ing)\\b", "browser (use|control|automation)", "computer use", "\\bconnectors?\\b", "integrat(es|ion) with", "connects? (to|with) (gmail|slack|notion|google|calendar|outlook|teams)", "자동화", "연동"]},
+      {"name": "새 기능 표현(할 수 있게 됨)", "weight": 5,
+       "patterns": ["\\b(you )?can now\\b", "\\bmay now\\b", "\\bnow (lets|allows|supports|works with)\\b", "\\bnew (feature|capability|tool|mode|app)\\b", "\\bintroduc(e|es|ing)\\b", "\\blaunch(ed|es)?\\b", "now available", "generally available", "출시", "공개"]},
+      {"name": "스킬·플러그인·도구 출시", "weight": 8,
+       "patterns": ["\\bagent skills?\\b", "\\bskills?\\b", "\\bplugins?\\b", "\\bmarketplace\\b", "스킬", "플러그인"]},
+      {"name": "요금·모델·정책(일반 사용자 영향 큼)", "weight": 15, "applies_to": ["release_line", "official", "community"], "_applies_to": "GitHub 레포 설명에 모델 이름(Opus 5.5 등)이 나오는 것만으로는 요금·모델 변화가 아니다",
+       "patterns": ["\\bpric(e|es|ing)\\b", "\\$\\d", "per mtok", "\\bfree (plan|tier)\\b", "\\b(pro|max|team|enterprise) plan", "subscription", "(usage|rate) limits?", "\\bnew model\\b", "\\b(opus|sonnet|haiku) \\d", "default (\\w+ )?model", "context window", "\\b1m context\\b", "(privacy|usage|data|acceptable use) polic(y|ies)", "data retention", "\\bdeprecat", "\\bdiscontinu", "요금", "가격", "새 모델"]}
+    ],
+
+    "_negative": "감점 그룹은 릴리스 줄·공식 페이지·커뮤니티 글에만 적용한다(applies_to). GitHub 레포 설명의 'config', 'options' 같은 말로 깎이지 않게.",
+    "negative": [
+      {"name": "화면 표시·문구·단축키·알림", "applies_to": ["release_line", "official", "community"], "weight": -12,
+       "patterns": ["\\b(a |the )?(count|indicator|hint|badge|spinner|tooltip|placeholder|label)s?\\b", "status ?line", "\\b(keyboard )?shortcuts?\\b", "keybindings?", "hotkey", "\\bctrl\\+", "\\bnotifications?\\b", "\\bnotif(y|ies)\\b", "\\b(colou?rs?|theme|font|icon|wording|typo)\\b", "\\bmouse\\b", "\\bhover\\b", "\\bscroll", "\\bfullscreen\\b", "permission prompt", "\\bdisplay(s|ed)?\\b", "\\bshows? (a|an|the)\\b", "\\bprogress bar"]},
+      {"name": "설정·환경변수·옵션 추가", "applies_to": ["release_line", "official", "community"], "weight": -10,
+       "patterns": ["environment variables?", "\\benv vars?\\b", "(?-i:\\b[A-Z][A-Z0-9]+_[A-Z0-9_]{3,}\\b)", "(?<![a-z])--[a-z][a-z-]+", "\\bsettings?(\\.json)?\\b", "\\bconfig(uration)?\\b", "\\bparameters?\\b", "\\boptions?\\b", "\\bfrontmatter\\b", "\\bpayload\\b", "\\bfields?\\b", "\\bhooks?\\b", "(?-i:`[a-z]+[A-Z][A-Za-z]*`)", "managed\\.?polic"]},
+      {"name": "버그 수정·안정성·소폭 성능 개선", "applies_to": ["release_line", "official", "community"], "weight": -15,
+       "patterns": ["^\\W*fix(ed|es)?\\b", "\\bbug", "\\bcrash", "\\bfreez", "\\bhang(s|ing)?\\b", "\\bregression", "\\bstabilit", "\\breliab", "\\bperformance\\b", "\\bfaster\\b", "\\bspeed(s|ed)? up\\b", "\\breduced? (memory|latency|startup|cpu)", "\\bmemory (usage|leak)", "^\\W*improved?\\b"]},
+      {"name": "내부 리팩터·개발자 전용 세부", "applies_to": ["release_line", "official", "community"], "weight": -10,
+       "patterns": ["\\brefactor", "\\binternal\\b", "\\bsdk\\b", "\\bprotocol\\b", "\\bosc \\d", "\\bstdout\\b", "\\bstderr\\b", "exit code", "\\btelemetry\\b", "\\blogging\\b", "\\bdebug\\b", "\\bmod'?s?\\b.*\\bhook", "\\bcompaction\\b", "\\bgateway\\b"]}
+    ],
+
+    "source_bonus": {
+      "_설명": "출처 자체가 글감 신호인 경우. marketplace = 공식 스킬·플러그인 폴더에 새 항목(규칙 ②), anthropic_news = Anthropic 공식 뉴스 새 글.",
+      "marketplace": 12,
+      "anthropic_news": 12
+    },
+
+    "popularity": {
+      "_설명": "파급 큰 오픈소스(규칙 ③). 7일 스타 증가·언급이 이 이상이면 가산. 공식이 아닌 항목은 unofficial_min 중 하나를 넘어야 글감급(감시 키워드에 걸린 항목은 예외지만 '확인 필요' 표시).",
+      "star_delta_big": 1000, "star_delta_big_bonus": 12,
+      "star_delta_mid": 300, "star_delta_mid_bonus": 6,
+      "mentions_big": 200, "mentions_big_bonus": 8,
+      "stars_total_big": 3000, "stars_total_big_bonus": 6,
+      "unofficial_min": {"stars": 300, "star_delta_7d": 100, "mentions": 50}
+    },
+
+    "release_bundle": {
+      "_설명": "릴리스·CHANGELOG는 버전별로 따로 올리지 않는다. 이번 주기에 처음 본 버전들을 하나로 묶어 bullet 한 줄씩 판정하고, 글감급 줄만 후보로 올린다. 글감급이 0이면 리포트에 '이번 주 릴리스: 글감급 변경 없음(사소한 개선 N건)' 한 줄만 남긴다.",
+      "max_candidates": 3,
+      "max_in_headline": 1,
+      "_max_in_headline": "핵심 3줄 중 릴리스 줄이 차지할 수 있는 최대 칸 수 (공식 릴리스가 3줄을 독식하던 문제 방지)"
+    }
   }
 }

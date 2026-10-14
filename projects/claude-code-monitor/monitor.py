@@ -3,6 +3,8 @@ Claude Code·AI 도구 소식 모니터 (v2)
 
 v1은 "GitHub 검색 5개 쿼리 → 스타순 TOP 20" 하나뿐이라 공식 발표·신규 스킬·커뮤니티 화제를 못 잡았다.
 v2는 공식 소스 + GitHub(신규·급상승) + 커뮤니티(HN/Reddit)를 모아 중요도 점수로 상위 N개만 리포트에 올린다.
+v2.1(2026-10-14)부터 '글감 가치 판정'(config.json value_rules)을 통과한 항목만 후보가 된다. 릴리스 노트는 버전별이 아니라
+이번 주기 릴리스를 하나로 묶어 bullet 한 줄씩 판정한다. 감시 키워드에 걸린 항목은 후보 풀에 올려 가산한다.
 왜 이렇게 바꿨는지는 HANDOVER.md 참고.
 
 실행:
@@ -10,6 +12,8 @@ v2는 공식 소스 + GitHub(신규·급상승) + 커뮤니티(HN/Reddit)를 모
   python projects/claude-code-monitor/monitor.py --watchlist     # 요일과 무관하게 주간 감시 리스트 점검 포함
   python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/dry_run_sample.json
       # 네트워크 없이 가짜 응답으로 전체 흐름 확인. 파일을 쓰지 않고 리포트를 화면에 출력
+  python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case2_big_news_vs_minor.json --dump /tmp/x
+      # --dump: dry-run 결과(리포트·latest-top.json)를 지정 폴더에 저장 (generate_content.py --top 검증용)
 
 환경변수: GITHUB_TOKEN (Actions 기본 제공. 없어도 동작하지만 검색 rate limit이 낮다)
 의존성: requests
@@ -18,6 +22,7 @@ v2는 공식 소스 + GitHub(신규·급상승) + 커뮤니티(HN/Reddit)를 모
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -51,9 +56,13 @@ class Fetcher:
 
     def get(self, key: str, url: str, params: dict | None = None, headers: dict | None = None, text: bool = False):
         if self.fixtures is not None:
-            if key not in self.fixtures:
-                raise RuntimeError(f"fixture 없음: {key}")
-            return self.fixtures[key]
+            if key in self.fixtures:
+                return self.fixtures[key]
+            # 케이스 fixture를 짧게 쓰도록 접두어별 기본 응답을 허용한다 (예: "search::" → {"items": []})
+            for prefix, default in (self.fixtures.get("__defaults__") or {}).items():
+                if key.startswith(prefix):
+                    return default
+            raise RuntimeError(f"fixture 없음: {key}")
         h = {"User-Agent": UA, **(headers or {})}
         resp = requests.get(url, params=params, headers=h, timeout=20)
         resp.raise_for_status()
@@ -146,18 +155,26 @@ def one_line(s: str, n: int = 160) -> str:
 
 # ─── 수집기: 공식 ─────────────────────────────────────────────────────────────
 
-def collect_releases(f: Fetcher, cfg: dict, now: datetime):
+def collect_releases(f: Fetcher, cfg: dict, now: datetime, state: dict):
+    """이번 주기에 처음 보는 릴리스만 돌려준다. 이후 bundle_releases()가 하나로 묶어 줄 단위로 판정한다."""
     items, cutoff = [], now - timedelta(days=cfg["lookback_days"])
+    seen = set(state.get("releases_seen") or [])
+    new_tags = []
     for repo in cfg["official"]["release_repos"]:
         for r in f.gh(f"releases::{repo}", f"/repos/{repo}/releases", {"per_page": 15}):
             pub = parse_dt(r.get("published_at"))
+            tag = r.get("tag_name", "")
+            if f"{repo}@{tag}" in seen:
+                continue  # 지난 주기에 이미 판정한 릴리스
             if pub and pub >= cutoff:
-                tag = r.get("tag_name", "")
+                new_tags.append(f"{repo}@{tag}")
                 items.append(make_item(
                     f"release:{repo}@{tag}", f"{repo} {tag} 릴리스", r.get("html_url", ""),
                     one_line(re.sub(r"^\s*[-*]\s*", "", r.get("body") or ""), 300), official=True, kind="official",
                     source="releases", published_at=r.get("published_at"), text=r.get("body", ""),
                 ))
+                items[-1]["body"] = r.get("body") or ""
+    state["releases_seen"] = (list(state.get("releases_seen") or []) + new_tags)[-200:]
     return items, len(items), ""
 
 
@@ -187,6 +204,7 @@ def collect_changelog(f: Fetcher, cfg: dict, state: dict):
             f"https://github.com/{c['repo']}/blob/HEAD/{c['path']}",
             one_line(re.sub(r"^\s*[-*]\s*", "", body), 300), official=True, kind="official", source="changelog", text=body,
         ))
+        new[-1]["body"] = body
         if len(new) >= 10:
             break
     return new, len(new), f"최신 {sections[0][0]}"
@@ -338,6 +356,172 @@ def categorize(item: dict, cats: dict) -> list[str]:
     return found or ["기타"]
 
 
+# ─── 글감 가치 판정 (규칙 기반, LLM 호출 없음) ───────────────────────────────
+# 2026-10-14 테스트 실행에서 핵심 3줄이 전부 사소한 릴리스(확인창 "2 of 5" 표시 등)였고, 감시 키워드에 걸린
+# 영상·문서 소식은 "리포트 미반영"으로 밀렸다. 공식 +35점이 내용과 무관하게 붙었기 때문이다. 이제 내용 자체가
+# 글감급(value >= min_value)이어야 후보가 된다. 패턴·가중치·임계값은 전부 config.json value_rules에 있다.
+
+_RX_CACHE: dict[str, re.Pattern] = {}
+
+
+def _rx(pat: str) -> re.Pattern:
+    if pat not in _RX_CACHE:
+        _RX_CACHE[pat] = re.compile(pat, re.I | re.M)
+    return _RX_CACHE[pat]
+
+
+def pattern_value(text: str, kind: str, vr: dict) -> tuple[float, list[str]]:
+    """positive/negative 그룹별로 패턴이 하나라도 맞으면 weight를 한 번 더한다."""
+    total, reasons = 0.0, []
+    for group in vr.get("positive", []) + vr.get("negative", []):
+        kinds = group.get("applies_to")
+        if kinds and kind not in kinds:
+            continue
+        if any(_rx(p).search(text) for p in group["patterns"]):
+            total += group["weight"]
+            reasons.append(f"{group['name']} {group['weight']:+g}")
+    return total, reasons
+
+
+def watch_bonus(text_lower: str, cfg: dict) -> tuple[float, list[str]]:
+    w = cfg["watchlist"]
+    hits = [kw for kw in w["keywords"] if kw_match(kw, text_lower)]
+    if not hits:
+        return 0.0, []
+    by_kw = w.get("promote_bonus_by_keyword", {})
+    return max(by_kw.get(kw, w.get("promote_bonus", 0)) for kw in hits), hits
+
+
+def judge_value(it: dict, cfg: dict) -> None:
+    """it에 value / value_reasons / story_grade / needs_check / watch_hits 를 채운다."""
+    vr = cfg["value_rules"]
+    pop = vr.get("popularity", {})
+    text = it["summary"] if it["kind"] == "release_line" else it["text"]
+    value, reasons = pattern_value(text, it["kind"], vr)
+
+    for src in it["sources"]:
+        b = vr.get("source_bonus", {}).get(src, 0)
+        if b:
+            value += b; reasons.append(f"출처({src}) +{b}")
+            break
+
+    delta, mentions = it.get("star_delta_7d") or 0, it.get("mentions") or 0
+    if delta >= pop.get("star_delta_big", 10**9):
+        value += pop["star_delta_big_bonus"]; reasons.append(f"스타 급증 +{pop['star_delta_big_bonus']}")
+    elif delta >= pop.get("star_delta_mid", 10**9):
+        value += pop["star_delta_mid_bonus"]; reasons.append(f"스타 증가 +{pop['star_delta_mid_bonus']}")
+    if mentions >= pop.get("mentions_big", 10**9):
+        value += pop["mentions_big_bonus"]; reasons.append(f"언급 많음 +{pop['mentions_big_bonus']}")
+    if (it.get("stars") or 0) >= pop.get("stars_total_big", 10**9):  # 이미 유명한 도구 (기준선 실행처럼 증가량을 모를 때도 반영)
+        value += pop["stars_total_big_bonus"]; reasons.append(f"유명(스타 {it['stars']:,}) +{pop['stars_total_big_bonus']}")
+
+    bonus, hits = watch_bonus(it["text"].lower(), cfg)
+    if bonus:
+        value += bonus; reasons.append(f"감시 키워드({', '.join(hits)}) +{bonus:g}")
+
+    # 공식이 아닌 항목은 인지도(스타·증가·언급) 최소선을 넘어야 글감급. 감시 키워드 항목은 통과시키되 '확인 필요'.
+    mins = pop.get("unofficial_min", {})
+    popular = it["official"] or (
+        (it.get("stars") or 0) >= mins.get("stars", 0)
+        or delta >= mins.get("star_delta_7d", 0)
+        or mentions >= mins.get("mentions", 0)
+    )
+    weak_summary = len((it.get("summary") or "").strip()) < cfg["watchlist"].get("weak_evidence_min_summary", 0)
+    grade = value >= vr["min_value"]
+    needs_check = False
+    if grade and not popular:
+        if hits:
+            # 후보에는 올리되(승격) 순위는 인지도 있는 항목보다 아래로
+            pen = cfg["watchlist"].get("weak_evidence_penalty", 0)
+            value += pen
+            needs_check = True; reasons.append(f"인지도 낮음(감시 키워드로 승격, 확인 필요) {pen:+g}")
+        else:
+            grade = False; reasons.append("인지도 미달(공식 아님·스타/언급 적음)")
+    if grade and hits and weak_summary:
+        needs_check = True; reasons.append("설명 부족(확인 필요)")
+
+    it["value"], it["value_reasons"] = round(value, 1), reasons
+    it["story_grade"], it["needs_check"], it["watch_hits"] = grade, needs_check, hits
+
+
+BULLET_RE = re.compile(r"^(\s*)[-*+]\s+(.*)$")
+
+
+def release_lines(body: str) -> list[str]:
+    """릴리스/CHANGELOG 본문 → bullet 한 줄씩. 들여쓴 이어지는 줄은 앞 bullet에 붙인다. 제목(##)은 버린다."""
+    out: list[str] = []
+    for raw in (body or "").splitlines():
+        m = BULLET_RE.match(raw)
+        if m:
+            out.append(m.group(2).strip())
+        elif out and raw.strip() and not raw.lstrip().startswith("#") and raw.startswith((" ", "\t")):
+            out[-1] += " " + raw.strip()
+    return [ln for ln in out if ln]
+
+
+def _norm_line(s: str) -> str:
+    s = re.sub(r"\(예시\)\s*", "", s.lower())
+    return re.sub(r"[^a-z0-9가-힣$.%/]+", " ", s).strip()
+
+
+def bundle_releases(items: dict[str, dict], cfg: dict) -> dict:
+    """버전별 릴리스·CHANGELOG 항목을 items에서 빼고, 줄 단위로 판정해 글감급 줄만 다시 넣는다.
+    반환: 리포트·latest-top.json에 넣을 릴리스 묶음 요약."""
+    rb, vr = cfg["value_rules"].get("release_bundle", {}), cfg["value_rules"]
+    rel = [k for k, v in items.items() if k.startswith(("release:", "changelog:"))]
+    if not rel:
+        return {"versions": [], "lines_total": 0, "lines_good": 0, "lines_minor": 0, "text": ""}
+    pool: dict[str, dict] = {}
+    versions: list[str] = []
+    for k in rel:
+        it = items.pop(k)
+        ver = k.rsplit("@", 1)[-1].lstrip("v")
+        if ver not in versions:
+            versions.append(ver)
+        for ln in release_lines(it.get("body") or ""):
+            key = _norm_line(ln)
+            if not key:
+                continue
+            rec = pool.setdefault(key, {"line": ln, "versions": [], "url": it["url"], "published_at": it.get("published_at"),
+                                        "sources": set(), "repo": k.split(":", 1)[1].rsplit("@", 1)[0]})
+            if ver not in rec["versions"]:
+                rec["versions"].append(ver)
+            rec["sources"] |= set(it["sources"])
+            if it["sources"] == ["releases"]:  # 버전별 릴리스 링크·발표일을 CHANGELOG보다 우선
+                rec["url"], rec["published_at"] = it["url"], it.get("published_at") or rec["published_at"]
+    judged = []
+    for rec in pool.values():
+        v, reasons = pattern_value(rec["line"], "release_line", vr)
+        judged.append((v, reasons, rec))
+    good = sorted((j for j in judged if j[0] >= vr["min_value"]), key=lambda j: j[0], reverse=True)
+    picked = good[: rb.get("max_candidates", 3)]
+    for v, reasons, rec in picked:
+        key = _norm_line(rec["line"])
+        vers = ", ".join(sorted(rec["versions"], key=_ver_key))
+        short = one_line(re.sub(r"^\(예시\)\s*", "", rec["line"]), 80)
+        it = make_item(
+            f"relline:{rec['repo'].lower()}:{hashlib.sha1(key.encode()).hexdigest()[:12]}",
+            f"Claude Code 업데이트({vers}): {short}",
+            rec["url"], rec["line"], official=True, kind="release_line", published_at=rec["published_at"],
+        )
+        it["sources"] = sorted(rec["sources"])
+        it["versions"] = sorted(rec["versions"], key=_ver_key)
+        items[it["id"]] = it
+    vs = sorted(versions, key=_ver_key)
+    span = (f"v{vs[0]}" if len(vs) == 1 else f"v{vs[0]}~v{vs[-1]}") + f", {len(vs)}개"
+    minor = len(judged) - len(good)
+    if good:
+        text = (f"이번 주 릴리스({span}): 글감급 변경 {len(good)}건(후보 {len(picked)}건 올림), 사소한 개선 {minor}건")
+    else:
+        text = f"이번 주 릴리스({span}): 글감급 변경 없음(사소한 개선 {minor}건)"
+    return {"versions": vs, "lines_total": len(judged), "lines_good": len(good), "lines_minor": minor, "text": text,
+            "good_lines": [{"line": r["line"], "value": v, "reasons": rs} for v, rs, r in good]}
+
+
+def _ver_key(v: str):
+    return [(0, int(x), "") if x.isdigit() else (1, 0, x) for x in re.split(r"[.\-]", v)]
+
+
 def star_delta_7d(item: dict, prev: dict | None, now: datetime, cfg: dict) -> tuple[int, bool]:
     """(7일 스타 증가량, 추정치 여부). 이력이 없으면 신규 레포만 생성일 기준으로 추정한다."""
     stars = item.get("stars")
@@ -406,9 +590,37 @@ def evaluate(items: dict[str, dict], state: dict, cfg: dict, now: datetime, base
             score += sc["novelty"]; reasons.append(f"신규 +{sc['novelty']}")
         if resurfaced:
             score += sc["resurfaced"]; reasons.append(f"재부상 +{sc['resurfaced']}")
-        it["score"], it["reasons"] = round(score, 1), reasons
+        # 글감 가치(value)를 더한 값이 최종 순위 점수. value 미달이면 아예 후보에서 빠진다(select_top).
+        judge_value(it, cfg)
+        it["importance"] = round(score, 1)
+        it["score"], it["reasons"] = round(score + it["value"], 1), reasons
         out.append(it)
     return out
+
+
+def select_top(evaluated: list[dict], cfg: dict) -> tuple[list[dict], list[dict]]:
+    """(상위 목록, 글감 미달로 뺀 항목). 상위 목록은 eligible(새 소식) 이면서 글감급인 것만."""
+    fresh = [i for i in evaluated if i["eligible"]]
+    top = sorted((i for i in fresh if i["story_grade"]), key=lambda i: i["score"], reverse=True)[: cfg["top_n"]]
+    dropped = sorted((i for i in fresh if not i["story_grade"]), key=lambda i: i["importance"], reverse=True)
+    return top, dropped
+
+
+def pick_headline(top: list[dict], cfg: dict, n: int = 3) -> list[dict]:
+    """핵심 3줄. 릴리스 줄은 max_in_headline 칸까지만 (공식 릴리스가 3줄을 독식하던 문제 방지)."""
+    cap = cfg["value_rules"].get("release_bundle", {}).get("max_in_headline", n)
+    out, held, rel = [], [], 0
+    for t in top:
+        if t["kind"] == "release_line":
+            if rel >= cap:
+                held.append(t)
+                continue
+            rel += 1
+        out.append(t)
+        if len(out) == n:
+            return out
+    # 다른 글감이 모자라면 남은 칸은 릴리스 줄로 채운다 (글감급인데 칸이 비는 것보다 낫다)
+    return sorted(out + held[: n - len(out)], key=top.index)
 
 
 def update_state(state: dict, items: list[dict], top: list[dict], now: datetime):
@@ -445,11 +657,13 @@ def keyword_surges(counts: dict, state: dict, cfg: dict) -> list[dict]:
 
 # ─── 주간 키워드 감시 리스트 ─────────────────────────────────────────────────
 
-def watchlist_check(f: Fetcher, cfg: dict, state: dict, top: list[dict], now: datetime, counts: dict):
+def watchlist_fetch(f: Fetcher, cfg: dict, now: datetime, counts: dict):
+    """감시 키워드별 바깥 반응 조회. 검색에 나온 레포는 후보 풀에 넣을 항목으로도 돌려준다(감시 키워드 승격).
+    반환: (rows, failed, extra_items)"""
     week = (now - timedelta(days=7)).strftime("%Y-%m-%d")
     since = int((now - timedelta(days=7)).timestamp())
-    week_ago = week
-    rows, failed = [], []
+    owners = {o.lower() for o in cfg["official"].get("owners", ["anthropics"])}
+    rows, failed, extra = [], [], []
     for kw in cfg["watchlist"]["keywords"]:
         row = {"kw": kw, "gh": None, "gh_top": [], "hn": None, "reddit": counts.get(f"reddit::{kw}")}
         try:
@@ -457,6 +671,14 @@ def watchlist_check(f: Fetcher, cfg: dict, state: dict, top: list[dict], now: da
                      {"q": f'"{kw}" claude pushed:>{week}', "sort": "stars", "order": "desc", "per_page": 3})
             row["gh"] = int(d.get("total_count", 0))
             row["gh_top"] = [i["full_name"] for i in d.get("items", [])[:3]]
+            for i in d.get("items", [])[:3]:
+                if not i.get("html_url") or (i.get("stargazers_count") or 0) < cfg["min_stars_search"]:
+                    continue
+                extra.append(make_item(
+                    f"gh:{i['full_name'].lower()}", i["full_name"], i["html_url"], i.get("description") or "",
+                    official=i["full_name"].split("/")[0].lower() in owners, source="watchlist",
+                    stars=i["stargazers_count"], created_at=i.get("created_at"), text=" ".join(i.get("topics") or []),
+                ))
         except Exception as e:
             failed.append(f"GitHub '{kw}' ({type(e).__name__})")
         finally:
@@ -468,6 +690,15 @@ def watchlist_check(f: Fetcher, cfg: dict, state: dict, top: list[dict], now: da
             row["hn"] = int(d.get("nbHits", 0))
         except Exception as e:
             failed.append(f"HN '{kw}' ({type(e).__name__})")
+        rows.append(row)
+    return rows, failed, extra
+
+
+def watchlist_finalize(rows: list[dict], state: dict, top: list[dict], now: datetime) -> None:
+    """상위 목록이 정해진 뒤 반영 여부·경고를 채운다. update_state() 전에 불러야 '이번 실행'이 반영으로 안 잡힌다."""
+    week_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    for row in rows:
+        kw = row["kw"]
         row["in_top"] = any(kw_match(kw, t["text"].lower()) for t in top)
         row["recent_reported"] = any(
             kw_match(kw, (v.get("kw_text") or "").lower()) and any(d >= week_ago for d in v.get("reported", []))
@@ -475,8 +706,6 @@ def watchlist_check(f: Fetcher, cfg: dict, state: dict, top: list[dict], now: da
         )
         signal = (row["gh"] or 0) >= 5 or (row["hn"] or 0) >= 3 or (row["reddit"] or 0) >= 3
         row["warn"] = signal and not row["in_top"] and not row["recent_reported"]
-        rows.append(row)
-    return rows, failed
 
 
 # ─── 리포트 ───────────────────────────────────────────────────────────────────
@@ -484,23 +713,30 @@ def watchlist_check(f: Fetcher, cfg: dict, state: dict, top: list[dict], now: da
 def headline(it: dict) -> str:
     tag = "/".join(it["categories"])
     flag = "공식 " if it["official"] else ""
-    return f"[{tag}] {flag}{it['title']} — {one_line(it['summary'], 90) or '설명 없음'}"
+    check = " (확인 필요)" if it.get("needs_check") else ""
+    if it["kind"] == "release_line":  # 제목에 이미 줄 내용이 들어 있다
+        return f"[{tag}] {flag}{it['title']}{check}"
+    return f"[{tag}] {flag}{it['title']}{check} — {one_line(it['summary'], 90) or '설명 없음'}"
 
 
 def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: list[dict], surges: list[dict],
-                 watch: tuple | None, baseline: bool) -> str:
+                 watch: tuple | None, baseline: bool, heads: list[dict] | None = None,
+                 bundle: dict | None = None, dropped: list[dict] | None = None) -> str:
+    heads = top[:3] if heads is None else heads
     L = [f"# Claude Code·AI 도구 소식 모니터 ({today})", "",
-         f"> 공식 발표 · GitHub 신규/급상승 · 커뮤니티(HN/Reddit)를 모아 중요도 점수순 상위 {cfg['top_n']}개만 싣는다. "
-         "이미 다룬 소식은 반응이 급증한 경우(재부상)만 다시 싣는다.", ""]
+         f"> 공식 발표 · GitHub 신규/급상승 · 커뮤니티(HN/Reddit)를 모아 글감 가치 판정을 통과한 것만 점수순 상위 {cfg['top_n']}개 싣는다. "
+         "릴리스 노트는 이번 주기분을 묶어 줄 단위로 판정한다. 이미 다룬 소식은 반응이 급증한 경우(재부상)만 다시 싣는다.", ""]
     if baseline:
         L += ["> ℹ️ 첫 실행(기준선 저장). 공식 목록·문서 링크는 이번엔 기준만 저장하고 다음 실행부터 '새 항목'을 잡는다.", ""]
 
     L += ["## 오늘의 핵심 3줄", ""]
-    if top:
-        L += [f"{i}. {headline(t)}" for i, t in enumerate(top[:3], 1)]
+    if heads:
+        L += [f"{i}. {headline(t)}" for i, t in enumerate(heads, 1)]
     else:
-        L.append("오늘은 새로 올라온 핵심 소식이 없습니다 (이미 다룬 항목 제외).")
+        L.append(f"이번 주는 글감급 소식이 없습니다 (이미 다룬 항목 제외, 글감 최소 점수 {cfg['value_rules']['min_value']}).")
     L.append("")
+    if bundle and bundle.get("text"):
+        L += [f"> {bundle['text']}", ""]
 
     if run.failures:
         L += ["## ⚠️ 수집 실패", "", "아래 소스는 이번에 수집하지 못했다. **이 소스에서 나온 소식은 이번 리포트에 빠져 있을 수 있다.**", ""]
@@ -510,10 +746,11 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
     if partial:
         L += ["> 일부 실패: " + " / ".join(f"{s['label']}: {s['note']}" for s in partial), ""]
 
-    L += [f"## 상위 {len(top)}개 (중요도 점수순)", "",
+    L += [f"## 상위 {len(top)}개 (글감급만, 점수 = 중요도 + 글감 가치)", "",
           "| # | 점수 | 카테고리 | 소식 | 처음 등장 | 출처 |", "|---|---|---|---|---|---|"]
     for i, t in enumerate(top, 1):
         mark = " 🔁재부상" if t["resurfaced"] else (" 🆕" if t["is_new"] else "")
+        mark += " ⚠️확인 필요" if t.get("needs_check") else ""
         L.append(f"| {i} | {t['score']:.0f} | {'/'.join(t['categories'])} | [{t['title']}]({t['url']}){mark} "
                  f"| {t['first_seen']} | {', '.join(t['sources'])} |")
     L.append("")
@@ -523,7 +760,18 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
               f"- 내용: {one_line(t['summary'], 300) or '설명 없음'}"]
         if t.get("stars") is not None:
             L.append(f"- 스타: {t['stars']:,}")
-        L += [f"- 점수 근거: {', '.join(t['reasons']) or '없음'}", ""]
+        if t.get("published_at"):
+            L.append(f"- 발표일(소스 기준): {t['published_at'][:10]}")
+        L += [f"- 점수 근거: 중요도 {t['importance']:.0f} ({', '.join(t['reasons']) or '없음'})",
+              f"- 글감 판정: {t['value']:+.0f} ({', '.join(t['value_reasons']) or '없음'})", ""]
+
+    if dropped:
+        L += ["## 글감 미달로 뺀 항목 (참고, 중요도순 상위 5)", "",
+              f"새 소식이지만 글감 가치가 최소 점수({cfg['value_rules']['min_value']}) 미만이라 후보에서 뺐다. "
+              "기준 조정은 config.json `value_rules`.", ""]
+        L += [f"- {one_line(t['title'], 80)} — 글감 {t['value']:+.0f} ({', '.join(t['value_reasons']) or '해당 규칙 없음'})"
+              for t in dropped[:5]]
+        L.append("")
 
     if surges:
         L += ["## 커뮤니티 키워드 급증", "", "| 소스::키워드 | 이번 | 직전 평균 |", "|---|---|---|"]
@@ -533,7 +781,8 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
     if watch is not None:
         rows, failed = watch
         L += ["## 주간 키워드 감시 리스트 점검", "",
-              "큰 소식이 점수 체계에서 빠지는 것을 막는 안전장치. 바깥 반응이 있는데 최근 7일 리포트에 없으면 ⚠️.", "",
+              "큰 소식이 점수 체계에서 빠지는 것을 막는 안전장치. 키워드에 걸린 항목은 후보 풀에 올려 가산점을 준다. "
+              "그래도 바깥 반응이 있는데 최근 7일 리포트에 없으면 ⚠️.", "",
               "| 키워드 | GitHub(7일 활동, claude 포함) | HN(7일) | Reddit(주간 상위) | 최근 리포트 반영 | 상위 레포 |",
               "|---|---|---|---|---|---|"]
         for r in rows:
@@ -555,6 +804,17 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
 
 # ─── 메인 ─────────────────────────────────────────────────────────────────────
 
+def load_fixtures(path: Path) -> dict:
+    """"__extends__": "다른.json" 이 있으면 그 파일을 먼저 읽고 덮어쓴다 (케이스 fixture를 짧게 유지)."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    base = data.pop("__extends__", None)
+    if base:
+        merged = load_fixtures(path.parent / base)
+        merged.update(data)
+        return merged
+    return data
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Claude Code·AI 도구 소식 모니터")
     ap.add_argument("--dry-run", action="store_true", help="파일을 쓰지 않고 리포트를 화면에 출력")
@@ -562,10 +822,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--watchlist", action="store_true", help="요일과 무관하게 주간 감시 리스트 점검")
     ap.add_argument("--state", type=Path, default=STATE_PATH)
     ap.add_argument("--config", type=Path, default=CONFIG_PATH)
+    ap.add_argument("--dump", type=Path, help="--dry-run 결과(리포트·latest-top.json)를 이 폴더에 저장")
     args = ap.parse_args(argv)
 
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
-    fixtures = json.loads(args.fixtures.read_text(encoding="utf-8")) if args.fixtures else None
+    fixtures = load_fixtures(args.fixtures) if args.fixtures else None
     f = Fetcher(os.getenv("GITHUB_TOKEN"), fixtures)
     now = datetime.now(KST)
     if fixtures is not None:
@@ -581,7 +842,7 @@ def main(argv: list[str] | None = None) -> int:
 
     run, items, counts = Run(), {}, {}
     batches = [
-        run.source("releases", "Claude Code 릴리스", collect_releases, f, cfg, now),
+        run.source("releases", "Claude Code 릴리스", collect_releases, f, cfg, now, state),
         run.source("changelog", "Claude Code CHANGELOG", collect_changelog, f, cfg, state),
     ]
     for m in cfg["official"]["marketplace_dirs"]:
@@ -594,30 +855,49 @@ def main(argv: list[str] | None = None) -> int:
     for batch in batches:
         for it in batch or []:
             merge(items, it)
+    weekly = args.watchlist or now.weekday() == cfg["watchlist"]["weekday_kst"]
+    watch = None
+    if weekly:  # 감시 키워드 검색 결과도 후보 풀에 넣는다 (예전엔 '리포트 미반영' 경고만 했다)
+        rows, wfailed, extra = watchlist_fetch(f, cfg, now, counts)
+        for it in extra:
+            merge(items, it)
+        watch = (rows, wfailed)
+    bundle = bundle_releases(items, cfg)
     print(f"  수집 아이템 {len(items)}개, 실패 소스 {len(run.failures)}개")
+    if bundle["text"]:
+        print(f"  {bundle['text']}")
 
     evaluated = evaluate(items, state, cfg, now, baseline)
-    top = sorted((i for i in evaluated if i["eligible"]), key=lambda i: i["score"], reverse=True)[: cfg["top_n"]]
+    top, dropped = select_top(evaluated, cfg)
+    heads = pick_headline(top, cfg)
     surges = keyword_surges(counts, state, cfg)
-    weekly = args.watchlist or now.weekday() == cfg["watchlist"]["weekday_kst"]
-    watch = watchlist_check(f, cfg, state, top, now, counts) if weekly else None
+    if watch:
+        watchlist_finalize(watch[0], state, top, now)
     update_state(state, evaluated, top, now)
 
-    report = build_report(today, cfg, run, top, evaluated, surges, watch, baseline)
+    report = build_report(today, cfg, run, top, evaluated, surges, watch, baseline, heads, bundle, dropped)
     top_json = {
         "date": today, "baseline": baseline,
-        "headline": [headline(t) for t in top[:3]],
+        "headline": [headline(t) for t in heads],
+        "release_summary": bundle["text"],
+        "min_value": cfg["value_rules"]["min_value"],
         "failures": [{"label": s["label"], "note": s["note"]} for s in run.failures],
         "watchlist_warnings": [r["kw"] for r in (watch[0] if watch else []) if r["warn"]],
-        "top": [{k: t[k] for k in ("id", "title", "url", "summary", "official", "categories", "stars",
-                                    "star_delta_7d", "mentions", "score", "reasons", "first_seen", "sources",
-                                    "resurfaced")} for t in top],
+        "top": [{k: t.get(k) for k in ("id", "title", "url", "summary", "kind", "official", "categories", "stars",
+                                        "star_delta_7d", "mentions", "score", "importance", "reasons", "value",
+                                        "value_reasons", "needs_check", "watch_hits", "published_at", "versions",
+                                        "first_seen", "sources", "resurfaced")} for t in top],
     }
 
     if args.dry_run:
         print("\n" + report)
         print("=== latest-top.json (미저장) ===")
         print(json.dumps(top_json, ensure_ascii=False, indent=2)[:3000])
+        if args.dump:
+            args.dump.mkdir(parents=True, exist_ok=True)
+            (args.dump / f"claude-code-trends-{today}.md").write_text(report, encoding="utf-8")
+            (args.dump / "latest-top.json").write_text(json.dumps(top_json, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"(--dump) {args.dump}에 리포트·latest-top.json 저장")
         return 0
 
     RESEARCH_DIR.mkdir(parents=True, exist_ok=True)

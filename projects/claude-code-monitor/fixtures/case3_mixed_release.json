@@ -1,0 +1,19 @@
+{
+ "_설명": "케이스 ③ 한 릴리스(v2.1.300) 안에 사소한 줄 4개와 글감급 줄 2개(슬라이드·엑셀 생성, 새 모델·요금)가 섞인 경우. 글감급 줄과 v2.1.300 버전은 지어낸 예시. 같은 내용이 CHANGELOG에도 있어 중복 제거도 확인. 다른 소스는 새 소식 없음. 기대: 글감급 2줄만 후보, 사소한 줄은 후보에 없음.",
+ "__extends__": "case1_minor_releases_only.json",
+ "releases::anthropics/claude-code": [
+  {
+   "tag_name": "v2.1.300",
+   "html_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.300",
+   "published_at": "2026-10-18T00:00:00Z",
+   "body": "## What's changed\n- Added a hint under the input box showing how many background tasks are running\n- (예시) You can now create PowerPoint slides and Excel spreadsheets from a conversation and download the files\n- (예시) Added Claude Example 6, now the default model for Pro and Max plans — new pricing $1/$5 per Mtok\n- Added `CLAUDE_CODE_TASK_TIMEOUT` environment variable to change the background task timeout\n- Fixed a crash when pasting a large image\n- Improved performance of long transcripts in fullscreen mode\n"
+  },
+  {
+   "tag_name": "v2.1.285",
+   "html_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.285",
+   "published_at": "2026-10-10T00:00:00Z",
+   "body": "- old"
+  }
+ ],
+ "changelog::anthropics/claude-code": "# Changelog\n\n## 2.1.300\n\n- Added a hint under the input box showing how many background tasks are running\n- (예시) You can now create PowerPoint slides and Excel spreadsheets from a conversation and download the files\n- (예시) Added Claude Example 6, now the default model for Pro and Max plans — new pricing $1/$5 per Mtok\n- Added `CLAUDE_CODE_TASK_TIMEOUT` environment variable to change the background task timeout\n- Fixed a crash when pasting a large image\n- Improved performance of long transcripts in fullscreen mode\n\n## 2.1.285\n\n- old\n"
+}
