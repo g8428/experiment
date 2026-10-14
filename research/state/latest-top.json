@@ -1,0 +1,307 @@
+{
+  "date": "2026-10-14",
+  "baseline": true,
+  "headline": [
+    "[영상/자동화/에이전트/연동(MCP)/코딩] 공식 anthropics/claude-code v2.1.286 릴리스 — ## What's changed - Added a count such as \"2 of 5\" to the permission prompt when several …",
+    "[디자인/문서·오피스/자동화/에이전트/연동(MCP)/코딩] 공식 anthropics/claude-code v2.1.299 릴리스 — ## What's changed - Added `CLAUDE_CODE_DISABLE_FILE_MENTIONS` environment variable: Claud…",
+    "[디자인/문서·오피스/자동화/에이전트/연동(MCP)/코딩] 공식 anthropics/claude-code v2.1.292 릴리스 — ## What's changed - Added `--marketplace <source>` to `claude plugin install`: adds the m…"
+  ],
+  "failures": [
+    {
+      "label": "Claude 플랫폼 문서 목차",
+      "note": "RuntimeError: 링크 0개 — 페이지 구조 변경 또는 차단 의심"
+    },
+    {
+      "label": "Reddit",
+      "note": "HTTPError: 403 Client Error: Blocked for url: https://www.reddit.com/r/ClaudeAI/top.json?t=week&limit=50"
+    }
+  ],
+  "watchlist_warnings": [
+    "remotion",
+    "motion graphics",
+    "pptx",
+    "google workspace",
+    "excel"
+  ],
+  "top": [
+    {
+      "id": "release:anthropics/claude-code@v2.1.286",
+      "title": "anthropics/claude-code v2.1.286 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.286",
+      "summary": "## What's changed - Added a count such as \"2 of 5\" to the permission prompt when several permission requests stack up - Added mouse support for the \"N more\" rows of lists in fullscreen mode: click one to jump to that end of the list, with hover and pressed states - Fixed several Claude Code process…",
+      "official": true,
+      "categories": [
+        "영상",
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 55.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(영상/자동화/에이전트/연동(MCP)/코딩) +15",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.299",
+      "title": "anthropics/claude-code v2.1.299 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.299",
+      "summary": "## What's changed - Added `CLAUDE_CODE_DISABLE_FILE_MENTIONS` environment variable: Claude gets the paths of `@` file mentions to read with its file tools, not the files' contents - Added idle compaction in the terminal: a 200K+ token conversation left idle for about 54 minutes is compacted before …",
+      "official": true,
+      "categories": [
+        "디자인",
+        "문서·오피스",
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(디자인/문서·오피스/자동화/에이전트/연동(MCP)/코딩) +12",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.292",
+      "title": "anthropics/claude-code v2.1.292 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.292",
+      "summary": "## What's changed - Added `--marketplace <source>` to `claude plugin install`: adds the marketplace if needed, under the same policy checks as `claude plugin marketplace add`, then installs the plugin from it - Added an `effort` parameter to the Agent tool, so Claude runs a sub-agent at the effort …",
+      "official": true,
+      "categories": [
+        "디자인",
+        "문서·오피스",
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(디자인/문서·오피스/자동화/에이전트/연동(MCP)/코딩) +12",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.290",
+      "title": "anthropics/claude-code v2.1.290 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.290",
+      "summary": "## What's changed - Added `serverToolUses` to the result of a mod's `turn.step` hook: the tool calls the API ran itself (the advisor), each with its id, name, input, start and end - Added `agentId` to the `tool.check` event of plugin hooks, so a hook can tell a subagent's permission check from the …",
+      "official": true,
+      "categories": [
+        "디자인",
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(디자인/자동화/에이전트/연동(MCP)/코딩) +12",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.288",
+      "title": "anthropics/claude-code v2.1.288 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.288",
+      "summary": "## What's changed - Added `$.ui.selection()` for mods: returns the text you last selected in fullscreen mode and, when the selection lies within one transcript row, that row - Added a built-in `gh api` to cloud sessions whose image has no GitHub CLI, and fixed the built-in sending control character…",
+      "official": true,
+      "categories": [
+        "디자인",
+        "문서·오피스",
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(디자인/문서·오피스/자동화/에이전트/연동(MCP)/코딩) +12",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.287",
+      "title": "anthropics/claude-code v2.1.287 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.287",
+      "summary": "## What's changed - Added Claude Mods: plugins may now modify deeper behavior - Added You should know, a built-in mod where a side agent watches your back and flags things you or Claude might miss. Turn it on with `/plugin enable cc-plugin-you-should-know@builtin` (for first-party sessions with tel…",
+      "official": true,
+      "categories": [
+        "디자인",
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(디자인/자동화/에이전트/연동(MCP)/코딩) +12",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.296",
+      "title": "anthropics/claude-code v2.1.296 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.296",
+      "summary": "## What's changed - Added a `code` key to the Claude apps gateway's `managed.policies[]`: the same settings as `cli`, also applied in Claude Desktop's Code tab; beside `desktop`, it turns on Claude Desktop's gateway mode - Added `autoCompactWindow` to subagent frontmatter and `--agents` definitions…",
+      "official": true,
+      "categories": [
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 50.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(자동화/에이전트/연동(MCP)/코딩) +10",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.295",
+      "title": "anthropics/claude-code v2.1.295 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.295",
+      "summary": "## What's changed - Added `onFailure: \"block\"` for command and HTTP hooks: a hook that can't start, times out, or exits with an unexpected code blocks the action instead of letting it through - Added Program Status Protocol (OSC 7501) support: terminals that implement it can show whether Claude Cod…",
+      "official": true,
+      "categories": [
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 50.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(자동화/에이전트/연동(MCP)/코딩) +10",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.293",
+      "title": "anthropics/claude-code v2.1.293 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.293",
+      "summary": "## What's changed - Added Claude Haiku 5.5 (`claude-haiku-5-5`), now the default Haiku model on the Anthropic API — 1M context, $0.10/$0.50 per Mtok ($0.50/$2.50 for prompts over 100K) - Added `agentType` to the `subagentStatusLine` payload, so scripts can tell custom subagent types apart - Added `…",
+      "official": true,
+      "categories": [
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 50.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(자동화/에이전트/연동(MCP)/코딩) +10",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "release:anthropics/claude-code@v2.1.289",
+      "title": "anthropics/claude-code v2.1.289 릴리스",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.289",
+      "summary": "## What's changed - Fixed a deny or ask rule on a nested part of a compound shell command not holding over a user-installed mod's approval on managed machines - Fixed the terminal freezing on short code blocks with many unclosed `<script>` tags or deeply nested `${` substitutions - Fixed `Read` den…",
+      "official": true,
+      "categories": [
+        "자동화",
+        "에이전트",
+        "연동(MCP)",
+        "코딩"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 50.0,
+      "reasons": [
+        "공식 +35",
+        "일반 사용자 영향(자동화/에이전트/연동(MCP)/코딩) +10",
+        "신규 +5"
+      ],
+      "first_seen": "2026-10-14",
+      "sources": [
+        "releases"
+      ],
+      "resurfaced": false
+    }
+  ]
+}
