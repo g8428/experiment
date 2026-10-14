@@ -67,18 +67,24 @@ def main() -> int:
 
     blog = latest(ROOT / "content" / "blog", f"{today}-*.md")  # 오늘 만든 글만 (없으면 '없음')
     insta = latest(ROOT / "content" / "instagram", f"{today}-*.md")
+    skip = ROOT / "content" / f"{today}-skip.txt"  # generate_content.py가 글감 없음(SKIP)으로 판단한 경우
     top = load_top()
     lines = [f"✅ Claude Code 소식 모니터 완료 ({today})"]
     if top.get("headline"):
         lines += ["*오늘의 핵심 3줄*"] + [f"{i}. {h}" for i, h in enumerate(top["headline"], 1)]
     else:
-        lines.append("오늘 새로 올라온 핵심 소식 없음")
+        lines.append("이번 주 글감급 소식 없음")
+    if top.get("release_summary"):
+        lines.append(top["release_summary"])
     if top.get("failures"):
         lines.append("⚠️ 수집 실패: " + ", ".join(f["label"] for f in top["failures"]) + " (리포트에 누락 가능)")
     if top.get("watchlist_warnings"):
         lines.append("⚠️ 감시 키워드 반응 있음·리포트 미반영: " + ", ".join(top["watchlist_warnings"]))
-    lines += [f"블로그: {'스레드 참고' if blog else '없음'} / 인스타: {'스레드 참고' if insta else '없음'}",
-              f"로그: {run_url}"]
+    if skip.exists():
+        lines.append(f"이번 주는 글감 없음({skip.read_text(encoding='utf-8').strip()})")
+    else:
+        lines.append(f"블로그: {'스레드 참고' if blog else '없음'} / 인스타: {'스레드 참고' if insta else '없음'}")
+    lines.append(f"로그: {run_url}")
     summary = "\n".join(lines)
     body = post(token, {"channel": channel, "text": summary})
     if report(body):
