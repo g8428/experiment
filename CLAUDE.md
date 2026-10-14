@@ -32,7 +32,7 @@ Python 기반 범용 실험 워크스페이스. 데이터 분석, 시각화, 자
 
 ## Directory Structure
 
-- `projects/` — **새 프로젝트는 여기부터 시작** (`projects/_template/` 복사해서 사용, 프로젝트당 브랜치 1개)
+- `projects/` — **새 프로젝트는 여기부터 시작** (`projects/_template/` 복사해서 사용, 브랜치 규칙은 `AGENTS.md` "브랜치 전략")
 - `analysis/` — 데이터 분석 프로젝트
 - `visualization/` — 시각화 프로젝트
 - `automation/` — 자동화 스크립트 및 도구 (레거시 — 신규 프로젝트는 `projects/`로)
@@ -50,6 +50,8 @@ Python 기반 범용 실험 워크스페이스. 데이터 분석, 시각화, 자
 - Dependencies: `requirements.txt` (pip)
 - Config/secrets: `.env` files (gitignored), `configs/` for non-secret config
 - Large data files in `data/` are gitignored — only `.gitkeep` is tracked
+- Git: master는 완성본. 작업은 `project/<이름표>-<할일>`(PC) 또는 자동 생성된 `claude/…`(클라우드) 브랜치에서 하고, 머지 후 즉시 삭제. 자세한 규칙은 `AGENTS.md` "브랜치 전략".
+- 커밋 메시지: `<이름표>: <무엇을>` 한국어 (이름표: deepcoin, iching, mvno-monitor, cc-monitor, biz, infra). 세션 시작 시 `git pull`, 종료 전 커밋+푸시.
 - `.mcp.json` is gitignored (contains secrets)
 
 ## Key Commands

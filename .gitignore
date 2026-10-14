@@ -26,6 +26,9 @@ vault/
 .claude/*
 !.claude/agents/
 !.claude/agents/**
+# 레포 공용 스킬(.claude/skills/)도 커밋한다.
+!.claude/skills/
+!.claude/skills/**
 
 # OS
 Thumbs.db

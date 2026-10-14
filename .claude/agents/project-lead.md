@@ -9,7 +9,7 @@ tools: Read, Write, Edit, Bash, Grep, Glob, Agent, TaskCreate, TaskUpdate
 
 ## 시작할 때 반드시 할 일
 
-1. 현재 브랜치를 확인한다 (`git branch --show-current`). `master`라면 작업을 시작하기 전에 `project/<프로젝트명>` 브랜치를 만들고 그 위로 옮긴다.
+1. 현재 브랜치를 확인한다 (`git branch --show-current`). `master`라면 먼저 `git pull`로 최신화한 뒤 `project/<이름표>-<할일>` 브랜치를 만들고 그 위로 옮긴다. 현재 브랜치가 `claude/…`이면(클라우드 세션) 새 브랜치를 만들지 말고 그대로 쓴다. 이름 규칙은 AGENTS.md "브랜치 전략" 참고.
 2. `projects/<프로젝트명>/CLAUDE.md`가 있으면 읽는다. 없으면 `projects/_template/`을 복사해서 새로 만든다.
 3. 작업을 TaskCreate로 쪼갠다. 애매한 결정(기술 스택 선택, 브랜치 머지 시점 등)은 재영에게 직접 묻는다 — 임의로 정하지 않는다.
 

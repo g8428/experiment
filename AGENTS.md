@@ -31,7 +31,7 @@
   ▼
 프로젝트 에이전트  ──────────────────────────────
   │  로컬 Claude Code (VSCode 통합 터미널에서 실행)
-  │  역할: 프로젝트 1개 = 브랜치 1개를 전담. 실제 코드/파일을 만들고 커밋
+  │  역할: 프로젝트 작업 브랜치(`project/<이름표>-<할일>`)를 전담. 실제 코드/파일을 만들고 커밋
   │  실행 위치: 재영의 데스크탑 (VSCode 열려 있을 때)
   │  적합한 일: 실제 개발이 필요한 프로젝트, 여러 파일에 걸친 작업, 반복 실행되는 자동화 도구 자체를 "만드는" 작업
   │
@@ -90,13 +90,25 @@ flowchart TD
 
 애매하면: 일단 프로젝트 에이전트로 만들고, 완성돼서 반복 실행만 하면 되는 단계가 되면 헤드봇의 스케줄 태스크로 "졸업"시킨다. (mvno-monitor가 이 경로를 이미 밟았다.)
 
-## 브랜치 전략
+## 브랜치 전략 (GitHub Flow 간소화판)
 
-- `master` — 항상 배포 가능한 상태. 프로젝트 에이전트가 직접 커밋하지 않는다.
-- `project/<프로젝트명>` — 프로젝트 에이전트 1개가 전담하는 작업 브랜치. 예: `project/mvno-monitor`, `project/competitive-intel`.
+> 상세 설명·근거·정리 루틴은 `.claude/skills/git-branch-policy/SKILL.md` 참고.
+
+- `master` = 완성본. 실거래·배포 기계는 master(또는 태그)만 받는다. 사람과 프로젝트 에이전트는 master에 직접 커밋하지 않는다.
+- 예외: 자동화 봇(github-actions[bot], 라즈베리파이 스케줄 태스크)은 자기 결과물 폴더(`research/`, `automation/mvno-monitor/` 로그 등)에 한해 master 직접 커밋 허용. 푸시 전 `git pull --rebase`. 봇이 코드를 고쳐야 하면 `bot/<봇이름>` 브랜치.
+- 작업 브랜치 이름:
+  - `project/<이름표>-<할일>` — 로컬 PC 개발 (예: `project/deepcoin-eth-slot`)
+  - `claude/<자동이름>` — 클라우드 세션 자동 생성. 이름 바꾸지 않음. 최대 7일
+  - `worktree-<이름>` — 로컬 `claude --worktree` 자동 생성. 종료 시 정리
+  - `test/<MMDD>-<내용>` — 손 실험, 푸시 안 함, 2주 후 삭제
+  - `archive/<YYYY-MM>-<내용>` — 보관용, 분기 1회 재검토
+- 이름표: deepcoin, iching, mvno-monitor, cc-monitor, biz, infra
+- 수명: 최신 master에서 만들고 → 매일 푸시 → 2주 안에 master로 머지 → **머지 즉시 로컬·원격 삭제(기본값)**.
+- 한 브랜치 = 한 장소. 클라우드 세션 브랜치를 PC에서 이어갈 땐 `project/…`로 새 이름을 붙여 받아오고 원래 `claude/…`는 삭제.
+- 커밋 메시지: `<이름표>: <무엇을> (<왜>)`, 한국어. 봇만 `chore: …`.
+- 태그: 딥코인봇 실거래 반영 시 `deepcoin-live-YYYYMMDD` (annotated tag + push).
 - 새 프로젝트 시작 = 새 브랜치 + `projects/<프로젝트명>/` 폴더 (아래 템플릿 참고) 생성.
-- 프로젝트가 어느 정도 완성되면 `master`로 PR/머지. 머지 전까지는 여러 프로젝트가 서로 브랜치를 침범하지 않으므로 병렬 진행이 가능하다.
-- **알려진 이슈**: 현재 `.git/index.lock`이 낡은 상태로 남아 있어 커밋/브랜치 생성이 막혀 있다. Cowork 샌드박스에서는 삭제 권한이 없었다 (`Operation not permitted`). Windows 탐색기/터미널에서 `C:\Users\g8428\experiment\.git\index.lock` 파일을 직접 지워야 한다 (VS Code나 다른 Git 클라이언트가 열려 있다면 먼저 종료). 이 문제가 풀려야 브랜치 전략을 실제로 쓸 수 있다.
+- **index.lock 이슈(과거)**: 예전에 `.git/index.lock`이 낡은 채 남아 커밋/브랜치 생성이 막힌 적이 있다. 최근 커밋이 계속 들어가고 있어 해결됐을 가능성이 높지만 PC에서 확인하지 못했다. 확인 후 이 줄을 삭제하거나 "해결됨 YYYY-MM-DD"로 갱신할 것.
 
 ## 프로젝트 폴더 구조
 
