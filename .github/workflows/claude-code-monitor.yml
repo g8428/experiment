@@ -2,9 +2,9 @@ name: Claude Code 트렌드 모니터 & 컨텐츠 생성
 
 on:
   schedule:
-    # 매일 오전 9시 7분 KST = UTC 00:07 (정각은 Actions 스케줄이 몰려 지연되기 쉬워 7분으로)
-    # 주간 키워드 감시 리스트 점검은 monitor.py가 월요일(KST)에 자동으로 포함한다.
-    - cron: '7 0 * * *'
+    # 매주 월요일 오전 9시 KST = UTC 월요일 00:00 (주 1회는 의도된 설정 — 임의로 바꾸지 말 것)
+    # 월요일 실행이므로 주간 키워드 감시 리스트 점검(monitor.py)이 매 실행에 포함된다.
+    - cron: '0 0 * * 1'
   workflow_dispatch:  # 수동 실행 버튼
     inputs:
       watchlist:

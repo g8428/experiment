@@ -2,7 +2,7 @@
 
 ## 목적
 
-Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 오픈소스, 커뮤니티 화제)을 매일 자동으로 모으고,
+Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 오픈소스, 커뮤니티 화제)을 매주 월요일 자동으로 모으고,
 그중 하나를 골라 **IT를 잘 모르는 일반인용 쉬운 블로그 소개글**과 인스타 카드뉴스 초안을 만드는 파이프라인.
 
 왜 지금 구조가 됐는지(2026-10-14 v2 개편 배경, v1이 Remotion 영상 소식을 놓친 원인)는 `HANDOVER.md` 참고.
@@ -16,7 +16,7 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
 ## 파이프라인
 
 ```
-매일 09:07 KST (GitHub Actions)
+매주 월요일 09:00 KST (GitHub Actions). 주 1회는 사용자가 의도한 설정이므로 임의로 바꾸지 않는다.
   monitor.py
     수집: Claude Code 릴리스·CHANGELOG / 공식 스킬·플러그인 폴더 / Anthropic 뉴스·공식 문서 목차
           / GitHub 신규·토픽 검색 / Hacker News / Reddit
@@ -77,7 +77,7 @@ projects/claude-code-monitor/
   CLAUDE.md / HANDOVER.md
 
 research/
-  claude-code-trends-YYYY-MM-DD.md     매일 리포트 (2026-10-12 이전 것은 v1 형식)
+  claude-code-trends-YYYY-MM-DD.md     주간 리포트 (2026-10-12 이전 것은 v1 형식)
   claude-code-ecosystem-2026-09-27.md  초기 심층 조사
   state/claude-code-monitor.json       중복 제거·스타 이력 상태 (봇이 커밋, 손대지 말 것)
   state/latest-top.json                오늘의 상위 목록
