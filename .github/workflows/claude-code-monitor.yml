@@ -2,9 +2,23 @@ name: Claude Code 트렌드 모니터 & 컨텐츠 생성
 
 on:
   schedule:
-    # 매주 월요일 오전 9시 KST = UTC 월요일 00:00
-    - cron: '0 0 * * 1'
+    # 매일 오전 9시 7분 KST = UTC 00:07 (정각은 Actions 스케줄이 몰려 지연되기 쉬워 7분으로)
+    # 주간 키워드 감시 리스트 점검은 monitor.py가 월요일(KST)에 자동으로 포함한다.
+    - cron: '7 0 * * *'
   workflow_dispatch:  # 수동 실행 버튼
+    inputs:
+      watchlist:
+        description: '요일과 무관하게 주간 키워드 감시 리스트 점검 포함'
+        type: boolean
+        default: false
+      skip_content:
+        description: '블로그·인스타 생성(Anthropic API) 건너뛰기'
+        type: boolean
+        default: false
+
+concurrency:
+  group: claude-code-monitor
+  cancel-in-progress: false
 
 jobs:
   monitor-and-generate:
@@ -26,12 +40,14 @@ jobs:
       - name: 패키지 설치
         run: pip install requests anthropic "langfuse>=4,<5" opentelemetry-instrumentation-anthropic
 
-      - name: GitHub 트렌드 수집
+      - name: 소식 수집 (공식·GitHub·커뮤니티)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Actions 기본 제공
-        run: python projects/claude-code-monitor/monitor.py
+        # 소스 일부가 실패해도 리포트에 '수집 실패'로 적고 계속 진행한다 (monitor.py가 0으로 종료)
+        run: python projects/claude-code-monitor/monitor.py ${{ inputs.watchlist && '--watchlist' || '' }}
 
       - name: 블로그 + 인스타 컨텐츠 생성
+        if: ${{ !inputs.skip_content }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # Langfuse 트레이싱 (Secrets 미설정 시 자동으로 꺼짐)
@@ -43,11 +59,14 @@ jobs:
         run: python projects/claude-code-monitor/generate_content.py
 
       - name: 결과 파일 커밋 & 푸시
+        # research/ = 리포트 + research/state/(중복 제거·스타 이력 상태). 상태를 커밋해야 다음 실행이 '새 소식'을 구분한다.
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add research/
-          git diff --staged --quiet || git commit -m "chore: Claude Code 트렌드 리포트 자동 생성 $(date +%Y-%m-%d)"
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: Claude Code 트렌드 리포트 자동 생성 $(TZ=Asia/Seoul date +%Y-%m-%d)"
+          git pull --rebase
           git push
 
       - name: Slack 보고 (#성과보고, Bot Token)

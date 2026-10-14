@@ -28,6 +28,14 @@ def latest(directory: Path, pattern: str) -> Path | None:
     return matches[0] if matches else None
 
 
+def load_top() -> dict:
+    """monitor.py가 남긴 핵심 3줄·수집 실패 목록. 없거나 깨져도 보고는 계속한다."""
+    try:
+        return json.loads((ROOT / "research" / "state" / "latest-top.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
 def post(token: str, payload: dict) -> dict:
     req = urllib.request.Request(
         "https://slack.com/api/chat.postMessage",
@@ -57,13 +65,21 @@ def main() -> int:
         body = post(token, {"channel": channel, "text": text})
         return report(body)
 
-    blog = latest(ROOT / "content" / "blog", "*.md")
-    insta = latest(ROOT / "content" / "instagram", "*.md")
-    summary = (
-        f"✅ Claude Code 트렌드 모니터 완료 ({today})\n"
-        f"블로그: {'스레드 참고' if blog else '없음'} / 인스타: {'스레드 참고' if insta else '없음'}\n"
-        f"로그: {run_url}"
-    )
+    blog = latest(ROOT / "content" / "blog", f"{today}-*.md")  # 오늘 만든 글만 (없으면 '없음')
+    insta = latest(ROOT / "content" / "instagram", f"{today}-*.md")
+    top = load_top()
+    lines = [f"✅ Claude Code 소식 모니터 완료 ({today})"]
+    if top.get("headline"):
+        lines += ["*오늘의 핵심 3줄*"] + [f"{i}. {h}" for i, h in enumerate(top["headline"], 1)]
+    else:
+        lines.append("오늘 새로 올라온 핵심 소식 없음")
+    if top.get("failures"):
+        lines.append("⚠️ 수집 실패: " + ", ".join(f["label"] for f in top["failures"]) + " (리포트에 누락 가능)")
+    if top.get("watchlist_warnings"):
+        lines.append("⚠️ 감시 키워드 반응 있음·리포트 미반영: " + ", ".join(top["watchlist_warnings"]))
+    lines += [f"블로그: {'스레드 참고' if blog else '없음'} / 인스타: {'스레드 참고' if insta else '없음'}",
+              f"로그: {run_url}"]
+    summary = "\n".join(lines)
     body = post(token, {"channel": channel, "text": summary})
     if report(body):
         return 1
