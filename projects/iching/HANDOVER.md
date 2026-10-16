@@ -134,31 +134,39 @@ GD2[20] = {
 **왜**: 7섹션을 한 번의 호출로 쓰면 괘 데이터·고민·문답·전 섹션 규칙을 한 맥락에 다 들고 가서 놓치는 게 많았고, 어느 단계에서 틀렸는지 볼 수 없었다. → 노드마다 역할과 JSON 출력 스키마를 정하고, **각 노드는 앞 노드 JSON 중 필요한 필드만** 받는다. Langfuse에 노드별 generation이 남는다.
 
 ```
-analyze_hexagram ─▶ map_situation ─┬▶ write_frame  총평 · 괘의 형세 · 마무리 · headline
-(괘 데이터만)        (+ 고민·문답)   ├▶ write_core   대상전 — 지금 할 것 · 이 점괘의 심장
-                                    └▶ write_path   방향 · 시기
-                                              ▼ assemble(코드) → 7섹션
+analyze_hexagram ─▶ plan_reading ─┬▶ write_open  물으신 것에 대한 답 · 지금의 형세(본괘)
+(괘 데이터만)        (편집장 구성안)  ├▶ write_core  이 점의 심장(중심 효) · 흘러가는 곳(지괘) · 할 것/피할 것
+                                   └▶ write_tail  때(타임라인) · 남겨 주신 답에(질문별) · 마무리
+                                            ▼ assemble(코드) → 리포트 객체(version 2) → index.html buildReport()
 ```
 
 | 위치 | 역할 |
 |---|---|
 | `index.html` `window.buildReadingInput(ben,ji,state)` | 재료만 만든다: `hexagram`(괘사/대상전/변효·불변효 효사/다산역/육효 응기 텍스트 — 고민·문답 없음), `heartRule`, `name`, `today`, `question`, `qa[]`, `meta` |
-| `index.html` `generateReading` / `parseReadingResponse` | 재료를 `/api/reading`에 POST, 응답 `reading`을 `READING_TAGS` 순서로 받는다 |
+| `index.html` `generateReading` / `parseReadingResponse` / `buildReport` | 재료를 `/api/reading`에 POST, 응답 `reading`(version 2 객체)을 `buildReport`가 리포트 화면으로 그린다 |
 | `api/_lib/reading-graph.js` | 노드 정의(프롬프트·`tool_use` 스키마·temperature·timeout)와 실행기. **프롬프트 규칙은 이제 여기서 고친다** |
 | `api/reading.js` | 그래프 실행 + Langfuse 루트(`agent` 타입 `iching-reading`) |
 | `lib/langfuse.js` | NodeSDK + LangfuseSpanProcessor 초기화(`ensureTracing`/`flushTraces`), 단일 호출용 `traceAnthropicCall`(questions.js) |
 
-- 쓰기 노드 3개는 병렬. 평소 약 21초. Vercel 60초 한도 때문에 노드별 시도 timeout(분석 25초, 나머지 15초) + 전체 예산 55초로 끊고 재시도한다 — 한 호출만 30초 넘게 멈춘 사례가 트레이스로 확인됨.
+- 쓰기 노드 3개는 병렬. `api/reading.js`만 `vercel.json` maxDuration 120초(Hobby + Fluid compute 한도 300초), 그래프 전체 예산 100초. 노드별 시도 timeout으로 끊고 재시도한다 — 한 호출만 30초 넘게 멈춘 사례가 트레이스로 확인됨.
 - **비용·시간 측정(2026-10-06, 같은 괘 2종 × 2회)**: 예전 단일 호출 20.6초·$0.0165·본문 1,741자 / 첫 그래프(쓰기 노드 5개) 27.5초·$0.042 / 현재(쓰기 3개) 21.3초·$0.028·본문 1,275자. 쓰기 노드마다 붙는 고정 규칙·도구 안내(노드당 ~1,700토큰)가 입력의 절반이었다 → 노드 수 줄이고 공통 규칙(STYLE) 압축, 분석·연결 메모는 필드당 한 문장, JSON 들여쓰기 제거. **STYLE은 쓰기 노드마다 반복되니 늘리지 말 것.**
 - **품질 회귀와 복구(2026-10-06)**: 쓰기 노드에 분석 메모만 넘겼더니 괘 이름·효 위치가 풀이에서 사라졌다(같은 괘 비교: 괘 이름 언급 단일 호출 4.3회 → 메모만 0회). 지금은 클라이언트가 `src`(본괘·지괘 원문 블록 — 상괘/하괘 상징, 괘사·대상전 한자 원문 포함, 중심 효 효사·자리 풀이, 해석 원칙, 호체, 추이, 응기)를 따로 보내고, 쓰기 노드마다 자기 섹션에 필요한 조각을 직접 받는다. 측정: 31초·$0.042, 본문 2,176자, 괘 이름 7.3회·자연 상징 19회(단일 호출 20.6초·$0.0165·1,747자·4.3회·10회). **메모만으로 쓰게 되돌리지 말 것.**
 - **한자 금지(2026-10-13)**: 작가 출력에 한자·지지(酉月 등)·없는 효사 원문 조작이 다시 섞였다. 원인은 ① 심장 노드가 받는 `heartRule`에 "효사의 한자 원문을 인용"이 남아 있었고 ② 작가용 원문 조각에 한자(괘사·대상전 원문, 감(坎), 지지)를 넣었기 때문. 지금은 클라이언트 `ko()`가 작가용 조각에서 한자를 걷어내고(자연 상징은 NAT_KO로 한글화), STYLE이 한자·지지 한글 읽기(술월·자일)까지 금지하며, 쓰기 노드 결과에 한자가 있으면 한글로 다시 쓰게 한다(`HANJA` 검사, 끝까지 남으면 `stripHanja`). 분석 노드만 응기 블록의 지지 한자를 본다. **원문 한자를 보여 주고 싶으면 작가에게 넘기지 말고 화면 카드에서 따로 붙일 것.**
-- 풀이 화면은 섹션 위에 머리글(본괘 · 이름 → 변효/불변효 · 위치 → 지괘 · 이름)을 붙여 1단계 카드와 같은 흐름으로 읽힌다(`PART`, `SRC_LABEL` in `buildReadingHtmlV2`).
 - 노드 실패 시 그 노드만 최대 3회 재시도(429/5xx/timeout/필드 누락/max_tokens). 시도마다 generation이 하나씩, 실패는 `ERROR`로 남는다.
 - **효사 한자 원문은 데이터에 없다**(GD.hy·GD2.hy2 모두 국문 의역). 예전 단일 호출은 "한자 원문 인용" 규칙 때문에 원문을 지어냈다 → 노드 프롬프트에 "주어진 문구 그대로, 한자를 만들지 않음"이 `heartRule`의 "한자 원문" 표현보다 우선한다고 명시. 진짜 원문을 넣으려면 GD에 효사 원문 필드를 추가해야 한다.
 - 화면의 효사 표시(1단계 `buildLocalCards`, 2단계 원전 카드·심장 의미, 괘 아래 요약)는 `focusYao(chg)` 하나로 정한다: 변효 1~3개 → 변효, 4~5개 → 불변효, 0·6개 → 개별 효 없음. 예전엔 원전 카드가 개수와 무관하게 변효를 보여줘서 4~5개일 때 풀이(불변효)와 어긋났다.
-- 섹션 tag 문자열은 서버 `READING_TAGS`와 클라이언트 `window.READING_TAGS`가 같아야 한다.
+- 리포트 객체의 필드(`headline, summary, verdict, empathy, answer, shape, heart, flow, dos, donts, season, timeline, qa, closing, bubbles`)는 서버 `assemble()`과 클라이언트 `buildReport()`가 함께 바뀌어야 한다. `version`을 올리면 `parseReadingResponse`도.
 - Langfuse 키: `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL`. 없으면 트레이싱만 꺼지고 점사는 동작한다. 트레이스 조회는 `npx langfuse-cli api observations list --trace-id <id>` (v4에서 legacy traces API는 막힘).
 - `.vercelignore`에서 `package.json`을 뺐다 — 들어 있으면 Vercel이 npm 패키지를 설치하지 않아 `@langfuse/*` import가 실패한다.
+
+### 리포트 재구성 — 화자 연서 (2026-10-17)
+**왜**: 유료 사주 리포트(청월당·포스텔러·헬로우봇·크몽 PDF·Co–Star·The Pattern)를 조사해 보니 공통점이 ① 결론 먼저 ② 분명한 판정 ③ 섹션마다 다른 역할, 반복·모순 없음 ④ 훑어볼 구조(요약 카드·목록·타임라인) ⑤ 질문별 답 ⑥ 용어 풀이 ⑦ 공감 한 문장. 이전 풀이는 같은 효사 인용이 5개 섹션에 반복되고, 결론이 없고, 상담자가 말하지 않은 사정을 지어내고, 섹션끼리 계절이 어긋났다. 원인은 작가들이 같은 원문을 받아 서로 모른 채 병렬로 썼기 때문.
+- **구성안 노드(plan_reading)**: 판정(go/wait/conditional/no/general)·한 줄·이유·키워드·국면(season)·상담자 사실(facts)·섹션별 메시지(point_*)·인용 배정(quote_*)·말풍선(bubble_*)·표정(mood)을 한 번 정하고, 작가는 이 기준과 자기 섹션 원문만 받는다. 출력은 **평평한 필드**로 받고 `nestPlan()`이 묶는다 — 중첩 객체로 받으면 Haiku가 객체째 빼먹었다.
+- **화자 연서**: 30대 초반 역술가, 해요체 기본·무게 있는 판단만 하십시오체, "이름+님". 화면은 `narratorSay()` 말풍선. **일러스트**는 `assets/narrator/{default,smile,serious,warm}.webp`(투명 배경 512×512 + 128 아바타, 금색·먹색 화면에 맞는 차분한 동양풍)를 넣고 `index.html`의 `NARRATOR.art`를 `'assets/narrator/'`로 바꾸면 된다. 그 전에는 이름 인장.
+- **문체 검사**(`checkStyle` 노드): 기계적으로 고칠 수 있는 건 바로 고친다 — "당신"→"이름+님", 명령형 "~세요/~십시오/~해야 합니다"→"~는 쪽이 좋아요", 흔한 해라체 끝("~한다/된다/있다/이다…")→해요체, 인용이 배정되지 않은 필드의 따옴표 제거. 고칠 수 없는 것(한자·남은 반말·지지 읽기·육효 용어)만 **노드당 한 번** 다시 쓰게 한다. 재시도를 늘렸을 때 시간만 늘고(평균 51초) 잘 안 고쳐졌다.
+- **필드 안정화**: 중첩 필드가 JSON 문자열로 오면 `coerce()`가 풀고, `missingFields()`가 중첩까지 필수 필드를 본다. 분석 노드는 fortune·why만 필수(나머지는 빠져도 리포트가 된다) — 필드 누락 재시도가 시간의 주범이었다.
+- **측정(괘 3종 × 2회)**: 6편 모두 완료, 한자·지지 읽기·"당신"·반말·명령형 0, 평균 37.7초·$0.050. 같은 인용 반복은 핵심 효사 한 줄 정도만 남음.
+- 화면 순서: 한눈에 카드(한 줄·키워드·길흉 5단계) → 연서 공감 → 물으신 것에 대한 답(판정·이유) → 본괘 · 지금의 형세 → 변효/불변효 · 이 점의 심장(중심 효 강조 작은 괘) → 지괘 · 흘러가는 곳 → 할 것·피할 것 → 때(타임라인) → 남겨 주신 답에(접기) → 마무리 → 처음 보는 말 풀이(접기).
 
 ### 이전 구조 (2026-09-28 ~ 10-05, 단일 호출)
 `buildReadingSystem`(고정 규칙) + `buildReadingUser`(데이터) + `READING_TOOL`(7섹션 스키마)로 한 번에 생성. 위 그래프로 대체되어 삭제됨. 아래 규칙들은 그래프 노드 프롬프트로 옮겨졌다.

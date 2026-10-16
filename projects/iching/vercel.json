@@ -1,7 +1,8 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*.js": { "maxDuration": 60 }
+    "api/**/*.js": { "maxDuration": 60 },
+    "api/reading.js": { "maxDuration": 120 }
   },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
