@@ -28,6 +28,12 @@ export default async function handler(req, res) {
     src: Object.fromEntries(
       ['ben', 'ji', 'lines', 'focus', 'hoche', 'tui', 'eunggi'].map((k) => [k, String(body.src?.[k] ?? '')]),
     ),
+    // 육효 응기에서 계산한 시기 창 — 범위 문구는 코드가 정하고 모델은 그 사이에 무슨 일이 움직이는지만 쓴다
+    timing: (Array.isArray(body.timing) ? body.timing : []).slice(0, 3).map((w) => ({
+      range: String(w?.range ?? ''),
+      basis: (Array.isArray(w?.basis) ? w.basis : []).slice(0, 4).map(String),
+      focus: String(w?.focus ?? ''),
+    })).filter((w) => w.range),
   };
   const meta = {
     ben: String(body.meta?.ben ?? ''),
