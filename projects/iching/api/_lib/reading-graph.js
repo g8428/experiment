@@ -76,7 +76,15 @@ const VOICE = `[화자 — 연서]
 - 인용은 [구성안]이 이 섹션에 배정한 문구만 따옴표로 그대로, 한 번만 씁니다. 배정되지 않은 괘사·효사·대상전은 인용하지 않습니다.
 - 계절·국면(season)은 화면의 「때」 카드에 따로 나옵니다. 다른 섹션에서는 그 문장을 옮겨 적거나 계절을 다시 말하지 않습니다. 꼭 필요하면 season과 같은 뜻으로 몇 단어만 쓰고, 다른 계절·절기를 새로 꺼내지 않습니다.
 - 상담자의 사정은 [구성안]의 facts에 있는 것만 씁니다. "이미 결정하셨으니"처럼 말하지 않은 사정을 가정하지 않습니다.
-- 날짜는 「때」와 「마무리」에서만 씁니다. 다른 섹션에서는 날짜를 꺼내지 않습니다.
+- 시기 표현("11월 초", "12월 중순", "다음 주", "두 달 안")은 「때」에서만 씁니다. 다른 섹션에서는 시기를 꺼내지 않습니다 — 같은 시기가 다섯 군데 되풀이된 일이 있었습니다.
+- 괘사·효사·대상전 원문은 화면에 따로 상자로 보입니다. 본문에서 원문을 따옴표로 다시 옮겨 적지 않고, "괘사가 말하는 곤궁은 …"처럼 그 말이 지금 무엇을 가리키는지만 풉니다.
+- 판정 한 줄(verdict.line)과 판정 이유(reasons)는 화면 맨 위에 따로 나옵니다. 그 문장을 되풀이하지 않고, 이 섹션에서만 할 수 있는 이야기를 씁니다.
+
+[쉬운 말 — 해설서 문장이 아니라 사람에게 하는 말]
+- 친한 언니·누나가 카페에서 말해 주듯 생활 말로 씁니다. 해설서·번역서 문장을 옮기지 않습니다.
+- 이렇게 바꿉니다: "외부 진입이 지연되고 있다" → "회사 밖으로 나가는 일이 생각보다 늦어지고 있어요" / "물질적·외적 제약" → "돈이나 주변 여건" / "불굴의 의지가 형태를 갖춘 것" → "포기하지 않고 실제로 만들어 낸 것" / "결과 도출이 예상된다" → "결과가 보이기 시작할 수 있어요".
+- 피할 말: 진입, 지연, 물질적, 외적, 내적, 제약, 불굴, 도출, 시사, 측면, 요소, 형태를 갖추다, ~에 해당하다.
+- 추상어보다 상담자의 실제 장면을 씁니다("퇴사 날짜를 먼저 정하기보다, 첫 고객 한 명을 먼저 찾는 쪽").
 
 [읽는 법]
 - 괘 원문이 풀이의 주인입니다. 괘 이름과 효 위치를 직접 짚습니다("수화기제는 …", "오효는 …").
@@ -137,6 +145,8 @@ const PLAN = {
   name: 'plan_reading',
   styleSkip: ['facts', 'keywords', 'point_shape', 'point_heart', 'point_flow', 'point_dos', 'quote_shape', 'quote_flow', 'quote_dos'],
   noQuote: ['verdict_label', 'verdict_line', 'reasons', 'empathy', 'bubble_heart', 'bubble_flow', 'bubble_timing', 'season'],
+  noTiming: true,
+  timingOk: ['season'], // season은 「때」 카드 맨 위에 나오니 달 이름이 있어도 된다 — 이것 때문에 구성안을 다시 쓰면 순차 구간이 8~10초 늘었다
   temperature: 0.3,
   timeoutMs: 20000,
   maxTokens: 1800,
@@ -153,7 +163,9 @@ const PLAN = {
 - point_shape / point_heart / point_flow / point_dos: 섹션마다 서로 겹치지 않는 메시지 하나씩. shape=본괘 그림이 말하는 지금, heart=중심 효가 고민에 답하는 것, flow=지괘가 보여 주는 귀결, dos=대상전이 권하는 태도.
 - quote_shape / quote_flow / quote_dos: 입력 원문에서 글자 그대로 복사해 섹션에 하나씩 배정합니다. shape=본괘 괘사 풀이, flow=지괘 괘사 풀이(지괘가 없으면 빈 문자열), dos=본괘 대상전 풀이. 효사는 효 읽기 섹션이 효마다 한 번씩 인용하므로 여기서 배정하지 않습니다.
 - 어느 필드에도 하루짜리 날짜("○월 ○일")를 쓰지 않습니다.
-- bubble_heart / bubble_flow / bubble_timing: 그 섹션 앞에서 연서가 건네는 짧은 말(해요체, 25자 안팎).
+- bubble_heart / bubble_flow / bubble_timing: 그 섹션 앞에서 연서가 건네는 짧은 말(해요체, 25자 안팎). 섹션을 여는 말일 뿐, verdict_line·reasons·season을 되풀이하지 않고 시기(달·주)를 넣지 않습니다. 예: "여기가 이 괘에서 제일 중요한 자리예요.", "이 일이 어디로 흘러가는지 볼게요.", "언제쯤 움직일지는 넉넉하게 잡아 볼게요."
+- verdict_line·reasons·point_*는 서로 다른 말이어야 합니다. 같은 원문 구절(예: "믿음을 잃지 않으면")을 두 필드 이상에 쓰지 않습니다.
+- 모든 필드는 해설서 말투가 아닌 쉬운 생활 말로 씁니다(진입·지연·제약·물질적·외적·도출 같은 말 대신 "나가는 일", "늦어지는", "돈이나 여건").
 - mood: 판정을 말할 때 연서의 표정. smile(길·소길), serious(조심·흉), warm(평·general).
 - 화면에 그대로 나가는 필드(verdict_*, reasons, empathy, season, bubble_*)는 해요체 존댓말로 쓰고, "당신"이라 부르지 않으며, "에너지"·"기운" 같은 막연한 말과 육효 용어(공망·세효·응효·용신 등)를 쓰지 않습니다.
 ${HANJA_RULE}`,
@@ -179,7 +191,7 @@ ${HANJA_RULE}`,
     mood: { type: 'string', enum: ['smile', 'serious', 'warm'] },
   }, ['quote_flow', 'facts']),
   user: ({ input, analysis: a }) => lines(
-    block('괘 분석 메모', json(a)),
+    block('괘 분석 메모', json(without(a, ['windows']))), // 시기 창은 「때」 작가 몫 — 구성안에 주면 달 이름을 여기저기 옮겨 적었다
     input.src.ben,
     input.src.ji,
     block('중심 자리', input.src.lines),
@@ -209,13 +221,14 @@ const STAGE_RULE = `효의 자리는 흐름의 단계이기도 합니다: 초효
 
 const WRITE_OPEN = {
   name: 'write_open',
-  noQuote: ['answer'],
+  noQuote: ['answer', 'shape'],
+  noTiming: true,
   temperature: 0.4,
   timeoutMs: 25000,
   maxTokens: 1600,
   checkStyle: true,
-  system: writerSystem('「물으신 것에 대한 답」과 「지금의 형세」', 'write_open', `- answer 4~6문장(400자 이내): empathy 문장은 화면에서 연서의 말풍선으로 따로 보이니 다시 쓰지 않습니다. 판정으로 바로 시작해("돌려 말하지 않을게요. …") verdict.kind에 맞게 분명히 말한 뒤, reasons를 자연스러운 문장으로 풀고, 고민의 어느 부분이 왜 그런지 상담자의 사정(facts)에 닿게 짚습니다. 본괘 이름을 한 번 짚습니다. answer에는 괘사·효사를 따옴표로 인용하지 않습니다.
-- shape 5~7문장(500자 이내): 첫 문장은 point_shape. 본괘의 상괘·하괘 자연 상징이 겹친 장면을 그리듯 보여 주고("물이 불 위에 놓인 형상이에요…"), 그 그림이 상담자의 지금과 어떻게 겹치는지 잇습니다. quote_shape(괘사)를 한 번 인용하고 그 말이 지금 무엇을 가리키는지 풉니다. 단전이 있으면 괘사를 받쳐 주는 근거로 한 문장 녹입니다. 호체 블록이 있으면 "겉은 ~이지만 안에는 ~가 숨어 있어요" 한 문장을 넣습니다(호체를 지괘와 섞지 않습니다).`),
+  system: writerSystem('「물으신 것에 대한 답」과 「지금의 형세」', 'write_open', `- answer 3~4문장(300자 이내): empathy 문장은 화면에서 연서의 말풍선으로, verdict.label과 reasons는 바로 위아래에 따로 보이니 다시 쓰지 않습니다. 판정이 상담자의 사정(facts)에서 구체적으로 무엇을 뜻하는지 — 지금 무엇은 되고 무엇은 아직인지, 어떤 조건이 갖춰지면 달라지는지 — 를 상담자의 실제 장면으로 말합니다. 본괘 이름을 한 번 짚습니다. 원문 인용과 시기 표현은 쓰지 않습니다.
+- shape 4~5문장(400자 이내): 첫 문장은 point_shape. 본괘의 상괘·하괘 자연 상징이 겹친 장면을 그리듯 보여 주고("못 아래로 물이 다 빠져나간 모습이에요…"), 그 그림이 상담자의 지금과 어떻게 겹치는지 잇습니다. 괘사(quote_shape)는 화면 상자에 나오니 옮겨 적지 말고 그 말이 지금 무엇을 가리키는지 풉니다. 호체 블록이 있으면 "겉은 ~이지만 안에는 ~가 숨어 있어요" 한 문장을 넣습니다(호체를 지괘와 섞지 않습니다).`),
   tool: tool('write_open', '질문에 대한 답과 지금의 형세를 쓴다', {
     answer: str('질문에 대한 답 4~6문장, 해요체'),
     shape: str('지금의 형세 5~7문장, 해요체'),
@@ -231,21 +244,31 @@ const WRITE_OPEN = {
 
 const WRITE_YAO = {
   name: 'write_yao',
+  noQuote: ['heart', 'yao', 'stages'],
+  noTiming: true,
   temperature: 0.4,
   timeoutMs: 30000,
   maxTokens: 3200,
   checkStyle: true,
-  system: writerSystem('「이 점의 심장」과 「효를 하나씩」', 'write_yao', `- heart 4~5문장(350자 이내): 첫 문장은 point_heart. 길흉 기조를 한 번 분명히 하고, 아래 효들이 모여 고민에 무엇을 말하는지 한데 묶어 줍니다. 효사는 여기서 인용하지 않습니다(효마다 yao에서 인용).
-- yao: [중심 자리]에 적힌 효를 하나도 빼지 않고, 적힌 순서대로 하나씩 읽습니다. 각 항목은 {pos: "초효"처럼 효 이름, stage: "초반"·"중반"·"후반" 중 하나, reading: 3~5문장}. reading은 그 효사를 따옴표로 그대로 한 번 인용하고 → 그 자리의 의미(자리 풀이 참고)를 풀고 → 상담자의 고민에서 그것이 무엇에 해당하는지 구체적으로 잇습니다. 효마다 다른 이야기를 해서 같은 말을 되풀이하지 않습니다.
-- stages: [중심 자리]가 "변효 없음"이면 초반·중반·후반 흐름 세 개를 {stage, reading: 2~3문장}으로 씁니다 — 각 단계에서 상담자의 일이 어떻게 펼쳐지는지 이야기처럼 잇습니다. 변효가 있으면 빈 배열.
+  system: writerSystem('「이 점의 심장」과 「효를 하나씩」', 'write_yao', `- 쓰는 순서: yao(효 전부) → stages → heart. yao를 빈 배열로 두면 안 됩니다([중심 자리]가 "여섯 효 모두 변함"일 때만 빈 배열).
+- heart 3~4문장(300자 이내): 첫 문장은 point_heart. 길흉 기조를 한 번 분명히 하고, 아래 효들이 모여 고민에 무엇을 말하는지 한데 묶어 줍니다.
+- yao: [중심 자리]에 적힌 효를 하나도 빼지 않고, 적힌 순서대로 하나씩 읽습니다. 각 항목은 {pos: "초효"처럼 효 이름, stage: "초반"·"중반"·"후반" 중 하나, reading: 3~4문장}. 효사 원문은 화면에서 그 효 바로 위 상자에 보이니 옮겨 적지 않습니다. reading은 효사의 그림이 무슨 뜻인지 쉬운 말로 풀고 → 그 자리의 의미(자리 풀이 참고)를 짚고 → 상담자의 고민에서 그것이 어떤 장면인지 구체적으로 잇습니다. 효마다 다른 이야기를 해서 같은 말을 되풀이하지 않습니다.
+- stages: [중심 자리]가 "변효 없음"이면 초반·중반·후반 흐름 세 개를 {stage, reading: 2~3문장}으로 씁니다 — 각 단계에서 상담자의 일이 어떻게 펼쳐지는지 이야기처럼 잇습니다(시기 표현 없이). 변효가 있으면 빈 배열.
 - [중심 자리]가 "여섯 효 모두 변함"이면 yao는 빈 배열이고, heart를 6~8문장으로 늘려 [해석 원칙]대로 읽습니다.
 - ${STAGE_RULE}
 - [해석 원칙]과 [심장 규칙]이 이 부분의 다른 지침보다 우선합니다.`),
-  tool: tool('write_yao', '이 점의 심장과 효 하나하나를 읽는다', {
-    heart: str('이 점의 심장 4~5문장, 해요체'),
-    yao: arr(obj({ pos: str('효 이름, 예: "초효"'), stage: { type: 'string', enum: ['초반', '중반', '후반'] }, reading: str('그 효의 풀이 3~5문장, 해요체, 효사를 따옴표로 한 번 인용') }), '[중심 자리]의 효를 순서대로', 0, 6),
+  // 효 읽기(yao)를 맨 앞에 둔다 — heart를 먼저 쓰게 했더니 요약만 쓰고 yao를 빈 배열로 내는 일이 잦았다(2026-10-18)
+  tool: tool('write_yao', '효 하나하나를 읽고, 이 점의 심장으로 묶는다', {
+    yao: arr(obj({ pos: str('효 이름, 예: "초효"'), stage: { type: 'string', enum: ['초반', '중반', '후반'] }, reading: str('그 효의 풀이 3~4문장, 해요체, 효사 원문은 옮겨 적지 않음') }), '필수 — [중심 자리]에 적힌 효 전부를 순서대로(변효 없음이면 여섯 개)', 0, 6),
     stages: arr(obj({ stage: { type: 'string', enum: ['초반 흐름', '중반 흐름', '후반 흐름'] }, reading: str('그 단계의 흐름 2~3문장, 해요체') }), '변효가 없을 때만 세 단계, 아니면 빈 배열', 0, 3),
+    heart: str('이 점의 심장 3~4문장, 해요체'),
   }, ['stages']),
+  // [중심 자리]에 적힌 효 수만큼 읽었는지 — 모자라면 다시 쓰게 한다
+  validate: ({ input }, out) => {
+    const want = (String(input.src.lines).match(/^(초효|이효|삼효|사효|오효|상효)\(/gm) || []).length;
+    const got = (out.yao || []).length;
+    return got < want ? `yao가 ${got}개뿐 — [중심 자리]의 효 ${want}개를 하나도 빼지 않고 모두 읽어야 함` : '';
+  },
   user: ({ input, analysis: a, plan: p }) => lines(
     `이름: ${input.name}\n고민: ${input.question}`,
     block('구성안', json({ verdict: p.verdict.kind, facts: p.facts, point_heart: p.points.heart })),
@@ -258,14 +281,19 @@ const WRITE_YAO = {
 
 const WRITE_CORE = {
   name: 'write_core',
+  noQuote: ['flow', 'dos', 'donts'],
+  noTiming: true,
   temperature: 0.4,
   timeoutMs: 25000,
   maxTokens: 1800,
   checkStyle: true,
-  system: writerSystem('「흘러가는 곳」과 「할 것 · 피할 것」', 'write_core', `- flow 4~6문장(450자 이내): 첫 문장은 point_flow. 지괘의 이름과 상괘·하괘 상징으로 이 일이 닿는 장면을 그리고(예: "택수곤은 못에 물이 빠진 형상이에요…"), quote_flow가 있으면 한 번 인용한 뒤 그곳에 닿았을 때 갖출 태도와 지괘 대상전이 권하는 자세로 맺습니다. 지괘가 없으면 본괘의 자리가 그대로 이어진다는 뜻으로 씁니다.
-- dos 3개, donts 3개: 각 항목은 text(한두 문장. dos는 "~하는 쪽이 좋아요", donts는 "~는 피하는 편이 좋아요")와 basis(근거 이름 짧게: "대상전", "오효", "상효", "지괘" 등). dos 첫 항목은 point_dos와 quote_dos(대상전)의 태도를 상담자 사정에 맞게 옮긴 것. facts 안에서 구체적으로 쓰고, 세 항목이 서로 겹치지 않게 합니다.`),
+  system: writerSystem('「흘러가는 곳」과 「할 것 · 피할 것」', 'write_core', `- flow 3~5문장(350자 이내): 첫 문장은 point_flow. 지괘의 이름과 상괘·하괘 상징으로 이 일이 닿는 장면을 그리고(예: "택수곤은 못에 물이 빠진 형상이에요…"), 지괘 괘사(quote_flow)는 화면 상자에 나오니 옮겨 적지 말고 그곳에 닿았을 때 갖출 태도로 맺습니다. 지괘가 없으면 본괘의 자리가 그대로 이어진다는 뜻으로 씁니다.
+- dos 3개, donts 3개: 각 항목은 text(한두 문장. dos는 "~하는 쪽이 좋아요", donts는 "~는 피하는 편이 좋아요")와 basis(근거 이름 짧게). 원문을 따옴표로 옮기지 않습니다. facts 안에서 상담자가 이번 주에라도 해 볼 수 있을 만큼 구체적으로 쓰고, 세 항목이 서로 겹치지 않게 합니다.
+  · dos 첫 항목은 point_dos와 본괘 대상전(quote_dos)의 태도를 상담자 사정에 맞게 옮긴 것이고, basis는 "대상전".
+  · basis "대상전"은 본괘 대상전(quote_dos)에만 씁니다. 지괘 블록의 대상전에서 가져왔다면 basis는 "지괘 대상전"입니다. 화면은 "대상전" 옆에 본괘 대상전 원문을 보여 주므로 둘을 섞으면 근거가 틀려 보입니다.
+  · 그 밖의 basis: 효 이름("사효"), "괘사", "단전", "지괘". "괘 분석"·"방향" 같은 말은 쓰지 않습니다.`),
   tool: tool('write_core', '흘러가는 곳과 할 것·피할 것을 쓴다', {
-    flow: str('흘러가는 곳 4~6문장, 해요체'),
+    flow: str('흘러가는 곳 3~5문장, 해요체'),
     dos: arr(obj({ text: str('한두 문장, 해요체'), basis: str('근거 이름') }), '할 것', 3, 3),
     donts: arr(obj({ text: str('한두 문장, 해요체'), basis: str('근거 이름') }), '피할 것', 3, 3),
   }),
@@ -290,7 +318,8 @@ const WRITE_TAIL = {
   · what은 그 범위 안에서 움직일 수 있는 일 한두 문장 — 그 단계의 효가 말한 흐름(예: 초반 흐름이면 초효·이효가 말한 일)과 잇습니다. watch는 그때 살펴볼 것 한 문장("~를 살펴보는 쪽이 좋아요").
   · ${STAGE_RULE}
   · [시기 창]이 비어 있으면 [추이]의 국면만으로 넓은 범위 두 개를 씁니다.
-- closing 2~3문장: 연서의 다정한 마무리. 판정과 같은 결로, 응원과 위로를 담습니다. 날짜는 쓰지 않습니다.
+- closing 2문장: 연서의 다정한 마무리. 판정과 같은 결로, 응원과 위로를 담습니다. 시기와 판정 한 줄(verdict.line)을 되풀이하지 않고, 상담자의 사정(facts)에 닿는 한마디로 맺습니다.
+- timeline의 what은 그 단계에서 실제로 볼 수 있는 일을 상담자의 장면으로 씁니다("첫 고객 반응이 오거나, 자금 계획의 빈 곳이 드러날 수 있어요"). "진전이 나타난다" 같은 추상어로 끝내지 않습니다.
 - timeline·closing에는 괘사·효사·대상전을 인용하지 않습니다.`),
   tool: tool('write_tail', '때(범위)와 마무리를 쓴다', {
     timeline: arr(obj({
@@ -312,20 +341,22 @@ const WRITE_TAIL = {
 
 const WRITE_QA = {
   name: 'write_qa',
+  noQuote: ['qa'],
+  noTiming: true,
   temperature: 0.45,
   timeoutMs: 30000,
   maxTokens: 2600,
   checkStyle: true,
-  system: writerSystem('「남겨 주신 답에」', 'write_qa', `- qa: [문답]의 질문마다 하나씩, 빠짐없이 순서대로 씁니다. 각 항목은 {q: 질문 그대로, a: 핵심 답 2~3문장, angles: 2~3개}.
+  system: writerSystem('「남겨 주신 답에」', 'write_qa', `- qa: [문답]의 질문마다 하나씩, 빠짐없이 순서대로 씁니다. 각 항목은 {q: 질문 그대로, a: 핵심 답 2~3문장, angles: 2개}.
   · a는 상담자가 그 질문에 남긴 답을 먼저 받아 주고(그 말 그대로 짚기), 그것이 이 점에서 무엇을 뜻하는지 분명히 말합니다.
-  · angles는 같은 답을 다른 각도에서 비춰 봅니다. 각 항목은 {lens, text: 2~3문장}. lens는 "본괘로 보면", "효로 보면", "흘러가는 곳으로 보면", "때로 보면" 가운데 그 질문에 맞는 2~3개. 각 각도는 서로 다른 말을 해야 하고, 괘·효 이름을 짚어 근거를 댑니다.
-  · 원문을 따옴표로 인용하지 않고 뜻으로 풀어 씁니다(인용은 다른 섹션 몫). 날짜는 쓰지 않습니다.
+  · angles는 같은 답을 다른 각도에서 비춰 봅니다. 각 항목은 {lens, text: 2문장}. lens는 "본괘로 보면", "효로 보면", "흘러가는 곳으로 보면" 가운데 그 질문에 맞는 2개. 각 각도는 서로 다른 말을 하고, 괘·효 이름을 짚어 근거를 댑니다. 다른 질문의 답에서 한 말을 되풀이하지 않습니다.
+  · 원문을 따옴표로 인용하지 않고 뜻으로 풀어 씁니다(인용은 다른 섹션 몫). 시기 표현과 판정 한 줄(verdict.line)은 쓰지 않습니다.
 - 문답이 없으면 빈 배열.`),
   tool: tool('write_qa', '질문별로 여러 각도의 답을 쓴다', {
     qa: arr(obj({
       q: str('질문 그대로'),
       a: str('핵심 답 2~3문장, 해요체'),
-      angles: arr(obj({ lens: str('예: "본괘로 보면"'), text: str('2~3문장, 해요체') }), '다른 각도 2~3개', 2, 3),
+      angles: arr(obj({ lens: str('예: "본괘로 보면"'), text: str('2문장, 해요체') }), '다른 각도 2개', 2, 3),
     }), '질문별 답', 0, 3),
   }),
   user: ({ input, analysis: a, plan: p }) => {
@@ -396,6 +427,9 @@ async function callClaude({ system, user, tool: t, temperature, maxTokens, timeo
 const HANJA = /[㐀-䶿一-鿿]+/g;
 const JIJI_KO = /(?<![가-힣])(자|축|인|묘|진|사|오|미|신|유|술|해)(월|일)(?=[\s,.)에은는이가을의도까부]|$)/;
 const JARGON = /공망|출공|세효|응효|용신|월건|일진|동효/;
+const TIMING = /\d{1,2}월|다음\s?주|다음\s?달|두\s?달\s?안/;
+// 해설서·번역서 말투 — 두 가지 이상 섞이면 다시 쓰게 한다("외부 진입이 지연", "물질적·외적 제약", "불굴의 의지")
+const STIFF = /진입|지연|물질적|외적|내적|제약|불굴|도출|시사하|측면|형태를 갖/g;
 const QUOTED = /["“'‘][^"”'’\n]*["”'’]/g;
 const sentencesOf = (t) => t.split(/(?<=[.!?])\s+|\n+/).map((s) => s.trim()).filter(Boolean);
 const isBanmal = (s) => /(?<!니)다[.!]?$/.test(s) || /(해|돼|봐|줘|거든|잖아)[.!]$/.test(s);
@@ -423,6 +457,7 @@ function autoFix(out, name, node = {}) {
   // 원문·상담자 말 그대로인 필드(styleSkip)는 문장 끝을 바꾸지 않는다
   for (const k of Object.keys(unquoted)) if (!(node.styleSkip || []).includes(k)) unquoted[k] = mapStrings(unquoted[k], toHaeyo);
   return mapStrings(unquoted, (s) => s
+    .replace(/[<>]/g, '') // 문장 끝에 ">"가 붙어 나온 일이 있었다
     .replace(/당신/g, who)
     .replace(/에너지/g, '기세')
     .replace(/지 마(?:세요|십시오)(?=[.!]?(\s|$))/g, '지 않는 쪽이 좋아요')
@@ -447,6 +482,11 @@ function styleIssues(out, node) {
   if (jg) issues.push(`육효 용어("${jg[0]}")`);
   const dt = outside.match(/\d{1,2}월\s?\d{1,2}일/);
   if (dt) issues.push(`하루짜리 날짜("${dt[0]}") — "빠르면 ~, 늦어도 ~" 범위로`);
+  // 시기는 「때」 카드 한 곳에만 — 같은 "11월 초부터 12월 중순"이 다섯 섹션에 되풀이된 일이 있었다(2026-10-18)
+  const tm = node.noTiming && !dt && stringsOf(without(out, [...(node.styleSkip || []), ...(node.timingOk || [])])).join('\n').replace(QUOTED, '').match(TIMING);
+  if (tm) issues.push(`시기 표현("${tm[0]}") — 시기는 「때」에서만 말하니 이 섹션에서는 빼기`);
+  const st = [...new Set(outside.match(STIFF) || [])];
+  if (st.length >= 2) issues.push(`해설서 말투(${st.slice(0, 4).join(', ')}) — 생활 말로`);
   return { issues, hanja: Boolean(hz) };
 }
 const stringsOf = (v) => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(stringsOf) : v && typeof v === 'object' ? Object.values(v).flatMap(stringsOf) : []);
@@ -490,6 +530,11 @@ async function runNode(node, state, parent, deadline) {
       const out = coerce(node.tool.input_schema, data.content?.find((b) => b.type === 'tool_use')?.input);
       const missing = missingFields(node.tool.input_schema, out);
       if (missing.length) throw new NodeError(`필드 누락: ${missing.slice(0, 8).join(', ')}`);
+      const invalid = node.validate?.(state, out);
+      if (invalid && attempt < MAX_ATTEMPTS && deadline - Date.now() > node.timeoutMs + 5000) { // 마지막 시도면 모자란 채로라도 진행
+        user = `${baseUser}\n\n[다시 쓰기] 직전 글은 ${invalid}. 처음부터 다시 쓰세요.`;
+        throw new NodeError(invalid);
+      }
       if (!checkStyle) {
         gen.update({ output: out }).end();
         return out;
@@ -503,7 +548,7 @@ async function runNode(node, state, parent, deadline) {
         if (canRetry) {
           styleRetried = true;
           gen.update({ output: fixed, level: 'WARNING', statusMessage: `문체 문제: ${summary} — 다시 쓰게 함` }).end();
-          user = `${baseUser}\n\n[다시 쓰기] 직전 글에 ${summary}이 있었습니다. 해요체 존댓말로, 한자·지지 이름·육효 용어 없이(날짜는 "10월 14일"처럼 숫자로), 배정되지 않은 인용 없이 처음부터 다시 쓰세요.`;
+          user = `${baseUser}\n\n[다시 쓰기] 직전 글에 ${summary}이 있었습니다. 해요체 존댓말과 쉬운 생활 말로, 한자·지지 이름·육효 용어·원문 인용 없이${node.noTiming ? ', 시기 표현 없이' : ', 시기는 폭이 있는 범위로만'} 처음부터 다시 쓰세요.`;
           continue;
         }
         const clean = hanja ? stripHanja(fixed) : fixed;
@@ -522,6 +567,53 @@ async function runNode(node, state, parent, deadline) {
   throw lastErr;
 }
 
+// 섹션 사이 되풀이를 걷어낸다 — 작가 다섯이 병렬로 쓰니 규칙만으로는 "믿음을 잃지 않으면 길이 열려요"가
+// 한 리포트에 여섯 번 나오는 일을 다 막지 못했다(2026-10-18). 화면에 보이는 순서대로 읽으며, 앞에 이미 나온
+// 문장과 글자 세 개 묶음이 60% 넘게 겹치는 문장은 뒤쪽에서 뺀다. 한 칸이 통째로 비지는 않게 첫 문장은 남긴다.
+const tri = (s) => {
+  const t = s.replace(/[^가-힣A-Za-z0-9]/g, '');
+  const g = new Set();
+  for (let i = 0; i + 3 <= t.length; i++) g.add(t.slice(i, i + 3));
+  return g;
+};
+function dedupeReport(r) {
+  const seen = [];
+  let removed = 0;
+  const overlaps = (g) => g.size >= 8 && seen.some((h) => { let n = 0; for (const x of g) if (h.has(x)) n++; return n / g.size >= 0.6; });
+  const see = (t) => { for (const s of sentencesOf(String(t || ''))) seen.push(tri(s)); };
+  const prose = (t) => {
+    if (!t) return t;
+    const paras = String(t).split(/\n+/).map((p) => {
+      const kept = sentencesOf(p).filter((s) => !(overlaps(tri(s)) && ++removed));
+      return kept.join(' ');
+    }).filter(Boolean);
+    const out = paras.length ? paras.join('\n') : sentencesOf(String(t))[0];
+    see(out);
+    return out;
+  };
+  const bubble = (t) => { if (!t) return t; if (overlaps(tri(t))) { removed++; return ''; } see(t); return t; };
+  [r.headline, r.verdict.label, ...(r.verdict.reasons || []), r.empathy].forEach(see);
+  r.answer = prose(r.answer);
+  r.shape = prose(r.shape);
+  r.bubbles.heart = bubble(r.bubbles.heart);
+  r.heart = prose(r.heart);
+  r.stages = r.stages.map((s) => ({ ...s, reading: prose(s.reading) }));
+  r.yao = r.yao.map((y) => ({ ...y, reading: prose(y.reading) }));
+  r.bubbles.flow = bubble(r.bubbles.flow);
+  r.flow = prose(r.flow);
+  [...(r.dos || []), ...(r.donts || [])].forEach((x) => see(x.text));
+  r.bubbles.timing = bubble(r.bubbles.timing);
+  see(r.season);
+  (r.timeline || []).forEach((x) => { see(x.what); see(x.watch); });
+  r.qa = r.qa.map((x) => ({ ...x, a: prose(x.a), angles: (x.angles || []).map((g) => ({ ...g, text: prose(g.text) })) }));
+  r.closing = prose(r.closing);
+  r.meta = { removedRepeats: removed };
+  return r;
+}
+
+// 할 것·피할 것의 근거 표시는 독자가 원문에서 찾을 수 있는 이름만 남긴다("괘 분석", "방향" 같은 내부 말이 나왔다)
+const cleanBasis = (x) => ({ ...x, basis: /대상전|괘사|단전|[초이삼사오상]효|지괘|본괘|호체/.test(x.basis || '') ? x.basis : '' });
+
 // 화면이 그대로 그리는 리포트 객체. version이 바뀌면 index.html의 buildReport·parseReadingResponse도 같이 바꿀 것.
 function assemble({ analysis: a, plan: p, open, yao, core, tail, qa }) {
   return {
@@ -536,13 +628,13 @@ function assemble({ analysis: a, plan: p, open, yao, core, tail, qa }) {
     yao: yao.yao || [],
     stages: yao.stages || [],
     flow: core.flow,
-    dos: core.dos,
-    donts: core.donts,
+    dos: core.dos.map(cleanBasis),
+    donts: core.donts.map(cleanBasis),
     season: p.season,
     timeline: tail.timeline,
     qa: qa.qa || [],
     closing: tail.closing,
-    bubbles: p.bubbles,
+    bubbles: { ...p.bubbles },
   };
 }
 
@@ -553,5 +645,5 @@ export async function runReadingGraph(input, root) {
   const [open, yao, core, tail, qa] = await Promise.all(
     WRITERS.map((node) => runNode(node, { input, analysis, plan }, root, deadline)),
   );
-  return assemble({ analysis, plan, open, yao, core, tail, qa });
+  return dedupeReport(assemble({ analysis, plan, open, yao, core, tail, qa }));
 }
