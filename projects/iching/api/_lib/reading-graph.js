@@ -60,7 +60,7 @@ const lines = (...parts) => parts.filter(Boolean).join('\n\n');
 const qaText = (qa) => qa.map((x, i) => `Q${i + 1}. ${x.q}\nA. ${x.a}`).join('\n') || '(추가 문답 없음)';
 
 const HANJA_RULE = `- 한자는 한 글자도 쓰지 않습니다. 괄호 속 한자("감(坎)"), 한자 인용, 지지·간지(子丑寅卯辰巳午未申酉戌亥, 壬午 등)도 금지입니다. 괘 이름·자연 상징·절기는 한글로만 씁니다.
-- 시기는 "10월 14일", "2027년 4월"처럼 숫자 날짜·달로만 씁니다. 지지의 한글 읽기("술월", "자일", "진월", "유월")도 달·날 이름으로 쓰지 않습니다.
+- 시기는 하루짜리 날짜("10월 14일", "○일 무렵")로 말하지 않습니다. "빠르면 다음 주, 늦어도 두 달 안", "올해 안"처럼 폭이 있는 범위로만 씁니다. 지지의 한글 읽기("술월", "자일", "진월", "유월")도 쓰지 않습니다.
 - 육효 용어(공망, 출공, 세효, 응효, 용신, 월건, 일진, 동효)는 쓰지 않고 뜻으로 풀어 씁니다(예: "막혀 있던 일이 풀리는 때", "상대 쪽 사정").
 - "추계", "하계" 같은 딱딱한 한자어 대신 "가을", "여름"처럼 쉬운 말을 씁니다.`;
 
@@ -135,7 +135,7 @@ const ANALYZE = {
 // 작가 노드가 쓰기 편하게 nestPlan()이 다시 묶는다.
 const PLAN = {
   name: 'plan_reading',
-  styleSkip: ['facts', 'keywords', 'point_shape', 'point_heart', 'point_flow', 'point_dos', 'quote_shape', 'quote_heart', 'quote_flow', 'quote_dos'],
+  styleSkip: ['facts', 'keywords', 'point_shape', 'point_heart', 'point_flow', 'point_dos', 'quote_shape', 'quote_flow', 'quote_dos'],
   noQuote: ['verdict_label', 'verdict_line', 'reasons', 'empathy', 'bubble_heart', 'bubble_flow', 'bubble_timing', 'season'],
   temperature: 0.3,
   timeoutMs: 20000,
@@ -151,8 +151,8 @@ const PLAN = {
 - facts: 상담자가 고민·문답에서 실제로 말한 사실만 3~6개. 짐작이나 해석은 넣지 않습니다.
 - empathy: 연서가 여는 공감 한 문장(해요체). 상담자가 쓴 말을 빌려 지금의 갈등을 짚습니다.
 - point_shape / point_heart / point_flow / point_dos: 섹션마다 서로 겹치지 않는 메시지 하나씩. shape=본괘 그림이 말하는 지금, heart=중심 효가 고민에 답하는 것, flow=지괘가 보여 주는 귀결, dos=대상전이 권하는 태도.
-- quote_shape / quote_heart / quote_flow / quote_dos: 입력 원문에서 글자 그대로 복사해 섹션에 하나씩 배정합니다. shape=본괘 괘사 풀이, heart=[중심 자리]의 효사들(없으면 빈 배열), flow=지괘 괘사 풀이(지괘가 없으면 빈 문자열), dos=본괘 대상전 풀이. 같은 문구를 두 곳에 배정하지 않습니다.
-- qa_pick: 개별로 답할 문답 번호 2~3개(1부터). 답이 비었거나 "(답변 없음)"인 문답은 고르지 않습니다. 문답이 없으면 빈 배열.
+- quote_shape / quote_flow / quote_dos: 입력 원문에서 글자 그대로 복사해 섹션에 하나씩 배정합니다. shape=본괘 괘사 풀이, flow=지괘 괘사 풀이(지괘가 없으면 빈 문자열), dos=본괘 대상전 풀이. 효사는 효 읽기 섹션이 효마다 한 번씩 인용하므로 여기서 배정하지 않습니다.
+- 어느 필드에도 하루짜리 날짜("○월 ○일")를 쓰지 않습니다.
 - bubble_heart / bubble_flow / bubble_timing: 그 섹션 앞에서 연서가 건네는 짧은 말(해요체, 25자 안팎).
 - mood: 판정을 말할 때 연서의 표정. smile(길·소길), serious(조심·흉), warm(평·general).
 - 화면에 그대로 나가는 필드(verdict_*, reasons, empathy, season, bubble_*)는 해요체 존댓말로 쓰고, "당신"이라 부르지 않으며, "에너지"·"기운" 같은 막연한 말과 육효 용어(공망·세효·응효·용신 등)를 쓰지 않습니다.
@@ -171,15 +171,13 @@ ${HANJA_RULE}`,
     point_flow: str('흘러가는 곳 메시지'),
     point_dos: str('할 것·피할 것의 중심 태도'),
     quote_shape: str('본괘 괘사 풀이 그대로'),
-    quote_heart: arr(str('중심 자리 효사 그대로'), '중심 효사들, 없으면 빈 배열', 0, 3),
     quote_flow: str('지괘 괘사 풀이 그대로, 없으면 빈 문자열'),
     quote_dos: str('본괘 대상전 풀이 그대로'),
-    qa_pick: arr({ type: 'integer' }, '개별로 답할 문답 번호', 0, 3),
     bubble_heart: str('심장 앞 한마디, 해요체. 예: "이 괘에서 제일 중요한 자리예요."'),
     bubble_flow: str('흘러가는 곳 앞 한마디, 해요체'),
     bubble_timing: str('때 앞 한마디, 해요체'),
     mood: { type: 'string', enum: ['smile', 'serious', 'warm'] },
-  }, ['quote_heart', 'quote_flow', 'qa_pick', 'facts']),
+  }, ['quote_flow', 'facts']),
   user: ({ input, analysis: a }) => lines(
     block('괘 분석 메모', json(a)),
     input.src.ben,
@@ -198,91 +196,153 @@ function nestPlan(f) {
     facts: f.facts || [],
     empathy: f.empathy,
     points: { shape: f.point_shape, heart: f.point_heart, flow: f.point_flow, dos: f.point_dos },
-    quotes: { shape: f.quote_shape, heart: f.quote_heart || [], flow: f.quote_flow || '', dos: f.quote_dos },
-    qa_pick: f.qa_pick || [],
+    quotes: { shape: f.quote_shape, flow: f.quote_flow || '', dos: f.quote_dos },
     bubbles: { heart: f.bubble_heart, flow: f.bubble_flow, timing: f.bubble_timing },
     mood: f.mood,
   };
 }
 
-/* ── 노드 3: 쓰기 노드들 — 구성안 뒤에 병렬로 돈다. 구성안 + 자기 섹션 원문만 받는다 ── */
+/* ── 노드 3: 쓰기 노드들 — 구성안 뒤에 병렬로 돈다. 구성안 + 자기 섹션 원문만 받는다 ──
+   2026-10-17 피드백으로 효 읽기(write_yao)와 질문별 답(write_qa)을 따로 뗐다: 한 노드에 몰았더니 효사는 한두 줄,
+   질문 답은 한 마디로 줄어들었다. 변효가 없으면 여섯 효를 초반·중반·후반 흐름으로 하나씩 읽는다. */
+const STAGE_RULE = `효의 자리는 흐름의 단계이기도 합니다: 초효·이효 = 초반 흐름(일의 시작, 가까운 때), 삼효·사효 = 중반 흐름(전환, 안과 밖이 만나는 때), 오효·상효 = 후반 흐름(정점과 마무리, 먼 때).`;
+
 const WRITE_OPEN = {
   name: 'write_open',
   noQuote: ['answer'],
   temperature: 0.4,
-  timeoutMs: 22000,
-  maxTokens: 1400,
+  timeoutMs: 25000,
+  maxTokens: 1600,
   checkStyle: true,
-  system: writerSystem('「질문에 대한 답」과 「지금의 형세」', 'write_open', `- answer 3~5문장(300자 이내): empathy 문장은 화면에서 연서의 말풍선으로 따로 보이니 다시 쓰지 않습니다. 판정으로 바로 시작해(“돌려 말하지 않을게요. …”) verdict.kind에 맞게 분명히 말한 뒤, reasons를 자연스러운 문장으로 잇습니다. 본괘 이름을 한 번 짚습니다. answer에는 괘사·효사를 따옴표로 인용하지 않습니다(인용은 형세·심장·흐름 섹션 몫).
-- shape 3~5문장(350자 이내): 첫 문장은 point_shape. 본괘의 상괘·하괘 자연 상징이 겹친 장면을 그리듯 보여 주고("물이 불 위에 놓인 형상이에요…"), 그 그림이 상담자의 지금과 어떻게 겹치는지 잇습니다. quote_shape를 한 번 인용합니다. 호체 블록이 있으면 "겉은 ~이지만 안에는 ~가 숨어 있어요" 한 문장을 넣습니다(호체를 지괘와 섞지 않습니다). 국면은 season으로만 말합니다.`),
+  system: writerSystem('「물으신 것에 대한 답」과 「지금의 형세」', 'write_open', `- answer 4~6문장(400자 이내): empathy 문장은 화면에서 연서의 말풍선으로 따로 보이니 다시 쓰지 않습니다. 판정으로 바로 시작해("돌려 말하지 않을게요. …") verdict.kind에 맞게 분명히 말한 뒤, reasons를 자연스러운 문장으로 풀고, 고민의 어느 부분이 왜 그런지 상담자의 사정(facts)에 닿게 짚습니다. 본괘 이름을 한 번 짚습니다. answer에는 괘사·효사를 따옴표로 인용하지 않습니다.
+- shape 5~7문장(500자 이내): 첫 문장은 point_shape. 본괘의 상괘·하괘 자연 상징이 겹친 장면을 그리듯 보여 주고("물이 불 위에 놓인 형상이에요…"), 그 그림이 상담자의 지금과 어떻게 겹치는지 잇습니다. quote_shape(괘사)를 한 번 인용하고 그 말이 지금 무엇을 가리키는지 풉니다. 단전이 있으면 괘사를 받쳐 주는 근거로 한 문장 녹입니다. 호체 블록이 있으면 "겉은 ~이지만 안에는 ~가 숨어 있어요" 한 문장을 넣습니다(호체를 지괘와 섞지 않습니다).`),
   tool: tool('write_open', '질문에 대한 답과 지금의 형세를 쓴다', {
-    answer: str('질문에 대한 답 3~5문장'),
-    shape: str('지금의 형세 3~5문장'),
+    answer: str('질문에 대한 답 4~6문장, 해요체'),
+    shape: str('지금의 형세 5~7문장, 해요체'),
   }),
   user: ({ input, analysis: a, plan: p }) => lines(
     `이름: ${input.name}\n고민: ${input.question}`,
-    block('구성안', json({ verdict: p.verdict, empathy: p.empathy, facts: p.facts, season: p.season, point_shape: p.points.shape, quote_shape: p.quotes.shape })),
+    block('구성안', json({ verdict: p.verdict, empathy: p.empathy, facts: p.facts, point_shape: p.points.shape, quote_shape: p.quotes.shape })),
     input.src.ben,
     input.src.hoche,
-    block('괘 분석 메모', json({ image: a.image, hidden: a.hidden })),
+    block('괘 분석 메모', json({ image: a.image, hidden: a.hidden, why: a.why })),
+  ),
+};
+
+const WRITE_YAO = {
+  name: 'write_yao',
+  temperature: 0.4,
+  timeoutMs: 30000,
+  maxTokens: 3200,
+  checkStyle: true,
+  system: writerSystem('「이 점의 심장」과 「효를 하나씩」', 'write_yao', `- heart 4~5문장(350자 이내): 첫 문장은 point_heart. 길흉 기조를 한 번 분명히 하고, 아래 효들이 모여 고민에 무엇을 말하는지 한데 묶어 줍니다. 효사는 여기서 인용하지 않습니다(효마다 yao에서 인용).
+- yao: [중심 자리]에 적힌 효를 하나도 빼지 않고, 적힌 순서대로 하나씩 읽습니다. 각 항목은 {pos: "초효"처럼 효 이름, stage: "초반"·"중반"·"후반" 중 하나, reading: 3~5문장}. reading은 그 효사를 따옴표로 그대로 한 번 인용하고 → 그 자리의 의미(자리 풀이 참고)를 풀고 → 상담자의 고민에서 그것이 무엇에 해당하는지 구체적으로 잇습니다. 효마다 다른 이야기를 해서 같은 말을 되풀이하지 않습니다.
+- stages: [중심 자리]가 "변효 없음"이면 초반·중반·후반 흐름 세 개를 {stage, reading: 2~3문장}으로 씁니다 — 각 단계에서 상담자의 일이 어떻게 펼쳐지는지 이야기처럼 잇습니다. 변효가 있으면 빈 배열.
+- [중심 자리]가 "여섯 효 모두 변함"이면 yao는 빈 배열이고, heart를 6~8문장으로 늘려 [해석 원칙]대로 읽습니다.
+- ${STAGE_RULE}
+- [해석 원칙]과 [심장 규칙]이 이 부분의 다른 지침보다 우선합니다.`),
+  tool: tool('write_yao', '이 점의 심장과 효 하나하나를 읽는다', {
+    heart: str('이 점의 심장 4~5문장, 해요체'),
+    yao: arr(obj({ pos: str('효 이름, 예: "초효"'), stage: { type: 'string', enum: ['초반', '중반', '후반'] }, reading: str('그 효의 풀이 3~5문장, 해요체, 효사를 따옴표로 한 번 인용') }), '[중심 자리]의 효를 순서대로', 0, 6),
+    stages: arr(obj({ stage: { type: 'string', enum: ['초반 흐름', '중반 흐름', '후반 흐름'] }, reading: str('그 단계의 흐름 2~3문장, 해요체') }), '변효가 없을 때만 세 단계, 아니면 빈 배열', 0, 3),
+  }, ['stages']),
+  user: ({ input, analysis: a, plan: p }) => lines(
+    `이름: ${input.name}\n고민: ${input.question}`,
+    block('구성안', json({ verdict: p.verdict.kind, facts: p.facts, point_heart: p.points.heart })),
+    block('중심 자리', input.src.lines),
+    block('해석 원칙', input.src.focus),
+    block('심장 규칙', input.heartRule),
+    block('괘 분석 메모', json({ fortune: a.fortune, heart: a.heart, liuyao: a.liuyao })),
   ),
 };
 
 const WRITE_CORE = {
   name: 'write_core',
   temperature: 0.4,
-  timeoutMs: 22000,
+  timeoutMs: 25000,
   maxTokens: 1800,
   checkStyle: true,
-  system: writerSystem('「이 점의 심장」「흘러가는 곳」「할 것 · 피할 것」', 'write_core', `- heart 4~6문장(400자 이내): 첫 문장은 point_heart. 길흉 기조를 한 번 분명히 합니다. [중심 자리]에 효가 있으면 효를 위치로 짚고("오효는 …"), quote_heart의 문구를 따옴표로 그대로 인용한 뒤 그 자리의 의미(군위·중심, 완성·마무리 등)가 고민에 무엇을 말하는지 풉니다. [중심 자리]가 비어 있으면 [해석 원칙]대로 읽습니다. [해석 원칙]과 [심장 규칙]이 이 섹션의 다른 지침보다 우선합니다.
-- flow 3~4문장(300자 이내): 첫 문장은 point_flow. 지괘의 이름과 상괘·하괘 상징으로 이 일이 닿는 장면을 그리고(예: "택수곤은 못에 물이 빠진 형상이에요…"), quote_flow가 있으면 한 번 인용한 뒤 그때 갖출 태도로 맺습니다. 지괘가 없으면 본괘의 자리가 그대로 이어진다는 뜻으로 씁니다.
-- dos 3개, donts 3개: 각 항목은 text(한 문장. dos는 "~하는 쪽이 좋아요", donts는 "~는 피하는 편이 좋아요")와 basis(근거 이름 짧게: "대상전", "오효", "상효", "지괘" 등). dos 첫 항목은 point_dos와 quote_dos(대상전)의 태도를 상담자 사정에 맞게 옮긴 것. facts 안에서 구체적으로 쓰고, 세 항목이 서로 겹치지 않게 합니다.`),
-  tool: tool('write_core', '심장·흘러가는 곳·할 것과 피할 것을 쓴다', {
-    heart: str('이 점의 심장 4~6문장'),
-    flow: str('흘러가는 곳 3~4문장'),
-    dos: arr(obj({ text: str('한 문장'), basis: str('근거 이름') }), '할 것', 3, 3),
-    donts: arr(obj({ text: str('한 문장'), basis: str('근거 이름') }), '피할 것', 3, 3),
+  system: writerSystem('「흘러가는 곳」과 「할 것 · 피할 것」', 'write_core', `- flow 4~6문장(450자 이내): 첫 문장은 point_flow. 지괘의 이름과 상괘·하괘 상징으로 이 일이 닿는 장면을 그리고(예: "택수곤은 못에 물이 빠진 형상이에요…"), quote_flow가 있으면 한 번 인용한 뒤 그곳에 닿았을 때 갖출 태도와 지괘 대상전이 권하는 자세로 맺습니다. 지괘가 없으면 본괘의 자리가 그대로 이어진다는 뜻으로 씁니다.
+- dos 3개, donts 3개: 각 항목은 text(한두 문장. dos는 "~하는 쪽이 좋아요", donts는 "~는 피하는 편이 좋아요")와 basis(근거 이름 짧게: "대상전", "오효", "상효", "지괘" 등). dos 첫 항목은 point_dos와 quote_dos(대상전)의 태도를 상담자 사정에 맞게 옮긴 것. facts 안에서 구체적으로 쓰고, 세 항목이 서로 겹치지 않게 합니다.`),
+  tool: tool('write_core', '흘러가는 곳과 할 것·피할 것을 쓴다', {
+    flow: str('흘러가는 곳 4~6문장, 해요체'),
+    dos: arr(obj({ text: str('한두 문장, 해요체'), basis: str('근거 이름') }), '할 것', 3, 3),
+    donts: arr(obj({ text: str('한두 문장, 해요체'), basis: str('근거 이름') }), '피할 것', 3, 3),
   }),
   user: ({ input, analysis: a, plan: p }) => lines(
     `이름: ${input.name}\n고민: ${input.question}`,
-    block('구성안', json({ verdict: p.verdict.kind, facts: p.facts, season: p.season, point_heart: p.points.heart, quote_heart: p.quotes.heart, point_flow: p.points.flow, quote_flow: p.quotes.flow, point_dos: p.points.dos, quote_dos: p.quotes.dos })),
-    block('중심 자리', input.src.lines),
-    block('해석 원칙', input.src.focus),
-    block('심장 규칙', input.heartRule),
+    block('구성안', json({ verdict: p.verdict.kind, facts: p.facts, point_flow: p.points.flow, quote_flow: p.quotes.flow, point_dos: p.points.dos, quote_dos: p.quotes.dos })),
     input.src.ji,
-    block('괘 분석 메모', json({ fortune: a.fortune, heart: a.heart, liuyao: a.liuyao, direction: a.direction })),
+    block('괘 분석 메모', json({ direction: a.direction })),
   ),
 };
 
 const WRITE_TAIL = {
   name: 'write_tail',
-  noQuote: ['timeline', 'qa', 'closing'],
+  noQuote: ['timeline', 'closing'],
   temperature: 0.4,
-  timeoutMs: 22000,
+  timeoutMs: 25000,
   maxTokens: 1600,
   checkStyle: true,
-  system: writerSystem('「때」「남겨 주신 답에」「마무리」', 'write_tail', `- timeline: [시기 창]의 항목마다 {when, what, watch}. when은 그대로 옮기고(오늘보다 이전이면 빼고), what은 그때 움직이는 일 한 문장, watch는 그때 살펴볼 것 한 문장("~를 살펴보는 쪽이 좋아요"). 상담자의 고민에 닿게 쓰되 facts 밖의 사정은 지어내지 않습니다. 시기 창이 비면 빈 배열.
-- qa: [고른 문답] 각각 {q, a}. q는 질문을 그대로, a는 2~3문장 — 상담자가 그 질문에 남긴 답을 받아 이 괘로 비춰 줍니다.
-- closing 2~3문장: 연서의 다정한 마무리. 판정과 같은 결로, 응원과 위로를 담습니다.
-- timeline·qa·closing에는 괘사·효사·대상전을 인용하지 않습니다(앞 섹션에서 이미 인용했습니다).
-- 상담자는 "이름+님"으로 부르거나 주어를 생략합니다. "당신", "자신"으로 가리키지 않습니다.`),
-  tool: tool('write_tail', '때·질문별 답·마무리를 쓴다', {
-    timeline: arr(obj({ when: str('날짜·달'), what: str('그때 움직이는 일, 해요체 한 문장. 예: "직장 쪽 결정이 움직이기 시작해요."'), watch: str('그때 살펴볼 것, 해요체 한 문장. 예: "주변 반응이 어떤지 살펴보는 쪽이 좋아요."') }), '시기 타임라인', 0, 3),
-    qa: arr(obj({ q: str('질문 그대로'), a: str('답 2~3문장, 해요체') }), '질문별 답', 0, 3),
+  system: writerSystem('「때」와 「마무리」', 'write_tail', `- timeline 2~3개: 각 항목은 {stage, range, what, watch}.
+  · stage는 "초반 흐름"·"중반 흐름"·"후반 흐름" 가운데 하나.
+  · range는 하루짜리 날짜가 아니라 폭이 있는 범위입니다: "빠르면 다음 주, 늦어도 두 달 안", "이르면 이달 말, 길게는 올해 안", "내년 봄 무렵까지"처럼. [시기 창]의 날짜는 범위의 앞뒤 끝을 정하는 근거로만 쓰고, 입력의 "오늘"에서 얼마나 떨어졌는지로 바꿔 말합니다. "10월 14일" 같은 날짜, "○일 무렵"은 쓰지 않습니다. 맞지 않을 수도 있는 예언처럼 들리지 않게, 그 사이 어느 때쯤 무엇이 움직일 수 있다는 말투로 씁니다. 범위의 폭은 넉넉하게 — 가장 가까운 단계도 "늦어도" 쪽은 두 달 이상 여유를 두고(예: "빠르면 다음 주, 늦어도 두 달 안"), 뒤 단계일수록 넓게 잡습니다("빠르면 연말, 길게는 내년 봄까지").
+  · what은 그 범위 안에서 움직일 수 있는 일 한두 문장 — 그 단계의 효가 말한 흐름(예: 초반 흐름이면 초효·이효가 말한 일)과 잇습니다. watch는 그때 살펴볼 것 한 문장("~를 살펴보는 쪽이 좋아요").
+  · ${STAGE_RULE}
+  · [시기 창]이 비어 있으면 [추이]의 국면만으로 넓은 범위 두 개를 씁니다.
+- closing 2~3문장: 연서의 다정한 마무리. 판정과 같은 결로, 응원과 위로를 담습니다. 날짜는 쓰지 않습니다.
+- timeline·closing에는 괘사·효사·대상전을 인용하지 않습니다.`),
+  tool: tool('write_tail', '때(범위)와 마무리를 쓴다', {
+    timeline: arr(obj({
+      stage: { type: 'string', enum: ['초반 흐름', '중반 흐름', '후반 흐름'] },
+      range: str('폭이 있는 범위. 예: "빠르면 다음 주, 늦어도 두 달 안"'),
+      what: str('그 사이 움직일 수 있는 일, 해요체'),
+      watch: str('그때 살펴볼 것, 해요체'),
+    }), '시기 범위 2~3개', 1, 3),
     closing: str('마무리 2~3문장, 해요체'),
   }),
+  user: ({ input, analysis: a, plan: p }) => lines(
+    `이름: ${input.name} / 오늘: ${input.today}\n고민: ${input.question}`,
+    block('구성안', json({ verdict: p.verdict, facts: p.facts, season: p.season })),
+    block('시기 창', json(a.windows || [])),
+    input.src.tui,
+    block('중심 자리', input.src.lines),
+  ),
+};
+
+const WRITE_QA = {
+  name: 'write_qa',
+  temperature: 0.45,
+  timeoutMs: 30000,
+  maxTokens: 2600,
+  checkStyle: true,
+  system: writerSystem('「남겨 주신 답에」', 'write_qa', `- qa: [문답]의 질문마다 하나씩, 빠짐없이 순서대로 씁니다. 각 항목은 {q: 질문 그대로, a: 핵심 답 2~3문장, angles: 2~3개}.
+  · a는 상담자가 그 질문에 남긴 답을 먼저 받아 주고(그 말 그대로 짚기), 그것이 이 점에서 무엇을 뜻하는지 분명히 말합니다.
+  · angles는 같은 답을 다른 각도에서 비춰 봅니다. 각 항목은 {lens, text: 2~3문장}. lens는 "본괘로 보면", "효로 보면", "흘러가는 곳으로 보면", "때로 보면" 가운데 그 질문에 맞는 2~3개. 각 각도는 서로 다른 말을 해야 하고, 괘·효 이름을 짚어 근거를 댑니다.
+  · 원문을 따옴표로 인용하지 않고 뜻으로 풀어 씁니다(인용은 다른 섹션 몫). 날짜는 쓰지 않습니다.
+- 문답이 없으면 빈 배열.`),
+  tool: tool('write_qa', '질문별로 여러 각도의 답을 쓴다', {
+    qa: arr(obj({
+      q: str('질문 그대로'),
+      a: str('핵심 답 2~3문장, 해요체'),
+      angles: arr(obj({ lens: str('예: "본괘로 보면"'), text: str('2~3문장, 해요체') }), '다른 각도 2~3개', 2, 3),
+    }), '질문별 답', 0, 3),
+  }),
   user: ({ input, analysis: a, plan: p }) => {
-    const picked = (p.qa_pick || []).map((n) => input.qa[n - 1]).filter((x) => x && x.a && x.a !== '(답변 없음)');
+    const answered = input.qa.filter((x) => x && x.a && x.a !== '(답변 없음)');
     return lines(
-      `이름: ${input.name} / 오늘: ${input.today}\n고민: ${input.question}`,
+      `이름: ${input.name}\n고민: ${input.question}`,
       block('구성안', json({ verdict: p.verdict, facts: p.facts, season: p.season })),
-      block('시기 창', json(a.windows || [])),
-      block('고른 문답', picked.map((x) => `Q. ${x.q}\nA. ${x.a}`).join('\n\n')),
+      block('문답', answered.map((x, i) => `Q${i + 1}. ${x.q}\nA. ${x.a}`).join('\n\n')),
+      input.src.ben.split('\n').slice(0, 4).join('\n'),
+      input.src.ji ? input.src.ji.split('\n').slice(0, 4).join('\n') : '',
+      block('중심 자리', input.src.lines),
+      block('괘 분석 메모', json({ fortune: a.fortune, heart: a.heart, direction: a.direction })),
     );
   },
 };
 
-const WRITERS = [WRITE_OPEN, WRITE_CORE, WRITE_TAIL];
+const WRITERS = [WRITE_OPEN, WRITE_YAO, WRITE_CORE, WRITE_TAIL, WRITE_QA];
 
 /* ── 실행기 ── */
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -347,11 +407,13 @@ const without = (o, keys = []) => Object.fromEntries(Object.entries(o || {}).fil
 const HAEYO = [['않는다', '않아요'], ['한다', '해요'], ['된다', '돼요'], ['있다', '있어요'], ['없다', '없어요'],
   ['진다', '져요'], ['린다', '려요'], ['인다', '여요'], ['온다', '와요']];
 const hasBatchim = (ch) => { const c = ch.charCodeAt(0) - 0xac00; return c >= 0 && c <= 11171 && c % 28 !== 0; };
-function toHaeyo(s) {
+function toHaeyoPlain(s) {
   let t = s.replace(/([가-힣])이다([.!])(?=\s|$)/g, (m, prev, p) => `${prev}${hasBatchim(prev) ? '이에요' : '예요'}${p}`);
   for (const [from, to] of HAEYO) t = t.replace(new RegExp(`${from}([.!])(?=\\s|$)`, 'g'), `${to}$1`);
   return t;
 }
+// 따옴표 안(괘사·효사 원문 인용)은 손대지 않는다 — 원문 "극한 곤궁이다."가 "곤궁이에요."로 바뀐 일이 있었다
+const toHaeyo = (s) => s.split(/(["“][^"”]*["”]|'[^'\n]*')/).map((part, i) => (i % 2 ? part : toHaeyoPlain(part))).join('');
 
 function autoFix(out, name, node = {}) {
   const who = name ? `${name}님` : '이분';
@@ -362,6 +424,7 @@ function autoFix(out, name, node = {}) {
   for (const k of Object.keys(unquoted)) if (!(node.styleSkip || []).includes(k)) unquoted[k] = mapStrings(unquoted[k], toHaeyo);
   return mapStrings(unquoted, (s) => s
     .replace(/당신/g, who)
+    .replace(/에너지/g, '기세')
     .replace(/지 마(?:세요|십시오)(?=[.!]?(\s|$))/g, '지 않는 쪽이 좋아요')
     .replace(/(?:으)?십시오(?=[.!]?(\s|$))/g, '는 쪽이 좋습니다')
     .replace(/(?:으)?세요(?=[.!](\s|$)|$)/g, '는 쪽이 좋아요')
@@ -382,6 +445,8 @@ function styleIssues(out, node) {
   if (jj) issues.push(`지지 이름("${jj[0]}")`);
   const jg = outside.match(JARGON);
   if (jg) issues.push(`육효 용어("${jg[0]}")`);
+  const dt = outside.match(/\d{1,2}월\s?\d{1,2}일/);
+  if (dt) issues.push(`하루짜리 날짜("${dt[0]}") — "빠르면 ~, 늦어도 ~" 범위로`);
   return { issues, hanja: Boolean(hz) };
 }
 const stringsOf = (v) => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(stringsOf) : v && typeof v === 'object' ? Object.values(v).flatMap(stringsOf) : []);
@@ -457,23 +522,25 @@ async function runNode(node, state, parent, deadline) {
   throw lastErr;
 }
 
-// 화면이 그대로 그리는 리포트 객체. version이 바뀌면 index.html의 renderReport도 같이 바꿀 것.
-function assemble({ analysis: a, plan: p, open, core, tail }) {
+// 화면이 그대로 그리는 리포트 객체. version이 바뀌면 index.html의 buildReport·parseReadingResponse도 같이 바꿀 것.
+function assemble({ analysis: a, plan: p, open, yao, core, tail, qa }) {
   return {
-    version: 2,
+    version: 3,
     headline: p.verdict.line,
     summary: { fortune: a.fortune, keywords: p.keywords, mood: p.mood },
     verdict: { kind: p.verdict.kind, label: p.verdict.label, reasons: p.verdict.reasons },
     empathy: p.empathy,
     answer: open.answer,
     shape: open.shape,
-    heart: core.heart,
+    heart: yao.heart,
+    yao: yao.yao || [],
+    stages: yao.stages || [],
     flow: core.flow,
     dos: core.dos,
     donts: core.donts,
     season: p.season,
     timeline: tail.timeline,
-    qa: tail.qa,
+    qa: qa.qa || [],
     closing: tail.closing,
     bubbles: p.bubbles,
   };
@@ -483,8 +550,8 @@ export async function runReadingGraph(input, root) {
   const deadline = Date.now() + GRAPH_BUDGET_MS;
   const analysis = await runNode(ANALYZE, { input }, root, deadline);
   const plan = nestPlan(await runNode(PLAN, { input, analysis }, root, deadline));
-  const [open, core, tail] = await Promise.all(
+  const [open, yao, core, tail, qa] = await Promise.all(
     WRITERS.map((node) => runNode(node, { input, analysis, plan }, root, deadline)),
   );
-  return assemble({ analysis, plan, open, core, tail });
+  return assemble({ analysis, plan, open, yao, core, tail, qa });
 }

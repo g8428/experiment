@@ -51,7 +51,27 @@ textarea.inp{min-height:140px;resize:vertical;}
 input.inp{resize:none;}
 
 /* ── S0 인트로 ── */
-#s0{justify-content:center;text-align:center;}
+#s0{justify-content:flex-start;}
+.land{gap:1rem;}
+.land-head{text-align:center;padding-top:1rem;}
+.land-sub{font-family:var(--f-ui);font-size:.86rem;color:var(--goldl);letter-spacing:.3em;margin-top:.2rem;}
+.land-say{margin:.4rem 0 0;}
+.land-say .say-text{font-size:1rem;}
+.land-cta{align-self:stretch;}
+.land-card{border:.5px solid var(--bdr);background:var(--sf);padding:1.2rem 1.1rem;border-radius:2px;display:flex;flex-direction:column;gap:.75rem;}
+.land-k{font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.14em;}
+.land-gua{display:flex;gap:1rem;align-items:center;}
+.land-gua .glines.mini .gy,.land-gua .glines.mini .gn{opacity:1;}
+.land-gname{font-family:var(--f-body);font-size:1.15rem;color:var(--t1);}
+.land-gno{font-family:var(--f-ui);font-size:.78rem;color:var(--t3);}
+.land-quote{font-family:var(--f-body);font-size:.98rem;line-height:1.8;color:var(--t1);}
+.land-note{font-family:var(--f-ui);font-size:.8rem;color:var(--t3);line-height:1.6;}
+.land-sample{margin:0;}
+.land-list{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
+.land-list li{font-family:var(--f-body);font-size:.92rem;line-height:1.7;color:var(--t2);padding-left:1rem;position:relative;}
+.land-list li::before{content:'';position:absolute;left:0;top:.7em;width:5px;height:5px;background:var(--gold);transform:rotate(45deg);}
+.land-list b{color:var(--t1);font-weight:500;}
+.land .btn-ghost{align-self:flex-start;}
 .logo{font-family:'Noto Serif SC',serif;font-size:clamp(2.8rem,11vw,4rem);font-weight:300;letter-spacing:.3em;color:var(--t1);line-height:1;margin-bottom:.6rem;}
 .trigs{display:flex;gap:1rem;justify-content:center;font-size:1.15rem;color:var(--t3);letter-spacing:.4em;animation:bth 3.5s ease-in-out infinite;margin:1rem 0 1.5rem;}
 @keyframes bth{0%,100%{opacity:.22;}50%{opacity:.52;}}
@@ -276,31 +296,69 @@ details.gloss dl{padding:.2rem 0 .9rem;}
 details.gloss dt{font-family:var(--f-ui);font-size:.84rem;color:var(--goldl);margin-top:.6rem;}
 details.gloss dd{font-family:var(--f-body);font-size:.9rem;line-height:1.7;color:var(--t2);}
 .ccard .say{margin:0;}
+.yao-title{font-family:var(--f-ui);font-size:.82rem;font-weight:500;color:var(--goldl);letter-spacing:.1em;margin:1.4rem 0 .4rem;padding-top:1rem;border-top:.5px solid var(--bdr);}
+.stage{margin-top:1rem;}
+.stage-h{font-family:var(--f-ui);font-size:.86rem;font-weight:500;color:var(--t1);background:var(--sf2);border-left:2px solid var(--gold);padding:.4rem .7rem;margin-bottom:.6rem;}
+.stage-r{margin-bottom:.4rem;}
+.yao{padding:.8rem 0 .2rem .8rem;border-left:.5px solid var(--bdr);margin-left:.2rem;}
+.yao+.yao{margin-top:.4rem;}
+.yao-h{display:flex;flex-wrap:wrap;gap:.5rem;align-items:baseline;margin-bottom:.35rem;}
+.yao-pos{font-family:var(--f-ui);font-size:.9rem;font-weight:500;color:var(--goldl);}
+.yao-meta{font-family:var(--f-ui);font-size:.76rem;color:var(--t3);}
+.yao-src{font-family:var(--f-body);font-size:.9rem;line-height:1.7;color:var(--t1);background:rgba(154,120,40,.05);padding:.45rem .7rem;margin-bottom:.5rem;}
+.tl-stage{font-family:var(--f-ui);font-size:.76rem;color:var(--t3);letter-spacing:.08em;}
+.tl-note{font-family:var(--f-ui);font-size:.78rem;color:var(--t3);margin-top:.8rem;}
+.angle{margin-top:.7rem;padding-left:.8rem;border-left:1px solid var(--bdr);}
+.angle-l{font-family:var(--f-ui);font-size:.8rem;font-weight:500;color:var(--goldl);margin-bottom:.2rem;}
 @media(max-width:480px){.dd{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<!-- S0 표지 -->
+<!-- S0 첫 화면: 연서의 점방에 들어서기 → 오늘의 한 괘(무료 맛보기) → 이런 풀이를 받아요(미리보기) -->
 <div class="screen active" id="s0">
-  <h1 class="logo">周易占</h1>
-  <p style="font-family:'Noto Sans KR',sans-serif;font-size:.84rem;color:var(--t2);letter-spacing:.22em;margin:.4rem 0 1.5rem">주역점</p>
-  <div class="orn" style="width:100%;max-width:340px"><i></i></div>
-  <p class="intro-p">동전 세 개를 여섯 번 던져 괘를 얻습니다.<br>괘가 나오면 몇 가지만 더 여쭙고, 그 답에 맞춰 풀이해 드립니다.</p>
-  <button class="btn" onclick="goTo('s1')"><span>점 보기</span></button>
+  <div class="inner land">
+    <header class="land-head">
+      <h1 class="logo">周易占</h1>
+      <p class="land-sub">연서의 주역 점방</p>
+    </header>
+    <div class="say land-say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">어서 오세요. 오늘은 무엇이 마음에 걸려 오셨어요?<br>동전 세 개만 있으면 돼요. 괘를 펴 놓고, 물으신 것에 차근차근 답해 드릴게요.</p></div>
+    <button class="btn land-cta" onclick="goTo('s1')"><span>고민 털어놓기</span></button>
+
+    <section class="land-card" id="todayGua" aria-label="오늘의 한 괘"></section>
+
+    <section class="land-card" aria-label="풀이 미리보기">
+      <p class="land-k">이런 풀이를 받아요</p>
+      <div class="sum-card land-sample">
+        <p class="sum-k">한 줄로 보면</p>
+        <p class="sum-line">정성으로 시작하고 끝까지 살피는 길</p>
+        <div class="chips"><span class="chip">정성</span><span class="chip">경계</span><span class="chip">때를 기다림</span></div>
+        <div class="fscale" aria-hidden="true"><span>흉</span><span>조심</span><span>평</span><span class="on">소길</span><span>길</span></div>
+      </div>
+      <ul class="land-list">
+        <li>물으신 것에 대한 <b>분명한 답</b>과 그 이유</li>
+        <li><b>효를 하나씩</b> 짚는 풀이 — 변효가 없으면 여섯 효를 처음부터 끝까지</li>
+        <li>지금 할 것 · 피할 것</li>
+        <li>일이 움직이기 쉬운 때를 <b>넉넉한 범위</b>로</li>
+        <li>남겨 주신 답 세 가지에 각각, 여러 각도로</li>
+      </ul>
+      <p class="land-note">예시 풀이예요. 실제 풀이는 나온 괘와 고민에 맞춰 연서가 새로 씁니다.</p>
+    </section>
+
+    <button class="btn land-cta" onclick="goTo('s1')"><span>연서에게 묻기</span></button>
+  </div>
 </div>
 
 <!-- S1 고민 입력 -->
 <div class="screen" id="s1">
   <div class="inner">
     <div class="stepbar" id="sb1"></div>
-    <p class="stitle">무엇이 궁금하세요</p>
-    <p class="ssub">한두 줄이면 충분합니다. 구체적일수록 풀이가 그 고민에 가까워집니다.</p>
+    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">어떤 일이 마음에 걸리세요? 한두 줄이면 충분해요.<br>이름을 알려 주시면 풀이에서 불러 드릴게요.</p></div>
     <label class="fld" for="nameIn">이름</label>
     <input class="inp" id="nameIn" placeholder="풀이에서 부를 이름" maxlength="10" autocomplete="given-name" style="margin-bottom:1rem">
     <label class="fld" for="qIn">고민</label>
-    <textarea class="inp" id="qIn" rows="5" placeholder="예: 지금 회사에 남을지, 올해 안에 옮길지 고민입니다."></textarea>
-    <p class="hint">비워 두면 요즘의 흐름 전반을 봅니다.</p>
+    <textarea class="inp" id="qIn" rows="5" placeholder="예: 지금 회사에 남을지, 올해 안에 옮길지 고민이에요."></textarea>
+    <p class="hint">비워 두면 요즘의 흐름 전반을 봐 드려요.</p>
     <div class="brow">
       <button class="btn-ghost" onclick="goTo('s0')">뒤로</button>
       <button class="btn" onclick="startThrow()"><span>동전 던지러 가기</span></button>
@@ -312,11 +370,8 @@ details.gloss dd{font-family:var(--f-body);font-size:.9rem;line-height:1.7;color
 <div class="screen" id="s2">
   <div class="inner">
     <div class="stepbar" id="sb2"></div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-bottom:.8rem">
-      <div>
-        <p class="stitle" style="text-align:left;margin:0">동전 던지기</p>
-        <p class="ssub" style="text-align:left;margin:.2rem 0 0">초효부터 상효까지 한 줄씩 던집니다.</p>
-      </div>
+    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">동전 세 개를 여섯 번 던져요. 맨 아래 첫 줄(초효)부터 한 줄씩 쌓여 괘가 돼요.<br>손에 쥔 동전으로 던지셨다면 「직접」으로 앞뒤를 넣어 주세요.</p></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
       <span style="font-family:var(--f-ui);font-size:.85rem;color:var(--t2);font-variant-numeric:tabular-nums;white-space:nowrap" id="tcnt">0 / 6효</span>
     </div>
     <div class="ptrak"><div class="pfill" id="tprog" style="width:0%"></div></div>
@@ -334,10 +389,11 @@ details.gloss dd{font-family:var(--f-body);font-size:.9rem;line-height:1.7;color
       <p class="ssub" id="hexSub"></p>
       <div class="gwrap" id="s2gua"></div>
       <p class="chgi" id="s2chgi"></p>
+      <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">괘가 나왔어요. 먼저 큰 그림부터 보여 드릴게요.<br>다 보시면 세 가지만 더 여쭤보고, 그 답에 맞춰 깊게 풀어 드릴게요.</p></div>
       <div id="hexInterpret"></div>
       <div class="brow" style="margin-top:1.2rem">
         <button class="btn-ghost" onclick="resetThrow()">다시 던지기</button>
-        <button class="btn" onclick="proceedToQ5()"><span>질문에 답하기</span></button>
+        <button class="btn" onclick="proceedToQ5()"><span>세 가지 질문에 답하기</span></button>
       </div>
     </div>
   </div>
@@ -349,9 +405,7 @@ details.gloss dd{font-family:var(--f-body);font-size:.9rem;line-height:1.7;color
     <div class="stepbar" id="sb3"></div>
     <div class="gwrap" id="s3gua"></div>
     <p class="chgi" id="s3chgi"></p>
-    <div class="orn"><i></i></div>
-    <p class="stitle">몇 가지만 더 여쭐게요</p>
-    <p class="ssub" id="s3sub">몇 가지 여쭤볼게요</p>
+    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text"><span id="s3sub">세 가지만 더 여쭤볼게요.</span></p></div>
     <div id="q5area">
       <div class="aibox"><p class="aild" id="q5ld">연서가 질문을 고르고 있어요</p></div>
     </div>
@@ -855,7 +909,7 @@ function resetThrow(){
 /* ── S2→S3 이동 + 질문 생성 ── */
 async function proceedToQ5(){
   renderGua('s3gua','s3chgi');
-  document.getElementById('s3sub').textContent='몇 가지 여쭤볼게요';
+  document.getElementById('s3sub').textContent='세 가지만 더 여쭤볼게요. 답이 구체적일수록 풀이가 그 일에 가까워져요.';
   document.getElementById('q5area').innerHTML=`<div class="aibox"><p class="aild">연서가 질문을 고르고 있어요</p></div>`;
   document.getElementById('s3btns').style.display='none';
   goTo('s3');
@@ -870,21 +924,17 @@ async function generateQ5(ben,ji){
     `"${S.q.slice(0,25)}${S.q.length>25?'...':''}" — 이 고민이 처음 생긴 건 어떤 계기였나요?`,
     '이 상황에서 가장 원하는 결과는 무엇인가요? 구체적으로 어떤 모습이기를 바라나요?',
     '앞으로 나아가는 데 가장 크게 가로막고 있는 것은 무엇인가요? 외부 상황인가요, 내 마음인가요?',
-    '이 고민에 대해 요즘 가장 자주 드는 생각이나 감정이 있다면요?',
-    '이 일이 잘 풀렸을 때, 6개월 뒤 어떤 모습이기를 원하나요?',
   ] : [
     '요즘 가장 크게 마음에 걸리는 것은 무엇인가요?',
-    '그 고민에 대해 지금 가장 자주 드는 생각이나 감정은 무엇인가요?',
-    '앞으로 나아가는 데 가장 크게 가로막고 있는 것은 무엇인가요?',
     '지금 정말 원하는 방향은 어디인가요? 어떤 모습으로 살고 싶으세요?',
-    '6개월 뒤 어떤 모습이기를 원하나요?',
+    '앞으로 나아가는 데 가장 크게 가로막고 있는 것은 무엇인가요?',
   ];
 
   const bStr=ben?`${S.benGua.n}(${S.benGua.no}번) — ${ben.v}`:'?';
   const jStr=ji?`${S.jiGua.n}(${S.jiGua.no}번) — ${ji.v}`:'없음';
   const hasQ=!!(S.q&&S.q.trim());
 
-  const prompt=`당신은 '연서'라는 30대 역술가입니다. 아래 상황을 보고, 괘를 더 깊이 읽기 위해 상담자에게 물을 질문 5가지를 해요체 존댓말로 만들어주세요.
+  const prompt=`당신은 '연서'라는 30대 역술가입니다. 아래 상황을 보고, 괘를 더 깊이 읽기 위해 상담자에게 물을 질문 3가지를 해요체 존댓말로 만들어주세요. 질문은 셋뿐이니, 풀이에 꼭 필요한 것만 묻습니다.
 
 중요: 질문은 반드시 일상적인 존댓말로 씁니다.
 - 모든 질문은 존댓말 의문형으로 끝냅니다: "~나요?", "~세요?", "~인가요?", "~ㄹ까요?". "~어?", "~니?", "~야?", "~지?" 같은 반말은 한 질문도 쓰지 않습니다.
@@ -900,15 +950,13 @@ ${hasQ?`[고민]\n"${S.q}"\n\n이 고민을 중심으로 질문을 만들어주�
 지괘: ${jStr}
 변효: ${S.chg.length>0?S.chg.map(i=>i+1+'효').join(', '):'없음'}
 
-[질문 5가지 틀]
-1. 이 상황이 시작된 배경이나 계기
+[질문 3가지 틀]
+1. 이 상황이 시작된 배경이나 계기, 지금 어디까지 와 있는지
 2. 지금 진짜 원하는 결과 (구체적으로)
 3. 앞을 막고 있는 것 (외부 상황 or 내 마음)
-4. 요즘 자주 드는 감정이나 생각
-5. 앞으로 어떤 모습이기를 바라는지
 
 반드시 JSON만 반환. 마크다운 없이.
-{"questions":["질문1","질문2","질문3","질문4","질문5"]}`;
+{"questions":["질문1","질문2","질문3"]}`;
 
   // 존댓말 의문형("~요?", "~까?")으로 끝나지 않으면 반말로 본다
   const polite=q=>/(요|까)[?？]?\s*$/.test(String(q||'').trim());
@@ -927,12 +975,12 @@ ${hasQ?`[고민]\n"${S.q}"\n\n이 고민을 중심으로 질문을 만들어주�
     return JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||'{}').questions||[];
   };
   try{
-    let qs=await ask(prompt);
+    let qs=(await ask(prompt)).slice(0,3);
     if(qs.length<3)throw new Error('질문 부족');
     if(!qs.every(polite)){
       console.warn('[질문] 반말 섞임 — 다시 요청',qs.filter(q=>!polite(q)));
       const again=await ask(prompt+'\n\n[다시 요청] 직전 답에 반말 질문이 있었습니다. 다섯 질문 모두 "~나요?/~세요?/~인가요?"처럼 존댓말로 끝내 주세요.').catch(()=>[]);
-      if(again.length>=3)qs=again;
+      if(again.length>=3)qs=again.slice(0,3);
     }
     S.q5=qs.map((q,i)=>polite(q)?q:(defaultQ[i]||defaultQ[defaultQ.length-1]));
   }catch(e){
@@ -1145,6 +1193,25 @@ function buildLocalCards(ben,ji,chg){
   return html;
 }
 
+/* ── 첫 화면 '오늘의 한 괘': 날짜로 고르는 무료 맛보기(같은 날엔 누구에게나 같은 괘) ── */
+function renderTodayGua(){
+  const el=document.getElementById('todayGua');if(!el)return;
+  const d=new Date();
+  const no=(Math.imul((d.getFullYear()*372+d.getMonth()*31+d.getDate())^0x5bd1e995,2654435761)>>>0)%64+1;
+  let name='',ns=[];
+  for(const hi in GUA)for(const lo in GUA[hi])if(GUA[hi][lo].no===no){name=GUA[hi][lo].n;ns=[...(lo+hi)];}
+  let g='<div class="glines mini" aria-hidden="true">';
+  for(let i=5;i>=0;i--)g+=ns[i]==='양'?'<div class="gy"></div>':'<div class="gnw"><div class="gn"></div><div class="gn"></div></div>';
+  g+='</div>';
+  const k=GD2?.[no]?.k2||GD?.[no]?.k||'';
+  el.innerHTML=`<p class="land-k">오늘의 한 괘 · ${d.getMonth()+1}월 ${d.getDate()}일</p>
+    <div class="land-gua">${g}<div><p class="land-gname">${esc(name)}</p><p class="land-gno">${no}번 괘</p></div></div>
+    <p class="land-quote">“${esc(k)}”</p>
+    <p class="land-note">오늘 펼친 괘가 이렇게 말해요. 내 고민에 대어 보면 이 말이 무엇을 가리키는지 또렷해져요.</p>
+    <button class="btn-ghost" onclick="goTo('s1')">내 고민으로 깊게 보기</button>`;
+}
+document.addEventListener('DOMContentLoaded',renderTodayGua);
+
 /* ── 풀이 리포트 렌더러 (서버 그래프 리포트 객체 version 2, 2026-10-17) ──
    흐름: 한눈에 → 물으신 것에 대한 답 → 본괘(지금의 형세) → 중심 효(이 점의 심장) → 지괘(흘러가는 곳)
         → 할 것·피할 것 → 때 → 남겨 주신 답에 → 마무리 · 처음 보는 말 풀이
@@ -1155,7 +1222,7 @@ const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 function narratorSay(text,mood='default'){
   if(!text)return'';
   const img=NARRATOR.art?`<img src="${NARRATOR.art}${mood}.webp" alt="" onerror="this.remove()">`:'';
-  return`<div class="say"><div class="say-ava" aria-hidden="true"><span>${NARRATOR.name}</span>${img}</div><p class="say-text"><b class="say-name">${NARRATOR.name}</b>${esc(text)}</p></div>`;
+  return`<div class="say"><div class="say-ava" aria-hidden="true"><span>${NARRATOR.name}</span>${img}</div><p class="say-text">${esc(text)}</p></div>`;
 }
 const FORTUNE_STEPS=['흉','조심','평','소길','길'];
 const VERDICT_TAG={go:'해도 좋아요',wait:'아직은 기다릴 때예요',conditional:'조건이 맞으면 좋아요',no:'하지 않는 편이 길해요',general:'요즘의 흐름'};
@@ -1220,13 +1287,25 @@ function buildReport(r,ben,ji){
   // ④ 중심 효 — 이 점의 심장
   const midPart=fy.kind?`${fy.kind} · ${fy.idxs.map(i=>L[i]).join('·')}`:chg.length===6?'여섯 효 모두 변함':'변효 없음 · 여섯 자리';
   const hy=i=>b2.hy2?.[i]||ben?.hy?.[i]||'';
-  const heartSrc=fy.idxs.map(i=>src(`${fy.kind} ${L[i]}`,hy(i))).join('')
-    ||src('읽는 법',chg.length===6?'여섯 효가 모두 바뀌어 개별 효사보다 지괘 괘사가 중심이에요.':'변효가 없어 본괘 여섯 자리를 처음·가운데·끝으로 읽어요.');
+  // 효를 하나씩: 효마다 원문(효사) → 연서의 풀이. 변효가 없으면 여섯 효를 초반·중반·후반 흐름으로 묶어 읽는다.
+  const yaoIdx=p=>L.indexOf(String(p||'').trim());
+  const yaoItem=y=>{const i=yaoIdx(y.pos);return`<div class="yao">
+      <p class="yao-h"><span class="yao-pos">${esc(y.pos)}</span>${i>=0?`<span class="yao-meta">${POS_MEAN[i]} · ${esc(y.stage)} 흐름</span>`:''}</p>
+      ${i>=0&&hy(i)?`<p class="yao-src">${esc(hy(i))}</p>`:''}
+      <div class="sbody">${paras(y.reading)}</div></div>`;};
+  const yaos=r.yao||[],stages=r.stages||[];
+  let yaoHtml='';
+  if(stages.length&&chg.length===0){
+    yaoHtml=stages.map(s=>{const st=s.stage.replace(' 흐름','');
+      return`<div class="stage"><p class="stage-h">${esc(s.stage)}</p><div class="sbody stage-r">${paras(s.reading)}</div>${yaos.filter(y=>y.stage===st).map(yaoItem).join('')}</div>`;}).join('');
+  }else yaoHtml=yaos.map(yaoItem).join('');
+  const focusIdx=chg.length===0?[0,1,2,3,4,5]:fy.idxs;
   h+=part(midPart);
   h+=narratorSay(r.bubbles?.heart,mood);
   h+=`<section class="scard"><span class="stag">이 점의 심장</span>
-    <div class="heart-src">${fy.idxs.length?miniGua(fy.idxs):''}<div>${heartSrc}</div></div>
-    <div class="sbody">${paras(r.heart)}</div></section>`;
+    <div class="heart-src">${focusIdx.length?miniGua(focusIdx):''}<div class="sbody">${paras(r.heart)}</div></div>
+    ${yaoHtml?`<p class="yao-title">${chg.length===0?'여섯 효를 처음부터 끝까지':'효를 하나씩'}</p>${yaoHtml}`:''}
+  </section>`;
 
   // ⑤ 지괘 — 흘러가는 곳
   h+=part(jiName?`지괘 · ${jiName}`:`본괘 · ${benName}`);
@@ -1247,12 +1326,13 @@ function buildReport(r,ben,ji){
   h+=narratorSay(r.bubbles?.timing,'default');
   h+=`<section class="scard"><span class="stag">때</span>
     <div class="sbody"><p>${esc(r.season)}</p></div>
-    ${(r.timeline||[]).length?`<ol class="tl">${r.timeline.map(t=>`<li><p class="tl-when">${esc(t.when)}</p><p class="tl-what">${esc(t.what)}</p><p class="tl-watch">${esc(t.watch)}</p></li>`).join('')}</ol>`:''}
+    ${(r.timeline||[]).length?`<ol class="tl">${r.timeline.map(t=>`<li><p class="tl-stage">${esc(t.stage)}</p><p class="tl-when">${esc(t.range)}</p><p class="tl-what">${esc(t.what)}</p><p class="tl-watch">${esc(t.watch)}</p></li>`).join('')}</ol>`:''}
+    <p class="tl-note">시기는 하루를 짚는 예언이 아니라, 괘가 말하는 흐름이 움직이기 쉬운 폭이에요.</p>
   </section>`;
 
   // ⑧ 남겨 주신 답에
   if((r.qa||[]).length){
-    h+=`<section class="scard"><span class="stag">남겨 주신 답에</span>${r.qa.map((x,i)=>`<details class="qa"${i===0?' open':''}><summary>${esc(x.q)}</summary><div class="sbody">${paras(x.a)}</div></details>`).join('')}</section>`;
+    h+=`<section class="scard"><span class="stag">남겨 주신 답에</span>${r.qa.map((x,i)=>`<details class="qa"${i===0?' open':''}><summary>${esc(x.q)}</summary><div class="sbody">${paras(x.a)}</div>${(x.angles||[]).map(g=>`<div class="angle"><p class="angle-l">${esc(g.lens)}</p><div class="sbody">${paras(g.text)}</div></div>`).join('')}</details>`).join('')}</section>`;
   }
 
   // ⑨ 마무리 · 처음 보는 말 풀이
@@ -1306,7 +1386,7 @@ function hideLoading(){
 function goBackToQ5(){
   // 기존 질문·답변 유지한 채 S3으로 복귀
   renderGua('s3gua','s3chgi');
-  document.getElementById('s3sub').textContent='답을 고친 뒤 다시 풀이를 받으세요';
+  document.getElementById('s3sub').textContent='답을 고쳐 주시면 그에 맞춰 다시 풀어 드릴게요.';
   // 질문 폼 다시 렌더링 (기존 답변 채워 넣기)
   let html='<div class="q5lst">';
   S.q5.forEach((q,i)=>{
@@ -1834,12 +1914,15 @@ ${yong?`본괘가 ${benName}이므로 ${yong}${josa(yong,'으로/로')} 읽는�
     `대상전 풀이: ${ko(gd2.dst2||gd?.dst||'')}`,
     gd?.v?`핵심: ${ko(gd.v)}`:'',
   ].filter(Boolean).join('\n');
-  // 변효 1~3개: 변효 효사 / 4~5개: 불변효 효사만(변효 효사는 일부러 안 줘서 인용을 막는다) / 0·6개: 개별 효사 없음
+  // 변효 1~3개: 변효 효사 / 4~5개: 불변효 효사만(변효 효사는 일부러 안 줘서 인용을 막는다)
+  // 0개: 여섯 효 전부를 초반·중반·후반 흐름으로(2026-10-17 — 변효가 없을 때 괘사만 읽고 끝난다는 피드백) / 6개: 개별 효사 없음
   const fy=focusYao(chg);
   const yongName=benNo===1?'용구(用九)':benNo===2?'용육(用六)':'';
+  const STAGE=i=>i<2?'초반':i<4?'중반':'후반';
+  const yaoLine=i=>`${LABELS[i]}(${POS_MEAN[i]} · ${STAGE(i)} 흐름): ${benHy(i)}${ben2.hy_detail?.[i]?`\n  자리 풀이: ${ko(ben2.hy_detail[i])}`:''}`;
   const linesStr=fy.kind
-    ?`[${fy.kind} — 이 점의 중심 자리]\n`+fy.idxs.map(i=>`${LABELS[i]}(${POS_MEAN[i]}): ${benHy(i)}${ben2.hy_detail?.[i]?`\n  자리 풀이: ${ben2.hy_detail[i]}`:''}`).join('\n')
-    :chgN===0?'[변효 없음 — 본괘 여섯 자리를 처음(초·이효)·가운데(삼·사효)·끝(오·상효)으로 읽음]'
+    ?`[${fy.kind} — 이 점의 중심 자리]\n`+fy.idxs.map(yaoLine).join('\n')
+    :chgN===0?'[변효 없음 — 여섯 효를 초반(초·이효)·중반(삼·사효)·후반(오·상효) 흐름으로 하나씩 읽음]\n'+[0,1,2,3,4,5].map(yaoLine).join('\n')
     :`[여섯 효 모두 변함 — 개별 효사 대신 ${yongName||'지괘 괘사'} 중심]`;
   const src={
     ben:guaBlock('본괘',state.benGua,ben,ben2,nats),
@@ -1872,7 +1955,7 @@ ${yong?`본괘가 ${benName}이므로 ${yong}${josa(yong,'으로/로')} 읽는�
 /* 응답 파싱: 서버 그래프의 리포트 객체(version 2)를 그대로 쓴다. 형식이 다르면 재시도·대체 풀이로 넘어간다. */
 function parseReadingResponse(data){
   const r=data?.reading;
-  if(!r||r.version!==2)throw new Error('알 수 없는 풀이 형식');
+  if(!r||r.version!==3)throw new Error('알 수 없는 풀이 형식');
   return r;
 }
 
