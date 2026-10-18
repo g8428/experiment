@@ -1380,7 +1380,7 @@ function buildReport(r,ben,ji){
         ${s.seun.map(y=>`<p><b>${y.year}</b>${esc(y.gz)}년 <em>${esc(y.ganTen)}·${esc(y.zhiTen)}</em></p>`).join('')}
         ${nx?`<p class="luck-next"><b>다음 대운</b>${esc(nx.gz)} <span>${nx.startYear}~</span></p>`:''}
       </div>
-      <div class="sbody">${paras(r.saju_flow?.now)}</div>
+      <div class="sbody">${paras(r.saju_flow?.portrait)}${paras(r.saju_flow?.past)}${paras(r.saju_flow?.now)}</div>
       ${r.saju_flow?.fit?`<div class="sbody saju-fit">${paras(r.saju_flow.fit)}</div>`:''}
     </section>`;
   }
@@ -2264,7 +2264,7 @@ async function generateReading(ben,ji,retryCount=0){
   const body=JSON.stringify(window.buildReadingInput(ben,ji,S));
   try{
     const ctrl=new AbortController();
-    const to=setTimeout(()=>ctrl.abort(),130000);
+    const to=setTimeout(()=>ctrl.abort(),175000); // v2 풀이는 길어서 서버 예산(150초)보다 넉넉히
     const res=await fetch('/api/v2/reading',{method:'POST',signal:ctrl.signal,headers,body});
     clearTimeout(to);
     const data=await res.json();

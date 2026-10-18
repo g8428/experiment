@@ -1,7 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*.js": { "maxDuration": 120 }
+    "api/**/*.js": { "maxDuration": 180 }
   },
   "rewrites": [
     { "source": "/v2", "destination": "/v2/index.html" },
