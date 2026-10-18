@@ -347,8 +347,8 @@ details.qa{padding:.3rem .2rem .7rem;}
       <h1 class="logo">周易占</h1>
       <p class="land-sub">연서의 주역 점방</p>
     </header>
-    <div class="say land-say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">어서 오세요. 오늘은 무엇이 마음에 걸려 오셨어요?<br>동전 세 개만 있으면 돼요. 괘를 펴 놓고, 물으신 것에 차근차근 답해 드릴게요.</p></div>
-    <button class="btn land-cta" onclick="goTo('s1')"><span>고민 털어놓기</span></button>
+    <div class="say land-say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">어서 오세요. 무슨 일로 오셨어요?</p></div>
+    <button class="btn land-cta" onclick="goTo('s1')"><span>점 보기</span></button>
 
     <section class="land-card" id="todayGua" aria-label="오늘의 한 괘"></section>
 
@@ -362,10 +362,9 @@ details.qa{padding:.3rem .2rem .7rem;}
         <p class="mv-h">퇴사 날짜는 아직 비워 두기</p>
         <p class="land-note">이효는 '십 년 만에 혼인한다'고 할 만큼 긴 호흡을 말해요. 첫 유료 사용자가 생길 때까지는 회사를 발판으로 두세요.</p>
       </div>
-      <p class="land-note">이 손님의 시기는 육효 응기로 짚었어요 — 나를 나타내는 자리가 다시 서는 달, 빠르면 4월 초.</p>
     </section>
 
-    <button class="btn land-cta" onclick="goTo('s1')"><span>연서에게 묻기</span></button>
+    <button class="btn land-cta" onclick="goTo('s1')"><span>점 보기</span></button>
   </div>
 </div>
 
@@ -373,15 +372,14 @@ details.qa{padding:.3rem .2rem .7rem;}
 <div class="screen" id="s1">
   <div class="inner">
     <div class="stepbar" id="sb1"></div>
-    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">어떤 일이 마음에 걸리세요? 한두 줄이면 충분해요.<br>이름을 알려 주시면 풀이에서 불러 드릴게요.</p></div>
+    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">편하게 말씀해 주세요.</p></div>
     <label class="fld" for="nameIn">이름</label>
-    <input class="inp" id="nameIn" placeholder="풀이에서 부를 이름" maxlength="10" autocomplete="given-name" style="margin-bottom:1rem">
+    <input class="inp" id="nameIn" placeholder="예: 재영" maxlength="10" autocomplete="given-name" style="margin-bottom:1rem">
     <label class="fld" for="qIn">고민</label>
     <textarea class="inp" id="qIn" rows="5" placeholder="예: 지금 회사에 남을지, 올해 안에 옮길지 고민이에요."></textarea>
-    <p class="hint">비워 두면 요즘의 흐름 전반을 봐 드려요.</p>
     <div class="brow">
       <button class="btn-ghost" onclick="goTo('s0')">뒤로</button>
-      <button class="btn" onclick="startThrow()"><span>동전 던지러 가기</span></button>
+      <button class="btn" onclick="startThrow()"><span>다음</span></button>
     </div>
   </div>
 </div>
@@ -390,7 +388,7 @@ details.qa{padding:.3rem .2rem .7rem;}
 <div class="screen" id="s2">
   <div class="inner">
     <div class="stepbar" id="sb2"></div>
-    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">동전 세 개를 여섯 번 던져요. 맨 아래 첫 줄(초효)부터 한 줄씩 쌓여 괘가 돼요.<br>손에 쥔 동전으로 던지셨다면 「직접」으로 앞뒤를 넣어 주세요.</p></div>
+    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">그 일을 마음에 두고 던져 보세요.</p></div>
     <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
       <span style="font-family:var(--f-ui);font-size:.85rem;color:var(--t2);font-variant-numeric:tabular-nums;white-space:nowrap" id="tcnt">0 / 6효</span>
     </div>
@@ -399,7 +397,7 @@ details.qa{padding:.3rem .2rem .7rem;}
     <div style="display:flex;gap:.6rem;justify-content:space-between;flex-wrap:wrap;margin-top:1rem">
       <button class="btn-ghost" onclick="goTo('s1')">고민 다시 쓰기</button>
       <button class="btns" id="autoBtn" onclick="autoAll()">
-        <span class="btn-s">남은 줄 한 번에 던지기</span>
+        <span class="btn-s">한 번에 던지기</span>
       </button>
     </div>
     <!-- 여섯 줄을 다 던진 뒤 -->
@@ -409,11 +407,11 @@ details.qa{padding:.3rem .2rem .7rem;}
       <p class="ssub" id="hexSub"></p>
       <div class="gwrap" id="s2gua"></div>
       <p class="chgi" id="s2chgi"></p>
-      <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text">괘가 나왔어요. 먼저 큰 그림부터 보여 드릴게요.<br>다 보시면 세 가지만 더 여쭤보고, 그 답에 맞춰 깊게 풀어 드릴게요.</p></div>
+      <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text" id="hexSay">괘가 나왔어요.</p></div>
       <div id="hexInterpret"></div>
       <div class="brow" style="margin-top:1.2rem">
         <button class="btn-ghost" onclick="resetThrow()">다시 던지기</button>
-        <button class="btn" onclick="proceedToQ5()"><span>세 가지 질문에 답하기</span></button>
+        <button class="btn" onclick="proceedToQ5()"><span>다음</span></button>
       </div>
     </div>
   </div>
@@ -425,9 +423,9 @@ details.qa{padding:.3rem .2rem .7rem;}
     <div class="stepbar" id="sb3"></div>
     <div class="gwrap" id="s3gua"></div>
     <p class="chgi" id="s3chgi"></p>
-    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text"><span id="s3sub">세 가지만 더 여쭤볼게요.</span></p></div>
+    <div class="say"><div class="say-ava" aria-hidden="true"><span>연서</span></div><p class="say-text"><span id="s3sub">몇 가지만 더 여쭤볼게요.</span></p></div>
     <div id="q5area">
-      <div class="aibox"><p class="aild" id="q5ld">연서가 질문을 고르고 있어요</p></div>
+      <div class="aibox"><p class="aild" id="q5ld">잠시만요</p></div>
     </div>
     <div class="brow" id="s3btns" style="display:none">
       <button class="btn-ghost" onclick="goTo('s2')">괘 다시 보기</button>
@@ -479,7 +477,7 @@ details.qa{padding:.3rem .2rem .7rem;}
 <div class="screen" id="tab-archive">
   <div class="inner" style="padding-top:1rem">
     <p class="stitle" style="margin-bottom:.3rem">보관함</p>
-    <p class="ssub" style="margin-bottom:1.5rem">받은 풀이가 이 기기에 저장됩니다</p>
+    
     <div id="archiveList" class="archive-list"></div>
   </div>
 </div>
@@ -488,7 +486,7 @@ details.qa{padding:.3rem .2rem .7rem;}
 <div id="loadingOverlay" role="status" aria-live="polite">
   <div class="lo-gua" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <p class="lo-title">연서가 괘를 읽고 있어요</p>
-  <p class="lo-sub" id="loSub">괘를 펴는 중</p>
+  <p class="lo-sub" id="loSub"></p>
   <p class="lo-secs" id="loSecs"></p>
 </div>
 
@@ -909,9 +907,9 @@ function showHexResult(){
   const ji=S.jiGua?GD[S.jiGua.no]:null;
   document.getElementById('hexTitle').textContent=S.benGua?(S.jiGua?`${S.benGua.n} → ${S.jiGua.n}`:S.benGua.n):'';
   const fy=focusYao(S.chg);
-  document.getElementById('hexSub').textContent=S.chg.length>0
-    ?`변효 ${S.chg.map(i=>i+1+'효').join('·')}${fy.kind==='불변효'?` → 불변효 ${fy.idxs.map(i=>i+1+'효').join('·')} 중심`:''} · ${S.benGua?.no||'??'}번 괘`
-    :`변효 없음 · ${S.benGua?.no||'??'}번 괘`;
+  document.getElementById('hexSub').textContent=S.benGua?.no?`${S.benGua.no}번 괘`:'';
+  const hs=document.getElementById('hexSay');
+  if(hs)hs.textContent=S.benGua?.n?`${S.benGua.n}${josa(S.benGua.n,'이/가')} 나왔네요.`:'괘가 나왔어요.';
   renderGua('s2gua','s2chgi');
   // 해석 카드 렌더링
   document.getElementById('hexInterpret').innerHTML=buildLocalCards(ben,ji,S.chg);
@@ -929,8 +927,8 @@ function resetThrow(){
 /* ── S2→S3 이동 + 질문 생성 ── */
 async function proceedToQ5(){
   renderGua('s3gua','s3chgi');
-  document.getElementById('s3sub').textContent='세 가지만 더 여쭤볼게요. 답이 구체적일수록 풀이가 그 일에 가까워져요.';
-  document.getElementById('q5area').innerHTML=`<div class="aibox"><p class="aild">연서가 질문을 고르고 있어요</p></div>`;
+  document.getElementById('s3sub').textContent='몇 가지만 더 여쭤볼게요.';
+  document.getElementById('q5area').innerHTML=`<div class="aibox"><p class="aild">잠시만요</p></div>`;
   document.getElementById('s3btns').style.display='none';
   goTo('s3');
   const ben=S.benGua?GD[S.benGua.no]:null;
@@ -1013,7 +1011,7 @@ ${hasQ?`[고민]\n"${S.q}"\n\n이 고민을 중심으로 질문을 만들어주�
 function renderQ5(){
   let html='<div class="q5lst">';
   S.q5.forEach((q,i)=>{
-    html+=`<div class="q5it"><label class="q5lb">${i+1}. ${q}</label><textarea class="q5in" id="a${i}" rows="2" placeholder="자유롭게 적어주세요 (짧아도 괜찮아요)"></textarea></div>`;
+    html+=`<div class="q5it"><label class="q5lb">${i+1}. ${q}</label><textarea class="q5in" id="a${i}" rows="2"></textarea></div>`;
   });
   html+='</div>';
   document.getElementById('q5area').innerHTML=html;
@@ -1053,16 +1051,8 @@ function buildLocalCards(ben,ji,chg){
   const chgN=chg?chg.length:0;
 
   html+=`<div class="scard">
-    <span class="stag">형세</span>
-    <h2 class="stit">${ben.v}</h2>
-    <div class="sbody">
-      <p>뽑힌 괘: <strong>${benName}(${S.benGua?.no||'?'}번)</strong>${jiName?` → <strong>${jiName}(${S.jiGua?.no||'?'}번)</strong>`:''}</p>
-    </div>
-  </div>`;
-
-  html+=`<div class="scard">
-    <span class="stag">본괘</span>
-    <h2 class="stit">${benName} 괘가 전하는 말</h2>
+    <span class="stag">본괘 · ${benName}</span>
+    <h2 class="stit">${ben.v||benName}</h2>
     <div class="sbody">
       <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">괘사</p>
       <p style="font-size:.88rem;color:var(--t1);line-height:1.8">${_bk}</p>
@@ -1072,7 +1062,6 @@ function buildLocalCards(ben,ji,chg){
       <div style="margin-top:.8rem;padding-top:.7rem;border-top:.5px solid var(--bdr)">
         <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">대상전</p>
         <p style="font-size:.84rem;color:var(--t2);line-height:1.75">${_bdst}</p>
-        <p style="margin-top:.55rem;font-family:var(--f-ui);font-size:.82rem;color:var(--t3)">이 지침이 지금 고민에서 무엇을 뜻하는지는 풀이에서 이어집니다.</p>
       </div>
     </div>
   </div>`;
@@ -1102,8 +1091,8 @@ function buildLocalCards(ben,ji,chg){
       </div>`;
     });
     if(secHtml)html+=`<div class="scard">
-      <span class="stag">여섯 자리</span>
-      <h2 class="stit">이 괘의 여섯 자리</h2>
+      <span class="stag">변효 없음</span>
+      <h2 class="stit">여섯 효</h2>
       <div class="sbody">${secHtml}</div>
     </div>`;
   }else if(chgN===6){
@@ -1158,26 +1147,22 @@ function buildLocalCards(ben,ji,chg){
         </div>`;
       });
     }
-    const _cardStit=chgN>=4?'변하지 않는 자리가 중심':'지금 움직이고 있는 것들';
+    const _cardStit=chgN>=4?'움직이지 않는 자리':'움직이는 자리';
     const _unchangedIdxs=chgN>=4?[0,1,2,3,4,5].filter(i=>!chg.includes(i)):[];
     const _unchangedText=chgN>=4?_unchangedIdxs.map(i=>LABELS[i]).join(', '):'';
     html+=`<div class="scard">
-      <span class="stag">${chgN>=4?`불변효 — 움직이지 않는 자리`:`변효 ${chg.length}개 — 움직이는 자리`}</span>
+      <span class="stag">${chgN>=4?`불변효 · ${_unchangedText}`:`변효 · ${chgText}`}</span>
       <h2 class="stit">${_cardStit}</h2>
       <div class="sbody">
-        <p style="font-size:.75rem;color:var(--t3)">${chgN>=4
-          ?`변효가 ${chgN}개(${chgText})라 움직이지 않는 <strong style="color:var(--t1)">${_unchangedText}</strong>${josa(_unchangedText,'을/를')} 읽습니다.`
-          :`변효: <strong style="color:var(--t1)">${chgText}</strong>`}</p>
         ${hyosaParts}
-        ${jiName?`<p style="margin-top:.8rem;font-size:.84rem;color:var(--t2)">지괘 <strong style="color:var(--t1)">${jiName}</strong>${josa(jiName,'으로/로')} 흘러가고 있습니다.</p>`:''}
       </div>
     </div>`;
   }
 
   if(ji&&chgN>0){
     html+=`<div class="scard">
-      <span class="stag">지괘 — 흘러가는 쪽</span>
-      <h2 class="stit">흘러가는 방향 — ${jiName}</h2>
+      <span class="stag">지괘 · ${jiName}</span>
+      <h2 class="stit">${ji.v||jiName}</h2>
       <div class="sbody">
         <p style="font-family:var(--f-ui);font-size:.78rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.3rem">괘사</p>
         <p style="font-size:.88rem;color:var(--t1);line-height:1.8">${_jk}</p>
@@ -1192,25 +1177,8 @@ function buildLocalCards(ben,ji,chg){
     </div>`;
   }
 
-  html+=`<div class="scard">
-    <span class="stag">한눈에</span>
-    <h2 class="stit">형세 · 활로 · 경계</h2>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);margin-top:.5rem">
-      <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">형세</p>
-        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${ben.v}</p>
-      </div>
-      <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">활로</p>
-        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chg&&chg.length>=3&&ji)?_jk:_bk}</p>
-      </div>
-      <div style="background:var(--sf);padding:1rem;text-align:center">
-        <p style="font-family:var(--f-ui);font-size:.78rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.5rem">경계</p>
-        <p style="font-size:.84rem;color:var(--t2);line-height:1.7">${(chgN>0&&ji)?(ji.v||_jdst):(_bdt2||_bdst)}</p>
-      </div>
-    </div>
-  </div>`;
-  return html;
+  // 괘 데이터 풀이문에 남아 있는 "당신"은 이름으로 바꾼다(이름이 없으면 그대로)
+  return S.name?html.replace(/당신/g,S.name+'님'):html;
 }
 
 /* ── 첫 화면 '오늘의 한 괘': 날짜로 고르는 무료 맛보기(같은 날엔 누구에게나 같은 괘) ── */
@@ -1227,8 +1195,7 @@ function renderTodayGua(){
   el.innerHTML=`<p class="land-k">오늘의 한 괘 · ${d.getMonth()+1}월 ${d.getDate()}일</p>
     <div class="land-gua">${g}<div><p class="land-gname">${esc(name)}</p><p class="land-gno">${no}번 괘</p></div></div>
     <p class="land-quote">“${esc(k)}”</p>
-    <p class="land-note">오늘 펼친 괘가 이렇게 말해요. 내 고민에 대어 보면 이 말이 무엇을 가리키는지 또렷해져요.</p>
-    <button class="btn-ghost" onclick="goTo('s1')">내 고민으로 깊게 보기</button>`;
+`;
 }
 document.addEventListener('DOMContentLoaded',renderTodayGua);
 
@@ -1397,12 +1364,11 @@ function renderFallback(ben,ji,err){
 
 /* ─── 로딩 오버레이 ─── */
 // 기다리는 30~40초 동안 연서가 지금 무엇을 하는지 보여 준다(서버 그래프의 실제 순서: 괘 분석 → 구성 → 섹션 병렬 작성)
-const LOAD_STEPS=[[0,'괘를 펴는 중'],[6,'괘사를 읽는 중'],[12,'효를 짚는 중'],[22,'응기로 때를 헤아리는 중'],[32,'붓을 고르는 중'],[45,'거의 다 됐어요']];
+const LOAD_STEPS=[];
 function showLoading(){
   let secs=0;
   clearInterval(S._tm);
   const sub=document.getElementById('loSub');
-  if(sub)sub.textContent=LOAD_STEPS[0][1];
   S._tm=setInterval(()=>{
     secs++;
     const el=document.getElementById('loSecs');
@@ -1422,12 +1388,12 @@ function hideLoading(){
 function goBackToQ5(){
   // 기존 질문·답변 유지한 채 S3으로 복귀
   renderGua('s3gua','s3chgi');
-  document.getElementById('s3sub').textContent='답을 고쳐 주시면 그에 맞춰 다시 풀어 드릴게요.';
+  document.getElementById('s3sub').textContent='고치실 답이 있으면 고쳐 주세요.';
   // 질문 폼 다시 렌더링 (기존 답변 채워 넣기)
   let html='<div class="q5lst">';
   S.q5.forEach((q,i)=>{
     const prevAns=S.a5[i]||'';
-    html+=`<div class="q5it"><label class="q5lb">${i+1}. ${q}</label><textarea class="q5in" id="a${i}" rows="2" placeholder="자유롭게 적어주세요 (짧아도 괜찮아요)">${prevAns}</textarea></div>`;
+    html+=`<div class="q5it"><label class="q5lb">${i+1}. ${q}</label><textarea class="q5in" id="a${i}" rows="2">${prevAns}</textarea></div>`;
   });
   html+='</div>';
   document.getElementById('q5area').innerHTML=html;
@@ -1449,7 +1415,7 @@ function renderArchive(){
   const records=JSON.parse(localStorage.getItem('ich_arc')||'[]');
   const container=document.getElementById('archiveList');
   if(records.length===0){
-    container.innerHTML='<div class="archive-empty"><p>아직 받은 풀이가 없습니다.</p><p style="margin-top:.5rem;font-size:.85rem">풀이를 받으면 여기에 남습니다.</p></div>';
+    container.innerHTML='<div class="archive-empty"><p>아직 본 점이 없어요.</p></div>';
     return;
   }
   container.innerHTML=records.map(r=>`
