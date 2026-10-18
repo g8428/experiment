@@ -4,6 +4,8 @@
     "api/**/*.js": { "maxDuration": 120 }
   },
   "rewrites": [
+    { "source": "/v2", "destination": "/v2/index.html" },
+    { "source": "/v2/(.*)", "destination": "/v2/index.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

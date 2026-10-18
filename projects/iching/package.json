@@ -11,6 +11,7 @@
     "@langfuse/tracing": "^5.13.0",
     "@opentelemetry/sdk-node": "^0.222.0",
     "@supabase/supabase-js": "^2.39.0",
+    "lunar-javascript": "1.7.7",
     "stripe": "^14.0.0"
   },
   "devDependencies": {

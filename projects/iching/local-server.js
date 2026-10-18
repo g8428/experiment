@@ -83,7 +83,8 @@ const server = createServer(async (req, res) => {
   }
 
   // 정적 파일 서빙
-  let filePath = path === '/' ? '/index.html' : path;
+  // /v2 — 주역사주 v2 (vercel.json의 /v2 규칙과 같게)
+  let filePath = path === '/' ? '/index.html' : /^\/v2\/?$/.test(path) ? '/v2/index.html' : path;
   const absPath = join(__dirname, filePath);
 
   if (!existsSync(absPath) || !absPath.startsWith(__dirname)) {
