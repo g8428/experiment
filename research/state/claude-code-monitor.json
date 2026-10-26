@@ -84,13 +84,29 @@
   "anthropic_news": [
    "https://www.anthropic.com/news/2026-us-midterms",
    "https://www.anthropic.com/news/2026-usage-policy-update",
+   "https://www.anthropic.com/news/accenture-embedded-evaluation",
    "https://www.anthropic.com/news/an-update-on-independent-evaluators",
+   "https://www.anthropic.com/news/announcements",
    "https://www.anthropic.com/news/anthropic-cyber-mission",
    "https://www.anthropic.com/news/barclays-scales-claude",
+   "https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust",
    "https://www.anthropic.com/news/claude-frontier-academy",
    "https://www.anthropic.com/news/cyber-verification-program",
+   "https://www.anthropic.com/news/distillation-defenses",
+   "https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
+   "https://www.anthropic.com/news/enterprise-frontier-safeguards",
+   "https://www.anthropic.com/news/features",
    "https://www.anthropic.com/news/genesis-mission-commitment",
+   "https://www.anthropic.com/news/improving-alignment-security-efforts",
+   "https://www.anthropic.com/news/life-sciences-verification-program",
+   "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+   "https://www.anthropic.com/news/open-call-guest-investigators-life-sciences",
+   "https://www.anthropic.com/news/partnerships",
+   "https://www.anthropic.com/news/policy",
+   "https://www.anthropic.com/news/product",
    "https://www.anthropic.com/news/public-benefit-fund",
+   "https://www.anthropic.com/news/safeguards",
+   "https://www.anthropic.com/news/security",
    "https://www.anthropic.com/news/singapore-office-opening"
   ],
   "claude_code_docs": [
@@ -8497,6 +8513,206 @@
     "기타"
    ],
    "kw_text": "Claude Code 업데이트(2.1.299): Added `size`, `weight`, `mono` and `tabular` to a mod's `Text` and named spacin… Added `size`, `weight`, `mono` and `tabular` to a mod's `Text` and named spacing steps (`xs` to `xl`) to its `Box`; `bold` is depre…"
+  },
+  "link:https://www.anthropic.com/news/accenture-embedded-evaluation": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: accenture-embedded-evaluation",
+   "url": "https://www.anthropic.com/news/accenture-embedded-evaluation",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: accenture-embedded-evaluation Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/announcements": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: announcements",
+   "url": "https://www.anthropic.com/news/announcements",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: announcements Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: christopher-stubbs-joins-long-term-benefit-trust",
+   "url": "https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: christopher-stubbs-joins-long-term-benefit-trust Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/distillation-defenses": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: distillation-defenses",
+   "url": "https://www.anthropic.com/news/distillation-defenses",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: distillation-defenses Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: donating-agent-skills-to-the-agentic-ai-foundation",
+   "url": "https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: donating-agent-skills-to-the-agentic-ai-foundation Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/enterprise-frontier-safeguards": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: enterprise-frontier-safeguards",
+   "url": "https://www.anthropic.com/news/enterprise-frontier-safeguards",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: enterprise-frontier-safeguards Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/features": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: features",
+   "url": "https://www.anthropic.com/news/features",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: features Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/improving-alignment-security-efforts": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: improving-alignment-security-efforts",
+   "url": "https://www.anthropic.com/news/improving-alignment-security-efforts",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: improving-alignment-security-efforts Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/life-sciences-verification-program": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: life-sciences-verification-program",
+   "url": "https://www.anthropic.com/news/life-sciences-verification-program",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: life-sciences-verification-program Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/model-hardware-standard-research-preview": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: model-hardware-standard-research-preview",
+   "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: model-hardware-standard-research-preview Anthropic 뉴스에 새 링크가 생김",
+   "reported": [
+    "2026-10-26"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "link:https://www.anthropic.com/news/open-call-guest-investigators-life-sciences": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: open-call-guest-investigators-life-sciences",
+   "url": "https://www.anthropic.com/news/open-call-guest-investigators-life-sciences",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: open-call-guest-investigators-life-sciences Anthropic 뉴스에 새 링크가 생김"
+  },
+  "link:https://www.anthropic.com/news/partnerships": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: partnerships",
+   "url": "https://www.anthropic.com/news/partnerships",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: partnerships Anthropic 뉴스에 새 링크가 생김"
+  },
+  "link:https://www.anthropic.com/news/policy": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: policy",
+   "url": "https://www.anthropic.com/news/policy",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: policy Anthropic 뉴스에 새 링크가 생김"
+  },
+  "link:https://www.anthropic.com/news/product": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: product",
+   "url": "https://www.anthropic.com/news/product",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: product Anthropic 뉴스에 새 링크가 생김"
+  },
+  "link:https://www.anthropic.com/news/safeguards": {
+   "first_seen": "2026-10-26",
+   "title": "[Anthropic 뉴스] 새 페이지: safeguards",
+   "url": "https://www.anthropic.com/news/safeguards",
+   "last_seen": "2026-10-26",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] 새 페이지: safeguards Anthropic 뉴스에 새 링크가 생김"
   }
  },
  "keyword_counts": {

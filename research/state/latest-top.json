@@ -1,435 +1,382 @@
 {
-  "date": "2026-10-19",
+  "date": "2026-10-26",
   "baseline": false,
   "headline": [
-    "[연동(MCP)] 공식 anthropics/claude-plugins-official — Official, Anthropic-managed directory of high quality Claude Code Plugins.",
-    "[에이전트] 공식 anthropics/skills — Public repository for Agent Skills",
-    "[자동화/에이전트/코딩] 공식 anthropics/claude-code — Claude Code is an agentic coding tool that lives in your terminal, understands your codeb…"
+    "[에이전트] 공식 [Anthropic 뉴스] 새 페이지: donating-agent-skills-to-the-agentic-ai-foundation — Anthropic 뉴스에 새 링크가 생김",
+    "[기타] 공식 [Anthropic 뉴스] 새 페이지: accenture-embedded-evaluation — Anthropic 뉴스에 새 링크가 생김",
+    "[기타] 공식 [Anthropic 뉴스] 새 페이지: announcements — Anthropic 뉴스에 새 링크가 생김"
   ],
-  "release_summary": "이번 주 릴리스(v2.1.290~v2.1.303, 12개): 글감급 변경 7건(후보 3건 올림), 사소한 개선 950건",
+  "release_summary": "",
   "min_value": 10,
   "failures": [
+    {
+      "label": "Claude Code 릴리스",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/releases?per_page=15"
+    },
+    {
+      "label": "Claude Code CHANGELOG",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/CHANGELOG.md"
+    },
+    {
+      "label": "Anthropic 공식 스킬",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/skills/contents/skills"
+    },
+    {
+      "label": "Claude Code 내장 플러그인",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/plugins"
+    },
+    {
+      "label": "공식 플러그인 마켓플레이스 (존재 확인 못 함)",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-plugins-official/contents/plugins"
+    },
     {
       "label": "Claude 플랫폼 문서 목차",
       "note": "RuntimeError: 링크 0개 — 페이지 구조 변경 또는 차단 의심"
     },
     {
+      "label": "GitHub 검색(신규·토픽)",
+      "note": "RuntimeError: 모든 검색 쿼리 실패: claude-code created:>{since} (HTTPError); claude skill created:>{since} (HTTPError); agent skills created:>{since} (HTTPError)"
+    },
+    {
+      "label": "Hacker News",
+      "note": "ProxyError: HTTPSConnectionPool(host='hn.algolia.com', port=443): Max retries exceeded with url: /api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i%3E1792368441&hitsPerPage=100 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 For"
+    },
+    {
       "label": "Reddit",
-      "note": "HTTPError: 403 Client Error: Blocked for url: https://www.reddit.com/r/ClaudeAI/top.json?t=week&limit=50"
+      "note": "ProxyError: HTTPSConnectionPool(host='www.reddit.com', port=443): Max retries exceeded with url: /r/ClaudeAI/top.json?t=week&limit=50 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
     }
   ],
-  "watchlist_warnings": [
-    "slides",
-    "pptx",
-    "google workspace",
-    "excel"
-  ],
+  "watchlist_warnings": [],
   "top": [
     {
-      "id": "gh:anthropics/claude-plugins-official",
-      "title": "anthropics/claude-plugins-official",
-      "url": "https://github.com/anthropics/claude-plugins-official",
-      "summary": "Official, Anthropic-managed directory of high quality Claude Code Plugins.",
-      "kind": "github",
-      "official": true,
-      "categories": [
-        "연동(MCP)"
-      ],
-      "stars": 42815,
-      "star_delta_7d": 4978,
-      "mentions": 0,
-      "score": 92.0,
-      "importance": 66.0,
-      "reasons": [
-        "공식 +35",
-        "스타 +4,978/7일 +25",
-        "일반 사용자 영향(연동(MCP)) +6"
-      ],
-      "value": 26.0,
-      "value_reasons": [
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 42,815) +6"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:anthropics/skills",
-      "title": "anthropics/skills",
-      "url": "https://github.com/anthropics/skills",
-      "summary": "Public repository for Agent Skills",
-      "kind": "github",
+      "id": "link:https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
+      "title": "[Anthropic 뉴스] 새 페이지: donating-agent-skills-to-the-agentic-ai-foundation",
+      "url": "https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
       "official": true,
       "categories": [
         "에이전트"
       ],
-      "stars": 182034,
-      "star_delta_7d": 1068,
+      "stars": null,
+      "star_delta_7d": 0,
       "mentions": 0,
-      "score": 88.8,
-      "importance": 62.8,
+      "score": 66.0,
+      "importance": 46.0,
       "reasons": [
         "공식 +35",
-        "스타 +1,068/7일 +22",
-        "일반 사용자 영향(에이전트) +6"
-      ],
-      "value": 26.0,
-      "value_reasons": [
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 182,034) +6"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:anthropics/claude-code",
-      "title": "anthropics/claude-code",
-      "url": "https://github.com/anthropics/claude-code",
-      "summary": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.",
-      "kind": "github",
-      "official": true,
-      "categories": [
-        "자동화",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 152280,
-      "star_delta_7d": 1590,
-      "mentions": 0,
-      "score": 86.0,
-      "importance": 68.0,
-      "reasons": [
-        "공식 +35",
-        "스타 +1,590/7일 +23",
-        "일반 사용자 영향(자동화/에이전트/코딩) +10"
-      ],
-      "value": 18.0,
-      "value_reasons": [
-        "스타 급증 +12",
-        "유명(스타 152,280) +6"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:calesthio/openmontage",
-      "title": "calesthio/OpenMontage",
-      "url": "https://github.com/calesthio/OpenMontage",
-      "summary": "World's first open-source, agentic video production system. 12 production pipelines, 100+ tools, 700+ agent skill and production-knowledge files. Turn your AI coding assistant into a full video production studio.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "디자인",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 69583,
-      "star_delta_7d": 1568,
-      "mentions": 0,
-      "score": 84.0,
-      "importance": 38.0,
-      "reasons": [
-        "스타 +1,568/7일 +23",
-        "일반 사용자 영향(영상/디자인/에이전트/코딩) +15"
-      ],
-      "value": 46.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 69,583) +6",
-        "감시 키워드(remotion, video) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "remotion",
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search",
-        "watchlist"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:nexu-io/open-design",
-      "title": "nexu-io/open-design",
-      "url": "https://github.com/nexu-io/open-design",
-      "summary": "The 1st Collaborative AI Design Agent Workspace. Local-first and open source. Create motion, prototypes, websites, apps, dashboards, presentations, images, and videos with your team and AI agents. Share work, exchange feedback, and iterate together in one workspace.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "디자인",
-        "문서·오피스",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 102248,
-      "star_delta_7d": 1253,
-      "mentions": 0,
-      "score": 81.3,
-      "importance": 37.3,
-      "reasons": [
-        "스타 +1,253/7일 +22",
-        "일반 사용자 영향(영상/디자인/문서·오피스/에이전트/코딩) +15"
-      ],
-      "value": 44.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 102,248) +6",
-        "감시 키워드(video, design) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video",
-        "design"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:latent-spaces/brag",
-      "title": "latent-spaces/brag",
-      "url": "https://github.com/latent-spaces/brag",
-      "summary": "You built it. Now brag. Turn the project you just created into a short, shareable launch video with one command.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트"
-      ],
-      "stars": 16759,
-      "star_delta_7d": 989,
-      "mentions": 0,
-      "score": 79.5,
-      "importance": 36.5,
-      "reasons": [
-        "스타 +989/7일 +22",
-        "일반 사용자 영향(영상/에이전트) +15"
-      ],
-      "value": 43.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "새 기능 표현(할 수 있게 됨) +5",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "유명(스타 16,759) +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:vincentwei1021/video-shotcraft",
-      "title": "Vincentwei1021/video-shotcraft",
-      "url": "https://github.com/Vincentwei1021/video-shotcraft",
-      "summary": "AI video skill for Claude Code & Codex — cinematic product videos with Remotion: 152 shot recipe cards, 209 motion previews, a production-ready template",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "디자인",
-        "에이전트"
-      ],
-      "stars": 12418,
-      "star_delta_7d": 646,
-      "mentions": 0,
-      "score": 75.2,
-      "importance": 35.2,
-      "reasons": [
-        "스타 +646/7일 +20",
-        "일반 사용자 영향(영상/디자인/에이전트) +15"
-      ],
-      "value": 40.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "유명(스타 12,418) +6",
-        "감시 키워드(remotion, video, design) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "remotion",
-        "video",
-        "design"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search",
-        "watchlist"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:rehan-remade/universal-modder",
-      "title": "rehan-remade/universal-modder",
-      "url": "https://github.com/rehan-remade/universal-modder",
-      "summary": "Point Claude at any game. Skills, tools and the fal MCP that let Claude Code mod almost any PC game you own: recon, reverse engineering, fal-generated art/3D/audio, in-game testing, showcase videos.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "연동(MCP)",
-        "코딩"
-      ],
-      "stars": 8366,
-      "star_delta_7d": 934,
-      "mentions": 0,
-      "score": 74.4,
-      "importance": 36.4,
-      "reasons": [
-        "스타 +934/7일 +21",
-        "일반 사용자 영향(영상/연동(MCP)/코딩) +15"
-      ],
-      "value": 38.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "유명(스타 8,366) +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:lemomo-ai/lemo-opuscar",
-      "title": "lemomo-ai/lemo-opuscar",
-      "url": "https://github.com/lemomo-ai/lemo-opuscar",
-      "summary": "Claude Code skill for short films with no video model: 51 film styles, each a style prompt plus a demo film made entirely in code by Claude Opus 5.5 (incl. OPUSCAR 98 and the new Evidence Films). By Lemomo. · Opus5.5 x 51 种影片风格：风格提示词 + 纯代码样片 + 导演与技术指南（新增「实证影像」）",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "디자인",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 3102,
-      "star_delta_7d": 896,
-      "mentions": 0,
-      "score": 74.2,
-      "importance": 36.2,
-      "reasons": [
-        "스타 +896/7일 +21",
-        "일반 사용자 영향(영상/디자인/에이전트/코딩) +15"
-      ],
-      "value": 38.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "유명(스타 3,102) +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:tejashmakwana/motionmaxxing",
-      "title": "Tejashmakwana/motionmaxxing",
-      "url": "https://github.com/Tejashmakwana/motionmaxxing",
-      "summary": "Looksmaxxing for motion graphics. An agent skill that turns AI slop videos into films that look made by a motion designer.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "디자인",
-        "에이전트"
-      ],
-      "stars": 875,
-      "star_delta_7d": 493,
-      "mentions": 0,
-      "score": 73.4,
-      "importance": 39.4,
-      "reasons": [
-        "스타 +493/7일(추정) +19",
-        "일반 사용자 영향(영상/디자인/에이전트) +15",
+        "일반 사용자 영향(에이전트) +6",
         "신규 +5"
       ],
-      "value": 34.0,
+      "value": 20.0,
       "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
         "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "감시 키워드(video, motion graphics, design) +10"
+        "출처(anthropic_news) +12"
       ],
       "needs_check": false,
-      "watch_hits": [
-        "video",
-        "motion graphics",
-        "design"
-      ],
+      "watch_hits": [],
       "published_at": null,
       "versions": null,
-      "first_seen": "2026-10-19",
+      "first_seen": "2026-10-26",
       "sources": [
-        "github_search"
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/accenture-embedded-evaluation",
+      "title": "[Anthropic 뉴스] 새 페이지: accenture-embedded-evaluation",
+      "url": "https://www.anthropic.com/news/accenture-embedded-evaluation",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/announcements",
+      "title": "[Anthropic 뉴스] 새 페이지: announcements",
+      "url": "https://www.anthropic.com/news/announcements",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust",
+      "title": "[Anthropic 뉴스] 새 페이지: christopher-stubbs-joins-long-term-benefit-trust",
+      "url": "https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/distillation-defenses",
+      "title": "[Anthropic 뉴스] 새 페이지: distillation-defenses",
+      "url": "https://www.anthropic.com/news/distillation-defenses",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/enterprise-frontier-safeguards",
+      "title": "[Anthropic 뉴스] 새 페이지: enterprise-frontier-safeguards",
+      "url": "https://www.anthropic.com/news/enterprise-frontier-safeguards",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/features",
+      "title": "[Anthropic 뉴스] 새 페이지: features",
+      "url": "https://www.anthropic.com/news/features",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/improving-alignment-security-efforts",
+      "title": "[Anthropic 뉴스] 새 페이지: improving-alignment-security-efforts",
+      "url": "https://www.anthropic.com/news/improving-alignment-security-efforts",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/life-sciences-verification-program",
+      "title": "[Anthropic 뉴스] 새 페이지: life-sciences-verification-program",
+      "url": "https://www.anthropic.com/news/life-sciences-verification-program",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/model-hardware-standard-research-preview",
+      "title": "[Anthropic 뉴스] 새 페이지: model-hardware-standard-research-preview",
+      "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+      "summary": "Anthropic 뉴스에 새 링크가 생김",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 52.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 12.0,
+      "value_reasons": [
+        "출처(anthropic_news) +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-26",
+      "sources": [
+        "anthropic_news"
       ],
       "resurfaced": false
     }
