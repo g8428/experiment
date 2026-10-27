@@ -20,7 +20,8 @@
   },
   "watch_hn::": {
    "nbHits": 0
-  }
+  },
+  "feed::": "<rss><channel><item><title>How a retailer uses AI (예시)</title><link>https://example.com/old-case</link><pubDate>Mon, 01 Sep 2026 00:00:00 GMT</pubDate></item></channel></rss>"
  },
  "__state__": {
   "changelog_last": "2.1.285",
@@ -47,6 +48,11 @@
    ],
    "claude_docs": [
     "https://docs.claude.com/en/home"
+   ],
+   "claude_products": [
+    "https://claude.com/product/claude-code",
+    "https://claude.com/product/cowork",
+    "https://claude.com/product/design"
    ]
   },
   "items": {
@@ -130,7 +136,7 @@
    "type": "dir"
   }
  ],
- "page::anthropic_news": "<a href=\"/news/example-old-post\">old</a>",
+ "page::anthropic_news": "[{\\\"_type\\\":\\\"article\\\",\\\"title\\\":\\\"(예시) Old announcement\\\",\\\"slug\\\":{\\\"current\\\":\\\"example-old-post\\\"},\\\"articleType\\\":\\\"news\\\",\\\"publishedOn\\\":\\\"2026-08-01\\\",\\\"category\\\":\\\"Announcements\\\"}]",
  "page::claude_code_docs": "- [Overview](https://code.claude.com/docs/en/overview)\n",
  "page::claude_docs": "- [Home](https://docs.claude.com/en/home)\n",
  "search::claude-code": {
@@ -144,5 +150,6 @@
     "topics": []
    }
   ]
- }
+ },
+ "page::claude_products": "{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/claude-code\\\"}{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/cowork\\\"}{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/design\\\"}"
 }

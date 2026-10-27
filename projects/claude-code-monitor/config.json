@@ -16,9 +16,23 @@
       {"repo": "anthropics/claude-plugins-official", "path": "plugins", "label": "공식 플러그인 마켓플레이스 (존재 확인 못 함)"}
     ],
     "link_watch": [
-      {"name": "anthropic_news", "label": "Anthropic 뉴스", "url": "https://www.anthropic.com/news", "pattern": "href=\"(/news/[a-z0-9][a-z0-9-]+)\"", "base": "https://www.anthropic.com"},
+      {"name": "claude_products", "label": "Claude 제품 목록(새 제품)", "url": "https://www.anthropic.com/news", "pattern": "https://claude\\.com/product/[a-z0-9-]+", "base": "", "pretty_slug": true, "_설명": "사이트 메뉴의 제품 페이지 링크. 새 제품(예: claude-duet)이 생기면 여기 새 링크가 붙는다. 신제품 출시 기사는 claude.com 쪽에 올라와 anthropic.com/news 기사 목록에는 없을 수 있어서 따로 본다"},
       {"name": "claude_code_docs", "label": "Claude Code 공식 문서 목차", "url": "https://code.claude.com/docs/llms.txt", "pattern": "\\((https://code\\.claude\\.com/docs/[^)\\s]+)\\)", "base": ""},
       {"name": "claude_docs", "label": "Claude 플랫폼 문서 목차", "url": "https://docs.claude.com/llms.txt", "pattern": "\\((https://docs\\.claude\\.com/[^)\\s]+)\\)", "base": ""}
+    ],
+    "_article_pages": "기사 목록이 페이지 안 JSON에 있는 곳. 최근 lookback_days 안에 발표된 기사만 올린다. keep_types=[\"news\"]는 연구 논문(research)을 뺀다 — 일반인 글감이 아니라서",
+    "article_pages": [
+      {"name": "anthropic_news", "label": "Anthropic 뉴스", "url": "https://www.anthropic.com/news", "base": "https://www.anthropic.com/news/", "keep_types": ["news"]}
+    ]
+  },
+
+  "industry_feeds": {
+    "_설명": "경쟁사·업계 공식 블로그 RSS. 제목이 value_rules.major.patterns(출시·공개·새 모델 등)에 맞는 최근 글만 후보로 올린다. GPT·Gemini 신모델, OpenAI Dots 같은 소식을 경쟁 계정들은 다루는데 v2.1은 Anthropic·GitHub만 봐서 못 잡았다(2026-10-27).",
+    "_주의": "세 주소 모두 이 레포에서 직접 열어 보지 못했다(작업 환경 프록시 차단). 틀리면 리포트 '수집 상태'에 실패로 찍힌다.",
+    "feeds": [
+      {"name": "openai_news", "label": "OpenAI 뉴스", "url": "https://openai.com/news/rss.xml"},
+      {"name": "google_ai_blog", "label": "Google AI 블로그", "url": "https://blog.google/technology/ai/rss/"},
+      {"name": "deepmind_blog", "label": "Google DeepMind 블로그", "url": "https://deepmind.google/blog/rss.xml"}
     ]
   },
 
@@ -47,6 +61,9 @@
   "community": {
     "hn_keywords": ["claude code", "anthropic", "claude skills", "remotion", "mcp server"],
     "hn_min_points": 50,
+    "hn_major_keywords": ["claude", "openai", "chatgpt", "gpt", "gemini"],
+    "hn_major_min_points": 300,
+    "_hn_major": "업계 키워드는 글이 너무 많아서 hn_major_min_points 이상만 본다. 이 점수를 넘은 글은 출처가 hackernews_major가 되고, 제목이 대형 발표 패턴에 맞으면 대형 발표로 친다",
     "reddit_subs": ["ClaudeAI", "ClaudeCode", "Anthropic"],
     "reddit_min_score": 100,
     "surge_ratio": 2.0,
@@ -119,6 +136,14 @@
       {"name": "내부 리팩터·개발자 전용 세부", "applies_to": ["release_line", "official", "community"], "weight": -10,
        "patterns": ["\\brefactor", "\\binternal\\b", "\\bsdk\\b", "\\bprotocol\\b", "\\bosc \\d", "\\bstdout\\b", "\\bstderr\\b", "exit code", "\\btelemetry\\b", "\\blogging\\b", "\\bdebug\\b", "\\bmod'?s?\\b.*\\bhook", "\\bcompaction\\b", "\\bgateway\\b"]}
     ],
+
+    "major": {
+      "_설명": "대형 발표(새 제품·새 모델 출시). 경쟁 계정들이 다 같이 다루는 소식이라 순위에서 GitHub 레포·릴리스 줄보다 항상 먼저 온다(select_top). sources 중 pattern_required_sources는 제목이 patterns에 맞을 때만 대형 발표. industry_feeds는 수집할 때 이미 patterns로 걸렀다.",
+      "bonus": 30,
+      "sources": ["claude_products", "anthropic_news", "openai_news", "google_ai_blog", "deepmind_blog", "hackernews_major"],
+      "pattern_required_sources": ["anthropic_news", "hackernews_major"],
+      "patterns": ["\\bintroduc(e|es|ing)\\b", "\\blaunch(es|ed|ing)?\\b", "\\bannounc(e|es|ed|ing)\\b", "\\bunveil", "research preview", "now available", "generally available", "\\bnew (model|agent|app)\\b", "\\bgpt-?\\d", "\\bgemini \\d", "\\b(opus|sonnet|haiku) \\d", "출시", "공개", "발표"]
+    },
 
     "source_bonus": {
       "_설명": "출처 자체가 글감 신호인 경우. marketplace = 공식 스킬·플러그인 폴더에 새 항목(규칙 ②), anthropic_news = Anthropic 공식 뉴스 새 글.",

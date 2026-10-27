@@ -108,6 +108,8 @@ def build_user_prompt(kind: str, top: dict, research: str, today: str, research_
     cands = json.dumps(top.get("top", [])[:CANDIDATES], ensure_ascii=False, indent=2)
     task = ("블로그 소개글 1편을 써라. 프론트매터의 date는 " + today
             + f", source_report는 {research_path.relative_to(ROOT) if research_path.is_relative_to(ROOT) else research_path}."
+            + " 후보에 \"major\": true(대형 발표: 새 제품·새 모델 출시)가 있으면 그중 하나를 고른다."
+            + " 본문은 700~1,100자로 짧게 쓴다."
             + " 후보가 모두 사소하거나 일반인에게 '그래서 뭐?'인 소식이면 글을 쓰지 말고 첫 줄에 `SKIP: <사유 한 줄>`만 출력한다.")
     if kind == "instagram":
         task = "카드뉴스 1개를 써라. 아래 '같은 소식의 블로그 초안'과 같은 소식을 다루고, 예시·수치·비유는 블로그와 똑같이 쓴다."
@@ -136,14 +138,14 @@ def extract_text(msg) -> str:
 
 @observe(name="generate-blog-post", capture_input=False)  # 입력(리서치 전문)은 하위 generation에 이미 기록됨
 def generate_blog_post(client, system: str, user: str) -> str:
-    msg = client.messages.create(model=MODEL, max_tokens=6000, system=system,
+    msg = client.messages.create(model=MODEL, max_tokens=3000, system=system,
                                  messages=[{"role": "user", "content": user}])
     return extract_text(msg)
 
 
 @observe(name="generate-instagram-post", capture_input=False)
 def generate_instagram_post(client, system: str, user: str) -> str:
-    msg = client.messages.create(model=MODEL, max_tokens=3000, system=system,
+    msg = client.messages.create(model=MODEL, max_tokens=2000, system=system,
                                  messages=[{"role": "user", "content": user}])
     return extract_text(msg)
 

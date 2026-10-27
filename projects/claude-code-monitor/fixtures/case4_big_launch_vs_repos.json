@@ -1,0 +1,42 @@
+{
+ "_설명": "케이스 ④ 2026-10-27 사용자 피드백 재현. 경쟁 계정들은 다 다룬 'Claude Duet 출시'(제품 메뉴에 새 페이지 + HN 900점)와 'OpenAI 신모델 소개'(RSS)가 있는데, 스타 급증 GitHub 영상 레포가 핵심 3줄을 차지하던 문제. 모든 레포·수치·제목은 지어낸 예시. 기대: 핵심 3줄 1~2번이 🔥대형 발표, OpenAI 사례 글(대형 발표 패턴 없음)은 후보에서 빠짐, GitHub 레포는 그 아래.",
+ "__extends__": "case1_minor_releases_only.json",
+ "page::claude_products": "{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/claude-code\\\"}{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/cowork\\\"}{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/design\\\"}{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/claude-duet\\\"}",
+ "feed::openai_news": "<rss><channel><item><title>Introducing GPT-6 Example (예시)</title><link>https://openai.com/index/example-gpt-6/</link><description>(예시) Our newest model for everyday work.</description><pubDate>Thu, 16 Oct 2026 17:00:00 GMT</pubDate></item><item><title>How Example Bank uses ChatGPT (예시)</title><link>https://openai.com/index/example-bank/</link><pubDate>Fri, 17 Oct 2026 17:00:00 GMT</pubDate></item></channel></rss>",
+ "hn::claude": {
+  "nbHits": 40,
+  "hits": [
+   {
+    "objectID": "4001",
+    "title": "(예시) Anthropic launches Claude Duet, an agent that messages you first",
+    "url": "https://example.com/claude-duet-news",
+    "points": 900,
+    "num_comments": 400,
+    "created_at": "2026-10-16T15:00:00Z"
+   },
+   {
+    "objectID": "4002",
+    "title": "(예시) Ask HN: Why is my Claude bill so high?",
+    "url": "https://news.ycombinator.com/item?id=4002",
+    "points": 320,
+    "num_comments": 200,
+    "created_at": "2026-10-17T15:00:00Z"
+   }
+  ]
+ },
+ "search::claude-code created:>{since}": {
+  "items": [
+   {
+    "full_name": "example-org/viral-video-skill",
+    "html_url": "https://github.com/example-org/viral-video-skill",
+    "description": "(예시) Claude Code skill that makes motion graphics videos with Remotion",
+    "stargazers_count": 9000,
+    "created_at": "2026-10-10T00:00:00Z",
+    "topics": [
+     "claude-code",
+     "remotion"
+    ]
+   }
+  ]
+ }
+}

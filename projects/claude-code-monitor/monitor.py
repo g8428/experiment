@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import math
 import os
@@ -30,6 +31,7 @@ import re
 import sys
 import time
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 import requests
@@ -243,13 +245,107 @@ def collect_links(f: Fetcher, state: dict, w: dict):
     if prev is None:
         return [], 0, f"기준선 저장 ({len(links)}개)"
     fresh = [u for u in links if u not in set(prev)]
+    def name(u: str) -> str:
+        slug = u.rstrip("/").rsplit("/", 1)[-1]
+        return slug.replace("-", " ").title() if w.get("pretty_slug") else slug  # claude-duet → Claude Duet
+
     new = [
-        make_item(f"link:{u}", f"[{w['label']}] 새 페이지: {u.rstrip('/').rsplit('/', 1)[-1]}", u,
+        make_item(f"link:{u}", f"[{w['label']}] 새 페이지: {name(u)}", u,
                   f"{w['label']}에 새 링크가 생김", official=True, kind="official", source=w["name"])
         for u in fresh[:15]
     ]
     note = f"전체 {len(links)}개" + (f", 신규 {len(fresh)}개 중 15개만 반영" if len(fresh) > 15 else "")
     return new, len(new), note
+
+
+ARTICLE_RE = re.compile(r'"title":"((?:[^"\\]|\\.)*)","slug":\{"current":"([a-z0-9-]+)"\}'
+                        r'(?:,"articleType":"(\w+)")?,"publishedOn":"(\d{4}-\d{2}-\d{2})"(?:,"category":"([^"]*)")?')
+
+
+def collect_articles(f: Fetcher, cfg: dict, now: datetime, a: dict):
+    """페이지 안 JSON에 든 기사 목록(제목·슬러그·발표일·분류)을 읽는다.
+    anthropic.com/news는 기사 링크가 href가 아니라 JSON에 있어서, 예전 href 패턴은 메뉴 링크 26개만 잡고 기사는 0개였다."""
+    text = f.get(f"page::{a['name']}", a["url"], text=True).replace('\\"', '"')
+    arts = {m.group(2): m.groups() for m in ARTICLE_RE.finditer(text)}
+    if not arts:
+        raise RuntimeError("기사 0개 — 페이지 구조 변경 또는 차단 의심")
+    since = (now - timedelta(days=cfg["lookback_days"])).strftime("%Y-%m-%d")
+    keep_types, keep_cats = set(a.get("keep_types") or []), set(a.get("keep_categories") or [])
+    items = []
+    for title, slug, atype, date, cat in arts.values():
+        if date < since or (keep_types and atype not in keep_types) or (keep_cats and cat not in keep_cats):
+            continue
+        try:
+            title = json.loads(f'"{title}"').strip()
+        except ValueError:
+            title = title.strip()
+        url = a["base"] + slug
+        items.append(make_item(f"link:{url}", f"[{a['label']}] {title}", url, f"{cat or atype or '기사'} · {date} 발표",
+                               official=True, kind="official", source=a["name"], published_at=date))
+    return items, len(items), f"전체 {len(arts)}개 중 최근 {cfg['lookback_days']}일·대상 분류 {len(items)}개"
+
+
+FEED_ENTRY_RE = re.compile(r"<(item|entry)\b.*?</\1>", re.S)
+
+
+def _feed_field(block: str, *tags: str) -> str:
+    for tag in tags:
+        m = re.search(rf"<{tag}\b[^>]*>(?:\s*<!\[CDATA\[)?(.*?)(?:\]\]>\s*)?</{tag}>", block, re.S)
+        if m and m.group(1).strip():
+            return html.unescape(m.group(1).strip())
+    return ""
+
+
+def collect_feed(f: Fetcher, cfg: dict, now: datetime, fd: dict):
+    """업계(경쟁사 포함) 공식 블로그 RSS/Atom. 제목이 '대형 발표' 패턴에 맞는 최근 글만 남긴다 (사례·정책·채용 글 제외)."""
+    text = f.get(f"feed::{fd['name']}", fd["url"], text=True)
+    blocks = [m.group(0) for m in FEED_ENTRY_RE.finditer(text)]
+    if not blocks:
+        raise RuntimeError("글 0개 — 피드 주소나 형식 변경 의심")
+    patterns = cfg["value_rules"]["major"]["patterns"]
+    since = now - timedelta(days=cfg["lookback_days"])
+    items = []
+    for b in blocks:
+        title = _feed_field(b, "title")
+        link = _feed_field(b, "link") or (re.search(r'<link\b[^>]*href="([^"]+)"', b) or [None, ""])[1]
+        published = parse_feed_date(_feed_field(b, "pubDate", "published", "updated"))
+        if not title or not link or (published and published < since):
+            continue
+        if not any(_rx(p).search(title) for p in patterns):
+            continue
+        summary = one_line(re.sub(r"<[^>]+>", " ", _feed_field(b, "description", "summary")), 200)
+        items.append(make_item(f"feed:{link}", f"[{fd['label']}] {title}", link, summary, kind="industry",
+                               source=fd["name"], published_at=published.isoformat() if published else None))
+    return items, len(items), f"글 {len(blocks)}개 중 대형 발표 패턴 {len(items)}개"
+
+
+def fold_launch_coverage(items: dict[str, dict]) -> None:
+    """새 제품 페이지와 같은 제품을 다룬 HN·업계·공식 글은 제품 항목 하나로 합친다 (한 소식이 핵심 3줄 두 칸을 먹지 않게)."""
+    products = {k: it["title"].rsplit(": ", 1)[-1].lower() for k, it in items.items() if "claude_products" in it["sources"]}
+    for pid, name in products.items():
+        if len(name) < 4:  # 'tag' 같은 짧은 이름은 엉뚱한 글에 걸린다
+            continue
+        prod = items[pid]
+        for oid in [k for k, o in items.items()
+                    if k != pid and o["kind"] in ("community", "industry", "official") and name in o["title"].lower()]:
+            o = items.pop(oid)
+            prod["mentions"] += o.get("mentions", 0)
+            prod["sources"] = sorted(set(prod["sources"]) | set(o["sources"]))
+            prod["text"] += " " + o["text"]
+            prod["summary"] += f" / 관련 보도: {o['title']} ({o['url']})"
+            prod["published_at"] = prod.get("published_at") or o.get("published_at")
+
+
+def parse_feed_date(s: str) -> datetime | None:
+    if not s:
+        return None
+    try:
+        d = parsedate_to_datetime(s)
+    except (TypeError, ValueError):
+        d = parse_dt(s)
+    if d and d.tzinfo is None:
+        d = d.replace(tzinfo=timezone.utc)
+    return d
 
 
 # ─── 수집기: GitHub 검색 ──────────────────────────────────────────────────────
@@ -290,27 +386,32 @@ def collect_github(f: Fetcher, cfg: dict, now: datetime):
 def collect_hn(f: Fetcher, cfg: dict, now: datetime, counts: dict):
     cm = cfg["community"]
     since = int((now - timedelta(days=7)).timestamp())
+    major_min = cm.get("hn_major_min_points", 10**9)
+    # 업계 키워드(openai, gemini 등)는 하루에도 글이 많아서 아주 화제가 된 글(major_min 이상)만 본다
+    queries = [(kw, cm["hn_min_points"]) for kw in cm["hn_keywords"]]
+    queries += [(kw, major_min) for kw in cm.get("hn_major_keywords", []) if kw not in cm["hn_keywords"]]
     items = []
-    for kw in cm["hn_keywords"]:
+    for kw, min_points in queries:
         data = f.get(f"hn::{kw}", "https://hn.algolia.com/api/v1/search_by_date",
                      {"query": kw, "tags": "story", "numericFilters": f"created_at_i>{since}", "hitsPerPage": 100})
         hits = data.get("hits", [])
         counts[f"hn::{kw}"] = int(data.get("nbHits", len(hits)))
         for h in hits:
             points = int(h.get("points") or 0)
-            if points < cm["hn_min_points"]:
+            if points < min_points:
                 continue
             disc = f"https://news.ycombinator.com/item?id={h.get('objectID')}"
             url = h.get("url") or disc
             mentions = points + int(h.get("num_comments") or 0)
+            source = "hackernews_major" if points >= major_min else "hackernews"
             rid = gh_repo_id(url)
             if rid:
-                items.append(make_item(rid, rid[3:], url, h.get("title", ""), source="hackernews", mentions=mentions))
+                items.append(make_item(rid, rid[3:], url, h.get("title", ""), source=source, mentions=mentions))
             else:
                 items.append(make_item(f"hn:{h.get('objectID')}", h.get("title", ""), url, f"HN 토론: {disc}",
-                                       kind="community", source="hackernews", mentions=mentions,
+                                       kind="community", source=source, mentions=mentions,
                                        published_at=h.get("created_at")))
-    return items, len(items), f"키워드 {len(cm['hn_keywords'])}개"
+    return items, len(items), f"키워드 {len(queries)}개"
 
 
 def collect_reddit(f: Fetcher, cfg: dict, counts: dict):
@@ -405,6 +506,15 @@ def judge_value(it: dict, cfg: dict) -> None:
             value += b; reasons.append(f"출처({src}) +{b}")
             break
 
+    # 대형 발표: 새 제품·새 모델 출시처럼 경쟁 계정들이 다 같이 다루는 소식. 순위에서 GitHub 레포보다 항상 위에 둔다(select_top).
+    mj = vr.get("major", {})
+    it["major"] = any(
+        s in mj.get("sources", []) and (s not in mj.get("pattern_required_sources", [])
+                                        or any(_rx(p).search(it["title"]) for p in mj.get("patterns", [])))
+        for s in it["sources"])
+    if it["major"]:
+        value += mj.get("bonus", 0); reasons.append(f"대형 발표 +{mj.get('bonus', 0)}")
+
     delta, mentions = it.get("star_delta_7d") or 0, it.get("mentions") or 0
     if delta >= pop.get("star_delta_big", 10**9):
         value += pop["star_delta_big_bonus"]; reasons.append(f"스타 급증 +{pop['star_delta_big_bonus']}")
@@ -421,7 +531,7 @@ def judge_value(it: dict, cfg: dict) -> None:
 
     # 공식이 아닌 항목은 인지도(스타·증가·언급) 최소선을 넘어야 글감급. 감시 키워드 항목은 통과시키되 '확인 필요'.
     mins = pop.get("unofficial_min", {})
-    popular = it["official"] or (
+    popular = it["official"] or it["major"] or (
         (it.get("stars") or 0) >= mins.get("stars", 0)
         or delta >= mins.get("star_delta_7d", 0)
         or mentions >= mins.get("mentions", 0)
@@ -570,7 +680,7 @@ def evaluate(items: dict[str, dict], state: dict, cfg: dict, now: datetime, base
 
         # 소식으로 볼 만한가: 공식 / 최근 생성 / 급상승 / 커뮤니티 화제 중 하나
         newsworthy = (it["official"] or is_new_repo or delta >= sc["resurface_min_star_delta"]
-                      or it["mentions"] > 0 or it["kind"] == "community")
+                      or it["mentions"] > 0 or it["kind"] in ("community", "industry"))
         it["eligible"] = newsworthy and (not reported or resurfaced)
         it["is_new"], it["resurfaced"] = is_new, resurfaced
 
@@ -601,7 +711,8 @@ def evaluate(items: dict[str, dict], state: dict, cfg: dict, now: datetime, base
 def select_top(evaluated: list[dict], cfg: dict) -> tuple[list[dict], list[dict]]:
     """(상위 목록, 글감 미달로 뺀 항목). 상위 목록은 eligible(새 소식) 이면서 글감급인 것만."""
     fresh = [i for i in evaluated if i["eligible"]]
-    top = sorted((i for i in fresh if i["story_grade"]), key=lambda i: i["score"], reverse=True)[: cfg["top_n"]]
+    # 대형 발표가 있으면 점수와 무관하게 먼저 (스타 많은 GitHub 레포가 신제품 출시를 이기던 문제)
+    top = sorted((i for i in fresh if i["story_grade"]), key=lambda i: (i["major"], i["score"]), reverse=True)[: cfg["top_n"]]
     dropped = sorted((i for i in fresh if not i["story_grade"]), key=lambda i: i["importance"], reverse=True)
     return top, dropped
 
@@ -712,7 +823,7 @@ def watchlist_finalize(rows: list[dict], state: dict, top: list[dict], now: date
 
 def headline(it: dict) -> str:
     tag = "/".join(it["categories"])
-    flag = "공식 " if it["official"] else ""
+    flag = ("🔥대형 발표 " if it.get("major") else "") + ("공식 " if it["official"] else "")
     check = " (확인 필요)" if it.get("needs_check") else ""
     if it["kind"] == "release_line":  # 제목에 이미 줄 내용이 들어 있다
         return f"[{tag}] {flag}{it['title']}{check}"
@@ -724,7 +835,8 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
                  bundle: dict | None = None, dropped: list[dict] | None = None) -> str:
     heads = top[:3] if heads is None else heads
     L = [f"# Claude Code·AI 도구 소식 모니터 ({today})", "",
-         f"> 공식 발표 · GitHub 신규/급상승 · 커뮤니티(HN/Reddit)를 모아 글감 가치 판정을 통과한 것만 점수순 상위 {cfg['top_n']}개 싣는다. "
+         f"> 공식 발표 · 업계(OpenAI·Google) 발표 · GitHub 신규/급상승 · 커뮤니티(HN/Reddit)를 모아 글감 가치 판정을 통과한 것만 상위 {cfg['top_n']}개 싣는다. "
+         "🔥대형 발표(새 제품·새 모델 출시)는 점수와 무관하게 맨 위, 나머지는 점수순. "
          "릴리스 노트는 이번 주기분을 묶어 줄 단위로 판정한다. 이미 다룬 소식은 반응이 급증한 경우(재부상)만 다시 싣는다.", ""]
     if baseline:
         L += ["> ℹ️ 첫 실행(기준선 저장). 공식 목록·문서 링크는 이번엔 기준만 저장하고 다음 실행부터 '새 항목'을 잡는다.", ""]
@@ -849,6 +961,10 @@ def main(argv: list[str] | None = None) -> int:
         batches.append(run.source(f"market:{m['repo']}", m["label"], collect_marketplace, f, cfg, state, m))
     for w in cfg["official"]["link_watch"]:
         batches.append(run.source(w["name"], w["label"], collect_links, f, state, w))
+    for a in cfg["official"].get("article_pages", []):
+        batches.append(run.source(a["name"], a["label"], collect_articles, f, cfg, now, a))
+    for fd in cfg.get("industry_feeds", {}).get("feeds", []):
+        batches.append(run.source(fd["name"], fd["label"], collect_feed, f, cfg, now, fd))
     batches.append(run.source("github_search", "GitHub 검색(신규·토픽)", collect_github, f, cfg, now))
     batches.append(run.source("hackernews", "Hacker News", collect_hn, f, cfg, now, counts))
     batches.append(run.source("reddit", "Reddit", collect_reddit, f, cfg, counts))
@@ -863,6 +979,7 @@ def main(argv: list[str] | None = None) -> int:
             merge(items, it)
         watch = (rows, wfailed)
     bundle = bundle_releases(items, cfg)
+    fold_launch_coverage(items)
     print(f"  수집 아이템 {len(items)}개, 실패 소스 {len(run.failures)}개")
     if bundle["text"]:
         print(f"  {bundle['text']}")
@@ -886,7 +1003,7 @@ def main(argv: list[str] | None = None) -> int:
         "top": [{k: t.get(k) for k in ("id", "title", "url", "summary", "kind", "official", "categories", "stars",
                                         "star_delta_7d", "mentions", "score", "importance", "reasons", "value",
                                         "value_reasons", "needs_check", "watch_hits", "published_at", "versions",
-                                        "first_seen", "sources", "resurfaced")} for t in top],
+                                        "first_seen", "sources", "resurfaced", "major")} for t in top],
     }
 
     if args.dry_run:
