@@ -258,29 +258,39 @@ def collect_links(f: Fetcher, state: dict, w: dict):
     return new, len(new), note
 
 
-ARTICLE_RE = re.compile(r'"title":"((?:[^"\\]|\\.)*)","slug":\{"current":"([a-z0-9-]+)"\}'
-                        r'(?:,"articleType":"(\w+)")?,"publishedOn":"(\d{4}-\d{2}-\d{2})"(?:,"category":"([^"]*)")?')
+ARTICLE_START_RE = re.compile(r'\{(?:"_id":"[^"]*",)?"_type":"article"')
 
 
 def collect_articles(f: Fetcher, cfg: dict, now: datetime, a: dict):
-    """페이지 안 JSON에 든 기사 목록(제목·슬러그·발표일·분류)을 읽는다.
-    anthropic.com/news는 기사 링크가 href가 아니라 JSON에 있어서, 예전 href 패턴은 메뉴 링크 26개만 잡고 기사는 0개였다."""
-    text = f.get(f"page::{a['name']}", a["url"], text=True).replace('\\"', '"')
-    arts = {m.group(2): m.groups() for m in ARTICLE_RE.finditer(text)}
+    """페이지 안 JSON에 든 기사 객체(제목·슬러그·발표일·분류·요약)를 통째로 읽는다.
+    anthropic.com/news는 기사 링크가 href가 아니라 JSON에 있어서, 예전 href 패턴은 메뉴 링크 26개만 잡고 기사는 0개였다.
+    기사마다 필드 순서가 달라서(출시 글은 알파벳순) 정규식 대신 JSON으로 읽는다."""
+    text = f.get(f"page::{a['name']}", a["url"], text=True).replace('\\"', '"').replace("\\\\", "\\")
+    dec, arts = json.JSONDecoder(), {}
+    for m in ARTICLE_START_RE.finditer(text):
+        try:
+            obj, _ = dec.raw_decode(text, m.start())
+        except ValueError:
+            continue
+        slug = (obj.get("slug") or {}).get("current")
+        if slug and obj.get("publishedOn") and obj.get("title"):
+            arts[slug] = obj
     if not arts:
         raise RuntimeError("기사 0개 — 페이지 구조 변경 또는 차단 의심")
     since = (now - timedelta(days=cfg["lookback_days"])).strftime("%Y-%m-%d")
-    keep_types, keep_cats = set(a.get("keep_types") or []), set(a.get("keep_categories") or [])
+    keep_types = set(a.get("keep_types") or [])
     items = []
-    for title, slug, atype, date, cat in arts.values():
-        if date < since or (keep_types and atype not in keep_types) or (keep_cats and cat not in keep_cats):
+    for slug, o in arts.items():
+        date = o["publishedOn"][:10]
+        if date < since or (keep_types and o.get("articleType") not in keep_types):
             continue
-        try:
-            title = json.loads(f'"{title}"').strip()
-        except ValueError:
-            title = title.strip()
-        url = a["base"] + slug
-        items.append(make_item(f"link:{url}", f"[{a['label']}] {title}", url, f"{cat or atype or '기사'} · {date} 발표",
+        cats = o.get("newsCategories") or o.get("category") or o.get("articleType") or "기사"
+        cats = ", ".join(cats) if isinstance(cats, list) else cats
+        # 출시 글은 /claude-opus-5-5 처럼 루트에, 일반 기사는 /news/... 에 있다. 페이지 안 링크로 판단
+        path = f"/{slug}" if f'"/{slug}"' in text and f'/news/{slug}"' not in text else f"/news/{slug}"
+        url = a["base"] + path
+        summary = f"{cats} · {date} 발표" + (f" — {o['summary']}" if o.get("summary") else "")
+        items.append(make_item(f"link:{url}", f"[{a['label']}] {o['title'].strip()}", url, summary,
                                official=True, kind="official", source=a["name"], published_at=date))
     return items, len(items), f"전체 {len(arts)}개 중 최근 {cfg['lookback_days']}일·대상 분류 {len(items)}개"
 
@@ -334,6 +344,57 @@ def fold_launch_coverage(items: dict[str, dict]) -> None:
             prod["text"] += " " + o["text"]
             prod["summary"] += f" / 관련 보도: {o['title']} ({o['url']})"
             prod["published_at"] = prod.get("published_at") or o.get("published_at")
+
+
+def page_text(raw: str, limit: int) -> str:
+    """HTML에서 설명(meta description)과 본문 글자만 뽑는다. 블로그 에이전트가 사실 소스로 쓴다."""
+    meta = re.search(r'<meta[^>]+(?:name|property)="(?:og:)?description"[^>]+content="([^"]*)"', raw)
+    body = re.sub(r"<(script|style|noscript|svg|nav|footer|header)\b.*?</\1>", " ", raw, flags=re.S | re.I)
+    body = html.unescape(re.sub(r"<[^>]+>", " ", body))
+    text = (html.unescape(meta.group(1)) + " / " if meta else "") + body
+    return one_line(text, limit)
+
+
+def major_name(it: dict) -> str | None:
+    """국내 기사 검색어로 쓸 제품·모델 이름. 'Introducing GPT-6 Example' → 'GPT-6 Example'. 문장형 제목이면 None."""
+    name = re.sub(r"^\[[^\]]*\]\s*", "", it["title"])
+    name = re.sub(r"^(새 페이지:|introducing|announcing)\s*", "", name, flags=re.I)
+    name = re.split(r"[:,—–(]| - ", name)[0].strip()
+    return name if name and len(name.split()) <= 4 else None
+
+
+def enrich_majors(f: Fetcher, cfg: dict, top: list[dict]):
+    """상위 목록의 대형 발표에 ① 원문 발췌(detail) ② 최근 7일 국내 기사 수(kr_news)를 붙인다.
+    ①은 블로그가 '공식 페이지에서 확인하세요'로만 채워지지 않게, ②는 '경쟁 계정들이 다 같이 다루는 소식'을 재는 신호."""
+    mj = cfg["value_rules"]["major"]
+    majors = [t for t in top if t.get("major")][: mj.get("detail_max", 3)]
+    notes, ok = [], 0
+    for it in majors:
+        try:
+            raw = f.get(f"detail::{it['url']}", it["url"], text=True)
+            it["detail"] = page_text(raw, mj.get("detail_chars", 1500))
+            ok += 1
+        except Exception as e:
+            notes.append(f"원문 실패({one_line(it['title'], 30)}): {type(e).__name__}")
+        name = major_name(it)
+        if not name:
+            continue
+        try:
+            rss = f.get(f"krnews::{name}", mj["kr_news_url"], {"q": f'"{name}" when:7d', "hl": "ko", "gl": "KR", "ceid": "KR:ko"},
+                        text=True)
+            n = len(FEED_ENTRY_RE.findall(rss))
+            it["kr_news"] = n
+            bonus = min(mj.get("kr_news_bonus_max", 20), n)
+            if bonus:
+                it["score"] = round(it["score"] + bonus, 1)
+                it["importance"] = round(it["importance"] + bonus, 1)
+                it["reasons"].append(f"국내 기사 {n}건/7일 +{bonus}")
+        except Exception as e:
+            notes.append(f"국내 기사 실패({name}): {type(e).__name__}")
+    if majors and not ok and notes:
+        raise RuntimeError("; ".join(notes))
+    top.sort(key=lambda i: (i["major"], i["score"]), reverse=True)  # 국내 반응 큰 대형 발표가 먼저
+    return None, ok, "; ".join(notes) or f"대형 발표 {len(majors)}개"
 
 
 def parse_feed_date(s: str) -> datetime | None:
@@ -874,6 +935,10 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
             L.append(f"- 스타: {t['stars']:,}")
         if t.get("published_at"):
             L.append(f"- 발표일(소스 기준): {t['published_at'][:10]}")
+        if t.get("kr_news") is not None:
+            L.append(f"- 국내 기사(최근 7일): {t['kr_news']}건")
+        if t.get("detail"):
+            L.append(f"- 원문 발췌: {one_line(t['detail'], 200)}")
         L += [f"- 점수 근거: 중요도 {t['importance']:.0f} ({', '.join(t['reasons']) or '없음'})",
               f"- 글감 판정: {t['value']:+.0f} ({', '.join(t['value_reasons']) or '없음'})", ""]
 
@@ -986,6 +1051,7 @@ def main(argv: list[str] | None = None) -> int:
 
     evaluated = evaluate(items, state, cfg, now, baseline)
     top, dropped = select_top(evaluated, cfg)
+    run.source("major_detail", "대형 발표 원문·국내 기사", enrich_majors, f, cfg, top)
     heads = pick_headline(top, cfg)
     surges = keyword_surges(counts, state, cfg)
     if watch:
@@ -1003,7 +1069,8 @@ def main(argv: list[str] | None = None) -> int:
         "top": [{k: t.get(k) for k in ("id", "title", "url", "summary", "kind", "official", "categories", "stars",
                                         "star_delta_7d", "mentions", "score", "importance", "reasons", "value",
                                         "value_reasons", "needs_check", "watch_hits", "published_at", "versions",
-                                        "first_seen", "sources", "resurfaced", "major")} for t in top],
+                                        "first_seen", "sources", "resurfaced", "major", "kr_news", "detail")}
+                for t in top],
     }
 
     if args.dry_run:

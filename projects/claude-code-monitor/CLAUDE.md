@@ -25,7 +25,8 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
     → 릴리스 묶음: 이번 주기 릴리스·CHANGELOG를 줄 단위로 판정, 글감급 줄만 남김
     → 카테고리 태깅(영상·디자인·문서·오피스·자동화·에이전트·연동·코딩)
     → 중복 제거(research/state/) + 재부상 판정 → 중요도 점수 + 글감 가치(value) → 글감급만 상위 10개
-       (🔥대형 발표 = 새 제품·새 모델 출시는 점수와 무관하게 맨 위)
+       (🔥대형 발표 = 새 제품·새 모델·상장 등은 점수와 무관하게 맨 위)
+    → 대형 발표에 원문 발췌(detail) + 최근 7일 국내 기사 수(kr_news, Google 뉴스 RSS) → 국내 기사 많은 쪽이 먼저
     → research/claude-code-trends-YYYY-MM-DD.md   (맨 위 "오늘의 핵심 3줄", 수집 실패 표시)
     → research/state/latest-top.json, research/state/claude-code-monitor.json
     → 월요일엔 "주간 키워드 감시 리스트 점검" 섹션 추가
@@ -76,7 +77,7 @@ ANTHROPIC_API_KEY=... python projects/claude-code-monitor/generate_content.py
 | 공식 소스(레포·폴더·페이지) | `official.*` (`article_pages` = JSON 기사 목록, `link_watch` = 새 링크 감지) |
 | 업계(경쟁사) 블로그 RSS | `industry_feeds.feeds` |
 | HN 업계 키워드·최소 점수 | `community.hn_major_keywords`, `hn_major_min_points` (300) |
-| **대형 발표 판정**(출처·패턴·가산점) | `value_rules.major` |
+| **대형 발표 판정**(출처·패턴·가산점·원문 발췌·국내 기사) | `value_rules.major` (`detail_max`, `detail_chars`, `kr_news_bonus_max`) |
 | 카테고리 키워드 | `categories` |
 | 점수 가중치·재부상 기준 | `scoring` |
 | 감시 키워드·요일 | `watchlist.keywords`, `watchlist.weekday_kst` |

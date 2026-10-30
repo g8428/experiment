@@ -21,7 +21,9 @@
   "watch_hn::": {
    "nbHits": 0
   },
-  "feed::": "<rss><channel><item><title>How a retailer uses AI (예시)</title><link>https://example.com/old-case</link><pubDate>Mon, 01 Sep 2026 00:00:00 GMT</pubDate></item></channel></rss>"
+  "feed::": "<rss><channel><item><title>How a retailer uses AI (예시)</title><link>https://example.com/old-case</link><pubDate>Mon, 01 Sep 2026 00:00:00 GMT</pubDate></item></channel></rss>",
+  "detail::": "<html><head><meta name=\"description\" content=\"(예시) 공식 페이지 설명\"></head><body><script>x</script><p>(예시) 공식 페이지 본문</p></body></html>",
+  "krnews::": "<rss><channel></channel></rss>"
  },
  "__state__": {
   "changelog_last": "2.1.285",

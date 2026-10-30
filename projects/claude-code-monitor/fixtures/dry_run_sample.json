@@ -352,6 +352,8 @@
   "hn::": {
    "nbHits": 0,
    "hits": []
-  }
+  },
+  "detail::": "<html><head><meta name=\"description\" content=\"(예시) 공식 페이지 설명\"></head><body><script>x</script><p>(예시) 공식 페이지 본문</p></body></html>",
+  "krnews::": "<rss><channel></channel></rss>"
  }
 }

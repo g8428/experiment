@@ -22,7 +22,7 @@
     ],
     "_article_pages": "기사 목록이 페이지 안 JSON에 있는 곳. 최근 lookback_days 안에 발표된 기사만 올린다. keep_types=[\"news\"]는 연구 논문(research)을 뺀다 — 일반인 글감이 아니라서",
     "article_pages": [
-      {"name": "anthropic_news", "label": "Anthropic 뉴스", "url": "https://www.anthropic.com/news", "base": "https://www.anthropic.com/news/", "keep_types": ["news"]}
+      {"name": "anthropic_news", "label": "Anthropic 뉴스", "url": "https://www.anthropic.com/news", "base": "https://www.anthropic.com", "keep_types": ["news"]}
     ]
   },
 
@@ -140,15 +140,20 @@
     "major": {
       "_설명": "대형 발표(새 제품·새 모델 출시). 경쟁 계정들이 다 같이 다루는 소식이라 순위에서 GitHub 레포·릴리스 줄보다 항상 먼저 온다(select_top). sources 중 pattern_required_sources는 제목이 patterns에 맞을 때만 대형 발표. industry_feeds는 수집할 때 이미 patterns로 걸렀다.",
       "bonus": 30,
+      "_enrich": "상위 목록의 대형 발표 최대 detail_max개에 원문 발췌(detail_chars자)와 최근 7일 국내 기사 수(Google 뉴스 RSS, 한국어)를 붙인다. 국내 기사 1건당 +1점(최대 kr_news_bonus_max) — 대형 발표끼리 순서를 정한다. 주소는 작업 환경에서 열어 보지 못했다(프록시 차단), 실패는 '수집 상태'에 찍힌다",
+      "detail_max": 3,
+      "detail_chars": 1500,
+      "kr_news_url": "https://news.google.com/rss/search",
+      "kr_news_bonus_max": 20,
       "sources": ["claude_products", "anthropic_news", "openai_news", "google_ai_blog", "deepmind_blog", "hackernews_major"],
       "pattern_required_sources": ["anthropic_news", "hackernews_major"],
-      "patterns": ["\\bintroduc(e|es|ing)\\b", "\\blaunch(es|ed|ing)?\\b", "\\bannounc(e|es|ed|ing)\\b", "\\bunveil", "research preview", "now available", "generally available", "\\bnew (model|agent|app)\\b", "\\bgpt-?\\d", "\\bgemini \\d", "\\b(opus|sonnet|haiku) \\d", "출시", "공개", "발표"]
+      "patterns": ["\\bintroduc(e|es|ing)\\b", "\\blaunch(es|ed|ing)?\\b", "\\bannounc(e|es|ed|ing)\\b", "\\bunveil", "initial public offering", "\\bipo\\b", "상장", "research preview", "now available", "generally available", "\\bnew (model|agent|app)\\b", "\\bgpt-?\\d", "\\bgemini \\d", "\\b(opus|sonnet|haiku) \\d", "출시", "공개", "발표"]
     },
 
     "source_bonus": {
-      "_설명": "출처 자체가 글감 신호인 경우. marketplace = 공식 스킬·플러그인 폴더에 새 항목(규칙 ②), anthropic_news = Anthropic 공식 뉴스 새 글.",
+      "_설명": "출처 자체가 글감 신호인 경우. marketplace = 공식 스킬·플러그인 폴더에 새 항목(규칙 ②). anthropic_news는 0: 2026-10-27 기사 수집을 고치고 보니 사무소 개소·이사 선임 같은 회사 소식이 주 7~8개라, 출처만으로 가산하면 후보가 회사 소식으로 찬다. 출시·새 모델 글은 major로 +30을 받는다.",
       "marketplace": 12,
-      "anthropic_news": 12
+      "anthropic_news": 0
     },
 
     "popularity": {
