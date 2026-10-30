@@ -1,0 +1,43 @@
+{
+ "_설명": "케이스 ⑤ 2026-10-30 실제 실행(run 40989617677) 재현. 경쟁사 신모델이 출처별로 중복(GPT: HN+OpenAI RSS, Gemini: HN+DeepMind+벤치마크 기사)되고, OpenAI 고객 사례 글이 모델 이름 패턴에 걸려 상위를 채우던 문제. 제목·링크는 실제 실행에서 가져온 것, 점수·기사 수는 예시. 기대: 대형 발표 2칸(GPT-6.1 Terra 공식 링크 1개, Gemini 4 Carbon 공식 링크 1개), 고객 사례 글 없음.",
+ "__extends__": "case1_minor_releases_only.json",
+ "feed::openai_news": "<rss><channel><item><title>Introducing GPT-6.1 Terra</title><link>https://openai.com/index/introducing-gpt-6-1-terra</link><description>Bringing fast and capable computer use to everyone</description><pubDate>Sun, 26 Oct 2026 17:00:00 GMT</pubDate></item><item><title>GPT-6.1 Sol helps CodeRabbit strengthen security across complex codebases</title><link>https://openai.com/index/gpt-6-1-sol-coderabbit-code-security</link><description>(예시)</description><pubDate>Mon, 27 Oct 2026 17:00:00 GMT</pubDate></item><item><title>Terminal X matches senior investor judgment 88.6% with GPT-6.1</title><link>https://openai.com/index/terminal-x</link><description>(예시)</description><pubDate>Mon, 27 Oct 2026 17:00:00 GMT</pubDate></item><item><title>Greptile takes bug detection beyond code review with GPT-6 Astra</title><link>https://openai.com/index/greptile-code-review-codex-astra</link><description>(예시)</description><pubDate>Mon, 27 Oct 2026 17:00:00 GMT</pubDate></item></channel></rss>",
+ "feed::deepmind_blog": "<rss><channel><item><title>Gemini 4 Carbon: Our next frontier model</title><link>https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/</link><description>(예시)</description><pubDate>Tue, 28 Oct 2026 16:00:00 GMT</pubDate></item></channel></rss>",
+ "hn::gpt": {
+  "nbHits": 30,
+  "hits": [
+   {
+    "objectID": "50248124",
+    "title": "GPT-6.1 Terra",
+    "url": "https://openai.com/index/introducing-gpt-6-1-terra/",
+    "points": 700,
+    "num_comments": 362,
+    "created_at": "2026-10-26T18:00:00Z"
+   }
+  ]
+ },
+ "hn::gemini": {
+  "nbHits": 30,
+  "hits": [
+   {
+    "objectID": "50276792",
+    "title": "Gemini 4 Carbon",
+    "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/",
+    "points": 1200,
+    "num_comments": 597,
+    "created_at": "2026-10-28T16:00:00Z"
+   },
+   {
+    "objectID": "50288019",
+    "title": "Gemini 4 Carbon is the new #1 on the Artificial Analysis Intelligence Index v5",
+    "url": "https://artificialanalysis.ai/articles/gemini-4-carbon-new-number-1",
+    "points": 400,
+    "num_comments": 168,
+    "created_at": "2026-10-29T10:00:00Z"
+   }
+  ]
+ },
+ "krnews::GPT-6.1 Terra": "<rss><channel><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item></channel></rss>",
+ "krnews::Gemini 4 Carbon": "<rss><channel><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item><item><title>(예시)</title></item></channel></rss>",
+ "__now__": "2026-10-30T11:00:00+09:00"
+}

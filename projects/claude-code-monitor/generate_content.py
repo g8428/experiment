@@ -52,7 +52,9 @@ CANDIDATES = 5  # 에이전트가 이 중에서 1개를 고른다
 FACT_RULE = """# 이번 작업의 사실 범위
 - 아래 '후보 소식'과 '모니터 리포트'에 적힌 내용만 사실로 쓴다. 그 밖의 수치·날짜·가격·기능은 쓰지 않는다.
 - 소식의 날짜는 후보의 published_at(소스에 적힌 발표일)만 쓴다. 리포트 날짜·오늘 날짜를 발표일처럼 쓰지 않는다. 없으면 날짜를 빼거나 "최근"이라고 쓴다.
-- 후보의 summary가 짧아 설명이 부족하면, 모르는 부분은 "공식 페이지에서 확인하세요"로 처리한다.
+- 후보의 detail(원문 페이지 발췌)도 사실 소스다. 대형 발표는 summary가 짧으니 detail에서 무엇·누가·언제부터를 가져온다.
+- 후보의 kr_news는 최근 7일 국내 기사 수다. 화제성 판단에만 쓰고 본문에 숫자로 쓰지 않는다.
+- summary·detail로도 설명이 부족하면, 모르는 부분은 "공식 페이지에서 확인하세요"로 처리한다.
 - 출처 목록에는 후보의 url과 리포트에 있는 URL만 넣는다.
 - 지금은 API 호출이라 파일을 저장할 수 없다. 완성된 마크다운 전체만 출력하고 다른 말은 붙이지 않는다 (글감이 없으면 `SKIP: <사유>` 한 줄만)."""
 
@@ -108,6 +110,8 @@ def build_user_prompt(kind: str, top: dict, research: str, today: str, research_
     cands = json.dumps(top.get("top", [])[:CANDIDATES], ensure_ascii=False, indent=2)
     task = ("블로그 소개글 1편을 써라. 프론트매터의 date는 " + today
             + f", source_report는 {research_path.relative_to(ROOT) if research_path.is_relative_to(ROOT) else research_path}."
+            + " 후보에 \"major\": true(대형 발표: 새 제품·새 모델 출시)가 있으면 그중 하나를 고른다."
+            + " 본문은 700~1,100자로 짧게 쓴다."
             + " 후보가 모두 사소하거나 일반인에게 '그래서 뭐?'인 소식이면 글을 쓰지 말고 첫 줄에 `SKIP: <사유 한 줄>`만 출력한다.")
     if kind == "instagram":
         task = "카드뉴스 1개를 써라. 아래 '같은 소식의 블로그 초안'과 같은 소식을 다루고, 예시·수치·비유는 블로그와 똑같이 쓴다."
@@ -136,14 +140,14 @@ def extract_text(msg) -> str:
 
 @observe(name="generate-blog-post", capture_input=False)  # 입력(리서치 전문)은 하위 generation에 이미 기록됨
 def generate_blog_post(client, system: str, user: str) -> str:
-    msg = client.messages.create(model=MODEL, max_tokens=6000, system=system,
+    msg = client.messages.create(model=MODEL, max_tokens=3000, system=system,
                                  messages=[{"role": "user", "content": user}])
     return extract_text(msg)
 
 
 @observe(name="generate-instagram-post", capture_input=False)
 def generate_instagram_post(client, system: str, user: str) -> str:
-    msg = client.messages.create(model=MODEL, max_tokens=3000, system=system,
+    msg = client.messages.create(model=MODEL, max_tokens=2000, system=system,
                                  messages=[{"role": "user", "content": user}])
     return extract_text(msg)
 

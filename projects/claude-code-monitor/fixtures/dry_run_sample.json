@@ -108,7 +108,7 @@
    "type": "dir"
   }
  ],
- "page::anthropic_news": "<a href=\"/news/example-old-post\">old</a><a href=\"/news/example-new-announcement\">new</a>",
+ "page::anthropic_news": "[{\\\"_type\\\":\\\"article\\\",\\\"title\\\":\\\"(예시) Old announcement\\\",\\\"slug\\\":{\\\"current\\\":\\\"example-old-post\\\"},\\\"articleType\\\":\\\"news\\\",\\\"publishedOn\\\":\\\"2026-08-01\\\",\\\"category\\\":\\\"Announcements\\\"},{\\\"_type\\\":\\\"article\\\",\\\"title\\\":\\\"(예시) Partnering with Example Corp\\\",\\\"slug\\\":{\\\"current\\\":\\\"example-new-announcement\\\"},\\\"articleType\\\":\\\"news\\\",\\\"publishedOn\\\":\\\"2026-10-08\\\",\\\"category\\\":\\\"Partnerships\\\"}]",
  "page::claude_code_docs": "- [Overview](https://code.claude.com/docs/en/overview)\n- [Example new page](https://code.claude.com/docs/en/example-new-page)\n",
  "page::claude_docs": "- [Home](https://docs.claude.com/en/home)\n",
  "search::claude-code created:>{since}": {
@@ -345,5 +345,15 @@
  },
  "watch_hn::excel": {
   "nbHits": 0
+ },
+ "page::claude_products": "{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/claude-code\\\"}{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/cowork\\\"}{\\\"label\\\":\\\"x\\\",\\\"href\\\":\\\"https://claude.com/product/design\\\"}",
+ "__defaults__": {
+  "feed::": "<rss><channel><item><title>How a retailer uses AI (예시)</title><link>https://example.com/old-case</link><pubDate>Mon, 01 Sep 2026 00:00:00 GMT</pubDate></item></channel></rss>",
+  "hn::": {
+   "nbHits": 0,
+   "hits": []
+  },
+  "detail::": "<html><head><meta name=\"description\" content=\"(예시) 공식 페이지 설명\"></head><body><script>x</script><p>(예시) 공식 페이지 본문</p></body></html>",
+  "krnews::": "<rss><channel></channel></rss>"
  }
 }

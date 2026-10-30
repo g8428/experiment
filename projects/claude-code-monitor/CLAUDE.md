@@ -7,24 +7,26 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
 
 왜 지금 구조가 됐는지(2026-10-14 v2 개편 배경, v1이 Remotion 영상 소식을 놓친 원인, v2.1 글감 선별 기준)는 `HANDOVER.md` 참고.
 
-## 현재 상태 (2026-10-14)
+## 현재 상태 (2026-10-27)
 
-- v2 코드는 `claude/charming-tesla-cypq91` 브랜치에 있고 아직 master에 머지되지 않았다. **Actions 스케줄은 master의 워크플로로 돈다** → 머지 전까지는 v1(주 1회)이 계속 돈다.
-- v2는 로컬 `--dry-run --fixtures`(가짜 응답)로만 검증했다. 실제 외부 호출은 첫 수동 실행에서 확인해야 한다.
-- 첫 실행은 기준선 저장(공식 목록·문서 링크 '새 항목' 0개가 정상).
-- 2026-10-14 테스트 실행(run 38508748996)에서 핵심 3줄이 사소한 릴리스로 채워져 **v2.1 글감 선별 기준**을 추가했다(같은 브랜치). 오프라인(fixtures·오늘 데이터 재평가)으로만 검증했고 Actions 재실행은 아직 안 했다.
+- v2.1은 master에서 매주 월요일 돌고 있다(10-19, 10-26 리포트).
+- **v2.2(대형 발표 우선·업계 소식·짧은 글)** 는 `claude/cc-monitor-big-news` 브랜치. 배경은 HANDOVER.md "2026-10-27". fixtures ①~⑤ + 이 브랜치 실제 Actions 실행(2026-10-30, run 40989617677)으로 검증했다.
+- 새 수집원 `claude_products`는 첫 실행이 기준선이라 그때는 '새 제품' 0개가 정상.
 
 ## 파이프라인
 
 ```
 매주 월요일 09:00 KST (GitHub Actions). 주 1회는 사용자가 의도한 설정이므로 임의로 바꾸지 않는다.
   monitor.py
-    수집: Claude Code 릴리스·CHANGELOG / 공식 스킬·플러그인 폴더 / Anthropic 뉴스·공식 문서 목차
-          / GitHub 신규·토픽 검색 / Hacker News / Reddit
+    수집: Claude Code 릴리스·CHANGELOG / 공식 스킬·플러그인 폴더 / Anthropic 뉴스(JSON 기사 목록)·Claude 제품 목록·공식 문서 목차
+          / 업계 RSS(OpenAI·Google AI·DeepMind) / GitHub 신규·토픽 검색 / Hacker News(업계 키워드는 300점 이상) / Reddit
+    → 같은 신제품·신모델을 다룬 글(공식·업계 블로그·HN·벤치마크 기사)은 한 항목으로 합침, 고객 사례 글 제외
     → (월요일) 감시 키워드 검색 → 걸린 레포도 후보 풀에 추가
     → 릴리스 묶음: 이번 주기 릴리스·CHANGELOG를 줄 단위로 판정, 글감급 줄만 남김
     → 카테고리 태깅(영상·디자인·문서·오피스·자동화·에이전트·연동·코딩)
     → 중복 제거(research/state/) + 재부상 판정 → 중요도 점수 + 글감 가치(value) → 글감급만 상위 10개
+       (🔥대형 발표 = 새 제품·새 모델·상장 등은 점수와 무관하게 맨 위)
+    → 대형 발표에 원문 발췌(detail) + 최근 7일 국내 기사 수(kr_news, Google 뉴스 RSS) → 국내 기사 많은 쪽이 먼저
     → research/claude-code-trends-YYYY-MM-DD.md   (맨 위 "오늘의 핵심 3줄", 수집 실패 표시)
     → research/state/latest-top.json, research/state/claude-code-monitor.json
     → 월요일엔 "주간 키워드 감시 리스트 점검" 섹션 추가
@@ -47,6 +49,8 @@ python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/cla
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case1_minor_releases_only.json  # 후보 0개여야 함
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case2_big_news_vs_minor.json    # 영상·스킬이 위
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case3_mixed_release.json        # 글감급 줄만
+python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case4_big_launch_vs_repos.json   # 🔥대형 발표 2개가 레포보다 위, Duet은 한 칸
+python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case5_competitor_models_dedup.json  # GPT·Gemini 한 칸씩, 고객 사례 글 없음
 #   --dump <폴더> 를 붙이면 리포트·latest-top.json을 그 폴더에 저장 → generate_content.py --top 으로 이어서 확인
 
 # 실제 수집 (GITHUB_TOKEN 없어도 동작하지만 검색 rate limit이 낮다)
@@ -71,7 +75,10 @@ ANTHROPIC_API_KEY=... python projects/claude-code-monitor/generate_content.py
 | 바꾸고 싶은 것 | 키 |
 |---|---|
 | GitHub 검색 쿼리·토픽 | `github_search.queries` |
-| 공식 소스(레포·폴더·페이지) | `official.*` |
+| 공식 소스(레포·폴더·페이지) | `official.*` (`article_pages` = JSON 기사 목록, `link_watch` = 새 링크 감지) |
+| 업계(경쟁사) 블로그 RSS | `industry_feeds.feeds` |
+| HN 업계 키워드·최소 점수 | `community.hn_major_keywords`, `hn_major_min_points` (300) |
+| **대형 발표 판정**(출처·패턴·가산점·원문 발췌·국내 기사) | `value_rules.major` (`detail_max`, `detail_chars`, `kr_news_bonus_max`) |
 | 카테고리 키워드 | `categories` |
 | 점수 가중치·재부상 기준 | `scoring` |
 | 감시 키워드·요일 | `watchlist.keywords`, `watchlist.weekday_kst` |
@@ -95,7 +102,7 @@ projects/claude-code-monitor/
   generate_content.py  블로그/인스타 초안 (에이전트 파일을 프롬프트로 사용)
   slack_notify.py      Slack 보고
   fixtures/dry_run_sample.json  드라이런용 가짜 응답 (실제 소식 아님)
-  fixtures/case*.json           글감 선별 회귀 케이스 ①②③ ("__extends__"로 case1을 상속, "__defaults__"로 빈 응답)
+  fixtures/case*.json           글감 선별 회귀 케이스 ①~⑤ ("__extends__"로 case1을 상속, "__defaults__"로 빈 응답)
   fixtures/fake_blog_*.md       generate_content.py --dry-run --fake-blog 용 가짜 블로그 응답 (SKIP / 정상)
   blog/                새 블로그 형식 완성 예시
   CLAUDE.md / HANDOVER.md
@@ -136,8 +143,8 @@ v2 추가 수집원은 모두 공개 API라 **새 시크릿 없이** 동작하�
 
 | 에이전트 | 파일 | 역할 |
 |---------|------|------|
-| content-blog-writer | `.claude/agents/content-blog-writer.md` | 일반인용 쉬운 소개글 + SEO (한 글 한 소식). 블로그 규칙의 단일 원본. 글감 기준표·SKIP·사실 고정 규칙 포함 |
-| content-instagram-writer | `.claude/agents/content-instagram-writer.md` | 쉬운 말 카드뉴스. 블로그 초안과 같은 예시·수치, SKIP 규칙 |
+| content-blog-writer | `.claude/agents/content-blog-writer.md` | 일반인용 쉬운 소개글 + SEO (한 글 한 소식, 700~1,100자). 블로그 규칙의 단일 원본. 주제 고르는 기준(대형 발표 우선)·SKIP·사실 고정 규칙 포함 |
+| content-instagram-writer | `.claude/agents/content-instagram-writer.md` | 쉬운 말 카드뉴스 5~6장. 블로그 초안과 같은 예시·수치, SKIP 규칙 |
 
 ## 참고
 

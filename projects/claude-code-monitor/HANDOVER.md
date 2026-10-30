@@ -104,3 +104,56 @@ blog/               새 블로그 형식 완성 예시
 **확인 못 한 것**
 - 규칙은 영어 릴리스 노트 문구 기준으로 만들었다. 새 표현이 나오면 `value_rules` 패턴에 추가해야 한다(리포트 "글감 미달로 뺀 항목"에서 확인).
 - 실제 실행에서 감시 검색 결과가 후보에 몇 개나 들어오는지, `min_value` 10이 적당한지는 다음 월요일 실행 결과로 조정해야 한다.
+
+### 2026-10-27 — v2.2: 대형 발표 우선 + 업계 소식 수집 + 짧은 글
+
+**계기 (사용자 피드백)**
+1. "블로그 글이 너어무 길다. 카드뉴스도 줄여."
+2. "주제가 너무 쓰잘데기 없다. 한 가지 큼직한 주제에 집중해야 한다." 2026-10-26 리포트 핵심 3줄이 lemo-opuscar·huashu-motion·RuView(중국어 영상 레포 등)였다.
+3. "지난주 Claude Duet이 나왔다고 경쟁 계정들이 다 같이 홍보하는데 여기선 1도 없었다. GPT Terra 나온 것도 못 발견했다."
+
+**원인 (근거)**
+| # | 원인 | 근거 |
+|---|---|---|
+| 1 | Anthropic 뉴스 수집이 처음부터 기사를 하나도 못 읽고 있었다. anthropic.com/news는 기사 목록이 href가 아니라 페이지 안 JSON(`"slug":{"current":...}`)에 있어서, href 패턴은 메뉴·분류 링크 26개만 잡았다 | 10-26 리포트 '수집 상태' "Anthropic 뉴스 성공 0건, 전체 26개". 상태 파일 `links.anthropic_news` 26개가 전부 /news/policy, /news/product 같은 메뉴 링크. 같은 페이지 JSON에는 기사 88개(제목·발표일·분류 포함) |
+| 2 | 신제품 출시 글은 anthropic.com/news 기사 목록에 없을 수 있다. Duet은 10-21 공개됐는데 그 페이지 JSON 기사 목록엔 없고, 사이트 메뉴에 `claude.com/product/claude-duet` 링크로만 있었다 | 2026-10-27 페이지 확인. 최근 기사는 연구·정책 글뿐 |
+| 3 | 경쟁사(OpenAI·Google) 소식을 보는 수집원이 아예 없었다. HN 키워드도 claude code·anthropic·remotion 등 5개뿐 | config.json `community.hn_keywords` |
+| 4 | 순위가 "스타 급증 + 영상 카테고리" 점수라 스타 많은 레포가 공식 발표(35점)를 이겼다 | 10-26 상위 10개 전부 GitHub 레포, 85~89점 |
+
+GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파이프라인 시작(09-27) 전이라 원래 잡을 수 없었다. GPT-6 Terra는 2026-10-27 기준 공식 발표를 찾지 못했다(소문 단계). 다만 원인 3 때문에 앞으로의 경쟁사 신모델도 못 잡는 구조였던 건 맞다.
+
+**바꾼 것**
+- `collect_articles`: anthropic.com/news의 JSON 기사 목록(제목·발표일·분류)을 읽는다. 최근 `lookback_days` 안 + `articleType` news만(연구 논문 제외).
+- `claude_products` 링크 감시: 사이트 메뉴의 `claude.com/product/*`에 새 페이지가 생기면 신제품. **첫 실행은 기준선이라 Duet은 소급해서 잡히지 않는다.**
+- `industry_feeds`: OpenAI 뉴스·Google AI 블로그·DeepMind 블로그 RSS. 제목이 대형 발표 패턴(introducing·launch·새 모델·출시 등)에 맞는 글만.
+- HN `hn_major_keywords`(claude·openai·chatgpt·gpt·gemini): 300점 이상만 → 출처 `hackernews_major`.
+- `value_rules.major`: 위 출처의 대형 발표는 +30이고, **순위에서 점수와 무관하게 맨 위**(select_top 정렬 키 `(major, score)`). 리포트·Slack에 🔥대형 발표 표시.
+- `fold_launch_coverage`: 새 제품 페이지와 같은 이름을 다룬 HN·업계 글은 한 항목으로 합친다(한 소식이 핵심 3줄 두 칸을 먹지 않게).
+- 블로그: 1,500~2,500자 → **700~1,100자**, 섹션 ⑥ 한 줄 요약 삭제, FAQ 3→2, 이미지 제안 1~2개. 주제 고르는 기준을 "① 대형 발표(경쟁사 포함) ② 공식 기능·스킬 ③ 유명 오픈소스(대형 발표 없을 때만)"로 바꿨다.
+- 인스타: 최대 10장 → **5~6장**, 슬라이드 35자, 캡션 300자, 해시태그 6~8개.
+- `generate_content.py`: max_tokens 6000/3000 → 3000/2000(짧아진 글 기준, 비용 감소). 프롬프트에 major 우선·길이 한 줄.
+- 회귀 케이스 ④ `fixtures/case4_big_launch_vs_repos.json` 추가. case1·dry_run_sample은 새 수집원 키(page::claude_products, feed::, JSON 기사)를 넣었다(기대 결과는 그대로).
+
+**버린 대안**
+- *Google News RSS로 "경쟁 계정들이 다루는 화제" 직접 측정*: 같은 소식이 매체 수만큼 중복으로 들어와 묶는 로직이 따로 필요하다. 이번엔 공식 블로그 RSS + HN 고득점으로 대신했다. 그래도 놓치면 다음 후보.
+- *X·유튜브·인스타 경쟁 계정 직접 감시*: 유료 API·키가 필요(사용자 승인 사항).
+- *대형 발표에 점수만 크게 주기*: 스타 점수 상한과 계속 줄다리기가 된다. 정렬 우선순위로 분리했다.
+
+**같은 날 추가 (사용자 "다 해")**
+- `collect_articles`를 정규식 → JSON 객체 통째 읽기로 바꿨다. 출시 글(예: "Introducing Claude Opus 5.5")은 필드 순서가 알파벳순이라 정규식이 놓쳤다. 88개 → 110개. 놓쳤던 것 중에 "Anthropic files S-1 with the SEC for proposed IPO"(10-26), "Donating Agent Skills to the Agentic AI Foundation"(10-22)이 있었다. 출시 글은 `/claude-opus-5-5`처럼 루트 경로라 페이지 안 링크로 경로를 정한다.
+- `source_bonus.anthropic_news` 12 → 0: 기사 수집을 고치니 사무소 개소·이사 선임 같은 회사 소식이 2주에 7개 들어와 후보를 채웠다. 출시·새 모델·상장(IPO) 글만 major로 +30.
+- `enrich_majors`: 상위 대형 발표(최대 3개)에 ① 원문 페이지 발췌 1,500자(`detail`) ② Google 뉴스 한국어 RSS로 최근 7일 국내 기사 수(`kr_news`, 1건당 +1점, 최대 +20)를 붙인다. ①은 블로그가 "공식 페이지에서 확인하세요"로만 채워지던 문제, ②는 "경쟁 계정들이 다 같이 다루는 소식"을 재는 신호다. 대형 발표끼리는 국내 기사가 많은 쪽이 먼저.
+- `generate_content.py` 사실 범위에 detail을 소스로 추가, kr_news는 본문에 숫자로 쓰지 않게 했다.
+
+**이 브랜치 실제 실행 결과 (2026-10-30, Actions run 40989617677, watchlist=true)**
+- 핵심 3줄: ① GPT-6.1 Terra(국내 기사 58건) ② Gemini 4 Carbon(16건) ③ Anthropic S-1(IPO). 10-26의 중국어 영상 레포 3줄과 비교하면 경쟁 계정들이 다루는 주제로 바뀌었다.
+- 수집 상태: OpenAI RSS(글 1,337개)·DeepMind RSS·Google AI 블로그·Google 뉴스 RSS·Anthropic 기사(107개) 모두 성공. 원문 발췌는 openai.com이 HTTP 오류로 실패, 나머지 성공.
+- 카드뉴스는 6장·캡션 약 270자·해시태그 7개로 새 기준에 맞았다. 원문 발췌 덕에 공식 수치가 들어갔다.
+- **문제 2개를 찾아 고쳤다**: (1) 같은 소식이 출처별로 따로 올라감 — GPT(HN+RSS), Gemini(HN+DeepMind+벤치마크 기사)가 상위 10칸 중 5칸. → `fold_same_story`로 일반화(기준 항목 우선순위 `fold_anchor_order`, 이름 포함 또는 같은 URL이면 합침). (2) OpenAI 고객 사례 글("CodeRabbit helps… with GPT-6.1")이 모델 이름 패턴에 걸려 6~9위. → `major.exclude_patterns`. 회귀 케이스 ⑤ `case5_competitor_models_dedup.json`이 이 상황을 재현한다.
+- 실행이 브랜치에 남긴 봇 커밋(리포트·상태)은 revert했다. 머지되면 월요일 정기 실행이 이 소식들을 '이미 다룸'으로 건너뛰기 때문이다.
+
+**확인 못 한 것**
+- (해결) 업계 RSS·Google 뉴스 주소는 위 실제 실행에서 모두 성공 확인.
+- 블로그 초안 전체 길이는 Slack에 앞부분만 올라가서 확인하지 못했다. 다음 실행에서 content/blog 파일 길이를 확인할 것.
+- anthropic.com/news JSON 구조는 2026-10-27 실제 페이지로 확인했다. 구조가 바뀌면 "기사 0개" 실패로 찍힌다.
+- 원문 발췌는 HTML 글자를 그대로 잘라 쓴다. JS로만 그려지는 페이지면 발췌가 메뉴 글자 위주일 수 있다.
