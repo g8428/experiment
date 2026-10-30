@@ -1,12 +1,12 @@
 {
-  "date": "2026-10-26",
+  "date": "2026-10-30",
   "baseline": false,
   "headline": [
-    "[영상/디자인/에이전트/코딩] lemomo-ai/lemo-opuscar — A toolbox of film styles made in code for Claude Code: 59 ready to use, and your own. Eac…",
-    "[영상/에이전트/코딩] alchaincyf/huashu-motion — 让你的agent一键直出商业级产品宣传片：会作曲，能指着画面改。Commercial-grade launch films by your coding agent — poin…",
-    "[영상/자동화] ruvnet/RuView — π RuView turns commodity WiFi signals into real-time spatial intelligence, vital sign mon…"
+    "[기타] 🔥대형 발표 GPT-6.1 Terra — HN 토론: https://news.ycombinator.com/item?id=50248124",
+    "[기타] 🔥대형 발표 Gemini 4 Carbon — HN 토론: https://news.ycombinator.com/item?id=50276792",
+    "[기타] 🔥대형 발표 공식 [Anthropic 뉴스] Anthropic files S-1 with the SEC for proposed initial public offering — announcements · 2026-10-26 발표 — Today, Anthropic, PBC filed a registration statement on F…"
   ],
-  "release_summary": "이번 주 릴리스(v2.1.304~v2.1.310, 7개): 글감급 변경 3건(후보 3건 올림), 사소한 개선 262건",
+  "release_summary": "이번 주 릴리스(v2.1.311~v2.1.314, 3개): 글감급 변경 5건(후보 3건 올림), 사소한 개선 245건",
   "min_value": 10,
   "failures": [
     {
@@ -19,417 +19,376 @@
     }
   ],
   "watchlist_warnings": [
-    "google workspace"
+    "motion graphics",
+    "pptx",
+    "google workspace",
+    "excel"
   ],
   "top": [
     {
-      "id": "gh:lemomo-ai/lemo-opuscar",
-      "title": "lemomo-ai/lemo-opuscar",
-      "url": "https://github.com/lemomo-ai/lemo-opuscar",
-      "summary": "A toolbox of film styles made in code for Claude Code: 59 ready to use, and your own. Each style is a style prompt plus a demo film made entirely in code by Claude Opus 5.5, with no video model. By Lemomo. · 一套用代码做片的风格工具箱：59 种现成风格，也能做出你自己的",
-      "kind": "github",
+      "id": "hn:50248124",
+      "title": "GPT-6.1 Terra",
+      "url": "https://openai.com/index/introducing-gpt-6-1-terra/",
+      "summary": "HN 토론: https://news.ycombinator.com/item?id=50248124",
+      "kind": "community",
       "official": false,
       "categories": [
-        "영상",
-        "디자인",
-        "에이전트",
-        "코딩"
+        "기타"
       ],
-      "stars": 7550,
-      "star_delta_7d": 4448,
-      "mentions": 0,
-      "score": 89.0,
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 1062,
+      "score": 83.0,
       "importance": 45.0,
       "reasons": [
-        "스타 +4,448/7일 +25",
-        "일반 사용자 영향(영상/디자인/에이전트/코딩) +15",
-        "재부상 +5"
+        "언급 1,062 +20",
+        "신규 +5",
+        "국내 기사 58건/7일 +20"
       ],
-      "value": 44.0,
+      "value": 38.0,
       "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 7,550) +6",
-        "감시 키워드(video) +8"
+        "대형 발표 +30",
+        "언급 많음 +8"
       ],
       "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
+      "watch_hits": [],
+      "published_at": "2026-10-26T18:01:17Z",
       "versions": null,
-      "first_seen": "2026-10-14",
+      "first_seen": "2026-10-30",
       "sources": [
-        "github_search"
+        "hackernews_major"
       ],
-      "resurfaced": true
+      "resurfaced": false,
+      "major": true,
+      "kr_news": 58,
+      "detail": null
     },
     {
-      "id": "gh:alchaincyf/huashu-motion",
-      "title": "alchaincyf/huashu-motion",
-      "url": "https://github.com/alchaincyf/huashu-motion",
-      "summary": "让你的agent一键直出商业级产品宣传片：会作曲，能指着画面改。Commercial-grade launch films by your coding agent — point at the frame to change it.",
-      "kind": "github",
+      "id": "hn:50276792",
+      "title": "Gemini 4 Carbon",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/",
+      "summary": "HN 토론: https://news.ycombinator.com/item?id=50276792",
+      "kind": "community",
       "official": false,
       "categories": [
-        "영상",
-        "에이전트",
-        "코딩"
+        "기타"
       ],
-      "stars": 1684,
-      "star_delta_7d": 1537,
-      "mentions": 0,
-      "score": 85.9,
-      "importance": 42.9,
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 1797,
+      "score": 79.0,
+      "importance": 41.0,
       "reasons": [
-        "스타 +1,537/7일(추정) +23",
-        "일반 사용자 영향(영상/에이전트/코딩) +15",
+        "언급 1,797 +20",
+        "신규 +5",
+        "국내 기사 16건/7일 +16"
+      ],
+      "value": 38.0,
+      "value_reasons": [
+        "대형 발표 +30",
+        "언급 많음 +8"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-28T17:01:23Z",
+      "versions": null,
+      "first_seen": "2026-10-30",
+      "sources": [
+        "hackernews_major"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": 16,
+      "detail": "Gemini 4 Carbon is our strongest model with state-of-the-art cybersecurity and long horizon capabilities. / Introducing Gemini 4 Carbon Gemini 4 Carbon: our next frontier model Oct 28, 2026 | x.com Facebook LinkedIn Mail Copy link Gemini 4 Carbon is our strongest model with state-of-the-art cybersecurity and long horizon capabilities. Koray Kavukcuoglu SVP, Google DeepMind and Chief AI Architect, Google Share x.com Facebook LinkedIn Mail Copy link Today, we’re announcing the next frontier model: Gemini 4 Carbon, our strongest model with state-of-the-art cybersecurity and long horizon capabilities. Carbon ranks #1 on the recently updated v5.0 of Artificial Analysis Intelligence Index at 59. It shows significant gains across coding and agentic tasks as well as across key capabilities critical for cybersecurity defense, landing a firm lead in SEC-bench Pro (88.2%) for finding vulnerabilities, ExploitGym (54.8%) for exploitation, and CWE-bench (71.0%) for patching. On internal benchmarks, Carbon drives a strong uplift in generating secure code, and in live coding environments with our own teams it shows reduced misalignment and fabrication rates. Building on Gemini 4 Argon , which was launched two weeks ago, Carbon illustrates the pace at which we’re pushing the frontier forward. Our researchers and models are working hand in hand to advance capabilities faster, while strengthening our safeguards in tandem. We're taking a deliberate approach to rollout and are actively engaged i…"
+    },
+    {
+      "id": "link:https://www.anthropic.com/news/s1-sec",
+      "title": "[Anthropic 뉴스] Anthropic files S-1 with the SEC for proposed initial public offering",
+      "url": "https://www.anthropic.com/news/s1-sec",
+      "summary": "announcements · 2026-10-26 발표 — Today, Anthropic, PBC filed a registration statement on Form S-1 with the U.S. Securities and Exchange Commission relating to its proposed initial public offering of its Class A common stock.",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 70.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-26",
+      "versions": null,
+      "first_seen": "2026-10-30",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": "Anthropic is an AI safety and research company that's working to build reliable, interpretable, and steerable AI systems. / Anthropic files S-1 with the SEC for proposed initial public offering \\ Anthropic Skip to main content Today, Anthropic, PBC filed a registration statement on Form S-1 with the U.S. Securities and Exchange Commission relating to its proposed initial public offering of its Class A common stock. Anthropic intends to list its Class A common stock on the Nasdaq Global Select Market under the symbol “ANT.” The number of shares of Class A common stock to be offered and the price range for the proposed offering have not yet been determined. The proposed offering will be made only by means of a prospectus. Copies of the preliminary prospectus, when available, may be obtained from: Goldman Sachs & Co. LLC, Attention: Prospectus Department, 200 West Street, New York, NY 10282, by telephone at (866) 471-2526, or by email at prospectus-ny@ny.email.gs.com; or Morgan Stanley & Co. LLC, Attention: Prospectus Department, 180 Varick Street, 2nd Floor, New York, NY 10014. A registration statement relating to these securities has been filed with the SEC but has not yet become effective. These securities may not be sold, nor may offers to buy be accepted, prior to the time the registration statement becomes effective. Today’s announcement does not constitute an offer to sell or the solicitation of an offer to buy these securities, nor shall there be any sale of these secur…"
+    },
+    {
+      "id": "hn:50288019",
+      "title": "Gemini 4 Carbon is the new #1 on the Artificial Analysis Intelligence Index v5",
+      "url": "https://artificialanalysis.ai/articles/gemini-4-carbon-new-number-1",
+      "summary": "HN 토론: https://news.ycombinator.com/item?id=50288019",
+      "kind": "community",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 568,
+      "score": 61.4,
+      "importance": 23.4,
+      "reasons": [
+        "언급 568 +18",
+        "신규 +5"
+      ],
+      "value": 38.0,
+      "value_reasons": [
+        "대형 발표 +30",
+        "언급 많음 +8"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-29T12:41:56Z",
+      "versions": null,
+      "first_seen": "2026-10-30",
+      "sources": [
+        "hackernews_major"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://openai.com/index/introducing-gpt-6-1-terra",
+      "title": "[OpenAI 뉴스] Introducing GPT-6.1 Terra",
+      "url": "https://openai.com/index/introducing-gpt-6-1-terra",
+      "summary": "Bringing fast and capable computer use to everyone",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 48.0,
+      "importance": 5.0,
+      "reasons": [
         "신규 +5"
       ],
       "value": 43.0,
       "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "자동화·새 연동 +8",
         "새 기능 표현(할 수 있게 됨) +5",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-26",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:ruvnet/ruview",
-      "title": "ruvnet/RuView",
-      "url": "https://github.com/ruvnet/RuView",
-      "summary": "π RuView turns commodity WiFi signals into real-time spatial intelligence, vital sign monitoring, and presence detection — all without a single pixel of video.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "자동화"
-      ],
-      "stars": 99612,
-      "star_delta_7d": 924,
-      "mentions": 0,
-      "score": 82.3,
-      "importance": 36.3,
-      "reasons": [
-        "스타 +924/7일 +21",
-        "일반 사용자 영향(영상/자동화) +15"
-      ],
-      "value": 46.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "자동화·새 연동 +8",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "유명(스타 99,612) +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-19",
-      "sources": [
-        "watchlist"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:genspark-ai/genoffice",
-      "title": "genspark-ai/genoffice",
-      "url": "https://github.com/genspark-ai/genoffice",
-      "summary": "Free, open-source AI Office suite: Docs, Sheets, Slides, PDF, Markdown and HTML editors with a built-in AI agent, plus a `genoffice` CLI and agent skill so Claude Code, Codex and Cursor can create and edit real .docx/.xlsx/.pptx files locally. Bring your own key. macOS, Windows & Linux.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "문서·오피스",
-        "에이전트"
-      ],
-      "stars": 10845,
-      "star_delta_7d": 878,
-      "mentions": 0,
-      "score": 73.2,
-      "importance": 33.2,
-      "reasons": [
-        "스타 +878/7일 +21",
-        "일반 사용자 영향(문서·오피스/에이전트) +12"
-      ],
-      "value": 40.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "유명(스타 10,845) +6",
-        "감시 키워드(slides, pptx, excel) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "slides",
-        "pptx",
-        "excel"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-19",
-      "sources": [
-        "watchlist"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:actionow-ai/vvv",
-      "title": "actionow-ai/vvv",
-      "url": "https://github.com/actionow-ai/vvv",
-      "summary": "Build a video template once, reuse it across coding agents. Editable Remotion templates and an Agent Skill for Claude Code, Codex and 25+ agents.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 377,
-      "star_delta_7d": 377,
-      "mentions": 0,
-      "score": 72.5,
-      "importance": 38.5,
-      "reasons": [
-        "스타 +377/7일(추정) +19",
-        "일반 사용자 영향(영상/에이전트/코딩) +15",
-        "신규 +5"
-      ],
-      "value": 34.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "감시 키워드(remotion, video) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "remotion",
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-26",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:underleveledbuilder/awesome-short-drama-skills",
-      "title": "UnderleveledBuilder/awesome-short-drama-skills",
-      "url": "https://github.com/UnderleveledBuilder/awesome-short-drama-skills",
-      "summary": "AI 短剧 · 漫剧 Skill（技能包）精选：剧本、改编、分镜、Seedance / 可灵 / MiniMax 视频提示词，千问、豆包、龙虾 OpenClaw、WorkBuddy、Claude Code、Codex 等智能体可用 | Curated agent skills for AI short drama, micro drama / microdrama, vertical drama and manju (AI comic drama): screenwriting, storyboards, Seedance / Kling / MiniMax video prompts",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트"
-      ],
-      "stars": 944,
-      "star_delta_7d": 536,
-      "mentions": 0,
-      "score": 71.6,
-      "importance": 39.6,
-      "reasons": [
-        "스타 +536/7일(추정) +20",
-        "일반 사용자 영향(영상/에이전트) +15",
-        "신규 +5"
-      ],
-      "value": 32.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-26",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:paperclipai/paperclip",
-      "title": "paperclipai/paperclip",
-      "url": "https://github.com/paperclipai/paperclip",
-      "summary": "The open-source app everyone uses to manage agents at work",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "자동화",
-        "에이전트",
-        "연동(MCP)"
-      ],
-      "stars": 107354,
-      "star_delta_7d": 3125,
-      "mentions": 0,
-      "score": 69.0,
-      "importance": 35.0,
-      "reasons": [
-        "스타 +3,125/7일 +25",
-        "일반 사용자 영향(자동화/에이전트/연동(MCP)) +10"
-      ],
-      "value": 34.0,
-      "value_reasons": [
-        "자동화·새 연동 +8",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 107,354) +6"
+        "대형 발표 +30"
       ],
       "needs_check": false,
       "watch_hits": [],
-      "published_at": null,
+      "published_at": "2026-10-26T00:00:00+00:00",
       "versions": null,
-      "first_seen": "2026-10-14",
+      "first_seen": "2026-10-30",
       "sources": [
-        "github_search"
+        "openai_news"
       ],
-      "resurfaced": false
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
     },
     {
-      "id": "gh:kajisho5/ffmpeg-skill",
-      "title": "kajisho5/ffmpeg-skill",
-      "url": "https://github.com/kajisho5/ffmpeg-skill",
-      "summary": "Local video editor for coding agents: 42 FFmpeg tools with a machine-readable contract and an MCP server, for Claude Code, Cursor and Codex. Cut, captions, reframe, loudness, platform exports. No cloud, no API keys.",
-      "kind": "github",
+      "id": "feed:https://openai.com/index/greptile-code-review-codex-astra",
+      "title": "[OpenAI 뉴스] Greptile takes bug detection beyond code review with GPT-6 Astra",
+      "url": "https://openai.com/index/greptile-code-review-codex-astra",
+      "summary": "How Greptile uses GPT-6 Astra to test user workflows, Daybreak to strengthen security, and Codex to reduce rework.",
+      "kind": "industry",
       "official": false,
       "categories": [
-        "영상",
-        "에이전트",
-        "연동(MCP)",
-        "코딩"
-      ],
-      "stars": 2879,
-      "star_delta_7d": 891,
-      "mentions": 0,
-      "score": 68.2,
-      "importance": 36.2,
-      "reasons": [
-        "스타 +891/7일 +21",
-        "일반 사용자 영향(영상/에이전트/연동(MCP)/코딩) +15"
-      ],
-      "value": 32.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-19",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:nextlevelbuilder/ui-ux-pro-max-skill",
-      "title": "nextlevelbuilder/ui-ux-pro-max-skill",
-      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
-      "summary": "An AI skill that provides design intelligence for building professional UI/UX across multiple platforms.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "디자인"
-      ],
-      "stars": 140443,
-      "star_delta_7d": 3141,
-      "mentions": 0,
-      "score": 67.0,
-      "importance": 37.0,
-      "reasons": [
-        "스타 +3,141/7일 +25",
-        "일반 사용자 영향(디자인) +12"
-      ],
-      "value": 30.0,
-      "value_reasons": [
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 140,443) +6",
-        "감시 키워드(design) +4"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "design"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search",
-        "watchlist"
-      ],
-      "resurfaced": false
-    },
-    {
-      "id": "gh:leonxlnx/taste-skill",
-      "title": "Leonxlnx/taste-skill",
-      "url": "https://github.com/Leonxlnx/taste-skill",
-      "summary": "Agent skills that give coding agents taste: art direction, reference images and a browser check instead of generic AI pages",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "디자인",
         "자동화",
-        "에이전트",
         "코딩"
       ],
-      "stars": 102567,
-      "star_delta_7d": 3631,
+      "stars": null,
+      "star_delta_7d": 0,
       "mentions": 0,
-      "score": 67.0,
-      "importance": 37.0,
+      "score": 45.0,
+      "importance": 15.0,
       "reasons": [
-        "스타 +3,631/7일 +25",
-        "일반 사용자 영향(디자인/자동화/에이전트/코딩) +12"
+        "일반 사용자 영향(자동화/코딩) +10",
+        "신규 +5"
       ],
       "value": 30.0,
       "value_reasons": [
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 102,567) +6",
-        "감시 키워드(design) +4"
+        "대형 발표 +30"
       ],
       "needs_check": false,
-      "watch_hits": [
-        "design"
-      ],
-      "published_at": null,
+      "watch_hits": [],
+      "published_at": "2026-10-26T22:00:00+00:00",
       "versions": null,
-      "first_seen": "2026-10-14",
+      "first_seen": "2026-10-30",
       "sources": [
-        "github_search"
+        "openai_news"
       ],
-      "resurfaced": false
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://openai.com/index/gpt-6-1-sol-coderabbit-code-security",
+      "title": "[OpenAI 뉴스] GPT-6.1 Sol helps CodeRabbit strengthen security across complex codebases",
+      "url": "https://openai.com/index/gpt-6-1-sol-coderabbit-code-security",
+      "summary": "CodeRabbit uses GPT-6.1 Sol to investigate security risks across complex codebases. Its security agent helps developers review findings and proposed fixes.",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "에이전트"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 41.0,
+      "importance": 11.0,
+      "reasons": [
+        "일반 사용자 영향(에이전트) +6",
+        "신규 +5"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-26T13:45:00+00:00",
+      "versions": null,
+      "first_seen": "2026-10-30",
+      "sources": [
+        "openai_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://openai.com/index/terminal-x",
+      "title": "[OpenAI 뉴스] Terminal X matches senior investor judgment 88.6% with GPT-6.1",
+      "url": "https://openai.com/index/terminal-x",
+      "summary": "Terminal X’s Eval Agent grades outputs against a 54-criterion rubric, catching 25% more deviances from a fund’s mandate with GPT-6.1 Sol.",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "에이전트"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 41.0,
+      "importance": 11.0,
+      "reasons": [
+        "일반 사용자 영향(에이전트) +6",
+        "신규 +5"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-20T07:00:00+00:00",
+      "versions": null,
+      "first_seen": "2026-10-30",
+      "sources": [
+        "openai_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://openai.com/index/anima",
+      "title": "[OpenAI 뉴스] Anima helps clinics cut call waits by 75% with GPT-6 and GPT-Live",
+      "url": "https://openai.com/index/anima",
+      "summary": "Anima expands what care teams can do with OpenAI models, giving them more capacity to respond to patients.",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 35.0,
+      "importance": 5.0,
+      "reasons": [
+        "신규 +5"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-23T00:00:00+00:00",
+      "versions": null,
+      "first_seen": "2026-10-30",
+      "sources": [
+        "openai_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/",
+      "title": "[Google DeepMind 블로그] Gemini 4 Carbon: Our next frontier model",
+      "url": "https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/",
+      "summary": "",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 35.0,
+      "importance": 5.0,
+      "reasons": [
+        "신규 +5"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-28T17:00:58+00:00",
+      "versions": null,
+      "first_seen": "2026-10-30",
+      "sources": [
+        "deepmind_blog"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
     }
   ]
 }
