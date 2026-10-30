@@ -10,7 +10,7 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
 ## 현재 상태 (2026-10-27)
 
 - v2.1은 master에서 매주 월요일 돌고 있다(10-19, 10-26 리포트).
-- **v2.2(대형 발표 우선·업계 소식·짧은 글)** 는 `claude/cc-monitor-big-news` 브랜치. 배경은 HANDOVER.md "2026-10-27". 오프라인 fixtures + 실제 anthropic.com/news 페이지로 검증했고, 업계 RSS 주소는 첫 실행에서 확인해야 한다.
+- **v2.2(대형 발표 우선·업계 소식·짧은 글)** 는 `claude/cc-monitor-big-news` 브랜치. 배경은 HANDOVER.md "2026-10-27". fixtures ①~⑤ + 이 브랜치 실제 Actions 실행(2026-10-30, run 40989617677)으로 검증했다.
 - 새 수집원 `claude_products`는 첫 실행이 기준선이라 그때는 '새 제품' 0개가 정상.
 
 ## 파이프라인
@@ -20,7 +20,7 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
   monitor.py
     수집: Claude Code 릴리스·CHANGELOG / 공식 스킬·플러그인 폴더 / Anthropic 뉴스(JSON 기사 목록)·Claude 제품 목록·공식 문서 목차
           / 업계 RSS(OpenAI·Google AI·DeepMind) / GitHub 신규·토픽 검색 / Hacker News(업계 키워드는 300점 이상) / Reddit
-    → 새 제품 페이지와 같은 제품을 다룬 글은 한 항목으로 합침
+    → 같은 신제품·신모델을 다룬 글(공식·업계 블로그·HN·벤치마크 기사)은 한 항목으로 합침, 고객 사례 글 제외
     → (월요일) 감시 키워드 검색 → 걸린 레포도 후보 풀에 추가
     → 릴리스 묶음: 이번 주기 릴리스·CHANGELOG를 줄 단위로 판정, 글감급 줄만 남김
     → 카테고리 태깅(영상·디자인·문서·오피스·자동화·에이전트·연동·코딩)
@@ -50,6 +50,7 @@ python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/cla
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case2_big_news_vs_minor.json    # 영상·스킬이 위
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case3_mixed_release.json        # 글감급 줄만
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case4_big_launch_vs_repos.json   # 🔥대형 발표 2개가 레포보다 위, Duet은 한 칸
+python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case5_competitor_models_dedup.json  # GPT·Gemini 한 칸씩, 고객 사례 글 없음
 #   --dump <폴더> 를 붙이면 리포트·latest-top.json을 그 폴더에 저장 → generate_content.py --top 으로 이어서 확인
 
 # 실제 수집 (GITHUB_TOKEN 없어도 동작하지만 검색 rate limit이 낮다)
@@ -101,7 +102,7 @@ projects/claude-code-monitor/
   generate_content.py  블로그/인스타 초안 (에이전트 파일을 프롬프트로 사용)
   slack_notify.py      Slack 보고
   fixtures/dry_run_sample.json  드라이런용 가짜 응답 (실제 소식 아님)
-  fixtures/case*.json           글감 선별 회귀 케이스 ①②③④ ("__extends__"로 case1을 상속, "__defaults__"로 빈 응답)
+  fixtures/case*.json           글감 선별 회귀 케이스 ①~⑤ ("__extends__"로 case1을 상속, "__defaults__"로 빈 응답)
   fixtures/fake_blog_*.md       generate_content.py --dry-run --fake-blog 용 가짜 블로그 응답 (SKIP / 정상)
   blog/                새 블로그 형식 완성 예시
   CLAUDE.md / HANDOVER.md

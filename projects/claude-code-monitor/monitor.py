@@ -312,7 +312,7 @@ def collect_feed(f: Fetcher, cfg: dict, now: datetime, fd: dict):
     blocks = [m.group(0) for m in FEED_ENTRY_RE.finditer(text)]
     if not blocks:
         raise RuntimeError("글 0개 — 피드 주소나 형식 변경 의심")
-    patterns = cfg["value_rules"]["major"]["patterns"]
+    mj = cfg["value_rules"]["major"]
     since = now - timedelta(days=cfg["lookback_days"])
     items = []
     for b in blocks:
@@ -321,7 +321,7 @@ def collect_feed(f: Fetcher, cfg: dict, now: datetime, fd: dict):
         published = parse_feed_date(_feed_field(b, "pubDate", "published", "updated"))
         if not title or not link or (published and published < since):
             continue
-        if not any(_rx(p).search(title) for p in patterns):
+        if not is_major_title(title, mj):
             continue
         summary = one_line(re.sub(r"<[^>]+>", " ", _feed_field(b, "description", "summary")), 200)
         items.append(make_item(f"feed:{link}", f"[{fd['label']}] {title}", link, summary, kind="industry",
@@ -329,15 +329,45 @@ def collect_feed(f: Fetcher, cfg: dict, now: datetime, fd: dict):
     return items, len(items), f"글 {len(blocks)}개 중 대형 발표 패턴 {len(items)}개"
 
 
-def fold_launch_coverage(items: dict[str, dict]) -> None:
-    """새 제품 페이지와 같은 제품을 다룬 HN·업계·공식 글은 제품 항목 하나로 합친다 (한 소식이 핵심 3줄 두 칸을 먹지 않게)."""
-    products = {k: it["title"].rsplit(": ", 1)[-1].lower() for k, it in items.items() if "claude_products" in it["sources"]}
-    for pid, name in products.items():
-        if len(name) < 4:  # 'tag' 같은 짧은 이름은 엉뚱한 글에 걸린다
+def is_major_title(title: str, mj: dict) -> bool:
+    """출시·새 모델 패턴에 맞고, 고객 사례 글('X helps Y with GPT-6')은 아닌 제목."""
+    return (any(_rx(p).search(title) for p in mj.get("patterns", []))
+            and not any(_rx(p).search(title) for p in mj.get("exclude_patterns", [])))
+
+
+def norm_url(u: str) -> str:
+    return re.sub(r"^https?://(www\.)?", "", u or "").rstrip("/").lower()
+
+
+def fold_same_story(items: dict[str, dict], cfg: dict) -> None:
+    """같은 신제품·신모델을 다룬 글(제품 페이지·공식 블로그·HN·벤치마크 기사)은 한 항목으로 합친다.
+    2026-10-30 실행에서 GPT-6.1 Terra(HN·OpenAI RSS), Gemini 4 Carbon(HN·DeepMind·벤치마크 기사)이 상위 10칸 중 5칸을 먹었다.
+    기준 항목은 fold_anchor_order 순(공식 → 업계 블로그 → HN)으로 골라 공식 링크가 남게 한다."""
+    mj = cfg["value_rules"]["major"]
+    order = {s: i for i, s in enumerate(mj.get("fold_anchor_order", []))}
+
+    def anchor_name(it: dict) -> str | None:
+        srcs = set(it["sources"]) & set(mj.get("sources", []))
+        if not srcs:
+            return None
+        if "claude_products" in srcs:  # 'tag' 같은 짧은 이름은 엉뚱한 글에 걸린다
+            name = it["title"].rsplit(": ", 1)[-1]
+            return name.lower() if len(name) >= 4 else None
+        name = major_name(it)
+        # 'Claude'처럼 한 단어 이름은 아무 글에나 걸린다. 두 단어 이상이거나 숫자(버전)가 있어야 한다
+        if not name or not is_major_title(it["title"], mj) or (len(name.split()) < 2 and not re.search(r"\d", name)):
+            return None
+        return name.lower()
+
+    anchors = sorted(((k, n) for k, it in items.items() if (n := anchor_name(it))),
+                     key=lambda kn: min(order.get(s, 99) for s in items[kn[0]]["sources"]))
+    for pid, name in anchors:
+        if pid not in items:  # 이미 다른 기준 항목에 합쳐졌다
             continue
         prod = items[pid]
         for oid in [k for k, o in items.items()
-                    if k != pid and o["kind"] in ("community", "industry", "official") and name in o["title"].lower()]:
+                    if k != pid and o["kind"] in ("community", "industry", "official")
+                    and (name in o["title"].lower() or norm_url(o["url"]) == norm_url(prod["url"]))]:
             o = items.pop(oid)
             prod["mentions"] += o.get("mentions", 0)
             prod["sources"] = sorted(set(prod["sources"]) | set(o["sources"]))
@@ -571,7 +601,7 @@ def judge_value(it: dict, cfg: dict) -> None:
     mj = vr.get("major", {})
     it["major"] = any(
         s in mj.get("sources", []) and (s not in mj.get("pattern_required_sources", [])
-                                        or any(_rx(p).search(it["title"]) for p in mj.get("patterns", [])))
+                                        or is_major_title(it["title"], mj))
         for s in it["sources"])
     if it["major"]:
         value += mj.get("bonus", 0); reasons.append(f"대형 발표 +{mj.get('bonus', 0)}")
@@ -1044,7 +1074,7 @@ def main(argv: list[str] | None = None) -> int:
             merge(items, it)
         watch = (rows, wfailed)
     bundle = bundle_releases(items, cfg)
-    fold_launch_coverage(items)
+    fold_same_story(items, cfg)
     print(f"  수집 아이템 {len(items)}개, 실패 소스 {len(run.failures)}개")
     if bundle["text"]:
         print(f"  {bundle['text']}")

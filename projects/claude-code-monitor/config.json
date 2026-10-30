@@ -147,6 +147,10 @@
       "kr_news_bonus_max": 20,
       "sources": ["claude_products", "anthropic_news", "openai_news", "google_ai_blog", "deepmind_blog", "hackernews_major"],
       "pattern_required_sources": ["anthropic_news", "hackernews_major"],
+      "_exclude_patterns": "고객 사례 글 제외. 2026-10-30 실행에서 'GPT-6.1 Sol helps CodeRabbit…', 'Terminal X matches … with GPT-6.1' 같은 OpenAI 사례 글이 모델 이름 패턴에 걸려 상위 6~9위를 채웠다",
+      "exclude_patterns": ["\\bhelps?\\b", "\\bwith (gpt|gemini|claude|codex|chatgpt)", "\\bcustomers?\\b", "case stud", "\\bpartner(s|ship)?\\b"],
+      "_fold_anchor_order": "같은 소식을 합칠 때 남길 항목의 출처 우선순위(공식 링크가 남게). fold_same_story",
+      "fold_anchor_order": ["claude_products", "anthropic_news", "openai_news", "deepmind_blog", "google_ai_blog", "hackernews_major"],
       "patterns": ["\\bintroduc(e|es|ing)\\b", "\\blaunch(es|ed|ing)?\\b", "\\bannounc(e|es|ed|ing)\\b", "\\bunveil", "initial public offering", "\\bipo\\b", "상장", "research preview", "now available", "generally available", "\\bnew (model|agent|app)\\b", "\\bgpt-?\\d", "\\bgemini \\d", "\\b(opus|sonnet|haiku) \\d", "출시", "공개", "발표"]
     },
 

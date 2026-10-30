@@ -145,8 +145,15 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 - `enrich_majors`: 상위 대형 발표(최대 3개)에 ① 원문 페이지 발췌 1,500자(`detail`) ② Google 뉴스 한국어 RSS로 최근 7일 국내 기사 수(`kr_news`, 1건당 +1점, 최대 +20)를 붙인다. ①은 블로그가 "공식 페이지에서 확인하세요"로만 채워지던 문제, ②는 "경쟁 계정들이 다 같이 다루는 소식"을 재는 신호다. 대형 발표끼리는 국내 기사가 많은 쪽이 먼저.
 - `generate_content.py` 사실 범위에 detail을 소스로 추가, kr_news는 본문에 숫자로 쓰지 않게 했다.
 
+**이 브랜치 실제 실행 결과 (2026-10-30, Actions run 40989617677, watchlist=true)**
+- 핵심 3줄: ① GPT-6.1 Terra(국내 기사 58건) ② Gemini 4 Carbon(16건) ③ Anthropic S-1(IPO). 10-26의 중국어 영상 레포 3줄과 비교하면 경쟁 계정들이 다루는 주제로 바뀌었다.
+- 수집 상태: OpenAI RSS(글 1,337개)·DeepMind RSS·Google AI 블로그·Google 뉴스 RSS·Anthropic 기사(107개) 모두 성공. 원문 발췌는 openai.com이 HTTP 오류로 실패, 나머지 성공.
+- 카드뉴스는 6장·캡션 약 270자·해시태그 7개로 새 기준에 맞았다. 원문 발췌 덕에 공식 수치가 들어갔다.
+- **문제 2개를 찾아 고쳤다**: (1) 같은 소식이 출처별로 따로 올라감 — GPT(HN+RSS), Gemini(HN+DeepMind+벤치마크 기사)가 상위 10칸 중 5칸. → `fold_same_story`로 일반화(기준 항목 우선순위 `fold_anchor_order`, 이름 포함 또는 같은 URL이면 합침). (2) OpenAI 고객 사례 글("CodeRabbit helps… with GPT-6.1")이 모델 이름 패턴에 걸려 6~9위. → `major.exclude_patterns`. 회귀 케이스 ⑤ `case5_competitor_models_dedup.json`이 이 상황을 재현한다.
+- 실행이 브랜치에 남긴 봇 커밋(리포트·상태)은 revert했다. 머지되면 월요일 정기 실행이 이 소식들을 '이미 다룸'으로 건너뛰기 때문이다.
+
 **확인 못 한 것**
-- Google 뉴스 RSS(`news.google.com/rss/search`)도 이 환경에선 막혀 있다. 실패하면 '수집 상태'의 "대형 발표 원문·국내 기사" 줄에 찍힌다.
-- OpenAI(`openai.com/news/rss.xml`)·Google AI 블로그·DeepMind RSS 주소는 이 작업 환경에서 열어 보지 못했다(프록시 차단). 틀리면 리포트 '수집 상태'에 실패로 찍힌다 → 다음 월요일 실행 결과로 확인.
+- (해결) 업계 RSS·Google 뉴스 주소는 위 실제 실행에서 모두 성공 확인.
+- 블로그 초안 전체 길이는 Slack에 앞부분만 올라가서 확인하지 못했다. 다음 실행에서 content/blog 파일 길이를 확인할 것.
 - anthropic.com/news JSON 구조는 2026-10-27 실제 페이지로 확인했다. 구조가 바뀌면 "기사 0개" 실패로 찍힌다.
 - 원문 발췌는 HTML 글자를 그대로 잘라 쓴다. JS로만 그려지는 페이지면 발췌가 메뉴 글자 위주일 수 있다.
