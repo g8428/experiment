@@ -40,6 +40,7 @@ Python 기반 범용 실험 워크스페이스. 데이터 분석, 시각화, 자
 - `랍스터주식회사/` — 초기 프로토타입. 문화/톤 문서(`회사규칙.md`)는 유효하지만 실행 구조(`slack_commander.py`)는 `AGENTS.md`의 구조로 대체됨
 - `sandbox/` — 임시 실험 및 테스트
 - `shared/utils/` — 공통 유틸리티 함수
+- `research/references/agent-dev/` — **개발 참고 자료**(외부 영상·글을 크로스체크한 분석). 에이전트·스킬·앱을 새로 만들기 전에 `README.md` 표에서 관련 자료를 먼저 읽는다
 - `data/raw/`, `data/processed/` — 데이터 저장소
 - `notebooks/` — Jupyter 노트북
 - `configs/` — 설정 파일
