@@ -349,6 +349,16 @@
    "https://code.claude.com/docs/en/workflows.md",
    "https://code.claude.com/docs/en/worktrees.md",
    "https://code.claude.com/docs/en/zero-data-retention.md"
+  ],
+  "claude_products": [
+   "https://claude.com/product/claude-code",
+   "https://claude.com/product/claude-duet",
+   "https://claude.com/product/claude-science",
+   "https://claude.com/product/claude-security",
+   "https://claude.com/product/cowork",
+   "https://claude.com/product/design",
+   "https://claude.com/product/overview",
+   "https://claude.com/product/tag"
   ]
  },
  "items": {
@@ -565,7 +575,7 @@
    "first_seen": "2026-10-14",
    "title": "yetone/magpie",
    "url": "https://github.com/yetone/magpie",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -582,6 +592,10 @@
     [
      "2026-10-26",
      21654
+    ],
+    [
+     "2026-11-02",
+     27567
     ]
    ]
   },
@@ -589,7 +603,7 @@
    "first_seen": "2026-10-14",
    "title": "tamaratran/fast-jev-compaction",
    "url": "https://github.com/tamaratran/fast-jev-compaction",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -606,6 +620,10 @@
     [
      "2026-10-26",
      7766
+    ],
+    [
+     "2026-11-02",
+     7827
     ]
    ]
   },
@@ -613,7 +631,7 @@
    "first_seen": "2026-10-14",
    "title": "rehan-remade/universal-modder",
    "url": "https://github.com/rehan-remade/universal-modder",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "연동(MCP)",
@@ -632,6 +650,10 @@
     [
      "2026-10-26",
      8963
+    ],
+    [
+     "2026-11-02",
+     9319
     ]
    ],
    "reported": [
@@ -644,7 +666,7 @@
    "first_seen": "2026-10-14",
    "title": "Ryze-AI-Adgent/open-seo-mcp-skills",
    "url": "https://github.com/Ryze-AI-Adgent/open-seo-mcp-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -661,6 +683,10 @@
     [
      "2026-10-26",
      7257
+    ],
+    [
+     "2026-11-02",
+     8552
     ]
    ]
   },
@@ -668,7 +694,7 @@
    "first_seen": "2026-10-14",
    "title": "Louis-CFM/coucou",
    "url": "https://github.com/Louis-CFM/coucou",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -686,6 +712,10 @@
     [
      "2026-10-26",
      6457
+    ],
+    [
+     "2026-11-02",
+     6881
     ]
    ]
   },
@@ -709,7 +739,7 @@
    "first_seen": "2026-10-14",
    "title": "nykooi1/vibe-wise",
    "url": "https://github.com/nykooi1/vibe-wise",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -726,6 +756,10 @@
     [
      "2026-10-26",
      3963
+    ],
+    [
+     "2026-11-02",
+     4104
     ]
    ]
   },
@@ -758,7 +792,7 @@
    "first_seen": "2026-10-14",
    "title": "nateherkai/scroll-craft",
    "url": "https://github.com/nateherkai/scroll-craft",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -778,6 +812,10 @@
     [
      "2026-10-26",
      4049
+    ],
+    [
+     "2026-11-02",
+     4364
     ]
    ]
   },
@@ -785,7 +823,7 @@
    "first_seen": "2026-10-14",
    "title": "QingYunA/answer-me-with-html",
    "url": "https://github.com/QingYunA/answer-me-with-html",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -802,6 +840,10 @@
     [
      "2026-10-26",
      4452
+    ],
+    [
+     "2026-11-02",
+     5023
     ]
    ]
   },
@@ -833,7 +875,7 @@
    "first_seen": "2026-10-14",
    "title": "vinzdg/codenotch",
    "url": "https://github.com/vinzdg/codenotch",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -850,6 +892,10 @@
     [
      "2026-10-26",
      2922
+    ],
+    [
+     "2026-11-02",
+     2981
     ]
    ]
   },
@@ -878,7 +924,7 @@
    "first_seen": "2026-10-14",
    "title": "dzhng/jevgrep",
    "url": "https://github.com/dzhng/jevgrep",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -896,6 +942,10 @@
     [
      "2026-10-26",
      2904
+    ],
+    [
+     "2026-11-02",
+     3136
     ]
    ]
   },
@@ -925,7 +975,7 @@
    "first_seen": "2026-10-14",
    "title": "Vincentwei1021/anything2explainer",
    "url": "https://github.com/Vincentwei1021/anything2explainer",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -944,6 +994,10 @@
     [
      "2026-10-26",
      2751
+    ],
+    [
+     "2026-11-02",
+     2958
     ]
    ]
   },
@@ -951,7 +1005,7 @@
    "first_seen": "2026-10-14",
    "title": "Jakeschincariol/replica-skill",
    "url": "https://github.com/Jakeschincariol/replica-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -969,6 +1023,10 @@
     [
      "2026-10-26",
      5516
+    ],
+    [
+     "2026-11-02",
+     6990
     ]
    ]
   },
@@ -976,7 +1034,7 @@
    "first_seen": "2026-10-14",
    "title": "Oldcircle/geo-sleuth",
    "url": "https://github.com/Oldcircle/geo-sleuth",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -994,6 +1052,10 @@
     [
      "2026-10-26",
      4184
+    ],
+    [
+     "2026-11-02",
+     5270
     ]
    ]
   },
@@ -1001,14 +1063,14 @@
    "first_seen": "2026-10-14",
    "title": "lemomo-ai/lemo-opuscar",
    "url": "https://github.com/lemomo-ai/lemo-opuscar",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
     "에이전트",
     "코딩"
    ],
-   "kw_text": "lemomo-ai/lemo-opuscar A toolbox of film styles made in code for Claude Code: 59 ready to use, and your own. Each style is a style prompt plus a demo film made entirely in code by Claude Opus 5.5, with no video model. By Lemomo. · 一套用代码做片的…",
+   "kw_text": "lemomo-ai/lemo-opuscar A toolbox of film styles made in code for Claude Code: 66 ready to use, and your own. Each style is a style prompt plus a demo film made entirely in code by Claude Opus 5.5, with no video model. By Lemomo. · 一套用代码做片的…",
    "stars_hist": [
     [
      "2026-10-14",
@@ -1021,20 +1083,25 @@
     [
      "2026-10-26",
      7550
+    ],
+    [
+     "2026-11-02",
+     10581
     ]
    ],
    "reported": [
     "2026-10-19",
-    "2026-10-26"
+    "2026-10-26",
+    "2026-11-02"
    ],
-   "last_reported_stars": 7550,
+   "last_reported_stars": 10581,
    "last_reported_mentions": 0
   },
   "gh:johnheibel/pdoomvideo": {
    "first_seen": "2026-10-14",
    "title": "JohnHeibel/PDoomVideo",
    "url": "https://github.com/JohnHeibel/PDoomVideo",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -1051,6 +1118,10 @@
     [
      "2026-10-26",
      2591
+    ],
+    [
+     "2026-11-02",
+     2769
     ]
    ]
   },
@@ -1083,7 +1154,7 @@
    "first_seen": "2026-10-14",
    "title": "Jakeschincariol/linkedin-agent-skill",
    "url": "https://github.com/Jakeschincariol/linkedin-agent-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -1100,6 +1171,10 @@
     [
      "2026-10-26",
      2684
+    ],
+    [
+     "2026-11-02",
+     3034
     ]
    ]
   },
@@ -1128,7 +1203,7 @@
    "first_seen": "2026-10-14",
    "title": "nanaism/yomiyasu",
    "url": "https://github.com/nanaism/yomiyasu",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -1145,6 +1220,10 @@
     [
      "2026-10-26",
      2550
+    ],
+    [
+     "2026-11-02",
+     2794
     ]
    ]
   },
@@ -1152,7 +1231,7 @@
    "first_seen": "2026-10-14",
    "title": "Vincentwei1021/video-talkcraft",
    "url": "https://github.com/Vincentwei1021/video-talkcraft",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -1172,6 +1251,10 @@
     [
      "2026-10-26",
      1774
+    ],
+    [
+     "2026-11-02",
+     2000
     ]
    ]
   },
@@ -1179,7 +1262,7 @@
    "first_seen": "2026-10-14",
    "title": "oil-oil/oil-ui",
    "url": "https://github.com/oil-oil/oil-ui",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -1197,6 +1280,10 @@
     [
      "2026-10-26",
      2251
+    ],
+    [
+     "2026-11-02",
+     2589
     ]
    ]
   },
@@ -1241,7 +1328,7 @@
    "first_seen": "2026-10-14",
    "title": "mikehasa/golive-skill",
    "url": "https://github.com/mikehasa/golive-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -1258,6 +1345,10 @@
     [
      "2026-10-26",
      1310
+    ],
+    [
+     "2026-11-02",
+     1354
     ]
    ]
   },
@@ -1282,7 +1373,7 @@
    "first_seen": "2026-10-14",
    "title": "kaankiziltug/logo-design-skill",
    "url": "https://github.com/kaankiziltug/logo-design-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트",
@@ -1301,6 +1392,10 @@
     [
      "2026-10-26",
      4592
+    ],
+    [
+     "2026-11-02",
+     5725
     ]
    ]
   },
@@ -1308,7 +1403,7 @@
    "first_seen": "2026-10-14",
    "title": "Jakeschincariol/youtube-agent-skill",
    "url": "https://github.com/Jakeschincariol/youtube-agent-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -1326,6 +1421,10 @@
     [
      "2026-10-26",
      2934
+    ],
+    [
+     "2026-11-02",
+     4163
     ]
    ]
   },
@@ -1333,7 +1432,7 @@
    "first_seen": "2026-10-14",
    "title": "Jakeschincariol/instagram-agent-skill",
    "url": "https://github.com/Jakeschincariol/instagram-agent-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -1350,6 +1449,10 @@
     [
      "2026-10-26",
      2923
+    ],
+    [
+     "2026-11-02",
+     4349
     ]
    ]
   },
@@ -1357,7 +1460,7 @@
    "first_seen": "2026-10-14",
    "title": "carnot-tech/jinba-consulting-pptx-skill",
    "url": "https://github.com/carnot-tech/jinba-consulting-pptx-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스"
    ],
@@ -1374,6 +1477,10 @@
     [
      "2026-10-26",
      1430
+    ],
+    [
+     "2026-11-02",
+     1458
     ]
    ]
   },
@@ -1381,7 +1488,7 @@
    "first_seen": "2026-10-14",
    "title": "kerpopule/hermes-jev-skills",
    "url": "https://github.com/kerpopule/hermes-jev-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -1399,6 +1506,10 @@
     [
      "2026-10-26",
      1181
+    ],
+    [
+     "2026-11-02",
+     1275
     ]
    ]
   },
@@ -1406,7 +1517,7 @@
    "first_seen": "2026-10-14",
    "title": "echris6/motion-video-kit",
    "url": "https://github.com/echris6/motion-video-kit",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인"
@@ -1424,6 +1535,10 @@
     [
      "2026-10-26",
      1194
+    ],
+    [
+     "2026-11-02",
+     1327
     ]
    ]
   },
@@ -1431,7 +1546,7 @@
    "first_seen": "2026-10-14",
    "title": "undefined-ui/second-brain-os",
    "url": "https://github.com/undefined-ui/second-brain-os",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -1449,6 +1564,10 @@
     [
      "2026-10-26",
      1124
+    ],
+    [
+     "2026-11-02",
+     1170
     ]
    ]
   },
@@ -1456,7 +1575,7 @@
    "first_seen": "2026-10-14",
    "title": "Arekejoker/qwen21-nsfw-pose-skill",
    "url": "https://github.com/Arekejoker/qwen21-nsfw-pose-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -1474,6 +1593,10 @@
     [
      "2026-10-26",
      3729
+    ],
+    [
+     "2026-11-02",
+     3921
     ]
    ]
   },
@@ -1624,7 +1747,7 @@
    "first_seen": "2026-10-14",
    "title": "Barty-Bart/motion-graphics",
    "url": "https://github.com/Barty-Bart/motion-graphics",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -1641,6 +1764,10 @@
     [
      "2026-10-26",
      861
+    ],
+    [
+     "2026-11-02",
+     998
     ]
    ]
   },
@@ -1648,7 +1775,7 @@
    "first_seen": "2026-10-14",
    "title": "zhuyansen/awesome-claude-video-skills",
    "url": "https://github.com/zhuyansen/awesome-claude-video-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -1667,6 +1794,10 @@
     [
      "2026-10-26",
      987
+    ],
+    [
+     "2026-11-02",
+     1423
     ]
    ]
   },
@@ -1691,7 +1822,7 @@
    "first_seen": "2026-10-14",
    "title": "wheresryan22/anatomy",
    "url": "https://github.com/wheresryan22/anatomy",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -1709,6 +1840,10 @@
     [
      "2026-10-26",
      20691
+    ],
+    [
+     "2026-11-02",
+     23766
     ]
    ]
   },
@@ -1809,7 +1944,7 @@
    "first_seen": "2026-10-14",
    "title": "achimala/dream-loop",
    "url": "https://github.com/achimala/dream-loop",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -1827,6 +1962,10 @@
     [
      "2026-10-26",
      1738
+    ],
+    [
+     "2026-11-02",
+     1769
     ]
    ]
   },
@@ -1834,7 +1973,7 @@
    "first_seen": "2026-10-14",
    "title": "jtydhr88/screenwriting-skills",
    "url": "https://github.com/jtydhr88/screenwriting-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -1851,6 +1990,10 @@
     [
      "2026-10-26",
      1805
+    ],
+    [
+     "2026-11-02",
+     1918
     ]
    ]
   },
@@ -1995,7 +2138,7 @@
    "first_seen": "2026-10-14",
    "title": "VoltAgent/official-mcp-servers",
    "url": "https://github.com/VoltAgent/official-mcp-servers",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -2012,6 +2155,10 @@
     [
      "2026-10-26",
      389
+    ],
+    [
+     "2026-11-02",
+     407
     ]
    ]
   },
@@ -2019,7 +2166,7 @@
    "first_seen": "2026-10-14",
    "title": "with-pebbly/aseprite-ai-artist",
    "url": "https://github.com/with-pebbly/aseprite-ai-artist",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -2039,6 +2186,10 @@
     [
      "2026-10-26",
      477
+    ],
+    [
+     "2026-11-02",
+     543
     ]
    ]
   },
@@ -2063,7 +2214,7 @@
    "first_seen": "2026-10-14",
    "title": "justxor/claude-code-pro-course",
    "url": "https://github.com/justxor/claude-code-pro-course",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -2082,6 +2233,10 @@
     [
      "2026-10-26",
      324
+    ],
+    [
+     "2026-11-02",
+     335
     ]
    ]
   },
@@ -2089,7 +2244,7 @@
    "first_seen": "2026-10-14",
    "title": "noskillish/bankmcp",
    "url": "https://github.com/noskillish/bankmcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)",
     "코딩"
@@ -2107,6 +2262,10 @@
     [
      "2026-10-26",
      292
+    ],
+    [
+     "2026-11-02",
+     297
     ]
    ]
   },
@@ -2160,12 +2319,12 @@
    "first_seen": "2026-10-14",
    "title": "chipfighter/context-attachment-manager",
    "url": "https://github.com/chipfighter/context-attachment-manager",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "연동(MCP)"
    ],
-   "kw_text": "chipfighter/context-attachment-manager Long image chats in Codex and Claude, without the lag. The model manages its own images, pulling back only what it needs, and any image you made before is one search away: just describe what you remem…",
+   "kw_text": "chipfighter/context-attachment-manager Turn Codex and Claude Code into your AI assistant director. Pair them with your favorite image-generation tools, keep image-heavy chats lightweight, and find the right image from a rough description—e…",
    "stars_hist": [
     [
      "2026-10-14",
@@ -2178,6 +2337,10 @@
     [
      "2026-10-26",
      517
+    ],
+    [
+     "2026-11-02",
+     702
     ]
    ]
   },
@@ -2224,7 +2387,7 @@
    "first_seen": "2026-10-14",
    "title": "limelit-co/open",
    "url": "https://github.com/limelit-co/open",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -2241,6 +2404,10 @@
     [
      "2026-10-26",
      219
+    ],
+    [
+     "2026-11-02",
+     280
     ]
    ]
   },
@@ -2267,13 +2434,13 @@
    "first_seen": "2026-10-14",
    "title": "Heyosseus/sloppy",
    "url": "https://github.com/Heyosseus/sloppy",
-   "last_seen": "2026-10-19",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
     "코딩"
    ],
-   "kw_text": "Heyosseus/sloppy Static analysis for the debt AI agents leave in PHP: 26 rules, Claude Code hooks, git-diff review, a Rector and Pint fix pass, Pest expectations, CI annotations and an MCP server. Deterministic, local, no LLM.",
+   "kw_text": "Heyosseus/sloppy Static analysis for the debt AI agents leave in PHP: 34 rules, Claude Code hooks, git-diff review, a Rector and Pint fix pass, Pest expectations, CI annotations and an MCP server. Deterministic, local, no LLM.",
    "stars_hist": [
     [
      "2026-10-14",
@@ -2282,6 +2449,10 @@
     [
      "2026-10-19",
      157
+    ],
+    [
+     "2026-11-02",
+     214
     ]
    ]
   },
@@ -2289,7 +2460,7 @@
    "first_seen": "2026-10-14",
    "title": "midudev/mcp-higgsfield-landing",
    "url": "https://github.com/midudev/mcp-higgsfield-landing",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -2306,6 +2477,10 @@
     [
      "2026-10-26",
      188
+    ],
+    [
+     "2026-11-02",
+     195
     ]
    ]
   },
@@ -2334,7 +2509,7 @@
    "first_seen": "2026-10-14",
    "title": "GTAI-1/flow-mcp",
    "url": "https://github.com/GTAI-1/flow-mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화",
@@ -2353,6 +2528,10 @@
     [
      "2026-10-26",
      325
+    ],
+    [
+     "2026-11-02",
+     439
     ]
    ]
   },
@@ -2378,7 +2557,7 @@
    "first_seen": "2026-10-14",
    "title": "S4US/Roqer",
    "url": "https://github.com/S4US/Roqer",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -2396,6 +2575,10 @@
     [
      "2026-10-26",
      173
+    ],
+    [
+     "2026-11-02",
+     187
     ]
    ]
   },
@@ -2437,7 +2620,7 @@
    "first_seen": "2026-10-14",
    "title": "affaan-m/ECC",
    "url": "https://github.com/affaan-m/ECC",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -2455,6 +2638,10 @@
     [
      "2026-10-26",
      288955
+    ],
+    [
+     "2026-11-02",
+     294795
     ]
    ]
   },
@@ -2462,7 +2649,7 @@
    "first_seen": "2026-10-14",
    "title": "NousResearch/hermes-agent",
    "url": "https://github.com/NousResearch/hermes-agent",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -2479,6 +2666,10 @@
     [
      "2026-10-26",
      257103
+    ],
+    [
+     "2026-11-02",
+     259501
     ]
    ]
   },
@@ -2486,7 +2677,7 @@
    "first_seen": "2026-10-14",
    "title": "morluto/rea",
    "url": "https://github.com/morluto/rea",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -2504,6 +2695,10 @@
     [
      "2026-10-26",
      385690
+    ],
+    [
+     "2026-11-02",
+     418675
     ]
    ]
   },
@@ -2511,7 +2706,7 @@
    "first_seen": "2026-10-14",
    "title": "DietrichGebert/ponytail",
    "url": "https://github.com/DietrichGebert/ponytail",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -2528,6 +2723,10 @@
     [
      "2026-10-26",
      176306
+    ],
+    [
+     "2026-11-02",
+     182103
     ]
    ]
   },
@@ -2535,12 +2734,11 @@
    "first_seen": "2026-10-14",
    "title": "farion1231/cc-switch",
    "url": "https://github.com/farion1231/cc-switch",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
-    "에이전트",
     "연동(MCP)"
    ],
-   "kw_text": "farion1231/cc-switch A cross-platform desktop All-in-One assistant for Claude Code, Codex, OpenCode, OpenClaw, Grok Build & Hermes Agent. Only official website: ccswitch.io",
+   "kw_text": "farion1231/cc-switch A cross-platform desktop All-in-One assistant for Claude Code, Codex, OpenCode,DeepSeek Harness and more. Only official website: ccswitch.io",
    "stars_hist": [
     [
      "2026-10-14",
@@ -2553,6 +2751,10 @@
     [
      "2026-10-26",
      148687
+    ],
+    [
+     "2026-11-02",
+     150870
     ]
    ]
   },
@@ -2560,7 +2762,7 @@
    "first_seen": "2026-10-14",
    "title": "nextlevelbuilder/ui-ux-pro-max-skill",
    "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인"
    ],
@@ -2577,6 +2779,10 @@
     [
      "2026-10-26",
      140443
+    ],
+    [
+     "2026-11-02",
+     143818
     ]
    ],
    "reported": [
@@ -2589,7 +2795,7 @@
    "first_seen": "2026-10-14",
    "title": "Graphify-Labs/graphify",
    "url": "https://github.com/Graphify-Labs/graphify",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -2607,6 +2813,10 @@
     [
      "2026-10-26",
      135409
+    ],
+    [
+     "2026-11-02",
+     140526
     ]
    ]
   },
@@ -2614,7 +2824,7 @@
    "first_seen": "2026-10-14",
    "title": "JuliusBrussee/caveman",
    "url": "https://github.com/JuliusBrussee/caveman",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -2632,6 +2842,10 @@
     [
      "2026-10-26",
      115090
+    ],
+    [
+     "2026-11-02",
+     116699
     ]
    ]
   },
@@ -2639,7 +2853,7 @@
    "first_seen": "2026-10-14",
    "title": "addyosmani/agent-skills",
    "url": "https://github.com/addyosmani/agent-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -2657,6 +2871,10 @@
     [
      "2026-10-26",
      110554
+    ],
+    [
+     "2026-11-02",
+     112551
     ]
    ]
   },
@@ -2664,7 +2882,7 @@
    "first_seen": "2026-10-14",
    "title": "paperclipai/paperclip",
    "url": "https://github.com/paperclipai/paperclip",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -2683,6 +2901,10 @@
     [
      "2026-10-26",
      107354
+    ],
+    [
+     "2026-11-02",
+     109904
     ]
    ],
    "reported": [
@@ -2695,7 +2917,7 @@
    "first_seen": "2026-10-14",
    "title": "thedotmack/claude-mem",
    "url": "https://github.com/thedotmack/claude-mem",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -2712,6 +2934,10 @@
     [
      "2026-10-26",
      103163
+    ],
+    [
+     "2026-11-02",
+     109222
     ]
    ]
   },
@@ -2719,7 +2945,7 @@
    "first_seen": "2026-10-14",
    "title": "Panniantong/Agent-Reach",
    "url": "https://github.com/Panniantong/Agent-Reach",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화",
@@ -2739,6 +2965,10 @@
     [
      "2026-10-26",
      102579
+    ],
+    [
+     "2026-11-02",
+     107603
     ]
    ]
   },
@@ -2746,7 +2976,7 @@
    "first_seen": "2026-10-14",
    "title": "Leonxlnx/taste-skill",
    "url": "https://github.com/Leonxlnx/taste-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "자동화",
@@ -2766,6 +2996,10 @@
     [
      "2026-10-26",
      102567
+    ],
+    [
+     "2026-11-02",
+     107765
     ]
    ],
    "reported": [
@@ -2778,7 +3012,7 @@
    "first_seen": "2026-10-14",
    "title": "stablyai/orca",
    "url": "https://github.com/stablyai/orca",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -2797,6 +3031,10 @@
     [
      "2026-10-26",
      106042
+    ],
+    [
+     "2026-11-02",
+     112492
     ]
    ]
   },
@@ -2804,7 +3042,7 @@
    "first_seen": "2026-10-14",
    "title": "Egonex-AI/Understand-Anything",
    "url": "https://github.com/Egonex-AI/Understand-Anything",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -2822,6 +3060,10 @@
     [
      "2026-10-26",
      88274
+    ],
+    [
+     "2026-11-02",
+     89634
     ]
    ]
   },
@@ -2829,7 +3071,7 @@
    "first_seen": "2026-10-14",
    "title": "rtk-ai/rtk",
    "url": "https://github.com/rtk-ai/rtk",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -2847,6 +3089,10 @@
     [
      "2026-10-26",
      84560
+    ],
+    [
+     "2026-11-02",
+     85226
     ]
    ]
   },
@@ -2854,7 +3100,7 @@
    "first_seen": "2026-10-14",
    "title": "tt-a1i/archify",
    "url": "https://github.com/tt-a1i/archify",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트",
@@ -2873,6 +3119,10 @@
     [
      "2026-10-26",
      89304
+    ],
+    [
+     "2026-11-02",
+     92377
     ]
    ]
   },
@@ -2902,7 +3152,7 @@
    "first_seen": "2026-10-14",
    "title": "headroomlabs-ai/headroom",
    "url": "https://github.com/headroomlabs-ai/headroom",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -2921,6 +3171,10 @@
     [
      "2026-10-26",
      77829
+    ],
+    [
+     "2026-11-02",
+     78567
     ]
    ]
   },
@@ -2928,12 +3182,11 @@
    "first_seen": "2026-10-14",
    "title": "career-ops-hq/career-ops",
    "url": "https://github.com/career-ops-hq/career-ops",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
-    "에이전트",
-    "코딩"
+    "에이전트"
    ],
-   "kw_text": "career-ops-hq/career-ops Open-source AI job search agent and job finder: scan job boards, score each job 1-5 against your CV before you apply, tailor an ATS-friendly resume and cover letter, get interview prep and a job application tracker…",
+   "kw_text": "career-ops-hq/career-ops Open-source AI job search agent and job finder: scan job boards, score each job 1-5 against your CV before you apply, tailor an ATS-friendly resume and cover letter, get interview prep and an application tracker. I…",
    "stars_hist": [
     [
      "2026-10-14",
@@ -2946,6 +3199,10 @@
     [
      "2026-10-26",
      77322
+    ],
+    [
+     "2026-11-02",
+     79281
     ]
    ]
   },
@@ -2953,7 +3210,7 @@
    "first_seen": "2026-10-14",
    "title": "asgeirtj/system_prompts_leaks",
    "url": "https://github.com/asgeirtj/system_prompts_leaks",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -2971,6 +3228,10 @@
     [
      "2026-10-26",
      70215
+    ],
+    [
+     "2026-11-02",
+     70596
     ]
    ]
   },
@@ -2978,7 +3239,7 @@
    "first_seen": "2026-10-14",
    "title": "shanraisshan/claude-code-best-practice",
    "url": "https://github.com/shanraisshan/claude-code-best-practice",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -2997,6 +3258,10 @@
     [
      "2026-10-26",
      68101
+    ],
+    [
+     "2026-11-02",
+     68428
     ]
    ]
   },
@@ -3004,7 +3269,7 @@
    "first_seen": "2026-10-14",
    "title": "mvanhorn/last30days-skill",
    "url": "https://github.com/mvanhorn/last30days-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -3022,6 +3287,10 @@
     [
      "2026-10-26",
      65478
+    ],
+    [
+     "2026-11-02",
+     66255
     ]
    ]
   },
@@ -3029,7 +3298,7 @@
    "first_seen": "2026-10-14",
    "title": "hesreallyhim/awesome-claude-code",
    "url": "https://github.com/hesreallyhim/awesome-claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3048,6 +3317,10 @@
     [
      "2026-10-26",
      56550
+    ],
+    [
+     "2026-11-02",
+     57048
     ]
    ]
   },
@@ -3055,7 +3328,7 @@
    "first_seen": "2026-10-14",
    "title": "router-for-me/CLIProxyAPI",
    "url": "https://github.com/router-for-me/CLIProxyAPI",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -3072,6 +3345,10 @@
     [
      "2026-10-26",
      56231
+    ],
+    [
+     "2026-11-02",
+     57211
     ]
    ]
   },
@@ -3079,7 +3356,7 @@
    "first_seen": "2026-10-14",
    "title": "coreyhaines31/marketingskills",
    "url": "https://github.com/coreyhaines31/marketingskills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -3097,6 +3374,10 @@
     [
      "2026-10-26",
      56555
+    ],
+    [
+     "2026-11-02",
+     57853
     ]
    ]
   },
@@ -3104,7 +3385,7 @@
    "first_seen": "2026-10-14",
    "title": "cathrynlavery/diagram-design",
    "url": "https://github.com/cathrynlavery/diagram-design",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -3122,6 +3403,10 @@
     [
      "2026-10-26",
      61106
+    ],
+    [
+     "2026-11-02",
+     63947
     ]
    ]
   },
@@ -3129,12 +3414,12 @@
    "first_seen": "2026-10-14",
    "title": "CherryHQ/cherry-studio",
    "url": "https://github.com/CherryHQ/cherry-studio",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
-    "코딩"
+    "연동(MCP)"
    ],
-   "kw_text": "CherryHQ/cherry-studio AI productivity studio with smart chat, autonomous agents, and 300+ assistants. Unified access to frontier LLMs",
+   "kw_text": "CherryHQ/cherry-studio Your AI workspace for models, agents, and productivity.",
    "stars_hist": [
     [
      "2026-10-14",
@@ -3147,6 +3432,10 @@
     [
      "2026-10-26",
      52984
+    ],
+    [
+     "2026-11-02",
+     53167
     ]
    ]
   },
@@ -3195,14 +3484,14 @@
    "first_seen": "2026-10-14",
    "title": "sickn33/agentic-awesome-skills",
    "url": "https://github.com/sickn33/agentic-awesome-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
     "연동(MCP)",
     "코딩"
    ],
-   "kw_text": "sickn33/agentic-awesome-skills AAS Core is the local, agent-first control plane for complete catalog discovery, agent-owned selection, stack validation, and planning, backed by 2,750+ agentic skills. Includes CLI, local MCP, catalog, plugi…",
+   "kw_text": "sickn33/agentic-awesome-skills 2,884+ reusable AI agent skills for Claude Code, Codex, Cursor and Gemini CLI. AAS Core adds local catalog discovery, agent-owned selection and plan preview. CLI, MCP and plugins.",
    "stars_hist": [
     [
      "2026-10-14",
@@ -3215,6 +3504,10 @@
     [
      "2026-10-26",
      48504
+    ],
+    [
+     "2026-11-02",
+     48990
     ]
    ]
   },
@@ -3222,7 +3515,7 @@
    "first_seen": "2026-10-14",
    "title": "VoltAgent/awesome-agent-skills",
    "url": "https://github.com/VoltAgent/awesome-agent-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -3239,6 +3532,10 @@
     [
      "2026-10-26",
      36360
+    ],
+    [
+     "2026-11-02",
+     36724
     ]
    ]
   },
@@ -3246,7 +3543,7 @@
    "first_seen": "2026-10-14",
    "title": "alirezarezvani/claude-skills",
    "url": "https://github.com/alirezarezvani/claude-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -3264,6 +3561,10 @@
     [
      "2026-10-26",
      28724
+    ],
+    [
+     "2026-11-02",
+     29122
     ]
    ]
   },
@@ -3271,7 +3572,7 @@
    "first_seen": "2026-10-14",
    "title": "OthmanAdi/planning-with-files",
    "url": "https://github.com/OthmanAdi/planning-with-files",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -3289,6 +3590,10 @@
     [
      "2026-10-26",
      27646
+    ],
+    [
+     "2026-11-02",
+     27811
     ]
    ]
   },
@@ -3296,7 +3601,7 @@
    "first_seen": "2026-10-14",
    "title": "wanshuiyin/Auto-claude-code-research-in-sleep",
    "url": "https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3315,6 +3620,10 @@
     [
      "2026-10-26",
      18073
+    ],
+    [
+     "2026-11-02",
+     18448
     ]
    ]
   },
@@ -3322,13 +3631,13 @@
    "first_seen": "2026-10-14",
    "title": "Vincentwei1021/video-shotcraft",
    "url": "https://github.com/Vincentwei1021/video-shotcraft",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
     "에이전트"
    ],
-   "kw_text": "Vincentwei1021/video-shotcraft AI video skill for Claude Code & Codex — cinematic product videos with Remotion: 152 shot recipe cards, 209 motion previews, a production-ready template",
+   "kw_text": "Vincentwei1021/video-shotcraft AI video skill for Claude Code & Codex — cinematic, editable product promos with Remotion: 124 shot recipe cards, 150 motion previews, beat sync, sound design, Motion Workbench & JianYing (CapCut CN) export.",
    "stars_hist": [
     [
      "2026-10-14",
@@ -3341,6 +3650,10 @@
     [
      "2026-10-26",
      13629
+    ],
+    [
+     "2026-11-02",
+     15818
     ]
    ],
    "reported": [
@@ -3353,11 +3666,11 @@
    "first_seen": "2026-10-14",
    "title": "zenstory-ai/oh-story-claudecode",
    "url": "https://github.com/zenstory-ai/oh-story-claudecode",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
-   "kw_text": "zenstory-ai/oh-story-claudecode Claude Code / Codex / OpenCode agent skills for writing Chinese web novels (网文): 扫榜、拆文、写作、去AI味、封面全流程，长篇短篇都支持 | 13 skills for novel writing and long-form fiction with file-based continuity tracking. MIT.",
+   "kw_text": "zenstory-ai/oh-story-claudecode Claude Code / Codex / OpenCode agent skills for writing Chinese web novels (网文): 扫榜、拆文、写作、去AI味、封面全流程，长篇短篇都支持 | 14 skills for novel writing and long-form fiction with file-based continuity tracking. MIT.",
    "stars_hist": [
     [
      "2026-10-14",
@@ -3370,6 +3683,10 @@
     [
      "2026-10-26",
      8002
+    ],
+    [
+     "2026-11-02",
+     8226
     ]
    ]
   },
@@ -3377,7 +3694,7 @@
    "first_seen": "2026-10-14",
    "title": "browser-act/skills",
    "url": "https://github.com/browser-act/skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -3395,6 +3712,10 @@
     [
      "2026-10-26",
      6278
+    ],
+    [
+     "2026-11-02",
+     6303
     ]
    ]
   },
@@ -3402,7 +3723,7 @@
    "first_seen": "2026-10-14",
    "title": "zebbern/claude-code-guide",
    "url": "https://github.com/zebbern/claude-code-guide",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3421,6 +3742,10 @@
     [
      "2026-10-26",
      4677
+    ],
+    [
+     "2026-11-02",
+     4691
     ]
    ]
   },
@@ -3428,7 +3753,7 @@
    "first_seen": "2026-10-14",
    "title": "parcadei/Continuous-Claude-v3",
    "url": "https://github.com/parcadei/Continuous-Claude-v3",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -3446,6 +3771,10 @@
     [
      "2026-10-26",
      3946
+    ],
+    [
+     "2026-11-02",
+     3947
     ]
    ]
   },
@@ -3453,7 +3782,7 @@
    "first_seen": "2026-10-14",
    "title": "jangviktor-web/nihaixia",
    "url": "https://github.com/jangviktor-web/nihaixia",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -3470,6 +3799,10 @@
     [
      "2026-10-26",
      3822
+    ],
+    [
+     "2026-11-02",
+     3955
     ]
    ]
   },
@@ -3477,7 +3810,7 @@
    "first_seen": "2026-10-14",
    "title": "ljagiello/ctf-skills",
    "url": "https://github.com/ljagiello/ctf-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -3494,6 +3827,10 @@
     [
      "2026-10-26",
      3529
+    ],
+    [
+     "2026-11-02",
+     3598
     ]
    ]
   },
@@ -3501,7 +3838,7 @@
    "first_seen": "2026-10-14",
    "title": "wesammustafa/Claude-Code-Everything-You-Need-to-Know",
    "url": "https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3521,6 +3858,10 @@
     [
      "2026-10-26",
      3489
+    ],
+    [
+     "2026-11-02",
+     3517
     ]
    ]
   },
@@ -3528,7 +3869,7 @@
    "first_seen": "2026-10-14",
    "title": "rebelytics/one-skill-to-rule-them-all",
    "url": "https://github.com/rebelytics/one-skill-to-rule-them-all",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -3546,6 +3887,10 @@
     [
      "2026-10-26",
      3563
+    ],
+    [
+     "2026-11-02",
+     3679
     ]
    ]
   },
@@ -3553,7 +3898,7 @@
    "first_seen": "2026-10-14",
    "title": "ciembor/agent-rules-books",
    "url": "https://github.com/ciembor/agent-rules-books",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트",
@@ -3572,6 +3917,10 @@
     [
      "2026-10-26",
      3114
+    ],
+    [
+     "2026-11-02",
+     3164
     ]
    ]
   },
@@ -3579,7 +3928,7 @@
    "first_seen": "2026-10-14",
    "title": "rohitg00/pro-workflow",
    "url": "https://github.com/rohitg00/pro-workflow",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3598,6 +3947,10 @@
     [
      "2026-10-26",
      2929
+    ],
+    [
+     "2026-11-02",
+     2940
     ]
    ]
   },
@@ -3605,7 +3958,7 @@
    "first_seen": "2026-10-14",
    "title": "zenstory-ai/drama-skills",
    "url": "https://github.com/zenstory-ai/drama-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -3624,6 +3977,10 @@
     [
      "2026-10-26",
      3356
+    ],
+    [
+     "2026-11-02",
+     3625
     ]
    ]
   },
@@ -3631,7 +3988,7 @@
    "first_seen": "2026-10-14",
    "title": "wondelai/skills",
    "url": "https://github.com/wondelai/skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -3649,6 +4006,10 @@
     [
      "2026-10-26",
      2507
+    ],
+    [
+     "2026-11-02",
+     2552
     ]
    ]
   },
@@ -3656,7 +4017,7 @@
    "first_seen": "2026-10-14",
    "title": "amElnagdy/delegate-skills",
    "url": "https://github.com/amElnagdy/delegate-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -3674,6 +4035,10 @@
     [
      "2026-10-26",
      2502
+    ],
+    [
+     "2026-11-02",
+     2546
     ]
    ]
   },
@@ -3681,7 +4046,7 @@
    "first_seen": "2026-10-14",
    "title": "Weizhena/Deep-Research-skills",
    "url": "https://github.com/Weizhena/Deep-Research-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -3698,6 +4063,10 @@
     [
      "2026-10-26",
      2420
+    ],
+    [
+     "2026-11-02",
+     2464
     ]
    ]
   },
@@ -3705,7 +4074,7 @@
    "first_seen": "2026-10-14",
    "title": "JuneYaooo/nihaisha-nishi-tcm",
    "url": "https://github.com/JuneYaooo/nihaisha-nishi-tcm",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -3722,6 +4091,10 @@
     [
      "2026-10-26",
      2198
+    ],
+    [
+     "2026-11-02",
+     2219
     ]
    ]
   },
@@ -3729,7 +4102,7 @@
    "first_seen": "2026-10-14",
    "title": "michael-denyer/pstack-claude",
    "url": "https://github.com/michael-denyer/pstack-claude",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3748,6 +4121,10 @@
     [
      "2026-10-26",
      3438
+    ],
+    [
+     "2026-11-02",
+     3727
     ]
    ]
   },
@@ -3755,7 +4132,7 @@
    "first_seen": "2026-10-14",
    "title": "a5c-ai/babysitter",
    "url": "https://github.com/a5c-ai/babysitter",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3774,6 +4151,10 @@
     [
      "2026-10-26",
      1870
+    ],
+    [
+     "2026-11-02",
+     1887
     ]
    ]
   },
@@ -3781,7 +4162,7 @@
    "first_seen": "2026-10-14",
    "title": "mex-memory/mex",
    "url": "https://github.com/mex-memory/mex",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -3800,6 +4181,10 @@
     [
      "2026-10-26",
      1779
+    ],
+    [
+     "2026-11-02",
+     1788
     ]
    ]
   },
@@ -3807,7 +4192,7 @@
    "first_seen": "2026-10-14",
    "title": "pedrohcgs/claude-code-my-workflow",
    "url": "https://github.com/pedrohcgs/claude-code-my-workflow",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -3825,6 +4210,10 @@
     [
      "2026-10-26",
      1668
+    ],
+    [
+     "2026-11-02",
+     1676
     ]
    ]
   },
@@ -3832,13 +4221,13 @@
    "first_seen": "2026-10-14",
    "title": "alookai/alook",
    "url": "https://github.com/alookai/alook",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
     "코딩"
    ],
-   "kw_text": "alookai/alook Rooms for people and agents.",
+   "kw_text": "alookai/alook Multi-Agent Collaboration for Team and Friends",
    "stars_hist": [
     [
      "2026-10-14",
@@ -3851,6 +4240,10 @@
     [
      "2026-10-26",
      1463
+    ],
+    [
+     "2026-11-02",
+     1475
     ]
    ]
   },
@@ -3858,7 +4251,7 @@
    "first_seen": "2026-10-14",
    "title": "JuneYaooo/gpt-image2-ppt-skills",
    "url": "https://github.com/JuneYaooo/gpt-image2-ppt-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "문서·오피스"
@@ -3876,6 +4269,10 @@
     [
      "2026-10-26",
      1389
+    ],
+    [
+     "2026-11-02",
+     1411
     ]
    ]
   },
@@ -3883,7 +4280,7 @@
    "first_seen": "2026-10-14",
    "title": "specstoryai/getspecstory",
    "url": "https://github.com/specstoryai/getspecstory",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -3901,6 +4298,10 @@
     [
      "2026-10-26",
      1356
+    ],
+    [
+     "2026-11-02",
+     1365
     ]
    ]
   },
@@ -3908,7 +4309,7 @@
    "first_seen": "2026-10-14",
    "title": "anthropics/skills",
    "url": "https://github.com/anthropics/skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -3925,6 +4326,10 @@
     [
      "2026-10-26",
      183798
+    ],
+    [
+     "2026-11-02",
+     186358
     ]
    ],
    "reported": [
@@ -3937,7 +4342,7 @@
    "first_seen": "2026-10-14",
    "title": "nexu-io/open-design",
    "url": "https://github.com/nexu-io/open-design",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -3958,6 +4363,10 @@
     [
      "2026-10-26",
      103988
+    ],
+    [
+     "2026-11-02",
+     105341
     ]
    ],
    "reported": [
@@ -3970,7 +4379,7 @@
    "first_seen": "2026-10-14",
    "title": "ComposioHQ/awesome-claude-skills",
    "url": "https://github.com/ComposioHQ/awesome-claude-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -3989,6 +4398,10 @@
     [
      "2026-10-26",
      77949
+    ],
+    [
+     "2026-11-02",
+     78519
     ]
    ]
   },
@@ -3996,7 +4409,7 @@
    "first_seen": "2026-10-14",
    "title": "blader/humanizer",
    "url": "https://github.com/blader/humanizer",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4013,6 +4426,10 @@
     [
      "2026-10-26",
      60651
+    ],
+    [
+     "2026-11-02",
+     63468
     ]
    ]
   },
@@ -4020,7 +4437,7 @@
    "first_seen": "2026-10-14",
    "title": "VoltAgent/awesome-openclaw-skills",
    "url": "https://github.com/VoltAgent/awesome-openclaw-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4037,6 +4454,10 @@
     [
      "2026-10-26",
      53352
+    ],
+    [
+     "2026-11-02",
+     53488
     ]
    ]
   },
@@ -4044,7 +4465,7 @@
    "first_seen": "2026-10-14",
    "title": "K-Dense-AI/scientific-agent-skills",
    "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4061,6 +4482,10 @@
     [
      "2026-10-26",
      54615
+    ],
+    [
+     "2026-11-02",
+     55664
     ]
    ]
   },
@@ -4068,7 +4493,7 @@
    "first_seen": "2026-10-14",
    "title": "alibaba/open-code-review",
    "url": "https://github.com/alibaba/open-code-review",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -4086,6 +4511,10 @@
     [
      "2026-10-26",
      48278
+    ],
+    [
+     "2026-11-02",
+     49238
     ]
    ]
   },
@@ -4093,7 +4522,7 @@
    "first_seen": "2026-10-14",
    "title": "reactive-resume/reactive-resume",
    "url": "https://github.com/reactive-resume/reactive-resume",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -4111,6 +4540,10 @@
     [
      "2026-10-26",
      44858
+    ],
+    [
+     "2026-11-02",
+     45164
     ]
    ]
   },
@@ -4118,7 +4551,7 @@
    "first_seen": "2026-10-14",
    "title": "wshobson/agents",
    "url": "https://github.com/wshobson/agents",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -4137,6 +4570,10 @@
     [
      "2026-10-26",
      41715
+    ],
+    [
+     "2026-11-02",
+     42081
     ]
    ]
   },
@@ -4144,7 +4581,7 @@
    "first_seen": "2026-10-14",
    "title": "github/awesome-copilot",
    "url": "https://github.com/github/awesome-copilot",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4161,6 +4598,10 @@
     [
      "2026-10-26",
      40410
+    ],
+    [
+     "2026-11-02",
+     40676
     ]
    ]
   },
@@ -4168,7 +4609,7 @@
    "first_seen": "2026-10-14",
    "title": "virgiliojr94/book-to-skill",
    "url": "https://github.com/virgiliojr94/book-to-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "에이전트"
@@ -4186,6 +4627,10 @@
     [
      "2026-10-26",
      36106
+    ],
+    [
+     "2026-11-02",
+     36707
     ]
    ]
   },
@@ -4193,7 +4638,7 @@
    "first_seen": "2026-10-14",
    "title": "topoteretes/cognee",
    "url": "https://github.com/topoteretes/cognee",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4210,6 +4655,10 @@
     [
      "2026-10-26",
      32754
+    ],
+    [
+     "2026-11-02",
+     32987
     ]
    ]
   },
@@ -4217,7 +4666,7 @@
    "first_seen": "2026-10-14",
    "title": "feder-cr/invisible_dots",
    "url": "https://github.com/feder-cr/invisible_dots",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -4236,6 +4685,10 @@
     [
      "2026-10-26",
      32248
+    ],
+    [
+     "2026-11-02",
+     32341
     ]
    ]
   },
@@ -4243,7 +4696,7 @@
    "first_seen": "2026-10-14",
    "title": "googleworkspace/cli",
    "url": "https://github.com/googleworkspace/cli",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "자동화",
@@ -4262,6 +4715,10 @@
     [
      "2026-10-26",
      31890
+    ],
+    [
+     "2026-11-02",
+     32046
     ]
    ]
   },
@@ -4293,7 +4750,7 @@
    "first_seen": "2026-10-14",
    "title": "code-yeongyu/oh-my-openagent",
    "url": "https://github.com/code-yeongyu/oh-my-openagent",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -4311,6 +4768,10 @@
     [
      "2026-10-26",
      70334
+    ],
+    [
+     "2026-11-02",
+     70581
     ]
    ]
   },
@@ -4318,7 +4779,7 @@
    "first_seen": "2026-10-14",
    "title": "ayghri/i-have-adhd",
    "url": "https://github.com/ayghri/i-have-adhd",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -4336,6 +4797,10 @@
     [
      "2026-10-26",
      58746
+    ],
+    [
+     "2026-11-02",
+     59694
     ]
    ]
   },
@@ -4343,7 +4808,7 @@
    "first_seen": "2026-10-14",
    "title": "nanocoai/nanoclaw",
    "url": "https://github.com/nanocoai/nanoclaw",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -4361,6 +4826,10 @@
     [
      "2026-10-26",
      31014
+    ],
+    [
+     "2026-11-02",
+     31070
     ]
    ]
   },
@@ -4368,7 +4837,7 @@
    "first_seen": "2026-10-14",
    "title": "JimLiu/baoyu-skills",
    "url": "https://github.com/JimLiu/baoyu-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4385,6 +4854,10 @@
     [
      "2026-10-26",
      26955
+    ],
+    [
+     "2026-11-02",
+     27161
     ]
    ]
   },
@@ -4392,7 +4865,7 @@
    "first_seen": "2026-10-14",
    "title": "titanwings/distilly",
    "url": "https://github.com/titanwings/distilly",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4409,6 +4882,10 @@
     [
      "2026-10-26",
      26011
+    ],
+    [
+     "2026-11-02",
+     26280
     ]
    ]
   },
@@ -4416,7 +4893,7 @@
    "first_seen": "2026-10-14",
    "title": "teng-lin/notebooklm-py",
    "url": "https://github.com/teng-lin/notebooklm-py",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4433,6 +4910,10 @@
     [
      "2026-10-26",
      19912
+    ],
+    [
+     "2026-11-02",
+     20057
     ]
    ]
   },
@@ -4440,7 +4921,7 @@
    "first_seen": "2026-10-14",
    "title": "latent-spaces/brag",
    "url": "https://github.com/latent-spaces/brag",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -4458,6 +4939,10 @@
     [
      "2026-10-26",
      18641
+    ],
+    [
+     "2026-11-02",
+     19912
     ]
    ],
    "reported": [
@@ -4470,7 +4955,7 @@
    "first_seen": "2026-10-14",
    "title": "travisvn/awesome-claude-skills",
    "url": "https://github.com/travisvn/awesome-claude-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -4489,6 +4974,10 @@
     [
      "2026-10-26",
      15565
+    ],
+    [
+     "2026-11-02",
+     15666
     ]
    ]
   },
@@ -4496,7 +4985,7 @@
    "first_seen": "2026-10-14",
    "title": "yusufkaraaslan/Skill_Seekers",
    "url": "https://github.com/yusufkaraaslan/Skill_Seekers",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "자동화",
@@ -4515,6 +5004,10 @@
     [
      "2026-10-26",
      15222
+    ],
+    [
+     "2026-11-02",
+     15263
     ]
    ]
   },
@@ -4522,7 +5015,7 @@
    "first_seen": "2026-10-14",
    "title": "NevaMind-AI/memU",
    "url": "https://github.com/NevaMind-AI/memU",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -4540,6 +5033,10 @@
     [
      "2026-10-26",
      14561
+    ],
+    [
+     "2026-11-02",
+     14591
     ]
    ]
   },
@@ -4547,7 +5044,7 @@
    "first_seen": "2026-10-14",
    "title": "nidhinjs/prompt-master",
    "url": "https://github.com/nidhinjs/prompt-master",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -4564,6 +5061,10 @@
     [
      "2026-10-26",
      15069
+    ],
+    [
+     "2026-11-02",
+     15379
     ]
    ]
   },
@@ -4571,7 +5072,7 @@
    "first_seen": "2026-10-14",
    "title": "Orchestra-Research/AI-Research-SKILLs",
    "url": "https://github.com/Orchestra-Research/AI-Research-SKILLs",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4588,6 +5089,10 @@
     [
      "2026-10-26",
      13948
+    ],
+    [
+     "2026-11-02",
+     14177
     ]
    ]
   },
@@ -4595,7 +5100,7 @@
    "first_seen": "2026-10-14",
    "title": "Jeffallan/claude-skills",
    "url": "https://github.com/Jeffallan/claude-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -4612,6 +5117,10 @@
     [
      "2026-10-26",
      12062
+    ],
+    [
+     "2026-11-02",
+     12165
     ]
    ]
   },
@@ -4619,7 +5128,7 @@
    "first_seen": "2026-10-14",
    "title": "nexu-io/html-anything",
    "url": "https://github.com/nexu-io/html-anything",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -4639,6 +5148,10 @@
     [
      "2026-10-26",
      9245
+    ],
+    [
+     "2026-11-02",
+     9359
     ]
    ]
   },
@@ -4646,7 +5159,7 @@
    "first_seen": "2026-10-14",
    "title": "anbeime/skill",
    "url": "https://github.com/anbeime/skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -4664,6 +5177,10 @@
     [
      "2026-10-26",
      8663
+    ],
+    [
+     "2026-11-02",
+     9005
     ]
    ]
   },
@@ -4697,7 +5214,7 @@
    "first_seen": "2026-10-14",
    "title": "SnailSploit/Claude-Red",
    "url": "https://github.com/SnailSploit/Claude-Red",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인"
    ],
@@ -4714,6 +5231,10 @@
     [
      "2026-10-26",
      9125
+    ],
+    [
+     "2026-11-02",
+     10195
     ]
    ]
   },
@@ -4742,7 +5263,7 @@
    "first_seen": "2026-10-14",
    "title": "feder-cr/invisible_playwright_mcp",
    "url": "https://github.com/feder-cr/invisible_playwright_mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -4761,6 +5282,10 @@
     [
      "2026-10-26",
      882
+    ],
+    [
+     "2026-11-02",
+     890
     ]
    ]
   },
@@ -4811,7 +5336,7 @@
    "first_seen": "2026-10-14",
    "title": "zhuyansen/new-term-radar",
    "url": "https://github.com/zhuyansen/new-term-radar",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -4829,6 +5354,10 @@
     [
      "2026-10-26",
      1794
+    ],
+    [
+     "2026-11-02",
+     2018
     ]
    ]
   },
@@ -4836,7 +5365,7 @@
    "first_seen": "2026-10-14",
    "title": "okf-memory/okf-agent-memory",
    "url": "https://github.com/okf-memory/okf-agent-memory",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -4855,6 +5384,10 @@
     [
      "2026-10-26",
      838
+    ],
+    [
+     "2026-11-02",
+     847
     ]
    ]
   },
@@ -4862,7 +5395,7 @@
    "first_seen": "2026-10-14",
    "title": "ZeroDayEvil/ai-security-tool",
    "url": "https://github.com/ZeroDayEvil/ai-security-tool",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -4881,6 +5414,10 @@
     [
      "2026-10-26",
      1142
+    ],
+    [
+     "2026-11-02",
+     1284
     ]
    ]
   },
@@ -4888,7 +5425,7 @@
    "first_seen": "2026-10-14",
    "title": "shinthink/blitzstrike",
    "url": "https://github.com/shinthink/blitzstrike",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -4905,6 +5442,10 @@
     [
      "2026-10-26",
      514
+    ],
+    [
+     "2026-11-02",
+     515
     ]
    ]
   },
@@ -4929,7 +5470,7 @@
    "first_seen": "2026-10-14",
    "title": "fidetolabs/qanat",
    "url": "https://github.com/fidetolabs/qanat",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -4946,6 +5487,10 @@
     [
      "2026-10-26",
      323
+    ],
+    [
+     "2026-11-02",
+     325
     ]
    ]
   },
@@ -4973,7 +5518,7 @@
    "first_seen": "2026-10-14",
    "title": "LingCore/WinShun",
    "url": "https://github.com/LingCore/WinShun",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "연동(MCP)"
@@ -4991,6 +5536,10 @@
     [
      "2026-10-26",
      593
+    ],
+    [
+     "2026-11-02",
+     785
     ]
    ]
   },
@@ -5072,7 +5621,7 @@
    "first_seen": "2026-10-14",
    "title": "FavioVazquez/showtime",
    "url": "https://github.com/FavioVazquez/showtime",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -5092,6 +5641,10 @@
     [
      "2026-10-26",
      293
+    ],
+    [
+     "2026-11-02",
+     312
     ]
    ]
   },
@@ -5211,7 +5764,7 @@
    "first_seen": "2026-10-14",
    "title": "hujjun/mcd-saver-strategist",
    "url": "https://github.com/hujjun/mcd-saver-strategist",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -5229,6 +5782,10 @@
     [
      "2026-10-26",
      1516
+    ],
+    [
+     "2026-11-02",
+     1543
     ]
    ]
   },
@@ -5236,7 +5793,7 @@
    "first_seen": "2026-10-14",
    "title": "calesthio/OpenMontage",
    "url": "https://github.com/calesthio/OpenMontage",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -5256,6 +5813,10 @@
     [
      "2026-10-26",
      71925
+    ],
+    [
+     "2026-11-02",
+     74355
     ]
    ],
    "reported": [
@@ -5268,7 +5829,7 @@
    "first_seen": "2026-10-14",
    "title": "dmtrKovalenko/fframes",
    "url": "https://github.com/dmtrKovalenko/fframes",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -5286,6 +5847,10 @@
     [
      "2026-10-26",
      2963
+    ],
+    [
+     "2026-11-02",
+     3114
     ]
    ]
   },
@@ -5293,7 +5858,7 @@
    "first_seen": "2026-10-14",
    "title": "digitalsamba/claude-code-video-toolkit",
    "url": "https://github.com/digitalsamba/claude-code-video-toolkit",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화"
@@ -5311,6 +5876,10 @@
     [
      "2026-10-26",
      2343
+    ],
+    [
+     "2026-11-02",
+     2406
     ]
    ]
   },
@@ -5318,7 +5887,7 @@
    "first_seen": "2026-10-14",
    "title": "Remocn/remocn",
    "url": "https://github.com/Remocn/remocn",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인"
@@ -5332,6 +5901,10 @@
     [
      "2026-10-26",
      1646
+    ],
+    [
+     "2026-11-02",
+     1660
     ]
    ]
   },
@@ -5355,7 +5928,7 @@
    "first_seen": "2026-10-14",
    "title": "GTKottman/mortiflix-oss",
    "url": "https://github.com/GTKottman/mortiflix-oss",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -5374,6 +5947,10 @@
     [
      "2026-10-26",
      656
+    ],
+    [
+     "2026-11-02",
+     676
     ]
    ]
   },
@@ -5399,7 +5976,7 @@
    "first_seen": "2026-10-14",
    "title": "shadcn-labs/snapcn",
    "url": "https://github.com/shadcn-labs/snapcn",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인"
@@ -5417,6 +5994,10 @@
     [
      "2026-10-26",
      514
+    ],
+    [
+     "2026-11-02",
+     551
     ]
    ]
   },
@@ -5424,7 +6005,7 @@
    "first_seen": "2026-10-14",
    "title": "trustfuture/simon-skills",
    "url": "https://github.com/trustfuture/simon-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -5441,6 +6022,10 @@
     [
      "2026-10-26",
      478
+    ],
+    [
+     "2026-11-02",
+     512
     ]
    ]
   },
@@ -5468,7 +6053,7 @@
    "first_seen": "2026-10-14",
    "title": "liyupi/ai-promo-video-maker",
    "url": "https://github.com/liyupi/ai-promo-video-maker",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화",
@@ -5487,6 +6072,10 @@
     [
      "2026-10-26",
      380
+    ],
+    [
+     "2026-11-02",
+     425
     ]
    ]
   },
@@ -5530,7 +6119,7 @@
    "first_seen": "2026-10-14",
    "title": "erduo1998-cell/erduo-broll-loop-engineering",
    "url": "https://github.com/erduo1998-cell/erduo-broll-loop-engineering",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -5548,6 +6137,10 @@
     [
      "2026-10-26",
      231
+    ],
+    [
+     "2026-11-02",
+     239
     ]
    ]
   },
@@ -5616,7 +6209,7 @@
    "first_seen": "2026-10-14",
    "title": "lyonjs/shortvid.io",
    "url": "https://github.com/lyonjs/shortvid.io",
-   "last_seen": "2026-10-14",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -5625,6 +6218,10 @@
     [
      "2026-10-14",
      147
+    ],
+    [
+     "2026-11-02",
+     147
     ]
    ]
   },
@@ -5632,7 +6229,7 @@
    "first_seen": "2026-10-14",
    "title": "notivn/AIEV",
    "url": "https://github.com/notivn/AIEV",
-   "last_seen": "2026-10-14",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -5641,6 +6238,10 @@
     [
      "2026-10-14",
      134
+    ],
+    [
+     "2026-11-02",
+     145
     ]
    ]
   },
@@ -5672,7 +6273,7 @@
    "first_seen": "2026-10-14",
    "title": "mishkatik/infra-billing",
    "url": "https://github.com/mishkatik/infra-billing",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -5689,6 +6290,10 @@
     [
      "2026-10-26",
      85
+    ],
+    [
+     "2026-11-02",
+     89
     ]
    ]
   },
@@ -5833,7 +6438,7 @@
    "first_seen": "2026-10-14",
    "title": "NanmiCoder/cc-haha",
    "url": "https://github.com/NanmiCoder/cc-haha",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -5852,6 +6457,10 @@
     [
      "2026-10-26",
      15164
+    ],
+    [
+     "2026-11-02",
+     15263
     ]
    ]
   },
@@ -5859,7 +6468,7 @@
    "first_seen": "2026-10-14",
    "title": "idosal/git-mcp",
    "url": "https://github.com/idosal/git-mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -5878,6 +6487,10 @@
     [
      "2026-10-26",
      8491
+    ],
+    [
+     "2026-11-02",
+     8499
     ]
    ]
   },
@@ -5885,7 +6498,7 @@
    "first_seen": "2026-10-14",
    "title": "irinabuht12-oss/google-ads-meta-ads-mcp",
    "url": "https://github.com/irinabuht12-oss/google-ads-meta-ads-mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "연동(MCP)"
@@ -5903,6 +6516,10 @@
     [
      "2026-10-26",
      5982
+    ],
+    [
+     "2026-11-02",
+     6770
     ]
    ]
   },
@@ -5910,7 +6527,7 @@
    "first_seen": "2026-10-14",
    "title": "AprilNEA/AChat",
    "url": "https://github.com/AprilNEA/AChat",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -5928,6 +6545,10 @@
     [
      "2026-10-26",
      3256
+    ],
+    [
+     "2026-11-02",
+     3255
     ]
    ]
   },
@@ -5935,7 +6556,7 @@
    "first_seen": "2026-10-14",
    "title": "kaitranntt/ccs",
    "url": "https://github.com/kaitranntt/ccs",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -5952,6 +6573,10 @@
     [
      "2026-10-26",
      2893
+    ],
+    [
+     "2026-11-02",
+     2895
     ]
    ]
   },
@@ -5959,7 +6584,7 @@
    "first_seen": "2026-10-14",
    "title": "overwirehq/claude-code-telegram",
    "url": "https://github.com/overwirehq/claude-code-telegram",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -5976,6 +6601,10 @@
     [
      "2026-10-26",
      2817
+    ],
+    [
+     "2026-11-02",
+     2819
     ]
    ]
   },
@@ -5983,7 +6612,7 @@
    "first_seen": "2026-10-14",
    "title": "Nexting-ai/nexting",
    "url": "https://github.com/Nexting-ai/nexting",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -6000,6 +6629,10 @@
     [
      "2026-10-26",
      2043
+    ],
+    [
+     "2026-11-02",
+     2134
     ]
    ]
   },
@@ -6007,7 +6640,7 @@
    "first_seen": "2026-10-14",
    "title": "pipeboard-co/meta-ads-mcp",
    "url": "https://github.com/pipeboard-co/meta-ads-mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -6025,6 +6658,10 @@
     [
      "2026-10-26",
      1334
+    ],
+    [
+     "2026-11-02",
+     1344
     ]
    ]
   },
@@ -6032,7 +6669,7 @@
    "first_seen": "2026-10-14",
    "title": "atlassian/atlassian-mcp-server",
    "url": "https://github.com/atlassian/atlassian-mcp-server",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -6050,6 +6687,10 @@
     [
      "2026-10-26",
      1121
+    ],
+    [
+     "2026-11-02",
+     1139
     ]
    ]
   },
@@ -6079,7 +6720,7 @@
    "first_seen": "2026-10-14",
    "title": "alioshr/memory-bank-mcp",
    "url": "https://github.com/alioshr/memory-bank-mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -6096,6 +6737,10 @@
     [
      "2026-10-26",
      921
+    ],
+    [
+     "2026-11-02",
+     922
     ]
    ]
   },
@@ -6103,11 +6748,13 @@
    "first_seen": "2026-10-14",
    "title": "BennyKok/omg.dev",
    "url": "https://github.com/BennyKok/omg.dev",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
-    "기타"
+    "에이전트",
+    "연동(MCP)",
+    "코딩"
    ],
-   "kw_text": "BennyKok/omg.dev omg.dev — Remote control for claude, codex, cursor, opencode, pi, grok, jcocde with mobile client",
+   "kw_text": "BennyKok/omg.dev omg.dev — Remote control for claude, codex, cursor, opencode, pi, grok, jcode with mobile client",
    "stars_hist": [
     [
      "2026-10-14",
@@ -6120,6 +6767,10 @@
     [
      "2026-10-26",
      550
+    ],
+    [
+     "2026-11-02",
+     553
     ]
    ]
   },
@@ -6127,7 +6778,7 @@
    "first_seen": "2026-10-14",
    "title": "howseen-ai/claude-motion-design",
    "url": "https://github.com/howseen-ai/claude-motion-design",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -6146,6 +6797,10 @@
     [
      "2026-10-26",
      684
+    ],
+    [
+     "2026-11-02",
+     745
     ]
    ]
   },
@@ -6178,7 +6833,7 @@
    "first_seen": "2026-10-14",
    "title": "baryhuang/mcp-remote-macos-use",
    "url": "https://github.com/baryhuang/mcp-remote-macos-use",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -6196,6 +6851,10 @@
     [
      "2026-10-26",
      490
+    ],
+    [
+     "2026-11-02",
+     490
     ]
    ]
   },
@@ -6203,7 +6862,7 @@
    "first_seen": "2026-10-14",
    "title": "haidrrrry/claude-remotion-skill",
    "url": "https://github.com/haidrrrry/claude-remotion-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -6222,6 +6881,10 @@
     [
      "2026-10-26",
      635
+    ],
+    [
+     "2026-11-02",
+     756
     ]
    ]
   },
@@ -6229,7 +6892,7 @@
    "first_seen": "2026-10-14",
    "title": "wshuyi/remotion-video-skill",
    "url": "https://github.com/wshuyi/remotion-video-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -6246,6 +6909,10 @@
     [
      "2026-10-26",
      432
+    ],
+    [
+     "2026-11-02",
+     446
     ]
    ]
   },
@@ -6278,7 +6945,7 @@
    "first_seen": "2026-10-14",
    "title": "hassancs91/claude-youtube-editor",
    "url": "https://github.com/hassancs91/claude-youtube-editor",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화",
@@ -6297,6 +6964,10 @@
     [
      "2026-10-26",
      348
+    ],
+    [
+     "2026-11-02",
+     360
     ]
    ]
   },
@@ -6324,7 +6995,7 @@
    "first_seen": "2026-10-14",
    "title": "joeseesun/opus-video-prompts",
    "url": "https://github.com/joeseesun/opus-video-prompts",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -6341,6 +7012,10 @@
     [
      "2026-10-26",
      752
+    ],
+    [
+     "2026-11-02",
+     879
     ]
    ]
   },
@@ -6383,7 +7058,7 @@
    "first_seen": "2026-10-14",
    "title": "snori74/linuxupskillchallenge",
    "url": "https://github.com/snori74/linuxupskillchallenge",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -6400,6 +7075,10 @@
     [
      "2026-10-26",
      3426
+    ],
+    [
+     "2026-11-02",
+     3424
     ]
    ]
   },
@@ -6407,7 +7086,7 @@
    "first_seen": "2026-10-14",
    "title": "0xsline/OpenChatCut",
    "url": "https://github.com/0xsline/OpenChatCut",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -6426,6 +7105,10 @@
     [
      "2026-10-26",
      2678
+    ],
+    [
+     "2026-11-02",
+     2835
     ]
    ]
   },
@@ -6433,7 +7116,7 @@
    "first_seen": "2026-10-14",
    "title": "livialima/linuxupskillchallenge",
    "url": "https://github.com/livialima/linuxupskillchallenge",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -6450,6 +7133,10 @@
     [
      "2026-10-26",
      862
+    ],
+    [
+     "2026-11-02",
+     869
     ]
    ]
   },
@@ -6457,7 +7144,7 @@
    "first_seen": "2026-10-14",
    "title": "ningbainb/deepseek-harness-desktop",
    "url": "https://github.com/ningbainb/deepseek-harness-desktop",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -6475,6 +7162,10 @@
     [
      "2026-10-26",
      864
+    ],
+    [
+     "2026-11-02",
+     891
     ]
    ]
   },
@@ -6482,7 +7173,7 @@
    "first_seen": "2026-10-14",
    "title": "iart-ai/motion-skills",
    "url": "https://github.com/iart-ai/motion-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -6501,6 +7192,10 @@
     [
      "2026-10-26",
      1012
+    ],
+    [
+     "2026-11-02",
+     1134
     ]
    ]
   },
@@ -6508,7 +7203,7 @@
    "first_seen": "2026-10-14",
    "title": "Bomx/super-video-maker-skill",
    "url": "https://github.com/Bomx/super-video-maker-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -6527,6 +7222,10 @@
     [
      "2026-10-26",
      322
+    ],
+    [
+     "2026-11-02",
+     330
     ]
    ]
   },
@@ -6534,7 +7233,7 @@
    "first_seen": "2026-10-14",
    "title": "Hainrixz/editor-pro-max",
    "url": "https://github.com/Hainrixz/editor-pro-max",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -6551,6 +7250,10 @@
     [
      "2026-10-26",
      279
+    ],
+    [
+     "2026-11-02",
+     287
     ]
    ]
   },
@@ -6558,7 +7261,7 @@
    "first_seen": "2026-10-14",
    "title": "Sfedfcv/redesigned-pancake",
    "url": "https://github.com/Sfedfcv/redesigned-pancake",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -6579,6 +7282,10 @@
     [
      "2026-10-26",
      270
+    ],
+    [
+     "2026-11-02",
+     275
     ]
    ]
   },
@@ -6586,7 +7293,7 @@
    "first_seen": "2026-10-14",
    "title": "AgriciDaniel/claude-shorts",
    "url": "https://github.com/AgriciDaniel/claude-shorts",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -6603,6 +7310,10 @@
     [
      "2026-10-26",
      239
+    ],
+    [
+     "2026-11-02",
+     276
     ]
    ]
   },
@@ -6610,7 +7321,7 @@
    "first_seen": "2026-10-14",
    "title": "UditAkhourii/cdaf",
    "url": "https://github.com/UditAkhourii/cdaf",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -6628,6 +7339,10 @@
     [
      "2026-10-26",
      224
+    ],
+    [
+     "2026-11-02",
+     225
     ]
    ]
   },
@@ -6635,7 +7350,7 @@
    "first_seen": "2026-10-14",
    "title": "coddy-project/coddy-agent",
    "url": "https://github.com/coddy-project/coddy-agent",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -6655,6 +7370,10 @@
     [
      "2026-10-26",
      187
+    ],
+    [
+     "2026-11-02",
+     194
     ]
    ]
   },
@@ -6662,7 +7381,7 @@
    "first_seen": "2026-10-14",
    "title": "aiguicai/MCP-Gateway",
    "url": "https://github.com/aiguicai/MCP-Gateway",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "연동(MCP)"
@@ -6679,6 +7398,10 @@
     ],
     [
      "2026-10-26",
+     156
+    ],
+    [
+     "2026-11-02",
      156
     ]
    ]
@@ -6776,7 +7499,7 @@
    "first_seen": "2026-10-14",
    "title": "njrhts2kvv-star/FredTalk",
    "url": "https://github.com/njrhts2kvv-star/FredTalk",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -6793,6 +7516,10 @@
     [
      "2026-10-26",
      208
+    ],
+    [
+     "2026-11-02",
+     239
     ]
    ]
   },
@@ -6817,7 +7544,7 @@
    "first_seen": "2026-10-14",
    "title": "multica-ai/andrej-karpathy-skills",
    "url": "https://github.com/multica-ai/andrej-karpathy-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "코딩"
    ],
@@ -6834,6 +7561,10 @@
     [
      "2026-10-26",
      223935
+    ],
+    [
+     "2026-11-02",
+     227984
     ]
    ]
   },
@@ -6841,7 +7572,7 @@
    "first_seen": "2026-10-14",
    "title": "anthropics/claude-code",
    "url": "https://github.com/anthropics/claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -6860,6 +7591,10 @@
     [
      "2026-10-26",
      153376
+    ],
+    [
+     "2026-11-02",
+     154169
     ]
    ],
    "reported": [
@@ -6872,7 +7607,7 @@
    "first_seen": "2026-10-14",
    "title": "x1xhlol/system-prompts-and-models-of-ai-tools",
    "url": "https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "에이전트",
@@ -6891,6 +7626,10 @@
     [
      "2026-10-26",
      144259
+    ],
+    [
+     "2026-11-02",
+     144412
     ]
    ]
   },
@@ -6898,7 +7637,7 @@
    "first_seen": "2026-10-14",
    "title": "garrytan/gstack",
    "url": "https://github.com/garrytan/gstack",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인"
    ],
@@ -6915,6 +7654,10 @@
     [
      "2026-10-26",
      137734
+    ],
+    [
+     "2026-11-02",
+     138593
     ]
    ]
   },
@@ -6922,7 +7665,7 @@
    "first_seen": "2026-10-14",
    "title": "shareAI-lab/learn-claude-code",
    "url": "https://github.com/shareAI-lab/learn-claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -6939,6 +7682,10 @@
     [
      "2026-10-26",
      79229
+    ],
+    [
+     "2026-11-02",
+     79684
     ]
    ]
   },
@@ -6946,7 +7693,7 @@
    "first_seen": "2026-10-14",
    "title": "ruvnet/ruflo",
    "url": "https://github.com/ruvnet/ruflo",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -6965,6 +7712,10 @@
     [
      "2026-10-26",
      79319
+    ],
+    [
+     "2026-11-02",
+     80538
     ]
    ]
   },
@@ -6972,7 +7723,7 @@
    "first_seen": "2026-10-14",
    "title": "colbymchenry/codegraph",
    "url": "https://github.com/colbymchenry/codegraph",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -6989,6 +7740,10 @@
     [
      "2026-10-26",
      75344
+    ],
+    [
+     "2026-11-02",
+     76158
     ]
    ]
   },
@@ -6996,7 +7751,7 @@
    "first_seen": "2026-10-14",
    "title": "VoltAgent/awesome-claude-code-subagents",
    "url": "https://github.com/VoltAgent/awesome-claude-code-subagents",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -7013,6 +7768,10 @@
     [
      "2026-10-26",
      26060
+    ],
+    [
+     "2026-11-02",
+     26257
     ]
    ]
   },
@@ -7020,7 +7779,7 @@
    "first_seen": "2026-10-14",
    "title": "rohitg00/awesome-claude-code-toolkit",
    "url": "https://github.com/rohitg00/awesome-claude-code-toolkit",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -7038,6 +7797,10 @@
     [
      "2026-10-26",
      2760
+    ],
+    [
+     "2026-11-02",
+     2801
     ]
    ]
   },
@@ -7045,7 +7808,7 @@
    "first_seen": "2026-10-14",
    "title": "Prat011/awesome-llm-skills",
    "url": "https://github.com/Prat011/awesome-llm-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -7063,6 +7826,10 @@
     [
      "2026-10-26",
      1821
+    ],
+    [
+     "2026-11-02",
+     1841
     ]
    ]
   },
@@ -7070,7 +7837,7 @@
    "first_seen": "2026-10-14",
    "title": "ccplugins/awesome-claude-code-plugins",
    "url": "https://github.com/ccplugins/awesome-claude-code-plugins",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -7088,6 +7855,10 @@
     [
      "2026-10-26",
      987
+    ],
+    [
+     "2026-11-02",
+     992
     ]
    ]
   },
@@ -7095,7 +7866,7 @@
    "first_seen": "2026-10-14",
    "title": "hashgraph-online/awesome-ai-plugins",
    "url": "https://github.com/hashgraph-online/awesome-ai-plugins",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -7112,6 +7883,10 @@
     [
      "2026-10-26",
      869
+    ],
+    [
+     "2026-11-02",
+     957
     ]
    ]
   },
@@ -7119,11 +7894,11 @@
    "first_seen": "2026-10-14",
    "title": "karanb192/awesome-claude-code-mods",
    "url": "https://github.com/karanb192/awesome-claude-code-mods",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
-   "kw_text": "karanb192/awesome-claude-code-mods 5,000+ Claude Code mods, with what each one can access before you install it. Context and usage meters, prompt cache warmers, status lines, guards and more, with install hints.",
+   "kw_text": "karanb192/awesome-claude-code-mods 6,000+ Claude Code mods, with what each one can access before you install it. Context and usage meters, prompt cache warmers, status lines, guards and more, with install hints.",
    "stars_hist": [
     [
      "2026-10-14",
@@ -7136,6 +7911,10 @@
     [
      "2026-10-26",
      760
+    ],
+    [
+     "2026-11-02",
+     836
     ]
    ]
   },
@@ -7143,7 +7922,7 @@
    "first_seen": "2026-10-14",
    "title": "karanb192/awesome-claude-skills",
    "url": "https://github.com/karanb192/awesome-claude-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -7162,6 +7941,10 @@
     [
      "2026-10-26",
      563
+    ],
+    [
+     "2026-11-02",
+     580
     ]
    ]
   },
@@ -7169,7 +7952,7 @@
    "first_seen": "2026-10-14",
    "title": "jqueryscript/awesome-claude-code",
    "url": "https://github.com/jqueryscript/awesome-claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -7188,6 +7971,10 @@
     [
      "2026-10-26",
      537
+    ],
+    [
+     "2026-11-02",
+     541
     ]
    ]
   },
@@ -7195,7 +7982,7 @@
    "first_seen": "2026-10-14",
    "title": "helloianneo/awesome-claude-code-skills",
    "url": "https://github.com/helloianneo/awesome-claude-code-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트"
@@ -7213,6 +8000,10 @@
     [
      "2026-10-26",
      499
+    ],
+    [
+     "2026-11-02",
+     502
     ]
    ]
   },
@@ -7236,7 +8027,7 @@
    "first_seen": "2026-10-14",
    "title": "rahulvrane/awesome-claude-agents",
    "url": "https://github.com/rahulvrane/awesome-claude-agents",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -7253,6 +8044,10 @@
     [
      "2026-10-26",
      373
+    ],
+    [
+     "2026-11-02",
+     375
     ]
    ]
   },
@@ -7260,7 +8055,7 @@
    "first_seen": "2026-10-14",
    "title": "athola/claude-night-market",
    "url": "https://github.com/athola/claude-night-market",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -7279,6 +8074,10 @@
     [
      "2026-10-26",
      343
+    ],
+    [
+     "2026-11-02",
+     343
     ]
    ]
   },
@@ -7286,7 +8085,7 @@
    "first_seen": "2026-10-14",
    "title": "Aboudjem/humanizer-skill",
    "url": "https://github.com/Aboudjem/humanizer-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -7303,6 +8102,10 @@
     [
      "2026-10-26",
      290
+    ],
+    [
+     "2026-11-02",
+     297
     ]
    ]
   },
@@ -7310,7 +8113,7 @@
    "first_seen": "2026-10-14",
    "title": "LangGPT/awesome-claude-code",
    "url": "https://github.com/LangGPT/awesome-claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -7327,6 +8130,10 @@
     [
      "2026-10-26",
      272
+    ],
+    [
+     "2026-11-02",
+     272
     ]
    ]
   },
@@ -7334,7 +8141,7 @@
    "first_seen": "2026-10-14",
    "title": "cassler/awesome-claude-code-setup",
    "url": "https://github.com/cassler/awesome-claude-code-setup",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -7351,6 +8158,10 @@
     [
      "2026-10-26",
      267
+    ],
+    [
+     "2026-11-02",
+     267
     ]
    ]
   },
@@ -7358,7 +8169,7 @@
    "first_seen": "2026-10-14",
    "title": "serenakeyitan/awesome-agent-loops",
    "url": "https://github.com/serenakeyitan/awesome-agent-loops",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -7375,6 +8186,10 @@
     [
      "2026-10-26",
      214
+    ],
+    [
+     "2026-11-02",
+     215
     ]
    ]
   },
@@ -7382,7 +8197,7 @@
    "first_seen": "2026-10-14",
    "title": "GetBindu/awesome-claude-code-and-skills",
    "url": "https://github.com/GetBindu/awesome-claude-code-and-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -7399,6 +8214,10 @@
     [
      "2026-10-26",
      205
+    ],
+    [
+     "2026-11-02",
+     206
     ]
    ]
   },
@@ -7406,7 +8225,7 @@
    "first_seen": "2026-10-14",
    "title": "croffasia/cc-blueprint-toolkit",
    "url": "https://github.com/croffasia/cc-blueprint-toolkit",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -7424,6 +8243,10 @@
     [
      "2026-10-26",
      195
+    ],
+    [
+     "2026-11-02",
+     195
     ]
    ]
   },
@@ -7431,7 +8254,7 @@
    "first_seen": "2026-10-14",
    "title": "amirfish1/claude-command-center",
    "url": "https://github.com/amirfish1/claude-command-center",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -7449,6 +8272,10 @@
     [
      "2026-10-26",
      211
+    ],
+    [
+     "2026-11-02",
+     214
     ]
    ]
   },
@@ -7456,7 +8283,7 @@
    "first_seen": "2026-10-14",
    "title": "tryalan-ai/awesome-claude-code-sub-agents",
    "url": "https://github.com/tryalan-ai/awesome-claude-code-sub-agents",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -7474,6 +8301,10 @@
     [
      "2026-10-26",
      177
+    ],
+    [
+     "2026-11-02",
+     177
     ]
    ]
   },
@@ -7481,7 +8312,7 @@
    "first_seen": "2026-10-14",
    "title": "baocode-dev/baocode",
    "url": "https://github.com/baocode-dev/baocode",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -7498,6 +8329,10 @@
     [
      "2026-10-26",
      408
+    ],
+    [
+     "2026-11-02",
+     489
     ]
    ]
   },
@@ -7505,7 +8340,7 @@
    "first_seen": "2026-10-14",
    "title": "ithiria894/awesome-claude-code-workflows",
    "url": "https://github.com/ithiria894/awesome-claude-code-workflows",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -7524,6 +8359,10 @@
     [
      "2026-10-26",
      131
+    ],
+    [
+     "2026-11-02",
+     134
     ]
    ]
   },
@@ -7531,7 +8370,7 @@
    "first_seen": "2026-10-14",
    "title": "GoekeLab/awesome-genomic-skills",
    "url": "https://github.com/GoekeLab/awesome-genomic-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -7548,6 +8387,10 @@
     [
      "2026-10-26",
      127
+    ],
+    [
+     "2026-11-02",
+     128
     ]
    ]
   },
@@ -7555,7 +8398,7 @@
    "first_seen": "2026-10-14",
    "title": "subinium/awesome-claude-code",
    "url": "https://github.com/subinium/awesome-claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -7572,6 +8415,10 @@
     [
      "2026-10-26",
      120
+    ],
+    [
+     "2026-11-02",
+     124
     ]
    ]
   },
@@ -7579,7 +8426,7 @@
    "first_seen": "2026-10-14",
    "title": "dykyi-roman/awesome-claude-code",
    "url": "https://github.com/dykyi-roman/awesome-claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "코딩"
@@ -7597,6 +8444,10 @@
     [
      "2026-10-26",
      105
+    ],
+    [
+     "2026-11-02",
+     105
     ]
    ]
   },
@@ -7604,7 +8455,7 @@
    "first_seen": "2026-10-14",
    "title": "pascalporedda/awesome-claude-code",
    "url": "https://github.com/pascalporedda/awesome-claude-code",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -7620,6 +8471,10 @@
     ],
     [
      "2026-10-26",
+     87
+    ],
+    [
+     "2026-11-02",
      87
     ]
    ]
@@ -7665,7 +8520,7 @@
    "first_seen": "2026-10-14",
    "title": "LibreChat-AI/LibreChat",
    "url": "https://github.com/LibreChat-AI/LibreChat",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -7683,6 +8538,10 @@
     [
      "2026-10-26",
      46324
+    ],
+    [
+     "2026-11-02",
+     46617
     ]
    ]
   },
@@ -7690,7 +8549,7 @@
    "first_seen": "2026-10-14",
    "title": "anthropics/claude-plugins-official",
    "url": "https://github.com/anthropics/claude-plugins-official",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -7707,6 +8566,10 @@
     [
      "2026-10-26",
      44592
+    ],
+    [
+     "2026-11-02",
+     45717
     ]
    ],
    "reported": [
@@ -7719,7 +8582,7 @@
    "first_seen": "2026-10-14",
    "title": "mukul975/Anthropic-Cybersecurity-Skills",
    "url": "https://github.com/mukul975/Anthropic-Cybersecurity-Skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -7739,6 +8602,10 @@
     [
      "2026-10-26",
      35023
+    ],
+    [
+     "2026-11-02",
+     35404
     ]
    ]
   },
@@ -7746,7 +8613,7 @@
    "first_seen": "2026-10-14",
    "title": "zarazhangrui/frontend-slides",
    "url": "https://github.com/zarazhangrui/frontend-slides",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "에이전트",
@@ -7765,6 +8632,10 @@
     [
      "2026-10-26",
      31299
+    ],
+    [
+     "2026-11-02",
+     31702
     ]
    ]
   },
@@ -7772,7 +8643,7 @@
    "first_seen": "2026-10-14",
    "title": "Donchitos/Claude-Code-Game-Studios",
    "url": "https://github.com/Donchitos/Claude-Code-Game-Studios",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "자동화",
@@ -7791,6 +8662,10 @@
     [
      "2026-10-26",
      27567
+    ],
+    [
+     "2026-11-02",
+     32241
     ]
    ]
   },
@@ -7798,7 +8673,7 @@
    "first_seen": "2026-10-14",
    "title": "op7418/guizang-social-card-skill",
    "url": "https://github.com/op7418/guizang-social-card-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "자동화",
@@ -7817,6 +8692,10 @@
     [
      "2026-10-26",
      7737
+    ],
+    [
+     "2026-11-02",
+     7913
     ]
    ]
   },
@@ -7824,7 +8703,7 @@
    "first_seen": "2026-10-14",
    "title": "op7418/CodePilot",
    "url": "https://github.com/op7418/CodePilot",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -7842,6 +8721,10 @@
     [
      "2026-10-26",
      6509
+    ],
+    [
+     "2026-11-02",
+     6513
     ]
    ]
   },
@@ -7849,7 +8732,7 @@
    "first_seen": "2026-10-14",
    "title": "heilcheng/awesome-agent-skills",
    "url": "https://github.com/heilcheng/awesome-agent-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -7868,6 +8751,10 @@
     [
      "2026-10-26",
      6313
+    ],
+    [
+     "2026-11-02",
+     6331
     ]
    ]
   },
@@ -7875,7 +8762,7 @@
    "first_seen": "2026-10-14",
    "title": "FlorianBruniaux/claude-code-ultimate-guide",
    "url": "https://github.com/FlorianBruniaux/claude-code-ultimate-guide",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -7895,6 +8782,10 @@
     [
      "2026-10-26",
      6253
+    ],
+    [
+     "2026-11-02",
+     6316
     ]
    ]
   },
@@ -7902,7 +8793,7 @@
    "first_seen": "2026-10-14",
    "title": "elementalsouls/Claude-BugHunter",
    "url": "https://github.com/elementalsouls/Claude-BugHunter",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -7919,6 +8810,10 @@
     [
      "2026-10-26",
      5303
+    ],
+    [
+     "2026-11-02",
+     5371
     ]
    ]
   },
@@ -7926,7 +8821,7 @@
    "first_seen": "2026-10-14",
    "title": "sergebulaev/linkedin-skills",
    "url": "https://github.com/sergebulaev/linkedin-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -7944,6 +8839,10 @@
     [
      "2026-10-26",
      5187
+    ],
+    [
+     "2026-11-02",
+     5478
     ]
    ]
   },
@@ -7951,7 +8850,7 @@
    "first_seen": "2026-10-14",
    "title": "IvanMurzak/Unity-MCP",
    "url": "https://github.com/IvanMurzak/Unity-MCP",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)",
     "코딩"
@@ -7969,6 +8868,10 @@
     [
      "2026-10-26",
      4530
+    ],
+    [
+     "2026-11-02",
+     4566
     ]
    ]
   },
@@ -7976,7 +8879,7 @@
    "first_seen": "2026-10-14",
    "title": "K-Dense-AI/claude-scientific-writer",
    "url": "https://github.com/K-Dense-AI/claude-scientific-writer",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -7993,6 +8896,10 @@
     [
      "2026-10-26",
      2522
+    ],
+    [
+     "2026-11-02",
+     2546
     ]
    ]
   },
@@ -8000,7 +8907,7 @@
    "first_seen": "2026-10-14",
    "title": "DenisSergeevitch/agents-best-practices",
    "url": "https://github.com/DenisSergeevitch/agents-best-practices",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "자동화",
@@ -8020,6 +8927,10 @@
     [
      "2026-10-26",
      2395
+    ],
+    [
+     "2026-11-02",
+     2408
     ]
    ]
   },
@@ -8027,7 +8938,7 @@
    "first_seen": "2026-10-14",
    "title": "OpenCoworkAI/open-cowork",
    "url": "https://github.com/OpenCoworkAI/open-cowork",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -8046,6 +8957,10 @@
     [
      "2026-10-26",
      2228
+    ],
+    [
+     "2026-11-02",
+     2248
     ]
    ]
   },
@@ -8053,7 +8968,7 @@
    "first_seen": "2026-10-14",
    "title": "xu-xiang/everything-claude-code-zh",
    "url": "https://github.com/xu-xiang/everything-claude-code-zh",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -8071,6 +8986,10 @@
     [
      "2026-10-26",
      2000
+    ],
+    [
+     "2026-11-02",
+     2012
     ]
    ]
   },
@@ -8078,7 +8997,7 @@
    "first_seen": "2026-10-14",
    "title": "glittercowboy/taches-cc-resources",
    "url": "https://github.com/glittercowboy/taches-cc-resources",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -8095,6 +9014,10 @@
     [
      "2026-10-26",
      1986
+    ],
+    [
+     "2026-11-02",
+     1986
     ]
    ]
   },
@@ -8102,7 +9025,7 @@
    "first_seen": "2026-10-14",
    "title": "DreambigOu/ELI5",
    "url": "https://github.com/DreambigOu/ELI5",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -8119,6 +9042,10 @@
     [
      "2026-10-26",
      1847
+    ],
+    [
+     "2026-11-02",
+     1894
     ]
    ]
   },
@@ -8126,7 +9053,7 @@
    "first_seen": "2026-10-14",
    "title": "Klotzkette/claude-fuer-deutsches-recht",
    "url": "https://github.com/Klotzkette/claude-fuer-deutsches-recht",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -8143,6 +9070,10 @@
     [
      "2026-10-26",
      1753
+    ],
+    [
+     "2026-11-02",
+     1798
     ]
    ]
   },
@@ -8150,7 +9081,7 @@
    "first_seen": "2026-10-14",
    "title": "tjboudreaux/cc-thinking-skills",
    "url": "https://github.com/tjboudreaux/cc-thinking-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -8167,6 +9098,10 @@
     [
      "2026-10-26",
      1674
+    ],
+    [
+     "2026-11-02",
+     1693
     ]
    ]
   },
@@ -8174,7 +9109,7 @@
    "first_seen": "2026-10-14",
    "title": "activeloopai/hivemind",
    "url": "https://github.com/activeloopai/hivemind",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -8191,6 +9126,10 @@
     [
      "2026-10-26",
      1635
+    ],
+    [
+     "2026-11-02",
+     1640
     ]
    ]
   },
@@ -8198,12 +9137,12 @@
    "first_seen": "2026-10-14",
    "title": "gamedev-skills/awesome-gamedev-agent-skills",
    "url": "https://github.com/gamedev-skills/awesome-gamedev-agent-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
    ],
-   "kw_text": "gamedev-skills/awesome-gamedev-agent-skills 74 game-dev skills for AI coding agents — Godot, Unity, Unreal, Phaser, PixiJS, three.js, Bevy, pygame, LÖVE, Roblox. Portable SKILL.md Agent Skills (the format Anthropic launched as Claude Skill…",
+   "kw_text": "gamedev-skills/awesome-gamedev-agent-skills 77 game-dev skills for AI coding agents — Godot, Unity, Unreal, Phaser, PixiJS, three.js, Bevy, pygame, LÖVE, Roblox. Portable SKILL.md Agent Skills (the format Anthropic launched as Claude Skill…",
    "stars_hist": [
     [
      "2026-10-14",
@@ -8216,6 +9155,10 @@
     [
      "2026-10-26",
      4380
+    ],
+    [
+     "2026-11-02",
+     6456
     ]
    ]
   },
@@ -8223,13 +9166,13 @@
    "first_seen": "2026-10-14",
    "title": "mohitagw15856/pm-claude-skills",
    "url": "https://github.com/mohitagw15856/pm-claude-skills",
-   "last_seen": "2026-10-19",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
     "연동(MCP)"
    ],
-   "kw_text": "mohitagw15856/pm-claude-skills 1255 professional Agent Skills for Claude, ChatGPT, Gemini, Cursor & Codex — PRDs, postmortems, leases, medical bills, layoffs, go-bags, new countries. Plain markdown, MIT, in Anthropic's plugin directory. Pl…",
+   "kw_text": "mohitagw15856/pm-claude-skills 1,310 professional Agent Skills for Claude, Claude Duet, ChatGPT, Gemini, Cursor & Codex: PRDs, postmortems, leases, medical bills, payroll checks, morning briefs. 21 skills built for always-on agents like Cl…",
    "stars_hist": [
     [
      "2026-10-14",
@@ -8238,6 +9181,10 @@
     [
      "2026-10-19",
      1470
+    ],
+    [
+     "2026-11-02",
+     1506
     ]
    ]
   },
@@ -8599,7 +9546,7 @@
    "first_seen": "2026-10-19",
    "title": "Folkbench/folkbench",
    "url": "https://github.com/Folkbench/folkbench",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -8612,6 +9559,10 @@
     [
      "2026-10-26",
      3662
+    ],
+    [
+     "2026-11-02",
+     4164
     ]
    ]
   },
@@ -8619,7 +9570,7 @@
    "first_seen": "2026-10-19",
    "title": "ardeyouxipianyi/workbuddy2api-hub",
    "url": "https://github.com/ardeyouxipianyi/workbuddy2api-hub",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "코딩"
    ],
@@ -8632,6 +9583,10 @@
     [
      "2026-10-26",
      2971
+    ],
+    [
+     "2026-11-02",
+     3360
     ]
    ]
   },
@@ -8639,7 +9594,7 @@
    "first_seen": "2026-10-19",
    "title": "Jakeschincariol/founder-skill",
    "url": "https://github.com/Jakeschincariol/founder-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "코딩"
@@ -8653,6 +9608,10 @@
     [
      "2026-10-26",
      1773
+    ],
+    [
+     "2026-11-02",
+     2323
     ]
    ]
   },
@@ -8660,7 +9619,7 @@
    "first_seen": "2026-10-19",
    "title": "Jakeschincariol/arena-skill",
    "url": "https://github.com/Jakeschincariol/arena-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -8673,6 +9632,10 @@
     [
      "2026-10-26",
      977
+    ],
+    [
+     "2026-11-02",
+     1187
     ]
    ]
   },
@@ -8680,7 +9643,7 @@
    "first_seen": "2026-10-19",
    "title": "Tejashmakwana/motionmaxxing",
    "url": "https://github.com/Tejashmakwana/motionmaxxing",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인",
@@ -8695,6 +9658,10 @@
     [
      "2026-10-26",
      1048
+    ],
+    [
+     "2026-11-02",
+     1250
     ]
    ],
    "reported": [
@@ -8760,7 +9727,7 @@
    "first_seen": "2026-10-19",
    "title": "Graphicle-AI/graphicle",
    "url": "https://github.com/Graphicle-AI/graphicle",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -8775,6 +9742,10 @@
     [
      "2026-10-26",
      358
+    ],
+    [
+     "2026-11-02",
+     489
     ]
    ]
   },
@@ -8782,7 +9753,7 @@
    "first_seen": "2026-10-19",
    "title": "dagoSte/squadra",
    "url": "https://github.com/dagoSte/squadra",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -8797,6 +9768,10 @@
     [
      "2026-10-26",
      572
+    ],
+    [
+     "2026-11-02",
+     1182
     ]
    ]
   },
@@ -8804,7 +9779,7 @@
    "first_seen": "2026-10-19",
    "title": "MiniMax-AI/OpenAgentCore",
    "url": "https://github.com/MiniMax-AI/OpenAgentCore",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -8819,6 +9794,10 @@
     [
      "2026-10-26",
      248
+    ],
+    [
+     "2026-11-02",
+     314
     ]
    ]
   },
@@ -8826,7 +9805,7 @@
    "first_seen": "2026-10-19",
    "title": "EL4CTEO/blender-skills",
    "url": "https://github.com/EL4CTEO/blender-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화",
@@ -8842,6 +9821,10 @@
     [
      "2026-10-26",
      508
+    ],
+    [
+     "2026-11-02",
+     652
     ]
    ]
   },
@@ -8849,7 +9832,7 @@
    "first_seen": "2026-10-19",
    "title": "INSANE0777/Awwwards-mcp",
    "url": "https://github.com/INSANE0777/Awwwards-mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트",
@@ -8865,6 +9848,10 @@
     [
      "2026-10-26",
      336
+    ],
+    [
+     "2026-11-02",
+     383
     ]
    ]
   },
@@ -8888,7 +9875,7 @@
    "first_seen": "2026-10-19",
    "title": "marclou/mailcheap",
    "url": "https://github.com/marclou/mailcheap",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -8902,6 +9889,10 @@
     [
      "2026-10-26",
      1454
+    ],
+    [
+     "2026-11-02",
+     1596
     ]
    ]
   },
@@ -8932,7 +9923,7 @@
    "first_seen": "2026-10-19",
    "title": "hanzohanzhe/Grandet",
    "url": "https://github.com/hanzohanzhe/Grandet",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -8946,6 +9937,10 @@
     [
      "2026-10-26",
      788
+    ],
+    [
+     "2026-11-02",
+     1037
     ]
    ]
   },
@@ -8953,7 +9948,7 @@
    "first_seen": "2026-10-19",
    "title": "lvzuojing/mcd-wrapped",
    "url": "https://github.com/lvzuojing/mcd-wrapped",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -8966,6 +9961,10 @@
     [
      "2026-10-26",
      499
+    ],
+    [
+     "2026-11-02",
+     517
     ]
    ]
   },
@@ -8973,7 +9972,7 @@
    "first_seen": "2026-10-19",
    "title": "KnifeLemon/Droidline",
    "url": "https://github.com/KnifeLemon/Droidline",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -8989,6 +9988,10 @@
     [
      "2026-10-26",
      335
+    ],
+    [
+     "2026-11-02",
+     438
     ]
    ]
   },
@@ -9052,13 +10055,13 @@
    "first_seen": "2026-10-19",
    "title": "LeaddeOpenLab/awesome-opus-5-5-video-prompts",
    "url": "https://github.com/LeaddeOpenLab/awesome-opus-5-5-video-prompts",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
     "코딩"
    ],
-   "kw_text": "LeaddeOpenLab/awesome-opus-5-5-video-prompts Claude Opus 5.5 video prompts for motion graphics, explainers, 3D scenes and interactive demos. Browse by use case, with previews, required inputs and tools.",
+   "kw_text": "LeaddeOpenLab/awesome-opus-5-5-video-prompts Actively updated Claude Opus prompts for motion graphics, product videos, explainers, 3D and interactive demos. Visual previews, setup guides and editable MP4 templates help you get started.",
    "stars_hist": [
     [
      "2026-10-19",
@@ -9067,6 +10070,10 @@
     [
      "2026-10-26",
      104
+    ],
+    [
+     "2026-11-02",
+     126
     ]
    ]
   },
@@ -9074,7 +10081,7 @@
    "first_seen": "2026-10-19",
    "title": "moritzkremb/framejam",
    "url": "https://github.com/moritzkremb/framejam",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -9090,6 +10097,10 @@
     [
      "2026-10-26",
      62
+    ],
+    [
+     "2026-11-02",
+     68
     ]
    ]
   },
@@ -9154,11 +10165,11 @@
    "first_seen": "2026-10-19",
    "title": "NOTBAD314/2ByteASR",
    "url": "https://github.com/NOTBAD314/2ByteASR",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
-   "kw_text": "NOTBAD314/2ByteASR 兔白字幕：面向中文游戏实况的本地字幕识别与视频编辑工具，支持校对、说话人分轨与特效字幕。当前提供源码，暂无公开安装包。",
+   "kw_text": "NOTBAD314/2ByteASR A smarter subtitle studio powered by advanced ASR models. Refine transcripts with AI and custom glossaries, build bilingual subtitles, and edit speech and video together.",
    "stars_hist": [
     [
      "2026-10-19",
@@ -9167,6 +10178,10 @@
     [
      "2026-10-26",
      45
+    ],
+    [
+     "2026-11-02",
+     56
     ]
    ]
   },
@@ -9207,7 +10222,7 @@
    "first_seen": "2026-10-19",
    "title": "Kianzzz/xilo-opus-video",
    "url": "https://github.com/Kianzzz/xilo-opus-video",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인"
@@ -9221,6 +10236,10 @@
     [
      "2026-10-26",
      280
+    ],
+    [
+     "2026-11-02",
+     347
     ]
    ]
   },
@@ -9228,7 +10247,7 @@
    "first_seen": "2026-10-19",
    "title": "wh000wh000/awesome-claude-mods",
    "url": "https://github.com/wh000wh000/awesome-claude-mods",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -9241,6 +10260,10 @@
     [
      "2026-10-26",
      172
+    ],
+    [
+     "2026-11-02",
+     237
     ]
    ]
   },
@@ -9464,7 +10487,7 @@
    "first_seen": "2026-10-19",
    "title": "ruvnet/RuView",
    "url": "https://github.com/ruvnet/RuView",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화"
@@ -9478,6 +10501,10 @@
     [
      "2026-10-26",
      99612
+    ],
+    [
+     "2026-11-02",
+     101996
     ]
    ],
    "reported": [
@@ -9506,7 +10533,7 @@
    "first_seen": "2026-10-19",
    "title": "zhuyansen/awesome-opus-5.5-video",
    "url": "https://github.com/zhuyansen/awesome-opus-5.5-video",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -9519,6 +10546,10 @@
     [
      "2026-10-26",
      246
+    ],
+    [
+     "2026-11-02",
+     285
     ]
    ]
   },
@@ -9526,7 +10557,7 @@
    "first_seen": "2026-10-19",
    "title": "genspark-ai/genoffice",
    "url": "https://github.com/genspark-ai/genoffice",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "에이전트"
@@ -9540,6 +10571,10 @@
     [
      "2026-10-26",
      10845
+    ],
+    [
+     "2026-11-02",
+     11501
     ]
    ],
    "reported": [
@@ -9552,7 +10587,7 @@
    "first_seen": "2026-10-19",
    "title": "OpenCoworkAI/open-codesign",
    "url": "https://github.com/OpenCoworkAI/open-codesign",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "문서·오피스"
@@ -9566,6 +10601,10 @@
     [
      "2026-10-26",
      8107
+    ],
+    [
+     "2026-11-02",
+     8143
     ]
    ]
   },
@@ -9573,7 +10612,7 @@
    "first_seen": "2026-10-19",
    "title": "taylorwilsdon/google_workspace_mcp",
    "url": "https://github.com/taylorwilsdon/google_workspace_mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "연동(MCP)"
@@ -9587,6 +10626,10 @@
     [
      "2026-10-26",
      3413
+    ],
+    [
+     "2026-11-02",
+     3457
     ]
    ]
   },
@@ -9612,7 +10655,7 @@
    "first_seen": "2026-10-19",
    "title": "haris-musa/excel-mcp-server",
    "url": "https://github.com/haris-musa/excel-mcp-server",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "자동화",
@@ -9627,6 +10670,10 @@
     [
      "2026-10-26",
      4263
+    ],
+    [
+     "2026-11-02",
+     4269
     ]
    ]
   },
@@ -9709,13 +10756,13 @@
   },
   "link:https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust": {
    "first_seen": "2026-10-26",
-   "title": "[Anthropic 뉴스] 새 페이지: christopher-stubbs-joins-long-term-benefit-trust",
+   "title": "[Anthropic 뉴스] Physicist Christopher Stubbs joins Anthropic's Long-Term Benefit Trust",
    "url": "https://www.anthropic.com/news/christopher-stubbs-joins-long-term-benefit-trust",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
-   "kw_text": "[Anthropic 뉴스] 새 페이지: christopher-stubbs-joins-long-term-benefit-trust Anthropic 뉴스에 새 링크가 생김",
+   "kw_text": "[Anthropic 뉴스] Physicist Christopher Stubbs joins Anthropic's Long-Term Benefit Trust announcements · 2026-10-21 발표 — Dr. Christopher Stubbs, an experimental physicist and former Dean of Science at Harvard University, has joined Anthropic’…",
    "reported": [
     "2026-10-26"
    ],
@@ -9739,13 +10786,14 @@
   },
   "link:https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation": {
    "first_seen": "2026-10-26",
-   "title": "[Anthropic 뉴스] 새 페이지: donating-agent-skills-to-the-agentic-ai-foundation",
+   "title": "[Anthropic 뉴스] Donating Agent Skills to the Agentic AI Foundation",
    "url": "https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
+    "자동화",
     "에이전트"
    ],
-   "kw_text": "[Anthropic 뉴스] 새 페이지: donating-agent-skills-to-the-agentic-ai-foundation Anthropic 뉴스에 새 링크가 생김",
+   "kw_text": "[Anthropic 뉴스] Donating Agent Skills to the Agentic AI Foundation product · 2026-10-22 발표 — We’re donating Agent Skills, the open standard that gives AI agents specialized knowledge and workflows, to the Agentic AI Foundation. More than 70…",
    "reported": [
     "2026-10-26"
    ],
@@ -9829,13 +10877,13 @@
   },
   "link:https://www.anthropic.com/news/open-call-guest-investigators-life-sciences": {
    "first_seen": "2026-10-26",
-   "title": "[Anthropic 뉴스] 새 페이지: open-call-guest-investigators-life-sciences",
+   "title": "[Anthropic 뉴스] Open call for guest investigators in the life sciences",
    "url": "https://www.anthropic.com/news/open-call-guest-investigators-life-sciences",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
-   "kw_text": "[Anthropic 뉴스] 새 페이지: open-call-guest-investigators-life-sciences Anthropic 뉴스에 새 링크가 생김"
+   "kw_text": "[Anthropic 뉴스] Open call for guest investigators in the life sciences announcements · 2026-10-22 발표 — Today, we’re inviting members of the life sciences community to apply to work with us on special projects."
   },
   "link:https://www.anthropic.com/news/partnerships": {
    "first_seen": "2026-10-26",
@@ -9881,7 +10929,7 @@
    "first_seen": "2026-10-26",
    "title": "Gathin23/cleanyourtv",
    "url": "https://github.com/Gathin23/cleanyourtv",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "코딩"
    ],
@@ -9890,6 +10938,10 @@
     [
      "2026-10-26",
      35873
+    ],
+    [
+     "2026-11-02",
+     49154
     ]
    ]
   },
@@ -9897,7 +10949,7 @@
    "first_seen": "2026-10-26",
    "title": "simbasjungles/free-my-tv",
    "url": "https://github.com/simbasjungles/free-my-tv",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -9906,6 +10958,10 @@
     [
      "2026-10-26",
      4648
+    ],
+    [
+     "2026-11-02",
+     5672
     ]
    ]
   },
@@ -9913,7 +10969,7 @@
    "first_seen": "2026-10-26",
    "title": "openfilm/openfilm",
    "url": "https://github.com/openfilm/openfilm",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -9924,14 +10980,23 @@
     [
      "2026-10-26",
      2857
+    ],
+    [
+     "2026-11-02",
+     4097
     ]
-   ]
+   ],
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 4097,
+   "last_reported_mentions": 0
   },
   "gh:leonxlnx/earshot": {
    "first_seen": "2026-10-26",
    "title": "Leonxlnx/earshot",
    "url": "https://github.com/Leonxlnx/earshot",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트",
@@ -9943,6 +11008,10 @@
     [
      "2026-10-26",
      2810
+    ],
+    [
+     "2026-11-02",
+     3446
     ]
    ]
   },
@@ -9950,7 +11019,7 @@
    "first_seen": "2026-10-26",
    "title": "amontlabs/lcu",
    "url": "https://github.com/amontlabs/lcu",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -9961,6 +11030,10 @@
     [
      "2026-10-26",
      2215
+    ],
+    [
+     "2026-11-02",
+     2349
     ]
    ]
   },
@@ -9968,7 +11041,7 @@
    "first_seen": "2026-10-26",
    "title": "Vincentwei1021/mg-styles-15",
    "url": "https://github.com/Vincentwei1021/mg-styles-15",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인"
    ],
@@ -9977,6 +11050,10 @@
     [
      "2026-10-26",
      2137
+    ],
+    [
+     "2026-11-02",
+     2806
     ]
    ]
   },
@@ -9984,7 +11061,7 @@
    "first_seen": "2026-10-26",
    "title": "Jakeschincariol/day-trader-skill",
    "url": "https://github.com/Jakeschincariol/day-trader-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -9993,6 +11070,10 @@
     [
      "2026-10-26",
      1700
+    ],
+    [
+     "2026-11-02",
+     4310
     ]
    ]
   },
@@ -10000,7 +11081,7 @@
    "first_seen": "2026-10-26",
    "title": "UnderleveledBuilder/awesome-short-drama-skills",
    "url": "https://github.com/UnderleveledBuilder/awesome-short-drama-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -10010,19 +11091,24 @@
     [
      "2026-10-26",
      944
+    ],
+    [
+     "2026-11-02",
+     1576
     ]
    ],
    "reported": [
-    "2026-10-26"
+    "2026-10-26",
+    "2026-11-02"
    ],
-   "last_reported_stars": 944,
+   "last_reported_stars": 1576,
    "last_reported_mentions": 0
   },
   "gh:dozentwelve/papermorph": {
    "first_seen": "2026-10-26",
    "title": "DozenTwelve/Papermorph",
    "url": "https://github.com/DozenTwelve/Papermorph",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트"
@@ -10032,6 +11118,10 @@
     [
      "2026-10-26",
      939
+    ],
+    [
+     "2026-11-02",
+     1051
     ]
    ]
   },
@@ -10056,7 +11146,7 @@
    "first_seen": "2026-10-26",
    "title": "alchaincyf/huashu-motion",
    "url": "https://github.com/alchaincyf/huashu-motion",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -10067,6 +11157,10 @@
     [
      "2026-10-26",
      1684
+    ],
+    [
+     "2026-11-02",
+     2007
     ]
    ],
    "reported": [
@@ -10096,7 +11190,7 @@
    "first_seen": "2026-10-26",
    "title": "juliobsz/skills",
    "url": "https://github.com/juliobsz/skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "에이전트",
@@ -10107,6 +11201,10 @@
     [
      "2026-10-26",
      952
+    ],
+    [
+     "2026-11-02",
+     1053
     ]
    ]
   },
@@ -10114,7 +11212,7 @@
    "first_seen": "2026-10-26",
    "title": "kanaworksai-hue/audio-studio-mcp",
    "url": "https://github.com/kanaworksai-hue/audio-studio-mcp",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
@@ -10123,6 +11221,10 @@
     [
      "2026-10-26",
      496
+    ],
+    [
+     "2026-11-02",
+     559
     ]
    ]
   },
@@ -10130,7 +11232,7 @@
    "first_seen": "2026-10-26",
    "title": "ctoldigital/axuse",
    "url": "https://github.com/ctoldigital/axuse",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -10141,6 +11243,10 @@
     [
      "2026-10-26",
      487
+    ],
+    [
+     "2026-11-02",
+     745
     ]
    ]
   },
@@ -10148,7 +11254,7 @@
    "first_seen": "2026-10-26",
    "title": "junxchan54-maker/mcd-cn-assistant",
    "url": "https://github.com/junxchan54-maker/mcd-cn-assistant",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -10159,6 +11265,10 @@
     [
      "2026-10-26",
      389
+    ],
+    [
+     "2026-11-02",
+     379
     ]
    ]
   },
@@ -10185,7 +11295,7 @@
    "first_seen": "2026-10-26",
    "title": "ZipengWu365/TOMC",
    "url": "https://github.com/ZipengWu365/TOMC",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -10195,6 +11305,10 @@
     [
      "2026-10-26",
      268
+    ],
+    [
+     "2026-11-02",
+     264
     ]
    ]
   },
@@ -10202,7 +11316,7 @@
    "first_seen": "2026-10-26",
    "title": "backtrue/thinkwithblack-skill",
    "url": "https://github.com/backtrue/thinkwithblack-skill",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -10212,6 +11326,10 @@
     [
      "2026-10-26",
      245
+    ],
+    [
+     "2026-11-02",
+     250
     ]
    ]
   },
@@ -10235,7 +11353,7 @@
    "first_seen": "2026-10-26",
    "title": "benord-labs/frink",
    "url": "https://github.com/benord-labs/frink",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -10247,6 +11365,10 @@
     [
      "2026-10-26",
      171
+    ],
+    [
+     "2026-11-02",
+     182
     ]
    ]
   },
@@ -10254,7 +11376,7 @@
    "first_seen": "2026-10-26",
    "title": "cheaper-inference/OmniRoute",
    "url": "https://github.com/cheaper-inference/OmniRoute",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -10265,6 +11387,10 @@
     [
      "2026-10-26",
      81193
+    ],
+    [
+     "2026-11-02",
+     83633
     ]
    ]
   },
@@ -10272,7 +11398,7 @@
    "first_seen": "2026-10-26",
    "title": "heygen-com/hyperframes",
    "url": "https://github.com/heygen-com/hyperframes",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -10283,14 +11409,23 @@
     [
      "2026-10-26",
      72298
+    ],
+    [
+     "2026-11-02",
+     77102
     ]
-   ]
+   ],
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 77102,
+   "last_reported_mentions": 0
   },
   "gh:ai-job-search-dev/ai-job-search": {
    "first_seen": "2026-10-26",
    "title": "ai-job-search-dev/ai-job-search",
    "url": "https://github.com/ai-job-search-dev/ai-job-search",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트"
    ],
@@ -10299,6 +11434,10 @@
     [
      "2026-10-26",
      65793
+    ],
+    [
+     "2026-11-02",
+     68729
     ]
    ]
   },
@@ -10306,7 +11445,7 @@
    "first_seen": "2026-10-26",
    "title": "nexscope-ai/eCommerce-Skills",
    "url": "https://github.com/nexscope-ai/eCommerce-Skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트"
@@ -10316,6 +11455,10 @@
     [
      "2026-10-26",
      1257
+    ],
+    [
+     "2026-11-02",
+     1312
     ]
    ]
   },
@@ -10323,7 +11466,7 @@
    "first_seen": "2026-10-26",
    "title": "alchaincyf/huashu-design",
    "url": "https://github.com/alchaincyf/huashu-design",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "문서·오피스",
@@ -10334,14 +11477,23 @@
     [
      "2026-10-26",
      26325
+    ],
+    [
+     "2026-11-02",
+     28399
     ]
-   ]
+   ],
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 28399,
+   "last_reported_mentions": 0
   },
   "gh:shaongitbd/doory": {
    "first_seen": "2026-10-26",
    "title": "shaongitbd/doory",
    "url": "https://github.com/shaongitbd/doory",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "디자인",
     "연동(MCP)"
@@ -10351,6 +11503,10 @@
     [
      "2026-10-26",
      1834
+    ],
+    [
+     "2026-11-02",
+     1955
     ]
    ]
   },
@@ -10358,15 +11514,19 @@
    "first_seen": "2026-10-26",
    "title": "ollaya-dev/ollaya",
    "url": "https://github.com/ollaya-dev/ollaya",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "연동(MCP)"
    ],
-   "kw_text": "ollaya-dev/ollaya Jev-compatible API server for open decision models. Ollama for decision models: pull and serve 25 model families (Laya, pplx-decider, Clef, Winnow, coba...) locally or self-hosted behind /v1/systemone. The TypeSafe SDK wo…",
+   "kw_text": "ollaya-dev/ollaya Jev-compatible API server for open decision models. Ollama for decision models: pull and serve 29 model families (Laya, pplx-decider, Clef, Winnow, coba...) locally or self-hosted behind /v1/systemone. The TypeSafe SDK wo…",
    "stars_hist": [
     [
      "2026-10-26",
      1397
+    ],
+    [
+     "2026-11-02",
+     1433
     ]
    ]
   },
@@ -10374,7 +11534,7 @@
    "first_seen": "2026-10-26",
    "title": "notinferred/keypaste",
    "url": "https://github.com/notinferred/keypaste",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -10384,6 +11544,10 @@
     [
      "2026-10-26",
      429
+    ],
+    [
+     "2026-11-02",
+     737
     ]
    ]
   },
@@ -10391,7 +11555,7 @@
    "first_seen": "2026-10-26",
    "title": "1105216375-alt/resimind",
    "url": "https://github.com/1105216375-alt/resimind",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)"
@@ -10401,6 +11565,10 @@
     [
      "2026-10-26",
      292
+    ],
+    [
+     "2026-11-02",
+     294
     ]
    ]
   },
@@ -10408,7 +11576,7 @@
    "first_seen": "2026-10-26",
    "title": "appariciojunior/video-editor-skills",
    "url": "https://github.com/appariciojunior/video-editor-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -10417,6 +11585,10 @@
     [
      "2026-10-26",
      259
+    ],
+    [
+     "2026-11-02",
+     379
     ]
    ]
   },
@@ -10424,7 +11596,7 @@
    "first_seen": "2026-10-26",
    "title": "0xS4N4TG/kinetograph",
    "url": "https://github.com/0xS4N4TG/kinetograph",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
@@ -10435,6 +11607,10 @@
     [
      "2026-10-26",
      71
+    ],
+    [
+     "2026-11-02",
+     434
     ]
    ]
   },
@@ -10442,7 +11618,7 @@
    "first_seen": "2026-10-26",
    "title": "noamdorr/saas-product-demo-video",
    "url": "https://github.com/noamdorr/saas-product-demo-video",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상"
    ],
@@ -10451,6 +11627,10 @@
     [
      "2026-10-26",
      60
+    ],
+    [
+     "2026-11-02",
+     64
     ]
    ]
   },
@@ -10458,7 +11638,7 @@
    "first_seen": "2026-10-26",
    "title": "mackswendhell/studio",
    "url": "https://github.com/mackswendhell/studio",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "연동(MCP)"
@@ -10468,6 +11648,10 @@
     [
      "2026-10-26",
      35
+    ],
+    [
+     "2026-11-02",
+     38
     ]
    ]
   },
@@ -10475,7 +11659,7 @@
    "first_seen": "2026-10-26",
    "title": "AnayDhawan/openvidstudio",
    "url": "https://github.com/AnayDhawan/openvidstudio",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "자동화",
@@ -10488,6 +11672,10 @@
     [
      "2026-10-26",
      34
+    ],
+    [
+     "2026-11-02",
+     34
     ]
    ]
   },
@@ -10495,7 +11683,7 @@
    "first_seen": "2026-10-26",
    "title": "devswha/ovis",
    "url": "https://github.com/devswha/ovis",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "자동화",
     "에이전트",
@@ -10506,6 +11694,10 @@
     [
      "2026-10-26",
      1486
+    ],
+    [
+     "2026-11-02",
+     1785
     ]
    ]
   },
@@ -10513,17 +11705,22 @@
    "first_seen": "2026-10-26",
    "title": "actionow-ai/vvv",
    "url": "https://github.com/actionow-ai/vvv",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "에이전트",
+    "연동(MCP)",
     "코딩"
    ],
-   "kw_text": "actionow-ai/vvv Build a video template once, reuse it across coding agents. Editable Remotion templates and an Agent Skill for Claude Code, Codex and 25+ agents.",
+   "kw_text": "actionow-ai/vvv 一次构建视频模板，多次复用：给 Claude Code、Codex 等 25+ 个 Agent 的开源可编辑婚礼视频模板与 Agent Skill。Build a video template once, reuse it across coding agents.",
    "stars_hist": [
     [
      "2026-10-26",
      377
+    ],
+    [
+     "2026-11-02",
+     510
     ]
    ],
    "reported": [
@@ -10536,7 +11733,7 @@
    "first_seen": "2026-10-26",
    "title": "iart-ai/motion-design-skills",
    "url": "https://github.com/iart-ai/motion-design-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "영상",
     "디자인"
@@ -10546,6 +11743,10 @@
     [
      "2026-10-26",
      161
+    ],
+    [
+     "2026-11-02",
+     184
     ]
    ]
   },
@@ -10553,7 +11754,7 @@
    "first_seen": "2026-10-26",
    "title": "JasonColapietro/suede-creator-skills",
    "url": "https://github.com/JasonColapietro/suede-creator-skills",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "에이전트",
     "연동(MCP)",
@@ -10564,6 +11765,10 @@
     [
      "2026-10-26",
      125
+    ],
+    [
+     "2026-11-02",
+     126
     ]
    ]
   },
@@ -10571,7 +11776,7 @@
    "first_seen": "2026-10-26",
    "title": "whyashthakker/awesome-claude-code-mods",
    "url": "https://github.com/whyashthakker/awesome-claude-code-mods",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "기타"
    ],
@@ -10580,6 +11785,10 @@
     [
      "2026-10-26",
      98
+    ],
+    [
+     "2026-11-02",
+     109
     ]
    ]
   },
@@ -10795,7 +12004,7 @@
    "first_seen": "2026-10-26",
    "title": "AgriciDaniel/claude-seo",
    "url": "https://github.com/AgriciDaniel/claude-seo",
-   "last_seen": "2026-10-26",
+   "last_seen": "2026-11-02",
    "categories": [
     "문서·오피스",
     "자동화",
@@ -10806,8 +12015,17 @@
     [
      "2026-10-26",
      21144
+    ],
+    [
+     "2026-11-02",
+     25525
     ]
-   ]
+   ],
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 25525,
+   "last_reported_mentions": 0
   },
   "relline:anthropics/claude-code:29e99e1199ff": {
    "first_seen": "2026-10-26",
@@ -10838,6 +12056,800 @@
     "기타"
    ],
    "kw_text": "Claude Code 업데이트(2.1.309): Updated the /claude-api skill: service account keys and Workload Identity Feder… Updated the /claude-api skill: service account keys and Workload Identity Federation tokens can now manage OpenTelemetry destinatio…"
+  },
+  "link:https://www.anthropic.com/news/ai-for-science-expands-foundations-research-institutions": {
+   "first_seen": "2026-11-02",
+   "title": "[Anthropic 뉴스] AI for Science expands to foundations and research institutions",
+   "url": "https://www.anthropic.com/news/ai-for-science-expands-foundations-research-institutions",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] AI for Science expands to foundations and research institutions Announcements · 2026-10-28 발표"
+  },
+  "link:https://www.anthropic.com/news/expanding-partnership-gsa": {
+   "first_seen": "2026-11-02",
+   "title": "[Anthropic 뉴스] Expanding our partnership with GSA to bring Claude to all levels of government",
+   "url": "https://www.anthropic.com/news/expanding-partnership-gsa",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] Expanding our partnership with GSA to bring Claude to all levels of government partnerships · 2026-10-27 발표 — We are expanding our partnership with the General Services Administration (GSA) through a new agreement that gives…"
+  },
+  "link:https://www.anthropic.com/news/s1-sec": {
+   "first_seen": "2026-11-02",
+   "title": "[Anthropic 뉴스] Anthropic files S-1 with the SEC for proposed initial public offering",
+   "url": "https://www.anthropic.com/news/s1-sec",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Anthropic 뉴스] Anthropic files S-1 with the SEC for proposed initial public offering announcements · 2026-10-26 발표 — Today, Anthropic, PBC filed a registration statement on Form S-1 with the U.S. Securities and Exchange Commission relating…",
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "gh:google/elephant-goldfish-model": {
+   "first_seen": "2026-11-02",
+   "title": "google/elephant-goldfish-model",
+   "url": "https://github.com/google/elephant-goldfish-model",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "디자인",
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "google/elephant-goldfish-model Open-source skills for designing and reviewing software with AI agents",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     8940
+    ]
+   ]
+  },
+  "gh:microsoft/tokeneconomizer": {
+   "first_seen": "2026-11-02",
+   "title": "microsoft/TokenEconomizer",
+   "url": "https://github.com/microsoft/TokenEconomizer",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "microsoft/TokenEconomizer Experience-Driven Black-Box Cost Control for Coding Agents",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     3879
+    ]
+   ]
+  },
+  "gh:t3dotgg/tstack": {
+   "first_seen": "2026-11-02",
+   "title": "t3dotgg/tstack",
+   "url": "https://github.com/t3dotgg/tstack",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "t3dotgg/tstack The agent skills I use every day. Works with Claude Code and Codex.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     2587
+    ]
+   ]
+  },
+  "gh:patch-gg/pixelfx": {
+   "first_seen": "2026-11-02",
+   "title": "patch-gg/pixelfx",
+   "url": "https://github.com/patch-gg/pixelfx",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "디자인",
+    "에이전트"
+   ],
+   "kw_text": "patch-gg/pixelfx 244 pixel art effects, every one a small piece of code. Plus a Claude Code skill to make your own.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     2550
+    ]
+   ],
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 2550,
+   "last_reported_mentions": 0
+  },
+  "gh:heydamir/unslop": {
+   "first_seen": "2026-11-02",
+   "title": "heydamir/unslop",
+   "url": "https://github.com/heydamir/unslop",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "디자인"
+   ],
+   "kw_text": "heydamir/unslop A Claude skill that turns vibecoded, AI-looking UI into a designed interface",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     4843
+    ]
+   ],
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 4843,
+   "last_reported_mentions": 0
+  },
+  "gh:morganlinton/beautifulrust": {
+   "first_seen": "2026-11-02",
+   "title": "morganlinton/BeautifulRust",
+   "url": "https://github.com/morganlinton/BeautifulRust",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "morganlinton/BeautifulRust Agent Skills that teach coding agents to write, review, and port idiomatic Rust, plus a tested clippy config. Works with Claude Code, Codex, Copilot, Cursor, and Gemini CLI.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1644
+    ]
+   ]
+  },
+  "gh:andyhuo520/digital-human-koubo": {
+   "first_seen": "2026-11-02",
+   "title": "andyhuo520/digital-human-koubo",
+   "url": "https://github.com/andyhuo520/digital-human-koubo",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "andyhuo520/digital-human-koubo AI digital-human talking-head videos from one photo: Renoise MCP generation + 5 editing styles + 48 creator-grade packaging components. Agent skill for Claude Code / Codex / OpenClaw / WorkBuddy …",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1639
+    ]
+   ],
+   "reported": [
+    "2026-11-02"
+   ],
+   "last_reported_stars": 1639,
+   "last_reported_mentions": 0
+  },
+  "gh:dunhkpcc/claude-guardian": {
+   "first_seen": "2026-11-02",
+   "title": "DUNHKpcc/Claude-Guardian",
+   "url": "https://github.com/DUNHKpcc/Claude-Guardian",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "DUNHKpcc/Claude-Guardian Claude Guardian is an all-in-one Claude account safety and risk prevention skill.Claude防封实战 It intelligently assesses your device, account history, network environment, and payment options, then provides personaliz…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1624
+    ]
+   ]
+  },
+  "gh:denissergeevitch/ex-ussr-kinship-research": {
+   "first_seen": "2026-11-02",
+   "title": "DenisSergeevitch/ex-ussr-kinship-research",
+   "url": "https://github.com/DenisSergeevitch/ex-ussr-kinship-research",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "DenisSergeevitch/ex-ussr-kinship-research Evidence-first genealogy skill for AI agents (Codex, Claude Code): church books, civil, military, deportation and repression records across the former USSR. Replies in your language.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1456
+    ]
+   ]
+  },
+  "gh:motionsites-ai/claude-skill": {
+   "first_seen": "2026-11-02",
+   "title": "Motionsites-AI/claude-skill",
+   "url": "https://github.com/Motionsites-AI/claude-skill",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Motionsites-AI/claude-skill Free Claude skill: make Claude build award-level, cinematic landing pages. By MotionSites.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1403
+    ]
+   ]
+  },
+  "gh:jakeschincariol/trader-skill": {
+   "first_seen": "2026-11-02",
+   "title": "Jakeschincariol/trader-skill",
+   "url": "https://github.com/Jakeschincariol/trader-skill",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Jakeschincariol/trader-skill 11 Claude skills that copy the investors you trust, watch the news and Congress, size every trade to your budget, and never place an order without your yes.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1078
+    ]
+   ]
+  },
+  "gh:daveebbelaar/bama": {
+   "first_seen": "2026-11-02",
+   "title": "daveebbelaar/bama",
+   "url": "https://github.com/daveebbelaar/bama",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "디자인",
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "daveebbelaar/bama BAMA: Build Any Mac App. Agent skills to research, clone, design, build, optimize, and test native macOS apps with Swift and SwiftUI.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1308
+    ]
+   ]
+  },
+  "gh:alexgaoth/awesome-reverse-engineered": {
+   "first_seen": "2026-11-02",
+   "title": "alexgaoth/awesome-reverse-engineered",
+   "url": "https://github.com/alexgaoth/awesome-reverse-engineered",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "alexgaoth/awesome-reverse-engineered Don't reverse engineer it twice. 17,000+ open-source tools built by reverse engineering closed apps, APIs, devices, protocols, file formats, games and AI tools. Search site + agent skill + MCP server, r…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1039
+    ]
+   ]
+  },
+  "gh:feimacode/open-design-agent-kit": {
+   "first_seen": "2026-11-02",
+   "title": "feimacode/open-design-agent-kit",
+   "url": "https://github.com/feimacode/open-design-agent-kit",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "디자인",
+    "에이전트",
+    "연동(MCP)",
+    "코딩"
+   ],
+   "kw_text": "feimacode/open-design-agent-kit Pro-grade UI design built into the coding agent you already use — GitHub Copilot Chat, Claude Code, Codex, Cursor. 270+ design skills, 150+ brand design systems, 160+ remixable examples. No desktop app, no d…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     770
+    ]
+   ]
+  },
+  "gh:1llu50ry/mcp-reverse": {
+   "first_seen": "2026-11-02",
+   "title": "1llu50ry/mcp-reverse",
+   "url": "https://github.com/1llu50ry/mcp-reverse",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "디자인",
+    "자동화",
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "1llu50ry/mcp-reverse MCP (Model Context Protocol) server for game hacking & reverse engineering. A structured knowledge base of 4,100+ skills with full source code archives, specialized agents, and workflow tools -- designed to be plugged …",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     519
+    ]
+   ]
+  },
+  "gh:frigadehq/hob": {
+   "first_seen": "2026-11-02",
+   "title": "FrigadeHQ/hob",
+   "url": "https://github.com/FrigadeHQ/hob",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "FrigadeHQ/hob An easier way to use AI on your own computer. A free, open-source alternative to Claude and ChatGPT that runs open-weight models like Gemma and gpt-oss locally on Mac, Windows and Linux. Private, and works offline.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     428
+    ]
+   ]
+  },
+  "gh:muaaz9329/cheap-ag": {
+   "first_seen": "2026-11-02",
+   "title": "muaaz9329/cheap-ag",
+   "url": "https://github.com/muaaz9329/cheap-ag",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)",
+    "코딩"
+   ],
+   "kw_text": "muaaz9329/cheap-ag 50x your Claude usage with cheap-ag. Opus plans, a dirt-cheap model writes every line, and tests decide what ships. Your $20 plan stops hitting limits. One MCP server for Claude Code.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     194
+    ]
+   ]
+  },
+  "gh:sepehr071/iran-mcp": {
+   "first_seen": "2026-11-02",
+   "title": "sepehr071/iran-mcp",
+   "url": "https://github.com/sepehr071/iran-mcp",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "sepehr071/iran-mcp 71 MCP servers (883 tools) that give AI agents the Iranian web: Digikala, Torob, Divar, Snappfood, Alibaba, Neshan, Paziresh24, Jobinja, Bama, Codal, laws, tax, crypto, stocks, news and more. Prices in Toman.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     192
+    ]
+   ]
+  },
+  "gh:pbakaus/impeccable": {
+   "first_seen": "2026-11-02",
+   "title": "pbakaus/impeccable",
+   "url": "https://github.com/pbakaus/impeccable",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "디자인",
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "pbakaus/impeccable The design vocabulary for your coding agent. Steer with polish and bolder, review with critique and audit, catch AI slop before it ships.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     99299
+    ]
+   ]
+  },
+  "gh:qybaihe/bla": {
+   "first_seen": "2026-11-02",
+   "title": "qybaihe/bla",
+   "url": "https://github.com/qybaihe/bla",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "qybaihe/bla 🛡️ BLA (Blind LLM Agents) — Adversarial defense shield that protects binaries, Electron apps, JS bundles, Python, and WebAssembly against AI reverse-engineering agents like REA. Poison -> Exhaust -> Hallucinate.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1823
+    ]
+   ]
+  },
+  "gh:reason-machines/reason-network": {
+   "first_seen": "2026-11-02",
+   "title": "reason-machines/reason-network",
+   "url": "https://github.com/reason-machines/reason-network",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)",
+    "코딩"
+   ],
+   "kw_text": "reason-machines/reason-network Reason Network: your team's coding agents, talking to each other. The engine behind `reason network`.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     1437
+    ]
+   ]
+  },
+  "gh:emanuele-em/kanzo": {
+   "first_seen": "2026-11-02",
+   "title": "emanuele-em/kanzo",
+   "url": "https://github.com/emanuele-em/kanzo",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)",
+    "코딩"
+   ],
+   "kw_text": "emanuele-em/kanzo Self-hosted, sharable kanban for humans and agents. One 4.5 MB binary, 4.5 MB of RAM, 10 to 60 tokens per agent reply, starts in 2 ms, zero setup.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     590
+    ]
+   ]
+  },
+  "gh:ebony-vinyl/eac-design-world": {
+   "first_seen": "2026-11-02",
+   "title": "Ebony-Vinyl/EAC-design-world",
+   "url": "https://github.com/Ebony-Vinyl/EAC-design-world",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "디자인",
+    "연동(MCP)"
+   ],
+   "kw_text": "Ebony-Vinyl/EAC-design-world DeepSeek Harness 本地视频制作与设计插件：多轨剪辑、模板与设计体系、原生预览画布和真实文件导出",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     399
+    ]
+   ]
+  },
+  "gh:tetrionlabs/mathema": {
+   "first_seen": "2026-11-02",
+   "title": "tetrionlabs/mathema",
+   "url": "https://github.com/tetrionlabs/mathema",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "디자인",
+    "연동(MCP)",
+    "코딩"
+   ],
+   "kw_text": "tetrionlabs/mathema Claim-Driven Development: turn software intent into verifiable evidence.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     272
+    ]
+   ]
+  },
+  "gh:lsposed/dexsql-release": {
+   "first_seen": "2026-11-02",
+   "title": "LSPosed/dexsql-release",
+   "url": "https://github.com/LSPosed/dexsql-release",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "LSPosed/dexsql-release SQL for Android apk and dex files",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     268
+    ]
+   ]
+  },
+  "gh:samuraigpt/revideo": {
+   "first_seen": "2026-11-02",
+   "title": "SamurAIGPT/revideo",
+   "url": "https://github.com/SamurAIGPT/revideo",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "자동화"
+   ],
+   "kw_text": "SamurAIGPT/revideo Free, open-source alternative to Revid for AI-assisted short-form scripting, discovery, and browser-based video editing.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     164
+    ]
+   ]
+  },
+  "gh:jianxinss/iching-64-motion": {
+   "first_seen": "2026-11-02",
+   "title": "jianxinss/iching-64-motion",
+   "url": "https://github.com/jianxinss/iching-64-motion",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상"
+   ],
+   "kw_text": "jianxinss/iching-64-motion 《易经》六十四卦结构动画 · I Ching 64 Hexagrams motion graphics, made entirely with code (Remotion + React)",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     162
+    ]
+   ]
+  },
+  "gh:dojocodinglabs/remotion-superpowers": {
+   "first_seen": "2026-11-02",
+   "title": "DojoCodingLabs/remotion-superpowers",
+   "url": "https://github.com/DojoCodingLabs/remotion-superpowers",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "디자인",
+    "에이전트",
+    "연동(MCP)",
+    "코딩"
+   ],
+   "kw_text": "DojoCodingLabs/remotion-superpowers 🎬 Full video production studio for Remotion — for Claude Code, Codex, Gemini CLI & any Agent Skills agent. AI voiceovers, music, stock footage, image/video generation, TikTok captions, transitions & AI r…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     153
+    ]
+   ]
+  },
+  "gh:unclejobs-ai/motion-video-skill": {
+   "first_seen": "2026-11-02",
+   "title": "unclejobs-ai/motion-video-skill",
+   "url": "https://github.com/unclejobs-ai/motion-video-skill",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트"
+   ],
+   "kw_text": "unclejobs-ai/motion-video-skill Agent Skill for 15–90 s motion graphics, promo and character videos: reference analysis, seven stage gates, Remotion and HyperFrames engines.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     131
+    ]
+   ]
+  },
+  "gh:runesleo/claude-video-kit": {
+   "first_seen": "2026-11-02",
+   "title": "runesleo/claude-video-kit",
+   "url": "https://github.com/runesleo/claude-video-kit",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트"
+   ],
+   "kw_text": "runesleo/claude-video-kit Agent Skill + Remotion pipeline: brief/script → review receipt → narrated 9:16 explainer. RC: video-explainer skill.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     122
+    ]
+   ]
+  },
+  "gh:itspremkumar/automated-video-generator": {
+   "first_seen": "2026-11-02",
+   "title": "itsPremkumar/Automated-Video-Generator",
+   "url": "https://github.com/itsPremkumar/Automated-Video-Generator",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "자동화",
+    "에이전트"
+   ],
+   "kw_text": "itsPremkumar/Automated-Video-Generator Agentic AI video generator — fully autonomous text-to-video pipeline with free TTS/voice-clone, auto-editing, captions, and 20+ single-task operations. Zero-cost, MIT.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     120
+    ]
+   ]
+  },
+  "gh:derek-zhuolin/motion-skill": {
+   "first_seen": "2026-11-02",
+   "title": "derek-zhuolin/motion-skill",
+   "url": "https://github.com/derek-zhuolin/motion-skill",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트"
+   ],
+   "kw_text": "derek-zhuolin/motion-skill 不出镜，用文案或录音把想法做成视频。Script- or voice-driven motion graphics with Codex and Remotion: real footage, captions, editable projects and 96 motion studies.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     107
+    ]
+   ]
+  },
+  "gh:akillll-duohe/fy-code-animation": {
+   "first_seen": "2026-11-02",
+   "title": "Akillll-DuoHe/fy-code-animation",
+   "url": "https://github.com/Akillll-DuoHe/fy-code-animation",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "디자인"
+   ],
+   "kw_text": "Akillll-DuoHe/fy-code-animation 把中文文案、画风提示词和声音做成前后连贯的代码动画（Remotion / Canvas / HTML）的 DeepSeek Harness 技能。341 画风库检索、语义分镜、镜头转场、角色表演、四案音乐与音效、检查返修。",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     102
+    ]
+   ]
+  },
+  "gh:ersinkoc/ai-video-factory": {
+   "first_seen": "2026-11-02",
+   "title": "ersinkoc/AI-Video-Factory",
+   "url": "https://github.com/ersinkoc/AI-Video-Factory",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트"
+   ],
+   "kw_text": "ersinkoc/AI-Video-Factory AI video factory: from one topic to a finished, multilingual YouTube video. Claude agents write, plan, draw and review; a Studio keeps the human in charge.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     98
+    ]
+   ]
+  },
+  "gh:delexw/motion-graphics-agent": {
+   "first_seen": "2026-11-02",
+   "title": "delexw/motion-graphics-agent",
+   "url": "https://github.com/delexw/motion-graphics-agent",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "delexw/motion-graphics-agent Turn ideas into motion graphics and animated videos with Claude or Codex. 用 Claude 或 Codex，将创意变成动态图形和动画视频。",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     92
+    ]
+   ]
+  },
+  "gh:aiseo-virtualabdigital/mcp-video-editor": {
+   "first_seen": "2026-11-02",
+   "title": "AISEO-VirtualabDigital/mcp-video-editor",
+   "url": "https://github.com/AISEO-VirtualabDigital/mcp-video-editor",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "AISEO-VirtualabDigital/mcp-video-editor Wag na kayo magbayad ng 5k PHP. Ito na — libre. MCP server for CapCut + OpenCut from Cursor, Claude, Codex, Antigravity, OpenCode, KiloCode, Qwen Code and ZCode. 59 tools: timeline editing, effects c…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     76
+    ]
+   ]
+  },
+  "gh:sirioberati/showhow": {
+   "first_seen": "2026-11-02",
+   "title": "sirioberati/showhow",
+   "url": "https://github.com/sirioberati/showhow",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "디자인",
+    "연동(MCP)"
+   ],
+   "kw_text": "sirioberati/showhow Explainer reels drawn in code: every move lands on a spoken word, every render is checked. Free and open source, from tein.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     55
+    ]
+   ]
+  },
+  "gh:hridaya423/silkreel": {
+   "first_seen": "2026-11-02",
+   "title": "hridaya423/silkreel",
+   "url": "https://github.com/hridaya423/silkreel",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "디자인"
+   ],
+   "kw_text": "hridaya423/silkreel KiCad board in, release film out. silk reel renders a .kicad_pcb as a lit, scored product film or a typographic loop, built from the board's real copper, parts and silkscreen. MP4, GIF, WebM and ProRes with alpha.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     45
+    ]
+   ]
+  },
+  "gh:mixpeek/amux": {
+   "first_seen": "2026-11-02",
+   "title": "mixpeek/amux",
+   "url": "https://github.com/mixpeek/amux",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "mixpeek/amux The agent control plane: run Claude Code, Codex and Gemini CLI agents in parallel with a shared task board, schedules and usage-limit recovery. Native iPhone, iPad and Mac apps plus a web dashboard. Self-host (Rust + SQLite, T…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     551
+    ]
+   ]
+  },
+  "gh:afk-surf/comma": {
+   "first_seen": "2026-11-02",
+   "title": "AFK-surf/Comma",
+   "url": "https://github.com/AFK-surf/Comma",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "자동화",
+    "에이전트"
+   ],
+   "kw_text": "AFK-surf/Comma Best free & open source AI personal assistant. Always-on, proactive, sessionless. Browser, computer use, files, remote control. Compatible with ChatGPT/codex and claude code. Selfhost your open source alternative to Muse, Do…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     404
+    ]
+   ]
+  },
+  "gh:mromidev/claude-animated-shorts": {
+   "first_seen": "2026-11-02",
+   "title": "mromidev/claude-animated-shorts",
+   "url": "https://github.com/mromidev/claude-animated-shorts",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상"
+   ],
+   "kw_text": "mromidev/claude-animated-shorts Free Claude skill: viral animated story shorts (2D characters in a 3D world) with three.js + Remotion",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     181
+    ]
+   ]
+  },
+  "gh:hruiccc/ruic-motion-reel": {
+   "first_seen": "2026-11-02",
+   "title": "HRuiCcc/RuiC-motion-reel",
+   "url": "https://github.com/HRuiCcc/RuiC-motion-reel",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "영상",
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "HRuiCcc/RuiC-motion-reel 一句话 brief 生成动态图形 / 动效宣传片 · Agent Skill。时长按 BPM×小节算（12–60 秒），默认 1920×1080；常规宣传片走 remotion/ 模板，特殊质感走自研引擎：2× 超采样矢量/文字、真 3D 点云、丝网印四色分色、普朗克/薄膜干涉物理配色、代码合成配乐，不用外部美术素材、不用 AE。16 张风格牌为参考库，已做过九种视觉语言（暗色科技 / riso / 纸艺 / 银盐 / 普朗…",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     179
+    ]
+   ]
+  },
+  "gh:maton-ai/api-gateway-skill": {
+   "first_seen": "2026-11-02",
+   "title": "maton-ai/api-gateway-skill",
+   "url": "https://github.com/maton-ai/api-gateway-skill",
+   "last_seen": "2026-11-02",
+   "categories": [
+    "문서·오피스"
+   ],
+   "kw_text": "maton-ai/api-gateway-skill API gateway with managed auth. Connect your AI to Slack, HubSpot, Salesforce, Google Workspace, Shopify, and more with a single API key.",
+   "stars_hist": [
+    [
+     "2026-11-02",
+     33
+    ]
+   ]
   }
  },
  "keyword_counts": {
