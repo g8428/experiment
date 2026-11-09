@@ -1,5 +1,5 @@
 {
- "changelog_last": "2.1.310",
+ "changelog_last": "2.1.319",
  "dirs": {
   "anthropics/skills/skills": [
    "academy-guide",
@@ -22,23 +22,10 @@
    "webapp-testing",
    "xlsx"
   ],
-  "anthropics/claude-code/plugins": [
-   "agent-sdk-dev",
-   "claude-opus-4-5-migration",
-   "code-review",
-   "commit-commands",
-   "explanatory-output-style",
-   "feature-dev",
-   "frontend-design",
-   "hookify",
-   "learning-output-style",
-   "plugin-dev",
-   "pr-review-toolkit",
-   "ralph-wiggum",
-   "security-guidance"
-  ],
+  "anthropics/claude-code/plugins": [],
   "anthropics/claude-plugins-official/plugins": [
    "agent-sdk-dev",
+   "champion-kit",
    "clangd-lsp",
    "claude-code-setup",
    "claude-md-management",
@@ -599,7 +586,7 @@
     ],
     [
      "2026-11-09",
-     32300
+     32570
     ]
    ]
   },
@@ -631,7 +618,7 @@
     ],
     [
      "2026-11-09",
-     7919
+     7924
     ]
    ]
   },
@@ -665,7 +652,7 @@
     ],
     [
      "2026-11-09",
-     9532
+     9536
     ]
    ],
    "reported": [
@@ -731,7 +718,7 @@
     ],
     [
      "2026-11-09",
-     7062
+     7067
     ]
    ]
   },
@@ -779,7 +766,7 @@
     ],
     [
      "2026-11-09",
-     4263
+     4266
     ]
    ]
   },
@@ -839,7 +826,7 @@
     ],
     [
      "2026-11-09",
-     4769
+     4773
     ]
    ]
   },
@@ -871,7 +858,7 @@
     ],
     [
      "2026-11-09",
-     6058
+     6099
     ]
    ]
   },
@@ -977,7 +964,7 @@
     ],
     [
      "2026-11-09",
-     3202
+     3203
     ]
    ]
   },
@@ -1033,7 +1020,7 @@
     ],
     [
      "2026-11-09",
-     3136
+     3145
     ]
    ]
   },
@@ -1066,7 +1053,7 @@
     ],
     [
      "2026-11-09",
-     8463
+     8509
     ]
    ]
   },
@@ -1099,7 +1086,7 @@
     ],
     [
      "2026-11-09",
-     6544
+     6587
     ]
    ]
   },
@@ -1134,7 +1121,7 @@
     ],
     [
      "2026-11-09",
-     13696
+     13769
     ]
    ],
    "reported": [
@@ -1173,7 +1160,7 @@
     ],
     [
      "2026-11-09",
-     2870
+     2877
     ]
    ]
   },
@@ -1279,7 +1266,7 @@
     ],
     [
      "2026-11-09",
-     2926
+     2934
     ]
    ]
   },
@@ -1314,7 +1301,7 @@
     ],
     [
      "2026-11-09",
-     2206
+     2218
     ]
    ]
   },
@@ -1347,7 +1334,7 @@
     ],
     [
      "2026-11-09",
-     2949
+     2967
     ]
    ]
   },
@@ -1416,7 +1403,7 @@
     ],
     [
      "2026-11-09",
-     1423
+     1428
     ]
    ]
   },
@@ -1467,7 +1454,7 @@
     ],
     [
      "2026-11-09",
-     6351
+     6366
     ]
    ]
   },
@@ -1500,7 +1487,7 @@
     ],
     [
      "2026-11-09",
-     5169
+     5197
     ]
    ]
   },
@@ -1532,7 +1519,7 @@
     ],
     [
      "2026-11-09",
-     5527
+     5560
     ]
    ]
   },
@@ -1593,7 +1580,7 @@
     ],
     [
      "2026-11-09",
-     1323
+     1326
     ]
    ]
   },
@@ -1626,7 +1613,7 @@
     ],
     [
      "2026-11-09",
-     1372
+     1376
     ]
    ]
   },
@@ -1688,7 +1675,7 @@
     ],
     [
      "2026-11-09",
-     4244
+     4246
     ]
    ]
   },
@@ -1863,7 +1850,7 @@
     ],
     [
      "2026-11-09",
-     1128
+     1134
     ]
    ]
   },
@@ -1897,7 +1884,7 @@
     ],
     [
      "2026-11-09",
-     1770
+     1784
     ]
    ]
   },
@@ -1947,7 +1934,7 @@
     ],
     [
      "2026-11-09",
-     26011
+     26075
     ]
    ]
   },
@@ -2528,7 +2515,7 @@
     ],
     [
      "2026-11-09",
-     436
+     437
     ]
    ]
   },
@@ -2656,7 +2643,7 @@
     ],
     [
      "2026-11-09",
-     545
+     550
     ]
    ]
   },
@@ -2770,7 +2757,7 @@
     ],
     [
      "2026-11-09",
-     299702
+     299798
     ]
    ]
   },
@@ -2802,7 +2789,7 @@
     ],
     [
      "2026-11-09",
-     261766
+     261835
     ]
    ]
   },
@@ -2835,7 +2822,7 @@
     ],
     [
      "2026-11-09",
-     443726
+     444464
     ]
    ]
   },
@@ -2867,7 +2854,7 @@
     ],
     [
      "2026-11-09",
-     186922
+     187043
     ]
    ]
   },
@@ -2899,7 +2886,7 @@
     ],
     [
      "2026-11-09",
-     152745
+     152857
     ]
    ]
   },
@@ -2931,7 +2918,7 @@
     ],
     [
      "2026-11-09",
-     146908
+     147015
     ]
    ],
    "reported": [
@@ -2969,7 +2956,7 @@
     ],
     [
      "2026-11-09",
-     144498
+     144602
     ]
    ]
   },
@@ -3002,7 +2989,7 @@
     ],
     [
      "2026-11-09",
-     118371
+     118433
     ]
    ]
   },
@@ -3035,7 +3022,7 @@
     ],
     [
      "2026-11-09",
-     114122
+     114223
     ]
    ]
   },
@@ -3069,7 +3056,7 @@
     ],
     [
      "2026-11-09",
-     112330
+     112398
     ]
    ],
    "reported": [
@@ -3106,7 +3093,7 @@
     ],
     [
      "2026-11-09",
-     114892
+     115014
     ]
    ]
   },
@@ -3141,7 +3128,7 @@
     ],
     [
      "2026-11-09",
-     110306
+     110371
     ]
    ]
   },
@@ -3176,7 +3163,7 @@
     ],
     [
      "2026-11-09",
-     112039
+     112136
     ]
    ],
    "reported": [
@@ -3215,7 +3202,7 @@
     ],
     [
      "2026-11-09",
-     119277
+     119534
     ]
    ]
   },
@@ -3248,7 +3235,7 @@
     ],
     [
      "2026-11-09",
-     91555
+     91612
     ]
    ]
   },
@@ -3281,7 +3268,7 @@
     ],
     [
      "2026-11-09",
-     85932
+     85956
     ]
    ]
   },
@@ -3315,7 +3302,7 @@
     ],
     [
      "2026-11-09",
-     94729
+     94811
     ]
    ]
   },
@@ -3371,7 +3358,7 @@
     ],
     [
      "2026-11-09",
-     79164
+     79179
     ]
    ]
   },
@@ -3403,7 +3390,7 @@
     ],
     [
      "2026-11-09",
-     81197
+     81249
     ]
    ]
   },
@@ -3435,7 +3422,7 @@
     ],
     [
      "2026-11-09",
-     71042
+     71050
     ]
    ]
   },
@@ -3469,7 +3456,7 @@
     ],
     [
      "2026-11-09",
-     68833
+     68847
     ]
    ]
   },
@@ -3502,7 +3489,7 @@
     ],
     [
      "2026-11-09",
-     67019
+     67040
     ]
    ]
   },
@@ -3536,7 +3523,7 @@
     ],
     [
      "2026-11-09",
-     57548
+     57566
     ]
    ]
   },
@@ -3568,7 +3555,7 @@
     ],
     [
      "2026-11-09",
-     57984
+     58005
     ]
    ]
   },
@@ -3601,7 +3588,7 @@
     ],
     [
      "2026-11-09",
-     59235
+     59269
     ]
    ]
   },
@@ -3634,7 +3621,7 @@
     ],
     [
      "2026-11-09",
-     65877
+     65943
     ]
    ]
   },
@@ -3667,7 +3654,7 @@
     ],
     [
      "2026-11-09",
-     53347
+     53357
     ]
    ]
   },
@@ -3695,7 +3682,7 @@
     ],
     [
      "2026-11-09",
-     55941
+     56004
     ]
    ]
   },
@@ -3747,7 +3734,7 @@
     ],
     [
      "2026-11-09",
-     49372
+     49383
     ]
    ]
   },
@@ -3779,7 +3766,7 @@
     ],
     [
      "2026-11-09",
-     36983
+     36989
     ]
    ]
   },
@@ -3812,7 +3799,7 @@
     ],
     [
      "2026-11-09",
-     29490
+     29496
     ]
    ]
   },
@@ -3845,7 +3832,7 @@
     ],
     [
      "2026-11-09",
-     27953
+     27956
     ]
    ]
   },
@@ -3879,7 +3866,7 @@
     ],
     [
      "2026-11-09",
-     18880
+     18897
     ]
    ]
   },
@@ -3913,7 +3900,7 @@
     ],
     [
      "2026-11-09",
-     17893
+     17976
     ]
    ],
    "reported": [
@@ -3951,7 +3938,7 @@
     ],
     [
      "2026-11-09",
-     8431
+     8440
     ]
    ]
   },
@@ -3984,7 +3971,7 @@
     ],
     [
      "2026-11-09",
-     6338
+     6339
     ]
    ]
   },
@@ -4018,7 +4005,7 @@
     ],
     [
      "2026-11-09",
-     4700
+     4701
     ]
    ]
   },
@@ -4083,7 +4070,7 @@
     ],
     [
      "2026-11-09",
-     4039
+     4044
     ]
    ]
   },
@@ -4115,7 +4102,7 @@
     ],
     [
      "2026-11-09",
-     3658
+     3662
     ]
    ]
   },
@@ -4179,7 +4166,7 @@
     ],
     [
      "2026-11-09",
-     3802
+     3805
     ]
    ]
   },
@@ -4213,7 +4200,7 @@
     ],
     [
      "2026-11-09",
-     3226
+     3227
     ]
    ]
   },
@@ -4280,7 +4267,7 @@
     ],
     [
      "2026-11-09",
-     3957
+     3968
     ]
    ]
   },
@@ -4313,7 +4300,7 @@
     ],
     [
      "2026-11-09",
-     2640
+     2644
     ]
    ]
   },
@@ -4410,7 +4397,7 @@
     ],
     [
      "2026-11-09",
-     2233
+     2234
     ]
    ]
   },
@@ -4443,7 +4430,7 @@
     ],
     [
      "2026-11-09",
-     4148
+     4159
     ]
    ]
   },
@@ -4652,7 +4639,7 @@
     ],
     [
      "2026-11-09",
-     189611
+     189893
     ]
    ],
    "reported": [
@@ -4693,7 +4680,7 @@
     ],
     [
      "2026-11-09",
-     106658
+     106693
     ]
    ],
    "reported": [
@@ -4732,7 +4719,7 @@
     ],
     [
      "2026-11-09",
-     79070
+     79083
     ]
    ]
   },
@@ -4764,7 +4751,7 @@
     ],
     [
      "2026-11-09",
-     66486
+     66677
     ]
    ]
   },
@@ -4796,7 +4783,7 @@
     ],
     [
      "2026-11-09",
-     53635
+     53640
     ]
    ]
   },
@@ -4828,7 +4815,7 @@
     ],
     [
      "2026-11-09",
-     56499
+     56519
     ]
    ]
   },
@@ -4861,7 +4848,7 @@
     ],
     [
      "2026-11-09",
-     49659
+     49670
     ]
    ]
   },
@@ -4894,7 +4881,7 @@
     ],
     [
      "2026-11-09",
-     45494
+     45507
     ]
    ]
   },
@@ -4928,7 +4915,7 @@
     ],
     [
      "2026-11-09",
-     42320
+     42337
     ]
    ]
   },
@@ -4960,7 +4947,7 @@
     ],
     [
      "2026-11-09",
-     40936
+     40945
     ]
    ]
   },
@@ -4993,7 +4980,7 @@
     ],
     [
      "2026-11-09",
-     37351
+     37390
     ]
    ]
   },
@@ -5025,7 +5012,7 @@
     ],
     [
      "2026-11-09",
-     33143
+     33155
     ]
    ]
   },
@@ -5089,7 +5076,7 @@
     ],
     [
      "2026-11-09",
-     32191
+     32198
     ]
    ]
   },
@@ -5146,7 +5133,7 @@
     ],
     [
      "2026-11-09",
-     70789
+     70793
     ]
    ]
   },
@@ -5179,7 +5166,7 @@
     ],
     [
      "2026-11-09",
-     60541
+     60556
     ]
    ]
   },
@@ -5212,7 +5199,7 @@
     ],
     [
      "2026-11-09",
-     31098
+     31099
     ]
    ]
   },
@@ -5244,7 +5231,7 @@
     ],
     [
      "2026-11-09",
-     27393
+     27400
     ]
    ]
   },
@@ -5276,7 +5263,7 @@
     ],
     [
      "2026-11-09",
-     26446
+     26452
     ]
    ]
   },
@@ -5341,7 +5328,7 @@
     ],
     [
      "2026-11-09",
-     20763
+     20778
     ]
    ],
    "reported": [
@@ -5414,7 +5401,7 @@
     ],
     [
      "2026-11-09",
-     15296
+     15294
     ]
    ]
   },
@@ -5447,7 +5434,7 @@
     ],
     [
      "2026-11-09",
-     14607
+     14608
     ]
    ]
   },
@@ -5479,7 +5466,7 @@
     ],
     [
      "2026-11-09",
-     15724
+     15734
     ]
    ]
   },
@@ -5511,7 +5498,7 @@
     ],
     [
      "2026-11-09",
-     14362
+     14373
     ]
    ]
   },
@@ -5543,7 +5530,7 @@
     ],
     [
      "2026-11-09",
-     12277
+     12279
     ]
    ]
   },
@@ -5578,7 +5565,7 @@
     ],
     [
      "2026-11-09",
-     9471
+     9476
     ]
    ]
   },
@@ -5665,7 +5652,7 @@
     ],
     [
      "2026-11-09",
-     10504
+     10511
     ]
    ]
   },
@@ -5796,7 +5783,7 @@
     ],
     [
      "2026-11-09",
-     2141
+     2142
     ]
    ]
   },
@@ -5986,7 +5973,7 @@
     ],
     [
      "2026-11-09",
-     929
+     934
     ]
    ]
   },
@@ -6095,7 +6082,7 @@
     ],
     [
      "2026-11-09",
-     323
+     324
     ]
    ]
   },
@@ -6309,7 +6296,7 @@
     ],
     [
      "2026-11-09",
-     3038
+     3041
     ]
    ]
   },
@@ -6373,7 +6360,7 @@
     ],
     [
      "2026-11-09",
-     1692
+     1693
     ]
    ]
   },
@@ -6423,7 +6410,7 @@
     ],
     [
      "2026-11-09",
-     692
+     694
     ]
    ]
   },
@@ -6474,7 +6461,7 @@
     ],
     [
      "2026-11-09",
-     602
+     603
     ]
    ]
   },
@@ -6506,7 +6493,7 @@
     ],
     [
      "2026-11-09",
-     525
+     526
     ]
    ]
   },
@@ -6560,7 +6547,7 @@
     ],
     [
      "2026-11-09",
-     454
+     455
     ]
    ]
   },
@@ -6656,7 +6643,7 @@
     ],
     [
      "2026-11-09",
-     1084
+     1088
     ]
    ],
    "reported": [
@@ -6982,7 +6969,7 @@
     ],
     [
      "2026-11-09",
-     15354
+     15360
     ]
    ]
   },
@@ -7049,7 +7036,7 @@
     ],
     [
      "2026-11-09",
-     7119
+     7130
     ]
    ]
   },
@@ -7178,7 +7165,7 @@
     ],
     [
      "2026-11-09",
-     2234
+     2236
     ]
    ]
   },
@@ -7211,7 +7198,7 @@
     ],
     [
      "2026-11-09",
-     1359
+     1360
     ]
    ]
   },
@@ -7366,7 +7353,7 @@
     ],
     [
      "2026-11-09",
-     796
+     798
     ]
    ]
   },
@@ -7458,7 +7445,7 @@
     ],
     [
      "2026-11-09",
-     893
+     894
     ]
    ]
   },
@@ -7490,7 +7477,7 @@
     ],
     [
      "2026-11-09",
-     465
+     466
     ]
    ]
   },
@@ -7549,7 +7536,7 @@
     ],
     [
      "2026-11-09",
-     368
+     369
     ]
    ]
   },
@@ -7601,7 +7588,7 @@
     ],
     [
      "2026-11-09",
-     978
+     980
     ]
    ]
   },
@@ -7702,7 +7689,7 @@
     ],
     [
      "2026-11-09",
-     2996
+     3005
     ]
    ]
   },
@@ -7767,7 +7754,7 @@
     ],
     [
      "2026-11-09",
-     918
+     919
     ]
    ]
   },
@@ -7801,7 +7788,7 @@
     ],
     [
      "2026-11-09",
-     1290
+     1296
     ]
    ]
   },
@@ -7835,7 +7822,7 @@
     ],
     [
      "2026-11-09",
-     338
+     340
     ]
    ]
   },
@@ -7935,7 +7922,7 @@
     ],
     [
      "2026-11-09",
-     354
+     356
     ]
    ]
   },
@@ -8003,7 +7990,7 @@
     ],
     [
      "2026-11-09",
-     200
+     202
     ]
    ]
   },
@@ -8202,7 +8189,7 @@
     ],
     [
      "2026-11-09",
-     230937
+     231028
     ]
    ]
   },
@@ -8236,14 +8223,15 @@
     ],
     [
      "2026-11-09",
-     155004
+     155033
     ]
    ],
    "reported": [
-    "2026-10-19"
+    "2026-10-19",
+    "2026-11-09"
    ],
-   "last_reported_stars": 152280,
-   "last_reported_mentions": 0
+   "last_reported_stars": 155033,
+   "last_reported_mentions": 6411
   },
   "gh:x1xhlol/system-prompts-and-models-of-ai-tools": {
    "first_seen": "2026-10-14",
@@ -8275,7 +8263,7 @@
     ],
     [
      "2026-11-09",
-     144572
+     144579
     ]
    ]
   },
@@ -8307,7 +8295,7 @@
     ],
     [
      "2026-11-09",
-     140782
+     140831
     ]
    ]
   },
@@ -8339,7 +8327,7 @@
     ],
     [
      "2026-11-09",
-     80063
+     80087
     ]
    ]
   },
@@ -8373,7 +8361,7 @@
     ],
     [
      "2026-11-09",
-     81273
+     81295
     ]
    ]
   },
@@ -8405,7 +8393,7 @@
     ],
     [
      "2026-11-09",
-     77088
+     77120
     ]
    ]
   },
@@ -8437,7 +8425,7 @@
     ],
     [
      "2026-11-09",
-     26425
+     26432
     ]
    ]
   },
@@ -8568,7 +8556,7 @@
     ],
     [
      "2026-11-09",
-     1006
+     1009
     ]
    ]
   },
@@ -8600,7 +8588,7 @@
     ],
     [
      "2026-11-09",
-     894
+     895
     ]
    ]
   },
@@ -8815,7 +8803,7 @@
     ],
     [
      "2026-11-09",
-     304
+     303
     ]
    ]
   },
@@ -9074,7 +9062,7 @@
     ],
     [
      "2026-11-09",
-     632
+     639
     ]
    ]
   },
@@ -9140,7 +9128,7 @@
     ],
     [
      "2026-11-09",
-     131
+     132
     ]
    ]
   },
@@ -9307,7 +9295,7 @@
     ],
     [
      "2026-11-09",
-     46864
+     46872
     ]
    ]
   },
@@ -9339,7 +9327,7 @@
     ],
     [
      "2026-11-09",
-     46490
+     46513
     ]
    ],
    "reported": [
@@ -9379,7 +9367,7 @@
     ],
     [
      "2026-11-09",
-     35796
+     35805
     ]
    ]
   },
@@ -9413,7 +9401,7 @@
     ],
     [
      "2026-11-09",
-     32083
+     32100
     ]
    ]
   },
@@ -9447,7 +9435,7 @@
     ],
     [
      "2026-11-09",
-     36996
+     37117
     ]
    ]
   },
@@ -9481,7 +9469,7 @@
     ],
     [
      "2026-11-09",
-     8032
+     8037
     ]
    ]
   },
@@ -9514,7 +9502,7 @@
     ],
     [
      "2026-11-09",
-     6517
+     6518
     ]
    ]
   },
@@ -9615,7 +9603,7 @@
     ],
     [
      "2026-11-09",
-     5494
+     5497
     ]
    ]
   },
@@ -9648,7 +9636,7 @@
     ],
     [
      "2026-11-09",
-     5744
+     5749
     ]
    ]
   },
@@ -9681,7 +9669,7 @@
     ],
     [
      "2026-11-09",
-     4605
+     4608
     ]
    ]
   },
@@ -9782,7 +9770,7 @@
     ],
     [
      "2026-11-09",
-     2259
+     2260
     ]
    ]
   },
@@ -9879,7 +9867,7 @@
     ],
     [
      "2026-11-09",
-     1928
+     1931
     ]
    ]
   },
@@ -10000,7 +9988,7 @@
     ],
     [
      "2026-11-09",
-     7820
+     7873
     ]
    ]
   },
@@ -10408,7 +10396,7 @@
     ],
     [
      "2026-11-09",
-     3759
+     3760
     ]
    ]
   },
@@ -10436,7 +10424,7 @@
     ],
     [
      "2026-11-09",
-     3722
+     3744
     ]
    ]
   },
@@ -10465,7 +10453,7 @@
     ],
     [
      "2026-11-09",
-     2784
+     2809
     ]
    ]
   },
@@ -10493,7 +10481,7 @@
     ],
     [
      "2026-11-09",
-     1382
+     1385
     ]
    ]
   },
@@ -10523,7 +10511,7 @@
     ],
     [
      "2026-11-09",
-     1455
+     1469
     ]
    ],
    "reported": [
@@ -10611,7 +10599,7 @@
     ],
     [
      "2026-11-09",
-     525
+     526
     ]
    ]
   },
@@ -10702,7 +10690,7 @@
     ],
     [
      "2026-11-09",
-     794
+     799
     ]
    ]
   },
@@ -10733,7 +10721,7 @@
     ],
     [
      "2026-11-09",
-     518
+     523
     ]
    ]
   },
@@ -10778,7 +10766,7 @@
     ],
     [
      "2026-11-09",
-     1662
+     1663
     ]
    ]
   },
@@ -10830,7 +10818,7 @@
     ],
     [
      "2026-11-09",
-     1201
+     1205
     ]
    ]
   },
@@ -10889,7 +10877,7 @@
     ],
     [
      "2026-11-09",
-     496
+     498
     ]
    ]
   },
@@ -11120,7 +11108,7 @@
     ],
     [
      "2026-11-09",
-     248
+     249
     ]
    ]
   },
@@ -11149,7 +11137,7 @@
     ],
     [
      "2026-11-09",
-     381
+     383
     ]
    ]
   },
@@ -11404,7 +11392,8 @@
    "last_seen": "2026-11-09",
    "categories": [
     "영상",
-    "자동화"
+    "자동화",
+    "연동(MCP)"
    ],
    "kw_text": "ruvnet/RuView π RuView turns commodity WiFi signals into real-time spatial intelligence, vital sign monitoring, and presence detection — all without a single pixel of video.",
    "stars_hist": [
@@ -11422,7 +11411,7 @@
     ],
     [
      "2026-11-09",
-     103077
+     103106
     ]
    ],
    "reported": [
@@ -11471,7 +11460,7 @@
     ],
     [
      "2026-11-09",
-     312
+     314
     ]
    ]
   },
@@ -11500,7 +11489,7 @@
     ],
     [
      "2026-11-09",
-     11966
+     11987
     ]
    ],
    "reported": [
@@ -11559,7 +11548,7 @@
     ],
     [
      "2026-11-09",
-     3488
+     3490
     ]
    ]
   },
@@ -11607,7 +11596,7 @@
     ],
     [
      "2026-11-09",
-     4283
+     4284
     ]
    ]
   },
@@ -11883,7 +11872,7 @@
     ],
     [
      "2026-11-09",
-     54744
+     54873
     ]
    ]
   },
@@ -11907,7 +11896,7 @@
     ],
     [
      "2026-11-09",
-     6129
+     6150
     ]
    ]
   },
@@ -11933,7 +11922,7 @@
     ],
     [
      "2026-11-09",
-     5346
+     5401
     ]
    ],
    "reported": [
@@ -11966,7 +11955,7 @@
     ],
     [
      "2026-11-09",
-     4275
+     4296
     ]
    ]
   },
@@ -12012,7 +12001,7 @@
     ],
     [
      "2026-11-09",
-     3298
+     3320
     ]
    ]
   },
@@ -12036,7 +12025,7 @@
     ],
     [
      "2026-11-09",
-     6190
+     6226
     ]
    ]
   },
@@ -12061,7 +12050,7 @@
     ],
     [
      "2026-11-09",
-     2024
+     2046
     ]
    ],
    "reported": [
@@ -12092,7 +12081,7 @@
     ],
     [
      "2026-11-09",
-     1409
+     1412
     ]
    ]
   },
@@ -12139,7 +12128,7 @@
     ],
     [
      "2026-11-09",
-     2523
+     2535
     ]
    ],
    "reported": [
@@ -12212,7 +12201,7 @@
     ],
     [
      "2026-11-09",
-     608
+     609
     ]
    ]
   },
@@ -12398,7 +12387,7 @@
     ],
     [
      "2026-11-09",
-     85714
+     85765
     ]
    ]
   },
@@ -12424,7 +12413,7 @@
     ],
     [
      "2026-11-09",
-     81080
+     81223
     ]
    ],
    "reported": [
@@ -12453,7 +12442,7 @@
     ],
     [
      "2026-11-09",
-     70558
+     70660
     ]
    ]
   },
@@ -12501,7 +12490,7 @@
     ],
     [
      "2026-11-09",
-     28980
+     28998
     ]
    ],
    "reported": [
@@ -12531,7 +12520,7 @@
     ],
     [
      "2026-11-09",
-     2557
+     2564
     ]
    ]
   },
@@ -12555,7 +12544,7 @@
     ],
     [
      "2026-11-09",
-     1446
+     1447
     ]
    ]
   },
@@ -12621,7 +12610,7 @@
     ],
     [
      "2026-11-09",
-     428
+     429
     ]
    ]
   },
@@ -12647,7 +12636,7 @@
     ],
     [
      "2026-11-09",
-     483
+     484
     ]
    ]
   },
@@ -12742,7 +12731,7 @@
     ],
     [
      "2026-11-09",
-     1969
+     1980
     ]
    ]
   },
@@ -13171,7 +13160,7 @@
     ],
     [
      "2026-11-09",
-     15064
+     15455
     ]
    ]
   },
@@ -13192,7 +13181,7 @@
     ],
     [
      "2026-11-09",
-     5276
+     5325
     ]
    ]
   },
@@ -13212,7 +13201,7 @@
     ],
     [
      "2026-11-09",
-     3287
+     3292
     ]
    ]
   },
@@ -13234,7 +13223,7 @@
     ],
     [
      "2026-11-09",
-     6080
+     6141
     ]
    ],
    "reported": [
@@ -13260,7 +13249,7 @@
     ],
     [
      "2026-11-09",
-     11965
+     12150
     ]
    ],
    "reported": [
@@ -13287,7 +13276,7 @@
     ],
     [
      "2026-11-09",
-     1766
+     1768
     ]
    ]
   },
@@ -13309,7 +13298,7 @@
     ],
     [
      "2026-11-09",
-     1878
+     1886
     ]
    ],
    "reported": [
@@ -13334,7 +13323,7 @@
     ],
     [
      "2026-11-09",
-     1859
+     1870
     ]
    ]
   },
@@ -13354,7 +13343,7 @@
     ],
     [
      "2026-11-09",
-     2208
+     2212
     ]
    ]
   },
@@ -13374,7 +13363,7 @@
     ],
     [
      "2026-11-09",
-     1856
+     1871
     ]
    ]
   },
@@ -13394,7 +13383,7 @@
     ],
     [
      "2026-11-09",
-     1565
+     1573
     ]
    ]
   },
@@ -13416,7 +13405,7 @@
     ],
     [
      "2026-11-09",
-     1699
+     1705
     ]
    ]
   },
@@ -13437,7 +13426,7 @@
     ],
     [
      "2026-11-09",
-     1288
+     1292
     ]
    ]
   },
@@ -13461,7 +13450,7 @@
     ],
     [
      "2026-11-09",
-     1061
+     1069
     ]
    ]
   },
@@ -13505,7 +13494,7 @@
     ],
     [
      "2026-11-09",
-     518
+     520
     ]
    ]
   },
@@ -13570,7 +13559,7 @@
     ],
     [
      "2026-11-09",
-     106195
+     106350
     ]
    ]
   },
@@ -13591,7 +13580,7 @@
     ],
     [
      "2026-11-09",
-     3796
+     3912
     ]
    ]
   },
@@ -13613,7 +13602,7 @@
     ],
     [
      "2026-11-09",
-     1677
+     1683
     ]
    ]
   },
@@ -13635,7 +13624,7 @@
     ],
     [
      "2026-11-09",
-     1119
+     1121
     ]
    ]
   },
@@ -13657,7 +13646,7 @@
     ],
     [
      "2026-11-09",
-     992
+     1099
     ]
    ]
   },
@@ -13696,7 +13685,7 @@
     ],
     [
      "2026-11-09",
-     293
+     294
     ]
    ]
   },
@@ -13890,7 +13879,7 @@
     ],
     [
      "2026-11-09",
-     64
+     63
     ]
    ]
   },
@@ -13968,7 +13957,7 @@
     ],
     [
      "2026-11-09",
-     555
+     556
     ]
    ]
   },
@@ -13989,7 +13978,7 @@
     ],
     [
      "2026-11-09",
-     551
+     559
     ]
    ]
   },
@@ -14009,7 +13998,7 @@
     ],
     [
      "2026-11-09",
-     2422
+     2461
     ]
    ],
    "reported": [
@@ -14069,7 +14058,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     6539
+     6561
     ]
    ],
    "reported": [
@@ -14091,7 +14080,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     4445
+     4770
     ]
    ],
    "reported": [
@@ -14114,7 +14103,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     4098
+     4164
     ]
    ]
   },
@@ -14130,7 +14119,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     3247
+     3272
     ]
    ]
   },
@@ -14146,7 +14135,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     2647
+     2683
     ]
    ]
   },
@@ -14164,7 +14153,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     1439
+     1454
     ]
    ]
   },
@@ -14181,7 +14170,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     2686
+     2723
     ]
    ]
   },
@@ -14197,7 +14186,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     2134
+     2155
     ]
    ]
   },
@@ -14263,7 +14252,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     437
+     451
     ]
    ]
   },
@@ -14280,7 +14269,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     320
+     331
     ]
    ]
   },
@@ -14296,7 +14285,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     261
+     262
     ]
    ]
   },
@@ -14313,7 +14302,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     241
+     247
     ]
    ]
   },
@@ -14331,7 +14320,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     233
+     238
     ]
    ]
   },
@@ -14349,7 +14338,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     232
+     236
     ]
    ]
   },
@@ -14382,7 +14371,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     37813
+     37835
     ]
    ]
   },
@@ -14398,7 +14387,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     10724
+     10726
     ]
    ]
   },
@@ -14415,7 +14404,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     6846
+     6850
     ]
    ]
   },
@@ -14434,7 +14423,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     3654
+     3655
     ]
    ]
   },
@@ -14450,7 +14439,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     2232
+     2236
     ]
    ]
   },
@@ -14467,7 +14456,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     33216
+     33219
     ]
    ]
   },
@@ -14485,7 +14474,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     764
+     769
     ]
    ]
   },
@@ -14520,7 +14509,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     335
+     341
     ]
    ]
   },
@@ -14574,7 +14563,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     78665
+     78765
     ]
    ]
   },
@@ -14627,7 +14616,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     114
+     117
     ]
    ],
    "reported": [
@@ -14681,7 +14670,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     1895
+     1906
     ]
    ]
   },
@@ -14699,7 +14688,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     1018
+     1019
     ]
    ]
   },
@@ -14717,7 +14706,7 @@
    "stars_hist": [
     [
      "2026-11-09",
-     10490
+     10499
     ]
    ]
   },
@@ -14733,36 +14722,471 @@
    "stars_hist": [
     [
      "2026-11-09",
-     50950
+     51132
     ]
    ]
+  },
+  "market:anthropics/claude-plugins-official/plugins/champion-kit": {
+   "first_seen": "2026-11-09",
+   "title": "[공식 플러그인 마켓플레이스 (존재 확인 못 함)] 새 항목: champion-kit",
+   "url": "https://github.com/anthropics/claude-plugins-official/tree/HEAD/plugins/champion-kit",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[공식 플러그인 마켓플레이스 (존재 확인 못 함)] 새 항목: champion-kit anthropics/claude-plugins-official의 plugins/ 폴더에 'champion-kit'이(가) 새로 추가됨"
+  },
+  "feed:https://openai.com/index/daybreak-red-aws-govcloud": {
+   "first_seen": "2026-11-09",
+   "title": "[OpenAI 뉴스] Daybreak Red is now available in AWS GovCloud (US-East)",
+   "url": "https://openai.com/index/daybreak-red-aws-govcloud",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[OpenAI 뉴스] Daybreak Red is now available in AWS GovCloud (US-East) Daybreak Red brings GPT-5.6 Cyber to approved customers in AWS GovCloud (US-East) through Amazon Bedrock for authorized cybersecurity work.",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://openai.com/index/introducing-images-2-6": {
+   "first_seen": "2026-11-09",
+   "title": "[OpenAI 뉴스] Introducing Images 2.6",
+   "url": "https://openai.com/index/introducing-images-2-6",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "디자인"
+   ],
+   "kw_text": "[OpenAI 뉴스] Introducing Images 2.6 Images 2.6 brings faster image generation, GIF creation, more precise editing, and new API controls across ChatGPT, Codex, and the API. / 관련 보도: Images 2.6 (https://openai.com/index/introducing-images-2-6…",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 622
+  },
+  "feed:https://openai.com/index/grid-protectors-program": {
+   "first_seen": "2026-11-09",
+   "title": "[OpenAI 뉴스] Introducing the Grid Protectors Program",
+   "url": "https://openai.com/index/grid-protectors-program",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[OpenAI 뉴스] Introducing the Grid Protectors Program OpenAI’s Grid Protectors Program will work with utilities to help future compute campuses support grid reliability and protect consumer electricity costs.",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://openai.com/index/introducing-gpt-6-1-terra": {
+   "first_seen": "2026-11-09",
+   "title": "[OpenAI 뉴스] Introducing GPT-6.1 Terra",
+   "url": "https://openai.com/index/introducing-gpt-6-1-terra",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[OpenAI 뉴스] Introducing GPT-6.1 Terra Delivering fast and capable computer use at scale",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-october-2026/": {
+   "first_seen": "2026-11-09",
+   "title": "[Google AI 블로그] The latest AI news we announced in October 2026",
+   "url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-october-2026/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Google AI 블로그] The latest AI news we announced in October 2026 Here are Google’s latest AI updates from October 2026",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/": {
+   "first_seen": "2026-11-09",
+   "title": "[Google DeepMind 블로그] Gemini 4 Carbon: Our next frontier model",
+   "url": "https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Google DeepMind 블로그] Gemini 4 Carbon: Our next frontier model",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "hn:50415628": {
+   "first_seen": "2026-11-09",
+   "title": "Goldman Sachs is pulling Claude Code from its bankers and traders",
+   "url": "https://www.thestateofai.com/news/goldman-sachs-claude-code-traders-bankers",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Goldman Sachs is pulling Claude Code from its bankers and traders HN 토론: https://news.ycombinator.com/item?id=50415628"
+  },
+  "hn:50407882": {
+   "first_seen": "2026-11-09",
+   "title": "Claude Code's \"Don't Ask Again\" exposes passwords in 1,122 public GitHub files",
+   "url": "https://apiiro.com/blog/coding-agents-leaking-secrets-github-dont-ask-again",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Claude Code's \"Don't Ask Again\" exposes passwords in 1,122 public GitHub files HN 토론: https://news.ycombinator.com/item?id=50407882"
+  },
+  "hn:50368804": {
+   "first_seen": "2026-11-09",
+   "title": "Launch HN: Kino AI (YC S23) – AI media manager and video editor",
+   "url": "https://news.ycombinator.com/item?id=50368804",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "영상"
+   ],
+   "kw_text": "Launch HN: Kino AI (YC S23) – AI media manager and video editor HN 토론: https://news.ycombinator.com/item?id=50368804"
+  },
+  "hn:50366117": {
+   "first_seen": "2026-11-09",
+   "title": "Ask HN: What's your current AI agentic setup?",
+   "url": "https://news.ycombinator.com/item?id=50366117",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "Ask HN: What's your current AI agentic setup? HN 토론: https://news.ycombinator.com/item?id=50366117"
+  },
+  "hn:50358352": {
+   "first_seen": "2026-11-09",
+   "title": "Show HN: Uncracked City, detective game where you question LLM suspects that lie",
+   "url": "https://uncracked.city",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Show HN: Uncracked City, detective game where you question LLM suspects that lie HN 토론: https://news.ycombinator.com/item?id=50358352"
+  },
+  "gh:finic-ai/kairos": {
+   "first_seen": "2026-11-09",
+   "title": "finic-ai/kairos",
+   "url": "https://github.com/finic-ai/kairos",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "finic-ai/kairos Show HN: Kairos – Open-source risk and fraud decisioning platform"
+  },
+  "hn:50402212": {
+   "first_seen": "2026-11-09",
+   "title": "The Components of Agent Memory",
+   "url": "https://www.anthropic.com/research/components-of-agent-memory",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "The Components of Agent Memory HN 토론: https://news.ycombinator.com/item?id=50402212"
+  },
+  "hn:50395318": {
+   "first_seen": "2026-11-09",
+   "title": "Anthropic IPO valuation talks drop to $1.3T",
+   "url": "https://epyhia.com/anthropic-ipo-valuation-talks-drop-to-1-3-trillion-as-major-investors",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic IPO valuation talks drop to $1.3T HN 토론: https://news.ycombinator.com/item?id=50395318"
+  },
+  "hn:50394906": {
+   "first_seen": "2026-11-09",
+   "title": "Anthropic IPO buyers see valuation as low as $1.1T",
+   "url": "https://www.bloomberg.com/news/articles/2026-11-06/anthropic-ipo-valuation-expectations-pressured-after-ai-rout",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic IPO buyers see valuation as low as $1.1T HN 토론: https://news.ycombinator.com/item?id=50394906",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 944
+  },
+  "hn:50389990": {
+   "first_seen": "2026-11-09",
+   "title": "AI for scientific discovery: How researchers use Claude",
+   "url": "https://www.anthropic.com/research/how-researchers-use-claude",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "AI for scientific discovery: How researchers use Claude HN 토론: https://news.ycombinator.com/item?id=50389990"
+  },
+  "hn:50386597": {
+   "first_seen": "2026-11-09",
+   "title": "Major Investors Are Skeptical Anthropic IPO Can Achieve $1.5T Valuation",
+   "url": "https://www.wsj.com/finance/major-investors-are-skeptical-anthropic-ipo-can-achieve-1-5-trillion-valuation-ca965d8b’",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Major Investors Are Skeptical Anthropic IPO Can Achieve $1.5T Valuation HN 토론: https://news.ycombinator.com/item?id=50386597"
+  },
+  "hn:50368626": {
+   "first_seen": "2026-11-09",
+   "title": "Progress on provable inference for large language models",
+   "url": "https://www.anthropic.com/research/provable-inference",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Progress on provable inference for large language models HN 토론: https://news.ycombinator.com/item?id=50368626"
+  },
+  "hn:50350560": {
+   "first_seen": "2026-11-09",
+   "title": "Anthropic IPO filing: $1.7B quarterly payroll, about $107K per employee monthly",
+   "url": "https://www.techspot.com/news/114428-anthropic-ipo-filing-reveals-17-billion-quarterly-personnel.html",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic IPO filing: $1.7B quarterly payroll, about $107K per employee monthly HN 토론: https://news.ycombinator.com/item?id=50350560"
+  },
+  "hn:50344958": {
+   "first_seen": "2026-11-09",
+   "title": "Anthropic's growth just flattened",
+   "url": "https://www.regenerator1.com/p/anthropics-growth-just-flattened",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic's growth just flattened HN 토론: https://news.ycombinator.com/item?id=50344958"
+  },
+  "hn:50344919": {
+   "first_seen": "2026-11-09",
+   "title": "The SEC Should Block Anthropic's IPO to Protect the Public",
+   "url": "https://www.techpolicy.press/the-sec-should-block-anthropics-ipo-to-protect-the-public/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "The SEC Should Block Anthropic's IPO to Protect the Public HN 토론: https://news.ycombinator.com/item?id=50344919",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 730
+  },
+  "hn:50342424": {
+   "first_seen": "2026-11-09",
+   "title": "Anthropic reveals $900B AI spending commitments ahead of IPO",
+   "url": "https://www.ft.com/content/4d91dbab-6fe4-45ab-beee-d77e091cb37f",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic reveals $900B AI spending commitments ahead of IPO HN 토론: https://news.ycombinator.com/item?id=50342424"
+  },
+  "gh:rivet-dev/rivet": {
+   "first_seen": "2026-11-09",
+   "title": "rivet-dev/rivet",
+   "url": "https://github.com/rivet-dev/rivet",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "rivet-dev/rivet Launch HN: Rivet (YC W23) – Scale and Orchestrate Agents on S3"
+  },
+  "gh:hyphatech/spindle": {
+   "first_seen": "2026-11-09",
+   "title": "hyphatech/spindle",
+   "url": "https://github.com/hyphatech/spindle",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "hyphatech/spindle Show HN: Spindle – a full-featured, type-safe web framework for OCaml 5"
+  },
+  "hn:50354336": {
+   "first_seen": "2026-11-09",
+   "title": "Gitbook Breached",
+   "url": "https://news.ycombinator.com/item?id=50354336",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Gitbook Breached HN 토론: https://news.ycombinator.com/item?id=50354336"
+  },
+  "hn:50339221": {
+   "first_seen": "2026-11-09",
+   "title": "Show HN: Warsaw in voxels – An interactive 3D map of the city centre",
+   "url": "https://p.migdal.pl/warsaw-vibe-voxel/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Show HN: Warsaw in voxels – An interactive 3D map of the city centre HN 토론: https://news.ycombinator.com/item?id=50339221"
+  },
+  "hn:50410107": {
+   "first_seen": "2026-11-09",
+   "title": "Goodbye Claude, hello Pi",
+   "url": "https://caleb.software/posts/claude-to-pi.html",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Goodbye Claude, hello Pi HN 토론: https://news.ycombinator.com/item?id=50410107"
+  },
+  "hn:50376313": {
+   "first_seen": "2026-11-09",
+   "title": "GPT-6 Astra covertly underperforms on safety research",
+   "url": "https://alignment.openai.com/misalignment-reports/covert-underperformance-on-safety-research-tasks/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "GPT-6 Astra covertly underperforms on safety research HN 토론: https://news.ycombinator.com/item?id=50376313",
+   "reported": [
+    "2026-11-09"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 535
+  },
+  "hn:50372929": {
+   "first_seen": "2026-11-09",
+   "title": "A thousand fewer paths to root",
+   "url": "https://openai.com/index/a-thousand-fewer-paths-to-root/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "A thousand fewer paths to root HN 토론: https://news.ycombinator.com/item?id=50372929"
+  },
+  "hn:50352757": {
+   "first_seen": "2026-11-09",
+   "title": "OpenAI seems to be silently re-enabling model training on Codex chats",
+   "url": "https://news.ycombinator.com/item?id=50352757",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "OpenAI seems to be silently re-enabling model training on Codex chats HN 토론: https://news.ycombinator.com/item?id=50352757"
+  },
+  "hn:50418176": {
+   "first_seen": "2026-11-09",
+   "title": "KetchUp – Open-source SketchUp alternative built with Rust and WebGPU",
+   "url": "https://ketchup3d.github.io/app/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "KetchUp – Open-source SketchUp alternative built with Rust and WebGPU HN 토론: https://news.ycombinator.com/item?id=50418176"
+  },
+  "hn:50392118": {
+   "first_seen": "2026-11-09",
+   "title": "Gemini Omni 1.2 Flash",
+   "url": "https://blog.google/innovation-and-ai/technology/developers-tools/introducing-gemini-omni-1-2-flash/",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Gemini Omni 1.2 Flash HN 토론: https://news.ycombinator.com/item?id=50392118"
+  },
+  "hn:50363461": {
+   "first_seen": "2026-11-09",
+   "title": "Tell HN: Gemini trains on chat history, even for subscribers (personal accounts)",
+   "url": "https://news.ycombinator.com/item?id=50363461",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Tell HN: Gemini trains on chat history, even for subscribers (personal accounts) HN 토론: https://news.ycombinator.com/item?id=50363461"
+  },
+  "relline:anthropics/claude-code:15bb5b544f1a": {
+   "first_seen": "2026-11-09",
+   "title": "Claude Code 업데이트(2.1.314): [Cloud sessions] Improved scheduled tasks: runs in Anthropic's cloud now load t…",
+   "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.314",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "자동화"
+   ],
+   "kw_text": "Claude Code 업데이트(2.1.314): [Cloud sessions] Improved scheduled tasks: runs in Anthropic's cloud now load t… [Cloud sessions] Improved scheduled tasks: runs in Anthropic's cloud now load the plugins enabled on your claude.ai account"
+  },
+  "relline:anthropics/claude-code:f8dd32da9dbc": {
+   "first_seen": "2026-11-09",
+   "title": "Claude Code 업데이트(2.1.316): Deprecated fast mode for Opus 4.8 as of October 30, 2026; it will be removed on…",
+   "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.316",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Claude Code 업데이트(2.1.316): Deprecated fast mode for Opus 4.8 as of October 30, 2026; it will be removed on… Deprecated fast mode for Opus 4.8 as of October 30, 2026; it will be removed on November 30, 2026. After removal, fast mode request…"
+  },
+  "relline:anthropics/claude-code:32298608daaa": {
+   "first_seen": "2026-11-09",
+   "title": "Claude Code 업데이트(2.1.312): Changed usage limit messages to call the 5-hour window the \"5-hour limit\" inste…",
+   "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.312",
+   "last_seen": "2026-11-09",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Claude Code 업데이트(2.1.312): Changed usage limit messages to call the 5-hour window the \"5-hour limit\" inste… Changed usage limit messages to call the 5-hour window the \"5-hour limit\" instead of the \"session limit\""
   }
  },
  "keyword_counts": {
   "hn::claude code": [
    121,
    121,
-   134
+   134,
+   132
   ],
   "hn::anthropic": [
    102,
    101,
-   92
+   92,
+   119
   ],
   "hn::claude skills": [
    16,
    16,
-   16
+   16,
+   13
   ],
   "hn::remotion": [
    22,
    16,
-   17
+   17,
+   19
   ],
   "hn::mcp server": [
    34,
    36,
-   38
+   38,
+   34
+  ],
+  "hn::claude": [
+   226
+  ],
+  "hn::openai": [
+   137
+  ],
+  "hn::chatgpt": [
+   47
+  ],
+  "hn::gpt": [
+   483
+  ],
+  "hn::gemini": [
+   32
   ]
  },
  "releases_seen": [
@@ -14784,6 +15208,13 @@
   "anthropics/claude-code@v2.1.307",
   "anthropics/claude-code@v2.1.306",
   "anthropics/claude-code@v2.1.305",
-  "anthropics/claude-code@v2.1.304"
+  "anthropics/claude-code@v2.1.304",
+  "anthropics/claude-code@v2.1.319",
+  "anthropics/claude-code@v2.1.318",
+  "anthropics/claude-code@v2.1.317",
+  "anthropics/claude-code@v2.1.316",
+  "anthropics/claude-code@v2.1.314",
+  "anthropics/claude-code@v2.1.312",
+  "anthropics/claude-code@v2.1.311"
  ]
 }

@@ -2,56 +2,20 @@
   "date": "2026-11-09",
   "baseline": false,
   "headline": [
-    "[영상/에이전트] JuneYaooo/rea-video — Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remak…",
-    "[영상/디자인/에이전트] Vincentwei1021/video-shotcraft — AI video skill for Claude Code & Codex — cinematic, editable product promos with Remotion…",
-    "[영상/에이전트] alchaincyf/huashu-art-motion — 艺术动画skill：35种艺术风格、9种解说语法，用代码让画动起来。"
+    "[디자인] 🔥대형 발표 [OpenAI 뉴스] Introducing Images 2.6 — Images 2.6 brings faster image generation, GIF creation, more precise editing, and new AP…",
+    "[기타] 🔥대형 발표 Anthropic IPO buyers see valuation as low as $1.1T — HN 토론: https://news.ycombinator.com/item?id=50394906",
+    "[기타] 🔥대형 발표 The SEC Should Block Anthropic's IPO to Protect the Public — HN 토론: https://news.ycombinator.com/item?id=50344919"
   ],
-  "release_summary": "",
+  "release_summary": "이번 주 릴리스(v2.1.311~v2.1.319, 7개): 글감급 변경 7건(후보 3건 올림), 사소한 개선 615건",
   "min_value": 10,
   "failures": [
-    {
-      "label": "Claude Code 릴리스",
-      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/releases?per_page=15"
-    },
-    {
-      "label": "Claude Code CHANGELOG",
-      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/CHANGELOG.md"
-    },
-    {
-      "label": "Anthropic 공식 스킬",
-      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/skills/contents/skills"
-    },
-    {
-      "label": "Claude Code 내장 플러그인",
-      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/plugins"
-    },
-    {
-      "label": "공식 플러그인 마켓플레이스 (존재 확인 못 함)",
-      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-plugins-official/contents/plugins"
-    },
     {
       "label": "Claude 플랫폼 문서 목차",
       "note": "RuntimeError: 링크 0개 — 페이지 구조 변경 또는 차단 의심"
     },
     {
-      "label": "OpenAI 뉴스",
-      "note": "ProxyError: HTTPSConnectionPool(host='openai.com', port=443): Max retries exceeded with url: /news/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
-    },
-    {
-      "label": "Google AI 블로그",
-      "note": "ProxyError: HTTPSConnectionPool(host='blog.google', port=443): Max retries exceeded with url: /technology/ai/rss/ (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
-    },
-    {
-      "label": "Google DeepMind 블로그",
-      "note": "ProxyError: HTTPSConnectionPool(host='deepmind.google', port=443): Max retries exceeded with url: /blog/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
-    },
-    {
-      "label": "Hacker News",
-      "note": "ProxyError: HTTPSConnectionPool(host='hn.algolia.com', port=443): Max retries exceeded with url: /api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i%3E1793578033&hitsPerPage=100 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 For"
-    },
-    {
       "label": "Reddit",
-      "note": "ProxyError: HTTPSConnectionPool(host='www.reddit.com', port=443): Max retries exceeded with url: /r/ClaudeAI/top.json?t=week&limit=50 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))"
+      "note": "HTTPError: 403 Client Error: Blocked for url: https://www.reddit.com/r/ClaudeAI/top.json?t=week&limit=50"
     }
   ],
   "watchlist_warnings": [
@@ -62,444 +26,378 @@
   ],
   "top": [
     {
-      "id": "gh:juneyaooo/rea-video",
-      "title": "JuneYaooo/rea-video",
-      "url": "https://github.com/JuneYaooo/rea-video",
-      "summary": "Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remake it. 逆向一切视频，逐个镜头看是拍的、AI 生成的还是代码做的，再告诉你怎么复刻。",
-      "kind": "github",
+      "id": "feed:https://openai.com/index/introducing-images-2-6",
+      "title": "[OpenAI 뉴스] Introducing Images 2.6",
+      "url": "https://openai.com/index/introducing-images-2-6",
+      "summary": "Images 2.6 brings faster image generation, GIF creation, more precise editing, and new API controls across ChatGPT, Codex, and the API. / 관련 보도: Images 2.6 (https://openai.com/index/introducing-images-2-6/)",
+      "kind": "industry",
       "official": false,
       "categories": [
-        "영상",
-        "에이전트"
+        "디자인"
       ],
-      "stars": 4445,
-      "star_delta_7d": 3012,
-      "mentions": 0,
-      "score": 91.0,
-      "importance": 45.0,
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 622,
+      "score": 98.6,
+      "importance": 45.6,
       "reasons": [
-        "스타 +3,012/7일(추정) +25",
-        "일반 사용자 영향(영상/에이전트) +15",
-        "신규 +5"
+        "언급 622 +19",
+        "일반 사용자 영향(디자인) +12",
+        "신규 +5",
+        "국내 기사 10건/7일 +10"
       ],
-      "value": 46.0,
+      "value": 53.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 4,445) +6",
-        "감시 키워드(remotion, video) +10"
+        "새 기능 표현(할 수 있게 됨) +5",
+        "대형 발표 +30",
+        "언급 많음 +8"
       ],
       "needs_check": false,
-      "watch_hits": [
-        "remotion",
-        "video"
-      ],
-      "published_at": null,
+      "watch_hits": [],
+      "published_at": "2026-11-04T00:00:00+00:00",
       "versions": null,
       "first_seen": "2026-11-09",
       "sources": [
-        "github_search"
+        "hackernews_major",
+        "openai_news"
       ],
       "resurfaced": false,
-      "major": false,
-      "kr_news": null,
+      "major": true,
+      "kr_news": 10,
       "detail": null
     },
     {
-      "id": "gh:vincentwei1021/video-shotcraft",
-      "title": "Vincentwei1021/video-shotcraft",
-      "url": "https://github.com/Vincentwei1021/video-shotcraft",
-      "summary": "AI video skill for Claude Code & Codex — cinematic, editable product promos with Remotion: 124 shot recipe cards, 150 motion previews, beat sync, sound design, Motion Workbench & JianYing (CapCut CN) export.",
-      "kind": "github",
+      "id": "hn:50394906",
+      "title": "Anthropic IPO buyers see valuation as low as $1.1T",
+      "url": "https://www.bloomberg.com/news/articles/2026-11-06/anthropic-ipo-valuation-expectations-pressured-after-ai-rout",
+      "summary": "HN 토론: https://news.ycombinator.com/item?id=50394906",
+      "kind": "community",
       "official": false,
       "categories": [
-        "영상",
-        "디자인",
-        "에이전트"
+        "기타"
       ],
-      "stars": 17893,
-      "star_delta_7d": 2075,
-      "mentions": 0,
-      "score": 89.8,
-      "importance": 43.8,
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 944,
+      "score": 77.8,
+      "importance": 24.8,
       "reasons": [
-        "스타 +2,075/7일 +24",
-        "일반 사용자 영향(영상/디자인/에이전트) +15",
-        "재부상 +5"
-      ],
-      "value": 46.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 17,893) +6",
-        "감시 키워드(remotion, video, design) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "remotion",
-        "video",
-        "design"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-14",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": true,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:alchaincyf/huashu-art-motion",
-      "title": "alchaincyf/huashu-art-motion",
-      "url": "https://github.com/alchaincyf/huashu-art-motion",
-      "summary": "艺术动画skill：35种艺术风格、9种解说语法，用代码让画动起来。",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트"
-      ],
-      "stars": 6539,
-      "star_delta_7d": 1354,
-      "mentions": 0,
-      "score": 86.5,
-      "importance": 42.5,
-      "reasons": [
-        "스타 +1,354/7일(추정) +23",
-        "일반 사용자 영향(영상/에이전트) +15",
+        "언급 944 +20",
         "신규 +5"
       ],
-      "value": 44.0,
+      "value": 53.0,
       "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 6,539) +6",
-        "감시 키워드(video) +8"
+        "요금·모델·정책(일반 사용자 영향 큼) +15",
+        "대형 발표 +30",
+        "언급 많음 +8"
       ],
       "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
+      "watch_hits": [],
+      "published_at": "2026-11-06T16:54:36Z",
       "versions": null,
       "first_seen": "2026-11-09",
       "sources": [
-        "github_search"
+        "hackernews_major"
       ],
       "resurfaced": false,
-      "major": false,
+      "major": true,
       "kr_news": null,
       "detail": null
     },
     {
-      "id": "gh:patch-gg/pixelfx",
-      "title": "patch-gg/pixelfx",
-      "url": "https://github.com/patch-gg/pixelfx",
-      "summary": "244 pixel art effects, every one a small piece of code. Plus a Claude Code skill to make your own.",
-      "kind": "github",
+      "id": "hn:50344919",
+      "title": "The SEC Should Block Anthropic's IPO to Protect the Public",
+      "url": "https://www.techpolicy.press/the-sec-should-block-anthropics-ipo-to-protect-the-public/",
+      "summary": "HN 토론: https://news.ycombinator.com/item?id=50344919",
+      "kind": "community",
       "official": false,
       "categories": [
-        "영상",
-        "디자인",
-        "에이전트"
+        "기타"
       ],
-      "stars": 6080,
-      "star_delta_7d": 3530,
-      "mentions": 0,
-      "score": 81.0,
-      "importance": 45.0,
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 730,
+      "score": 62.1,
+      "importance": 24.1,
       "reasons": [
-        "스타 +3,530/7일 +25",
-        "일반 사용자 영향(영상/디자인/에이전트) +15",
+        "언급 730 +19",
+        "신규 +5"
+      ],
+      "value": 38.0,
+      "value_reasons": [
+        "대형 발표 +30",
+        "언급 많음 +8"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-11-02T22:30:47Z",
+      "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "hackernews_major"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": "If Anthropic goes public, workers, retail investors, and retirees will be left holding the bag when its bills come due, writes Matt Scherer. / The SEC Should Block Anthropic’s IPO to Protect the Public | TechPolicy.Press Perspective The SEC Should Block Anthropic’s IPO to Protect the Public Matt Scherer / Nov 2, 2026 Matt Scherer is co-author of the recent report Brace for Impact: Protecting people and the economy when the AI bubble bursts . Anthropic CEO Dario Amodei looks on as United States President Donald Trump holds a press briefing with AI executives following a meeting on artificial intelligence, outside the West Wing of the White House on September 29, 2026 in Washington, DC. (Photo by Kevin Dietsch/Getty Images) Republish Share Things are seldom what they seem when it comes to the finances of the AI industry. The AI ecosystem’s circular business dealings , extensive use of financial engineering , and otherwise murky finances make it hard for investors, regulators, or workers saving for retirement to get an accurate financial picture of AI companies. That is particularly true of Anthropic, which filed the registration statement for its initial public offering (IPO) last week ahead of a planned November stock market debut. The company’s topline financial figures look quite impressive for a startup, with revenues that appear to have grown quickly over the course of 2026 and a fairly healthy balance sheet — on the surface, that is. Dig a little deeper, however, and a f…"
+    },
+    {
+      "id": "hn:50376313",
+      "title": "GPT-6 Astra covertly underperforms on safety research",
+      "url": "https://alignment.openai.com/misalignment-reports/covert-underperformance-on-safety-research-tasks/",
+      "summary": "HN 토론: https://news.ycombinator.com/item?id=50376313",
+      "kind": "community",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 535,
+      "score": 61.2,
+      "importance": 23.2,
+      "reasons": [
+        "언급 535 +18",
+        "신규 +5"
+      ],
+      "value": 38.0,
+      "value_reasons": [
+        "대형 발표 +30",
+        "언급 많음 +8"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-11-05T07:44:30Z",
+      "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "hackernews_major"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://openai.com/index/introducing-gpt-6-1-terra",
+      "title": "[OpenAI 뉴스] Introducing GPT-6.1 Terra",
+      "url": "https://openai.com/index/introducing-gpt-6-1-terra",
+      "summary": "Delivering fast and capable computer use at scale",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 48.0,
+      "importance": 5.0,
+      "reasons": [
+        "신규 +5"
+      ],
+      "value": 43.0,
+      "value_reasons": [
+        "자동화·새 연동 +8",
+        "새 기능 표현(할 수 있게 됨) +5",
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-26T18:00:00+00:00",
+      "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "openai_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://openai.com/index/daybreak-red-aws-govcloud",
+      "title": "[OpenAI 뉴스] Daybreak Red is now available in AWS GovCloud (US-East)",
+      "url": "https://openai.com/index/daybreak-red-aws-govcloud",
+      "summary": "Daybreak Red brings GPT-5.6 Cyber to approved customers in AWS GovCloud (US-East) through Amazon Bedrock for authorized cybersecurity work.",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 40.0,
+      "importance": 5.0,
+      "reasons": [
+        "신규 +5"
+      ],
+      "value": 35.0,
+      "value_reasons": [
+        "새 기능 표현(할 수 있게 됨) +5",
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-11-04T07:00:00+00:00",
+      "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "openai_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://openai.com/index/grid-protectors-program",
+      "title": "[OpenAI 뉴스] Introducing the Grid Protectors Program",
+      "url": "https://openai.com/index/grid-protectors-program",
+      "summary": "OpenAI’s Grid Protectors Program will work with utilities to help future compute campuses support grid reliability and protect consumer electricity costs.",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 40.0,
+      "importance": 5.0,
+      "reasons": [
+        "신규 +5"
+      ],
+      "value": 35.0,
+      "value_reasons": [
+        "새 기능 표현(할 수 있게 됨) +5",
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-11-02T15:00:00+00:00",
+      "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "openai_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-october-2026/",
+      "title": "[Google AI 블로그] The latest AI news we announced in October 2026",
+      "url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-october-2026/",
+      "summary": "Here are Google’s latest AI updates from October 2026",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 35.0,
+      "importance": 5.0,
+      "reasons": [
+        "신규 +5"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-11-02T17:45:00+00:00",
+      "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "google_ai_blog"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "feed:https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/",
+      "title": "[Google DeepMind 블로그] Gemini 4 Carbon: Our next frontier model",
+      "url": "https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/",
+      "summary": "",
+      "kind": "industry",
+      "official": false,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 35.0,
+      "importance": 5.0,
+      "reasons": [
+        "신규 +5"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-10-28T17:00:58+00:00",
+      "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "deepmind_blog"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:anthropics/claude-code",
+      "title": "anthropics/claude-code",
+      "url": "https://github.com/anthropics/claude-code",
+      "summary": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.",
+      "kind": "github",
+      "official": true,
+      "categories": [
+        "자동화",
+        "에이전트",
+        "코딩"
+      ],
+      "stars": 155033,
+      "star_delta_7d": 864,
+      "mentions": 6411,
+      "score": 111.1,
+      "importance": 91.1,
+      "reasons": [
+        "공식 +35",
+        "스타 +864/7일 +21",
+        "언급 6,411 +20",
+        "일반 사용자 영향(자동화/에이전트/코딩) +10",
         "재부상 +5"
       ],
-      "value": 36.0,
+      "value": 20.0,
       "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 6,080) +6"
+        "스타 증가 +6",
+        "언급 많음 +8",
+        "유명(스타 155,033) +6"
       ],
       "needs_check": false,
       "watch_hits": [],
       "published_at": null,
       "versions": null,
-      "first_seen": "2026-11-02",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": true,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:mromidev/claude-animated-shorts",
-      "title": "mromidev/claude-animated-shorts",
-      "url": "https://github.com/mromidev/claude-animated-shorts",
-      "summary": "Free Claude skill: viral animated story shorts (2D characters in a 3D world) with three.js + Remotion",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상"
-      ],
-      "stars": 2422,
-      "star_delta_7d": 2241,
-      "mentions": 0,
-      "score": 79.1,
-      "importance": 39.1,
-      "reasons": [
-        "스타 +2,241/7일 +24",
-        "일반 사용자 영향(영상) +15"
-      ],
-      "value": 40.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "감시 키워드(remotion) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "remotion"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-11-02",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:openfilm/openfilm",
-      "title": "openfilm/openfilm",
-      "url": "https://github.com/openfilm/openfilm",
-      "summary": "The open source AI video agent: turns any coding agent into a video agent, with an editor to change anything it makes.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 5346,
-      "star_delta_7d": 1249,
-      "mentions": 0,
-      "score": 78.3,
-      "importance": 42.3,
-      "reasons": [
-        "스타 +1,249/7일 +22",
-        "일반 사용자 영향(영상/에이전트/코딩) +15",
-        "재부상 +5"
-      ],
-      "value": 36.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스타 급증 +12",
-        "유명(스타 5,346) +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-26",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": true,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:alchaincyf/huashu-motion",
-      "title": "alchaincyf/huashu-motion",
-      "url": "https://github.com/alchaincyf/huashu-motion",
-      "summary": "让你的agent一键直出商业级产品宣传片：会作曲，能指着画面改。Commercial-grade launch films by your coding agent — point at the frame to change it.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 2523,
-      "star_delta_7d": 516,
-      "mentions": 0,
-      "score": 76.5,
-      "importance": 39.5,
-      "reasons": [
-        "스타 +516/7일 +20",
-        "일반 사용자 영향(영상/에이전트/코딩) +15",
-        "재부상 +5"
-      ],
-      "value": 37.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "새 기능 표현(할 수 있게 됨) +5",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-26",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": true,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:leonxlnx/cinetic",
-      "title": "Leonxlnx/cinetic",
-      "url": "https://github.com/Leonxlnx/cinetic",
-      "summary": "Cinematic launch films and motion design from code, directed by your coding agent.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "디자인",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 1084,
-      "star_delta_7d": 575,
-      "mentions": 0,
-      "score": 73.8,
-      "importance": 34.8,
-      "reasons": [
-        "스타 +575/7일 +20",
-        "일반 사용자 영향(영상/디자인/에이전트/코딩) +15"
-      ],
-      "value": 39.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "새 기능 표현(할 수 있게 됨) +5",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
-        "감시 키워드(remotion, video, design) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "remotion",
-        "video",
-        "design"
-      ],
-      "published_at": null,
-      "versions": null,
       "first_seen": "2026-10-14",
       "sources": [
-        "github_search"
-      ],
-      "resurfaced": false,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:heydamir/unslop",
-      "title": "heydamir/unslop",
-      "url": "https://github.com/heydamir/unslop",
-      "summary": "A Claude skill that turns vibecoded, AI-looking UI into a designed interface",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "디자인"
-      ],
-      "stars": 11965,
-      "star_delta_7d": 7122,
-      "mentions": 0,
-      "score": 72.0,
-      "importance": 42.0,
-      "reasons": [
-        "스타 +7,122/7일 +25",
-        "일반 사용자 영향(디자인) +12",
-        "재부상 +5"
-      ],
-      "value": 30.0,
-      "value_reasons": [
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 11,965) +6",
-        "감시 키워드(design) +4"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "design"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-11-02",
-      "sources": [
-        "github_search"
+        "github_search",
+        "hackernews_major"
       ],
       "resurfaced": true,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:howznguyen/shorts-kit",
-      "title": "howznguyen/shorts-kit",
-      "url": "https://github.com/howznguyen/shorts-kit",
-      "summary": "Make narrated vertical shorts (TikTok, YouTube Shorts, Reels) with a coding agent and Remotion. 9+ agent skills, 20+ story flows, fact ledger, CC0 SFX.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "자동화",
-        "에이전트",
-        "코딩"
-      ],
-      "stars": 114,
-      "star_delta_7d": 114,
-      "mentions": 0,
-      "score": 70.8,
-      "importance": 34.8,
-      "reasons": [
-        "스타 +114/7일(추정) +15",
-        "일반 사용자 영향(영상/자동화/에이전트/코딩) +15",
-        "신규 +5"
-      ],
-      "value": 36.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "자동화·새 연동 +8",
-        "스킬·플러그인·도구 출시 +8",
-        "감시 키워드(remotion, video) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "remotion",
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-11-09",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false,
       "major": false,
       "kr_news": null,
       "detail": null
