@@ -1,10 +1,10 @@
 {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "baseline": false,
   "headline": [
-    "[기타] 🔥대형 발표 공식 [Anthropic 뉴스] Anthropic files S-1 with the SEC for proposed initial public offering — announcements · 2026-10-26 발표 — Today, Anthropic, PBC filed a registration statement on F…",
-    "[문서·오피스/자동화/에이전트] AgriciDaniel/claude-seo — Universal SEO skill for Claude Code. 26 sub-skills + 19 sub-agents covering technical SEO…",
-    "[영상/디자인/에이전트/코딩] lemomo-ai/lemo-opuscar — A toolbox of film styles made in code for Claude Code: 66 ready to use, and your own. Eac…"
+    "[영상/에이전트] JuneYaooo/rea-video — Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remak…",
+    "[영상/디자인/에이전트] Vincentwei1021/video-shotcraft — AI video skill for Claude Code & Codex — cinematic, editable product promos with Remotion…",
+    "[영상/에이전트] alchaincyf/huashu-art-motion — 艺术动画skill：35种艺术风格、9种解说语法，用代码让画动起来。"
   ],
   "release_summary": "",
   "min_value": 10,
@@ -47,7 +47,7 @@
     },
     {
       "label": "Hacker News",
-      "note": "ProxyError: HTTPSConnectionPool(host='hn.algolia.com', port=443): Max retries exceeded with url: /api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i%3E1792973251&hitsPerPage=100 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 For"
+      "note": "ProxyError: HTTPSConnectionPool(host='hn.algolia.com', port=443): Max retries exceeded with url: /api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i%3E1793578033&hitsPerPage=100 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 For"
     },
     {
       "label": "Reddit",
@@ -56,84 +56,50 @@
   ],
   "watchlist_warnings": [
     "motion graphics",
-    "google workspace"
+    "slides",
+    "google workspace",
+    "excel"
   ],
   "top": [
     {
-      "id": "link:https://www.anthropic.com/news/s1-sec",
-      "title": "[Anthropic 뉴스] Anthropic files S-1 with the SEC for proposed initial public offering",
-      "url": "https://www.anthropic.com/news/s1-sec",
-      "summary": "announcements · 2026-10-26 발표 — Today, Anthropic, PBC filed a registration statement on Form S-1 with the U.S. Securities and Exchange Commission relating to its proposed initial public offering of its Class A common stock.",
-      "kind": "official",
-      "official": true,
-      "categories": [
-        "기타"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 0,
-      "score": 70.0,
-      "importance": 40.0,
-      "reasons": [
-        "공식 +35",
-        "신규 +5"
-      ],
-      "value": 30.0,
-      "value_reasons": [
-        "대형 발표 +30"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-10-26",
-      "versions": null,
-      "first_seen": "2026-11-02",
-      "sources": [
-        "anthropic_news"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": null,
-      "detail": "Anthropic is an AI safety and research company that's working to build reliable, interpretable, and steerable AI systems. / Anthropic files S-1 with the SEC for proposed initial public offering \\ Anthropic Skip to main content Today, Anthropic, PBC filed a registration statement on Form S-1 with the U.S. Securities and Exchange Commission relating to its proposed initial public offering of its Class A common stock. Anthropic intends to list its Class A common stock on the Nasdaq Global Select Market under the symbol “ANT.” The number of shares of Class A common stock to be offered and the price range for the proposed offering have not yet been determined. The proposed offering will be made only by means of a prospectus. Copies of the preliminary prospectus, when available, may be obtained from: Goldman Sachs & Co. LLC, Attention: Prospectus Department, 200 West Street, New York, NY 10282, by telephone at (866) 471-2526, or by email at prospectus-ny@ny.email.gs.com; or Morgan Stanley & Co. LLC, Attention: Prospectus Department, 180 Varick Street, 2nd Floor, New York, NY 10014. A registration statement relating to these securities has been filed with the SEC but has not yet become effective. These securities may not be sold, nor may offers to buy be accepted, prior to the time the registration statement becomes effective. Today’s announcement does not constitute an offer to sell or the solicitation of an offer to buy these securities, nor shall there be any sale of these secur…"
-    },
-    {
-      "id": "gh:agricidaniel/claude-seo",
-      "title": "AgriciDaniel/claude-seo",
-      "url": "https://github.com/AgriciDaniel/claude-seo",
-      "summary": "Universal SEO skill for Claude Code. 26 sub-skills + 19 sub-agents covering technical SEO, E-E-A-T, schema, GEO/AEO, agent readiness (Lighthouse Agentic Browsing, WebMCP, llms.txt), backlinks, local SEO, e-commerce, international SEO, Google APIs, and PDF/Excel reporting. 9 optional extensions for live SEO data.",
+      "id": "gh:juneyaooo/rea-video",
+      "title": "JuneYaooo/rea-video",
+      "url": "https://github.com/JuneYaooo/rea-video",
+      "summary": "Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remake it. 逆向一切视频，逐个镜头看是拍的、AI 生成的还是代码做的，再告诉你怎么复刻。",
       "kind": "github",
       "official": false,
       "categories": [
-        "문서·오피스",
-        "자동화",
+        "영상",
         "에이전트"
       ],
-      "stars": 25525,
-      "star_delta_7d": 4381,
+      "stars": 4445,
+      "star_delta_7d": 3012,
       "mentions": 0,
       "score": 91.0,
-      "importance": 37.0,
+      "importance": 45.0,
       "reasons": [
-        "스타 +4,381/7일 +25",
-        "일반 사용자 영향(문서·오피스/자동화/에이전트) +12"
+        "스타 +3,012/7일(추정) +25",
+        "일반 사용자 영향(영상/에이전트) +15",
+        "신규 +5"
       ],
-      "value": 54.0,
+      "value": 46.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "자동화·새 연동 +8",
         "스킬·플러그인·도구 출시 +8",
         "스타 급증 +12",
-        "유명(스타 25,525) +6",
-        "감시 키워드(excel) +10"
+        "유명(스타 4,445) +6",
+        "감시 키워드(remotion, video) +10"
       ],
       "needs_check": false,
       "watch_hits": [
-        "excel"
+        "remotion",
+        "video"
       ],
       "published_at": null,
       "versions": null,
-      "first_seen": "2026-10-26",
+      "first_seen": "2026-11-09",
       "sources": [
-        "watchlist"
+        "github_search"
       ],
       "resurfaced": false,
       "major": false,
@@ -141,39 +107,40 @@
       "detail": null
     },
     {
-      "id": "gh:lemomo-ai/lemo-opuscar",
-      "title": "lemomo-ai/lemo-opuscar",
-      "url": "https://github.com/lemomo-ai/lemo-opuscar",
-      "summary": "A toolbox of film styles made in code for Claude Code: 66 ready to use, and your own. Each style is a style prompt plus a demo film made entirely in code by Claude Opus 5.5, with no video model. By Lemomo. · 一套用代码做片的风格工具箱：66 种现成风格，也能做出你自己的",
+      "id": "gh:vincentwei1021/video-shotcraft",
+      "title": "Vincentwei1021/video-shotcraft",
+      "url": "https://github.com/Vincentwei1021/video-shotcraft",
+      "summary": "AI video skill for Claude Code & Codex — cinematic, editable product promos with Remotion: 124 shot recipe cards, 150 motion previews, beat sync, sound design, Motion Workbench & JianYing (CapCut CN) export.",
       "kind": "github",
       "official": false,
       "categories": [
         "영상",
         "디자인",
-        "에이전트",
-        "코딩"
+        "에이전트"
       ],
-      "stars": 10581,
-      "star_delta_7d": 3031,
+      "stars": 17893,
+      "star_delta_7d": 2075,
       "mentions": 0,
-      "score": 89.0,
-      "importance": 45.0,
+      "score": 89.8,
+      "importance": 43.8,
       "reasons": [
-        "스타 +3,031/7일 +25",
-        "일반 사용자 영향(영상/디자인/에이전트/코딩) +15",
+        "스타 +2,075/7일 +24",
+        "일반 사용자 영향(영상/디자인/에이전트) +15",
         "재부상 +5"
       ],
-      "value": 44.0,
+      "value": 46.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
         "스킬·플러그인·도구 출시 +8",
         "스타 급증 +12",
-        "유명(스타 10,581) +6",
-        "감시 키워드(video) +8"
+        "유명(스타 17,893) +6",
+        "감시 키워드(remotion, video, design) +10"
       ],
       "needs_check": false,
       "watch_hits": [
-        "video"
+        "remotion",
+        "video",
+        "design"
       ],
       "published_at": null,
       "versions": null,
@@ -187,78 +154,32 @@
       "detail": null
     },
     {
-      "id": "gh:alchaincyf/huashu-design",
-      "title": "alchaincyf/huashu-design",
-      "url": "https://github.com/alchaincyf/huashu-design",
-      "summary": "Huashu Design 3.0 · 在 agent 里打一句话，拿回能交付的设计：网页 / App 原型 / 可编辑 PPTX / 动画 / 信息图 · 六个候选挑三个方向 · 84 种带样张的风格库 · 越用越懂你的外观账本与设计体检 · HTML-native design skill for Claude Code, Codex, Cursor & any agent",
+      "id": "gh:alchaincyf/huashu-art-motion",
+      "title": "alchaincyf/huashu-art-motion",
+      "url": "https://github.com/alchaincyf/huashu-art-motion",
+      "summary": "艺术动画skill：35种艺术风格、9种解说语法，用代码让画动起来。",
       "kind": "github",
       "official": false,
       "categories": [
-        "디자인",
-        "문서·오피스",
+        "영상",
         "에이전트"
       ],
-      "stars": 28399,
-      "star_delta_7d": 2074,
+      "stars": 6539,
+      "star_delta_7d": 1354,
       "mentions": 0,
-      "score": 81.8,
-      "importance": 35.8,
+      "score": 86.5,
+      "importance": 42.5,
       "reasons": [
-        "스타 +2,074/7일 +24",
-        "일반 사용자 영향(디자인/문서·오피스/에이전트) +12"
-      ],
-      "value": 46.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12",
-        "유명(스타 28,399) +6",
-        "감시 키워드(pptx, design) +10"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "pptx",
-        "design"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-26",
-      "sources": [
-        "github_search",
-        "watchlist"
-      ],
-      "resurfaced": false,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:andyhuo520/digital-human-koubo",
-      "title": "andyhuo520/digital-human-koubo",
-      "url": "https://github.com/andyhuo520/digital-human-koubo",
-      "summary": "AI digital-human talking-head videos from one photo: Renoise MCP generation + 5 editing styles + 48 creator-grade packaging components. Agent skill for Claude Code / Codex / OpenClaw / WorkBuddy …",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트",
-        "연동(MCP)"
-      ],
-      "stars": 1639,
-      "star_delta_7d": 1639,
-      "mentions": 0,
-      "score": 81.1,
-      "importance": 43.1,
-      "reasons": [
-        "스타 +1,639/7일(추정) +23",
-        "일반 사용자 영향(영상/에이전트/연동(MCP)) +15",
+        "스타 +1,354/7일(추정) +23",
+        "일반 사용자 영향(영상/에이전트) +15",
         "신규 +5"
       ],
-      "value": 38.0,
+      "value": 44.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
         "스킬·플러그인·도구 출시 +8",
         "스타 급증 +12",
+        "유명(스타 6,539) +6",
         "감시 키워드(video) +8"
       ],
       "needs_check": false,
@@ -267,50 +188,7 @@
       ],
       "published_at": null,
       "versions": null,
-      "first_seen": "2026-11-02",
-      "sources": [
-        "github_search"
-      ],
-      "resurfaced": false,
-      "major": false,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "gh:heygen-com/hyperframes",
-      "title": "heygen-com/hyperframes",
-      "url": "https://github.com/heygen-com/hyperframes",
-      "summary": "Write HTML. Render video. Built for agents.",
-      "kind": "github",
-      "official": false,
-      "categories": [
-        "영상",
-        "에이전트",
-        "연동(MCP)"
-      ],
-      "stars": 77102,
-      "star_delta_7d": 4804,
-      "mentions": 0,
-      "score": 76.0,
-      "importance": 40.0,
-      "reasons": [
-        "스타 +4,804/7일 +25",
-        "일반 사용자 영향(영상/에이전트/연동(MCP)) +15"
-      ],
-      "value": 36.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
-        "스타 급증 +12",
-        "유명(스타 77,102) +6",
-        "감시 키워드(video) +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": null,
-      "versions": null,
-      "first_seen": "2026-10-26",
+      "first_seen": "2026-11-09",
       "sources": [
         "github_search"
       ],
@@ -331,24 +209,66 @@
         "디자인",
         "에이전트"
       ],
-      "stars": 2550,
-      "star_delta_7d": 2550,
+      "stars": 6080,
+      "star_delta_7d": 3530,
       "mentions": 0,
-      "score": 74.5,
-      "importance": 44.5,
+      "score": 81.0,
+      "importance": 45.0,
       "reasons": [
-        "스타 +2,550/7일(추정) +24",
+        "스타 +3,530/7일 +25",
         "일반 사용자 영향(영상/디자인/에이전트) +15",
-        "신규 +5"
+        "재부상 +5"
       ],
-      "value": 30.0,
+      "value": 36.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
         "스킬·플러그인·도구 출시 +8",
-        "스타 급증 +12"
+        "스타 급증 +12",
+        "유명(스타 6,080) +6"
       ],
       "needs_check": false,
       "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-11-02",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": true,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:mromidev/claude-animated-shorts",
+      "title": "mromidev/claude-animated-shorts",
+      "url": "https://github.com/mromidev/claude-animated-shorts",
+      "summary": "Free Claude skill: viral animated story shorts (2D characters in a 3D world) with three.js + Remotion",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상"
+      ],
+      "stars": 2422,
+      "star_delta_7d": 2241,
+      "mentions": 0,
+      "score": 79.1,
+      "importance": 39.1,
+      "reasons": [
+        "스타 +2,241/7일 +24",
+        "일반 사용자 영향(영상) +15"
+      ],
+      "value": 40.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 급증 +12",
+        "감시 키워드(remotion) +10"
+      ],
+      "needs_check": false,
+      "watch_hits": [
+        "remotion"
+      ],
       "published_at": null,
       "versions": null,
       "first_seen": "2026-11-02",
@@ -372,20 +292,21 @@
         "에이전트",
         "코딩"
       ],
-      "stars": 4097,
-      "star_delta_7d": 1240,
+      "stars": 5346,
+      "star_delta_7d": 1249,
       "mentions": 0,
-      "score": 73.2,
-      "importance": 37.2,
+      "score": 78.3,
+      "importance": 42.3,
       "reasons": [
-        "스타 +1,240/7일 +22",
-        "일반 사용자 영향(영상/에이전트/코딩) +15"
+        "스타 +1,249/7일 +22",
+        "일반 사용자 영향(영상/에이전트/코딩) +15",
+        "재부상 +5"
       ],
       "value": 36.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
         "스타 급증 +12",
-        "유명(스타 4,097) +6",
+        "유명(스타 5,346) +6",
         "감시 키워드(video) +8"
       ],
       "needs_check": false,
@@ -398,35 +319,37 @@
       "sources": [
         "github_search"
       ],
-      "resurfaced": false,
+      "resurfaced": true,
       "major": false,
       "kr_news": null,
       "detail": null
     },
     {
-      "id": "gh:underleveledbuilder/awesome-short-drama-skills",
-      "title": "UnderleveledBuilder/awesome-short-drama-skills",
-      "url": "https://github.com/UnderleveledBuilder/awesome-short-drama-skills",
-      "summary": "AI 短剧 · 漫剧 Skill（技能包）精选：剧本、改编、分镜、Seedance / 可灵 / MiniMax 视频提示词，千问、豆包、龙虾 OpenClaw、WorkBuddy、Claude Code、Codex 等智能体可用 | Curated agent skills for AI short drama, micro drama / microdrama, vertical drama and manju (AI comic drama): screenwriting, storyboards, Seedance / Kling / MiniMax video prompts",
+      "id": "gh:alchaincyf/huashu-motion",
+      "title": "alchaincyf/huashu-motion",
+      "url": "https://github.com/alchaincyf/huashu-motion",
+      "summary": "让你的agent一键直出商业级产品宣传片：会作曲，能指着画面改。Commercial-grade launch films by your coding agent — point at the frame to change it.",
       "kind": "github",
       "official": false,
       "categories": [
         "영상",
-        "에이전트"
+        "에이전트",
+        "코딩"
       ],
-      "stars": 1576,
-      "star_delta_7d": 632,
+      "stars": 2523,
+      "star_delta_7d": 516,
       "mentions": 0,
-      "score": 72.1,
-      "importance": 40.1,
+      "score": 76.5,
+      "importance": 39.5,
       "reasons": [
-        "스타 +632/7일 +20",
-        "일반 사용자 영향(영상/에이전트) +15",
+        "스타 +516/7일 +20",
+        "일반 사용자 영향(영상/에이전트/코딩) +15",
         "재부상 +5"
       ],
-      "value": 32.0,
+      "value": 37.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "새 기능 표현(할 수 있게 됨) +5",
         "스킬·플러그인·도구 출시 +8",
         "스타 증가 +6",
         "감시 키워드(video) +8"
@@ -447,6 +370,53 @@
       "detail": null
     },
     {
+      "id": "gh:leonxlnx/cinetic",
+      "title": "Leonxlnx/cinetic",
+      "url": "https://github.com/Leonxlnx/cinetic",
+      "summary": "Cinematic launch films and motion design from code, directed by your coding agent.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "디자인",
+        "에이전트",
+        "코딩"
+      ],
+      "stars": 1084,
+      "star_delta_7d": 575,
+      "mentions": 0,
+      "score": 73.8,
+      "importance": 34.8,
+      "reasons": [
+        "스타 +575/7일 +20",
+        "일반 사용자 영향(영상/디자인/에이전트/코딩) +15"
+      ],
+      "value": 39.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "새 기능 표현(할 수 있게 됨) +5",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 증가 +6",
+        "감시 키워드(remotion, video, design) +10"
+      ],
+      "needs_check": false,
+      "watch_hits": [
+        "remotion",
+        "video",
+        "design"
+      ],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-14",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": false,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
       "id": "gh:heydamir/unslop",
       "title": "heydamir/unslop",
       "url": "https://github.com/heydamir/unslop",
@@ -456,21 +426,21 @@
       "categories": [
         "디자인"
       ],
-      "stars": 4843,
-      "star_delta_7d": 4843,
+      "stars": 11965,
+      "star_delta_7d": 7122,
       "mentions": 0,
       "score": 72.0,
       "importance": 42.0,
       "reasons": [
-        "스타 +4,843/7일(추정) +25",
+        "스타 +7,122/7일 +25",
         "일반 사용자 영향(디자인) +12",
-        "신규 +5"
+        "재부상 +5"
       ],
       "value": 30.0,
       "value_reasons": [
         "스킬·플러그인·도구 출시 +8",
         "스타 급증 +12",
-        "유명(스타 4,843) +6",
+        "유명(스타 11,965) +6",
         "감시 키워드(design) +4"
       ],
       "needs_check": false,
@@ -480,6 +450,52 @@
       "published_at": null,
       "versions": null,
       "first_seen": "2026-11-02",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": true,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:howznguyen/shorts-kit",
+      "title": "howznguyen/shorts-kit",
+      "url": "https://github.com/howznguyen/shorts-kit",
+      "summary": "Make narrated vertical shorts (TikTok, YouTube Shorts, Reels) with a coding agent and Remotion. 9+ agent skills, 20+ story flows, fact ledger, CC0 SFX.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "자동화",
+        "에이전트",
+        "코딩"
+      ],
+      "stars": 114,
+      "star_delta_7d": 114,
+      "mentions": 0,
+      "score": 70.8,
+      "importance": 34.8,
+      "reasons": [
+        "스타 +114/7일(추정) +15",
+        "일반 사용자 영향(영상/자동화/에이전트/코딩) +15",
+        "신규 +5"
+      ],
+      "value": 36.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "자동화·새 연동 +8",
+        "스킬·플러그인·도구 출시 +8",
+        "감시 키워드(remotion, video) +10"
+      ],
+      "needs_check": false,
+      "watch_hits": [
+        "remotion",
+        "video"
+      ],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-11-09",
       "sources": [
         "github_search"
       ],
