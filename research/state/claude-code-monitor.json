@@ -1,5 +1,5 @@
 {
- "changelog_last": "2.1.319",
+ "changelog_last": "2.1.325",
  "dirs": {
   "anthropics/skills/skills": [
    "academy-guide",
@@ -28,6 +28,7 @@
    "champion-kit",
    "clangd-lsp",
    "claude-code-setup",
+   "claude-for-manufacturing",
    "claude-md-management",
    "claude-security",
    "code-modernization",
@@ -64,6 +65,7 @@
    "session-report",
    "skill-creator",
    "swift-lsp",
+   "theme-examples",
    "typescript-lsp"
   ]
  },
@@ -567,7 +569,7 @@
     ],
     [
      "2026-11-16",
-     36930
+     37186
     ]
    ]
   },
@@ -637,7 +639,7 @@
     ],
     [
      "2026-11-16",
-     9715
+     9720
     ]
    ],
    "reported": [
@@ -707,7 +709,7 @@
     ],
     [
      "2026-11-16",
-     7225
+     7250
     ]
    ]
   },
@@ -759,7 +761,7 @@
     ],
     [
      "2026-11-16",
-     4391
+     4392
     ]
    ]
   },
@@ -823,7 +825,7 @@
     ],
     [
      "2026-11-16",
-     5106
+     5112
     ]
    ]
   },
@@ -859,7 +861,7 @@
     ],
     [
      "2026-11-16",
-     6339
+     6348
     ]
    ]
   },
@@ -969,7 +971,7 @@
     ],
     [
      "2026-11-16",
-     3228
+     3230
     ]
    ]
   },
@@ -1029,7 +1031,7 @@
     ],
     [
      "2026-11-16",
-     3339
+     3341
     ]
    ]
   },
@@ -1066,7 +1068,7 @@
     ],
     [
      "2026-11-16",
-     9446
+     9472
     ]
    ]
   },
@@ -1103,7 +1105,7 @@
     ],
     [
      "2026-11-16",
-     7084
+     7091
     ]
    ]
   },
@@ -1142,7 +1144,7 @@
     ],
     [
      "2026-11-16",
-     16765
+     16878
     ]
    ],
    "reported": [
@@ -1186,7 +1188,7 @@
     ],
     [
      "2026-11-16",
-     2942
+     2946
     ]
    ]
   },
@@ -1296,7 +1298,7 @@
     ],
     [
      "2026-11-16",
-     3283
+     3292
     ]
    ]
   },
@@ -1335,7 +1337,7 @@
     ],
     [
      "2026-11-16",
-     2349
+     2352
     ]
    ]
   },
@@ -1372,7 +1374,7 @@
     ],
     [
      "2026-11-16",
-     3411
+     3423
     ]
    ]
   },
@@ -1445,7 +1447,7 @@
     ],
     [
      "2026-11-16",
-     1566
+     1569
     ]
    ]
   },
@@ -1500,7 +1502,7 @@
     ],
     [
      "2026-11-16",
-     7000
+     7019
     ]
    ]
   },
@@ -1597,7 +1599,7 @@
     ],
     [
      "2026-11-16",
-     1616
+     1619
     ]
    ]
   },
@@ -1737,7 +1739,7 @@
     ],
     [
      "2026-11-16",
-     4419
+     4421
     ]
    ]
   },
@@ -1916,7 +1918,7 @@
     ],
     [
      "2026-11-16",
-     1288
+     1294
     ]
    ]
   },
@@ -1954,9 +1956,14 @@
     ],
     [
      "2026-11-16",
-     2154
+     2172
     ]
-   ]
+   ],
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 2172,
+   "last_reported_mentions": 0
   },
   "gh:s0xdk/refactoring-ui-skill": {
    "first_seen": "2026-10-14",
@@ -2008,7 +2015,7 @@
     ],
     [
      "2026-11-16",
-     27488
+     27535
     ]
    ]
   },
@@ -2734,7 +2741,7 @@
     ],
     [
      "2026-11-16",
-     641
+     644
     ]
    ]
   },
@@ -2852,7 +2859,7 @@
     ],
     [
      "2026-11-16",
-     303836
+     303960
     ]
    ]
   },
@@ -2888,7 +2895,7 @@
     ],
     [
      "2026-11-16",
-     263637
+     263697
     ]
    ]
   },
@@ -2925,7 +2932,7 @@
     ],
     [
      "2026-11-16",
-     461929
+     462416
     ]
    ]
   },
@@ -2961,7 +2968,7 @@
     ],
     [
      "2026-11-16",
-     191446
+     191587
     ]
    ]
   },
@@ -2997,7 +3004,7 @@
     ],
     [
      "2026-11-16",
-     154619
+     154746
     ]
    ]
   },
@@ -3033,7 +3040,7 @@
     ],
     [
      "2026-11-16",
-     149953
+     150054
     ]
    ],
    "reported": [
@@ -3075,7 +3082,7 @@
     ],
     [
      "2026-11-16",
-     148414
+     148555
     ]
    ]
   },
@@ -3112,7 +3119,7 @@
     ],
     [
      "2026-11-16",
-     120455
+     120523
     ]
    ]
   },
@@ -3149,7 +3156,7 @@
     ],
     [
      "2026-11-16",
-     117939
+     118025
     ]
    ]
   },
@@ -3187,7 +3194,7 @@
     ],
     [
      "2026-11-16",
-     114141
+     114184
     ]
    ],
    "reported": [
@@ -3228,7 +3235,7 @@
     ],
     [
      "2026-11-16",
-     117370
+     117443
     ]
    ]
   },
@@ -3267,7 +3274,7 @@
     ],
     [
      "2026-11-16",
-     112070
+     112127
     ]
    ]
   },
@@ -3306,7 +3313,7 @@
     ],
     [
      "2026-11-16",
-     116227
+     116362
     ]
    ],
    "reported": [
@@ -3349,7 +3356,7 @@
     ],
     [
      "2026-11-16",
-     125750
+     126004
     ]
    ]
   },
@@ -3386,7 +3393,7 @@
     ],
     [
      "2026-11-16",
-     92733
+     92761
     ]
    ]
   },
@@ -3423,7 +3430,7 @@
     ],
     [
      "2026-11-16",
-     86673
+     86691
     ]
    ]
   },
@@ -3461,7 +3468,7 @@
     ],
     [
      "2026-11-16",
-     96800
+     96897
     ]
    ]
   },
@@ -3521,7 +3528,7 @@
     ],
     [
      "2026-11-16",
-     79747
+     79766
     ]
    ]
   },
@@ -3557,7 +3564,7 @@
     ],
     [
      "2026-11-16",
-     82790
+     82831
     ]
    ]
   },
@@ -3593,7 +3600,7 @@
     ],
     [
      "2026-11-16",
-     71488
+     71512
     ]
    ]
   },
@@ -3631,7 +3638,7 @@
     ],
     [
      "2026-11-16",
-     69088
+     69095
     ]
    ]
   },
@@ -3668,7 +3675,7 @@
     ],
     [
      "2026-11-16",
-     67779
+     67804
     ]
    ]
   },
@@ -3706,7 +3713,7 @@
     ],
     [
      "2026-11-16",
-     58087
+     58103
     ]
    ]
   },
@@ -3742,7 +3749,7 @@
     ],
     [
      "2026-11-16",
-     58647
+     58665
     ]
    ]
   },
@@ -3779,7 +3786,7 @@
     ],
     [
      "2026-11-16",
-     60578
+     60636
     ]
    ]
   },
@@ -3816,7 +3823,7 @@
     ],
     [
      "2026-11-16",
-     67383
+     67447
     ]
    ]
   },
@@ -3853,7 +3860,7 @@
     ],
     [
      "2026-11-16",
-     53546
+     53553
     ]
    ]
   },
@@ -3937,7 +3944,7 @@
     ],
     [
      "2026-11-16",
-     49765
+     49777
     ]
    ]
   },
@@ -3973,7 +3980,7 @@
     ],
     [
      "2026-11-16",
-     37214
+     37223
     ]
    ]
   },
@@ -4010,7 +4017,7 @@
     ],
     [
      "2026-11-16",
-     29854
+     29868
     ]
    ]
   },
@@ -4047,7 +4054,7 @@
     ],
     [
      "2026-11-16",
-     28078
+     28081
     ]
    ]
   },
@@ -4085,7 +4092,7 @@
     ],
     [
      "2026-11-16",
-     19248
+     19263
     ]
    ]
   },
@@ -4123,7 +4130,7 @@
     ],
     [
      "2026-11-16",
-     20055
+     20211
     ]
    ],
    "reported": [
@@ -4165,7 +4172,7 @@
     ],
     [
      "2026-11-16",
-     8632
+     8640
     ]
    ]
   },
@@ -4277,7 +4284,7 @@
     ],
     [
      "2026-11-16",
-     3949
+     3950
     ]
    ]
   },
@@ -4313,7 +4320,7 @@
     ],
     [
      "2026-11-16",
-     4118
+     4122
     ]
    ]
   },
@@ -4349,7 +4356,7 @@
     ],
     [
      "2026-11-16",
-     3717
+     3719
     ]
    ]
   },
@@ -4417,7 +4424,7 @@
     ],
     [
      "2026-11-16",
-     3923
+     3924
     ]
    ]
   },
@@ -4455,7 +4462,7 @@
     ],
     [
      "2026-11-16",
-     3280
+     3282
     ]
    ]
   },
@@ -4530,7 +4537,7 @@
     ],
     [
      "2026-11-16",
-     4296
+     4309
     ]
    ]
   },
@@ -4640,7 +4647,7 @@
     ],
     [
      "2026-11-16",
-     2562
+     2565
     ]
    ]
   },
@@ -4713,7 +4720,7 @@
     ],
     [
      "2026-11-16",
-     4350
+     4361
     ]
    ]
   },
@@ -4926,7 +4933,7 @@
     ],
     [
      "2026-11-16",
-     195349
+     195490
     ]
    ],
    "reported": [
@@ -4971,7 +4978,7 @@
     ],
     [
      "2026-11-16",
-     107761
+     107803
     ]
    ],
    "reported": [
@@ -5014,7 +5021,7 @@
     ],
     [
      "2026-11-16",
-     79582
+     79598
     ]
    ]
   },
@@ -5050,7 +5057,7 @@
     ],
     [
      "2026-11-16",
-     69475
+     69574
     ]
    ]
   },
@@ -5086,7 +5093,7 @@
     ],
     [
      "2026-11-16",
-     53797
+     53805
     ]
    ]
   },
@@ -5122,7 +5129,7 @@
     ],
     [
      "2026-11-16",
-     57311
+     57347
     ]
    ]
   },
@@ -5159,7 +5166,7 @@
     ],
     [
      "2026-11-16",
-     52051
+     52346
     ]
    ]
   },
@@ -5196,7 +5203,7 @@
     ],
     [
      "2026-11-16",
-     45790
+     45795
     ]
    ]
   },
@@ -5234,7 +5241,7 @@
     ],
     [
      "2026-11-16",
-     42558
+     42561
     ]
    ]
   },
@@ -5270,7 +5277,7 @@
     ],
     [
      "2026-11-16",
-     41188
+     41201
     ]
    ]
   },
@@ -5307,7 +5314,7 @@
     ],
     [
      "2026-11-16",
-     37976
+     38008
     ]
    ]
   },
@@ -5343,7 +5350,7 @@
     ],
     [
      "2026-11-16",
-     33335
+     33341
     ]
    ]
   },
@@ -5411,7 +5418,7 @@
     ],
     [
      "2026-11-16",
-     32330
+     32332
     ]
    ]
   },
@@ -5472,7 +5479,7 @@
     ],
     [
      "2026-11-16",
-     70925
+     70933
     ]
    ]
   },
@@ -5509,7 +5516,7 @@
     ],
     [
      "2026-11-16",
-     61295
+     61321
     ]
    ]
   },
@@ -5546,7 +5553,7 @@
     ],
     [
      "2026-11-16",
-     31120
+     31118
     ]
    ]
   },
@@ -5582,7 +5589,7 @@
     ],
     [
      "2026-11-16",
-     27566
+     27576
     ]
    ]
   },
@@ -5618,7 +5625,7 @@
     ],
     [
      "2026-11-16",
-     26588
+     26597
     ]
    ]
   },
@@ -5691,7 +5698,7 @@
     ],
     [
      "2026-11-16",
-     21613
+     21626
     ]
    ],
    "reported": [
@@ -5734,7 +5741,7 @@
     ],
     [
      "2026-11-16",
-     15830
+     15834
     ]
    ]
   },
@@ -5772,7 +5779,7 @@
     ],
     [
      "2026-11-16",
-     15321
+     15324
     ]
    ]
   },
@@ -5845,7 +5852,7 @@
     ],
     [
      "2026-11-16",
-     16026
+     16034
     ]
    ]
   },
@@ -5881,7 +5888,7 @@
     ],
     [
      "2026-11-16",
-     14570
+     14577
     ]
    ]
   },
@@ -5917,7 +5924,7 @@
     ],
     [
      "2026-11-16",
-     12379
+     12382
     ]
    ]
   },
@@ -6043,7 +6050,7 @@
     ],
     [
      "2026-11-16",
-     11032
+     11051
     ]
    ]
   },
@@ -6178,7 +6185,7 @@
     ],
     [
      "2026-11-16",
-     2178
+     2179
     ]
    ]
   },
@@ -6372,7 +6379,7 @@
     ],
     [
      "2026-11-16",
-     1055
+     1061
     ]
    ]
   },
@@ -6703,7 +6710,7 @@
     ],
     [
      "2026-11-16",
-     3112
+     3115
     ]
    ]
   },
@@ -6742,7 +6749,7 @@
     ],
     [
      "2026-11-16",
-     2585
+     2586
     ]
    ]
   },
@@ -6777,7 +6784,7 @@
     ],
     [
      "2026-11-16",
-     1754
+     1757
     ]
    ]
   },
@@ -6886,7 +6893,7 @@
     ],
     [
      "2026-11-16",
-     629
+     631
     ]
    ]
   },
@@ -7305,7 +7312,7 @@
     ],
     [
      "2026-11-16",
-     112
+     113
     ]
    ]
   },
@@ -7355,7 +7362,7 @@
     ],
     [
      "2026-11-16",
-     227
+     228
     ]
    ]
   },
@@ -7426,7 +7433,7 @@
     ],
     [
      "2026-11-16",
-     15448
+     15453
     ]
    ]
   },
@@ -7464,7 +7471,7 @@
     ],
     [
      "2026-11-16",
-     8521
+     8523
     ]
    ]
   },
@@ -7501,7 +7508,7 @@
     ],
     [
      "2026-11-16",
-     7886
+     7916
     ]
    ]
   },
@@ -7646,7 +7653,7 @@
     ],
     [
      "2026-11-16",
-     2328
+     2332
     ]
    ]
   },
@@ -7683,7 +7690,7 @@
     ],
     [
      "2026-11-16",
-     1371
+     1373
     ]
    ]
   },
@@ -7854,7 +7861,7 @@
     ],
     [
      "2026-11-16",
-     829
+     831
     ]
    ]
   },
@@ -7954,7 +7961,7 @@
     ],
     [
      "2026-11-16",
-     1036
+     1039
     ]
    ]
   },
@@ -8176,7 +8183,7 @@
     ],
     [
      "2026-11-16",
-     3423
+     3422
     ]
    ]
   },
@@ -8214,7 +8221,7 @@
     ],
     [
      "2026-11-16",
-     3131
+     3135
     ]
    ]
   },
@@ -8326,7 +8333,7 @@
     ],
     [
      "2026-11-16",
-     1588
+     1615
     ]
    ]
   },
@@ -8396,7 +8403,7 @@
     ],
     [
      "2026-11-16",
-     301
+     302
     ]
    ]
   },
@@ -8472,7 +8479,7 @@
     ],
     [
      "2026-11-16",
-     399
+     402
     ]
    ]
   },
@@ -8698,7 +8705,7 @@
     ],
     [
      "2026-11-16",
-     307
+     316
     ]
    ]
   },
@@ -8751,7 +8758,7 @@
     ],
     [
      "2026-11-16",
-     233449
+     233520
     ]
    ]
   },
@@ -8789,7 +8796,7 @@
     ],
     [
      "2026-11-16",
-     155793
+     155816
     ]
    ],
    "reported": [
@@ -8833,7 +8840,7 @@
     ],
     [
      "2026-11-16",
-     144688
+     144695
     ]
    ]
   },
@@ -8869,7 +8876,7 @@
     ],
     [
      "2026-11-16",
-     141695
+     141731
     ]
    ]
   },
@@ -8905,7 +8912,7 @@
     ],
     [
      "2026-11-16",
-     80446
+     80454
     ]
    ]
   },
@@ -8943,7 +8950,7 @@
     ],
     [
      "2026-11-16",
-     81821
+     81833
     ]
    ]
   },
@@ -8979,7 +8986,7 @@
     ],
     [
      "2026-11-16",
-     77662
+     77682
     ]
    ]
   },
@@ -9015,7 +9022,7 @@
     ],
     [
      "2026-11-16",
-     26582
+     26590
     ]
    ]
   },
@@ -9198,7 +9205,7 @@
     ],
     [
      "2026-11-16",
-     997
+     1001
     ]
    ]
   },
@@ -9236,7 +9243,7 @@
     ],
     [
      "2026-11-16",
-     600
+     601
     ]
    ]
   },
@@ -9437,7 +9444,7 @@
     ],
     [
      "2026-11-16",
-     314
+     316
     ]
    ]
   },
@@ -9728,7 +9735,7 @@
     ],
     [
      "2026-11-16",
-     722
+     726
     ]
    ]
   },
@@ -9766,7 +9773,7 @@
     ],
     [
      "2026-11-16",
-     135
+     136
     ]
    ]
   },
@@ -9981,7 +9988,7 @@
     ],
     [
      "2026-11-16",
-     47159
+     47166
     ]
    ]
   },
@@ -10017,7 +10024,7 @@
     ],
     [
      "2026-11-16",
-     47396
+     47411
     ]
    ],
    "reported": [
@@ -10061,7 +10068,7 @@
     ],
     [
      "2026-11-16",
-     36199
+     36209
     ]
    ]
   },
@@ -10099,7 +10106,7 @@
     ],
     [
      "2026-11-16",
-     32360
+     32374
     ]
    ]
   },
@@ -10137,7 +10144,7 @@
     ],
     [
      "2026-11-16",
-     39561
+     39635
     ]
    ]
   },
@@ -10175,7 +10182,7 @@
     ],
     [
      "2026-11-16",
-     8115
+     8122
     ]
    ]
   },
@@ -10250,7 +10257,7 @@
     ],
     [
      "2026-11-16",
-     6392
+     6394
     ]
    ]
   },
@@ -10289,7 +10296,7 @@
     ],
     [
      "2026-11-16",
-     6448
+     6450
     ]
    ]
   },
@@ -10325,7 +10332,7 @@
     ],
     [
      "2026-11-16",
-     6417
+     6694
     ]
    ]
   },
@@ -10362,7 +10369,7 @@
     ],
     [
      "2026-11-16",
-     5937
+     5942
     ]
    ]
   },
@@ -10399,7 +10406,7 @@
     ],
     [
      "2026-11-16",
-     4638
+     4643
     ]
    ]
   },
@@ -10621,7 +10628,7 @@
     ],
     [
      "2026-11-16",
-     1987
+     1989
     ]
    ]
   },
@@ -10657,7 +10664,7 @@
     ],
     [
      "2026-11-16",
-     1840
+     1841
     ]
    ]
   },
@@ -11144,9 +11151,9 @@
    "url": "https://github.com/Folkbench/folkbench",
    "last_seen": "2026-11-16",
    "categories": [
-    "기타"
+    "코딩"
    ],
-   "kw_text": "Folkbench/folkbench AI API 中转站评测排行与切换工具：实测可用率、延迟与价格 · Open-source AI API relay benchmark, rankings & switcher for Claude Code / Codex",
+   "kw_text": "Folkbench/folkbench 帮你的 AI 编程工具找到不降智、不断连、高性价比的好线路 · Live LLM relay rankings, model integrity probes & Tauri/Rust switcher for Claude Code, Codex & Gemini CLI",
    "stars_hist": [
     [
      "2026-10-19",
@@ -11166,7 +11173,7 @@
     ],
     [
      "2026-11-16",
-     3864
+     3881
     ]
    ]
   },
@@ -11227,7 +11234,7 @@
     ],
     [
      "2026-11-16",
-     3779
+     3804
     ]
    ]
   },
@@ -11259,7 +11266,7 @@
     ],
     [
      "2026-11-16",
-     1509
+     1511
     ]
    ]
   },
@@ -11293,7 +11300,7 @@
     ],
     [
      "2026-11-16",
-     1626
+     1630
     ]
    ],
    "reported": [
@@ -11385,7 +11392,7 @@
     ],
     [
      "2026-11-16",
-     577
+     579
     ]
    ]
   },
@@ -11484,7 +11491,7 @@
     ],
     [
      "2026-11-16",
-     1223
+     1244
     ]
    ]
   },
@@ -11519,7 +11526,7 @@
     ],
     [
      "2026-11-16",
-     784
+     786
     ]
    ]
   },
@@ -11568,7 +11575,7 @@
     ],
     [
      "2026-11-16",
-     1698
+     1699
     ]
    ]
   },
@@ -11624,7 +11631,7 @@
     ],
     [
      "2026-11-16",
-     1400
+     1404
     ]
    ]
   },
@@ -11691,7 +11698,7 @@
     ],
     [
      "2026-11-16",
-     541
+     542
     ]
    ]
   },
@@ -11777,7 +11784,7 @@
     ],
     [
      "2026-11-16",
-     184
+     185
     ]
    ]
   },
@@ -11963,7 +11970,7 @@
     ],
     [
      "2026-11-16",
-     406
+     407
     ]
    ]
   },
@@ -11995,7 +12002,7 @@
     ],
     [
      "2026-11-16",
-     361
+     364
     ]
    ]
   },
@@ -12245,7 +12252,7 @@
     ],
     [
      "2026-11-16",
-     104375
+     104400
     ]
    ],
    "reported": [
@@ -12298,7 +12305,7 @@
     ],
     [
      "2026-11-16",
-     339
+     340
     ]
    ]
   },
@@ -12331,7 +12338,7 @@
     ],
     [
      "2026-11-16",
-     12398
+     12414
     ]
    ],
    "reported": [
@@ -12365,7 +12372,7 @@
     ],
     [
      "2026-11-16",
-     8229
+     8230
     ]
    ]
   },
@@ -12398,7 +12405,7 @@
     ],
     [
      "2026-11-16",
-     3522
+     3524
     ]
    ]
   },
@@ -12450,7 +12457,7 @@
     ],
     [
      "2026-11-16",
-     4308
+     4309
     ]
    ]
   },
@@ -12730,7 +12737,7 @@
     ],
     [
      "2026-11-16",
-     58271
+     58360
     ]
    ]
   },
@@ -12758,7 +12765,7 @@
     ],
     [
      "2026-11-16",
-     6422
+     6431
     ]
    ]
   },
@@ -12788,7 +12795,7 @@
     ],
     [
      "2026-11-16",
-     7508
+     7606
     ]
    ],
    "reported": [
@@ -12826,7 +12833,7 @@
     ],
     [
      "2026-11-16",
-     4919
+     4939
     ]
    ]
   },
@@ -12876,7 +12883,7 @@
     ],
     [
      "2026-11-16",
-     3560
+     3566
     ]
    ]
   },
@@ -12904,7 +12911,7 @@
     ],
     [
      "2026-11-16",
-     8015
+     8053
     ]
    ]
   },
@@ -12933,7 +12940,7 @@
     ],
     [
      "2026-11-16",
-     2356
+     2381
     ]
    ],
    "reported": [
@@ -12969,7 +12976,7 @@
     ],
     [
      "2026-11-16",
-     1721
+     1730
     ]
    ]
   },
@@ -13020,7 +13027,7 @@
     ],
     [
      "2026-11-16",
-     2742
+     2752
     ]
    ],
    "reported": [
@@ -13073,7 +13080,7 @@
     ],
     [
      "2026-11-16",
-     1327
+     1328
     ]
    ]
   },
@@ -13299,7 +13306,7 @@
     ],
     [
      "2026-11-16",
-     87798
+     87860
     ]
    ]
   },
@@ -13329,7 +13336,7 @@
     ],
     [
      "2026-11-16",
-     84738
+     84849
     ]
    ],
    "reported": [
@@ -13362,7 +13369,7 @@
     ],
     [
      "2026-11-16",
-     71916
+     71951
     ]
    ]
   },
@@ -13414,7 +13421,7 @@
     ],
     [
      "2026-11-16",
-     29576
+     29605
     ]
    ],
    "reported": [
@@ -13448,7 +13455,7 @@
     ],
     [
      "2026-11-16",
-     2746
+     2748
     ]
    ]
   },
@@ -13476,7 +13483,7 @@
     ],
     [
      "2026-11-16",
-     1464
+     1466
     ]
    ]
   },
@@ -13546,7 +13553,7 @@
     ],
     [
      "2026-11-16",
-     449
+     450
     ]
    ]
   },
@@ -13679,7 +13686,7 @@
     ],
     [
      "2026-11-16",
-     2075
+     2076
     ]
    ]
   },
@@ -13710,7 +13717,7 @@
     ],
     [
      "2026-11-16",
-     554
+     555
     ]
    ],
    "reported": [
@@ -14037,7 +14044,7 @@
     ],
     [
      "2026-11-16",
-     29712
+     29790
     ]
    ],
    "reported": [
@@ -14133,7 +14140,7 @@
     ],
     [
      "2026-11-16",
-     19748
+     19928
     ]
    ]
   },
@@ -14158,7 +14165,7 @@
     ],
     [
      "2026-11-16",
-     6515
+     6699
     ]
    ]
   },
@@ -14182,7 +14189,7 @@
     ],
     [
      "2026-11-16",
-     3855
+     3905
     ]
    ]
   },
@@ -14208,7 +14215,7 @@
     ],
     [
      "2026-11-16",
-     7584
+     7631
     ]
    ],
    "reported": [
@@ -14238,7 +14245,7 @@
     ],
     [
      "2026-11-16",
-     16749
+     16874
     ]
    ],
    "reported": [
@@ -14270,7 +14277,7 @@
     ],
     [
      "2026-11-16",
-     1826
+     1827
     ]
    ]
   },
@@ -14296,7 +14303,7 @@
     ],
     [
      "2026-11-16",
-     1995
+     2001
     ]
    ],
    "reported": [
@@ -14325,7 +14332,7 @@
     ],
     [
      "2026-11-16",
-     2101
+     2107
     ]
    ]
   },
@@ -14349,7 +14356,7 @@
     ],
     [
      "2026-11-16",
-     2539
+     2545
     ]
    ]
   },
@@ -14373,7 +14380,7 @@
     ],
     [
      "2026-11-16",
-     2125
+     2132
     ]
    ]
   },
@@ -14397,7 +14404,7 @@
     ],
     [
      "2026-11-16",
-     1847
+     1854
     ]
    ]
   },
@@ -14423,7 +14430,7 @@
     ],
     [
      "2026-11-16",
-     1836
+     1838
     ]
    ]
   },
@@ -14448,7 +14455,7 @@
     ],
     [
      "2026-11-16",
-     1425
+     1427
     ]
    ]
   },
@@ -14524,7 +14531,7 @@
     ],
     [
      "2026-11-16",
-     546
+     547
     ]
    ]
   },
@@ -14593,7 +14600,7 @@
     ],
     [
      "2026-11-16",
-     110746
+     110895
     ]
    ]
   },
@@ -14618,7 +14625,7 @@
     ],
     [
      "2026-11-16",
-     5796
+     5829
     ]
    ]
   },
@@ -14644,7 +14651,7 @@
     ],
     [
      "2026-11-16",
-     1749
+     1752
     ]
    ]
   },
@@ -14670,7 +14677,7 @@
     ],
     [
      "2026-11-16",
-     1207
+     1209
     ]
    ]
   },
@@ -14696,7 +14703,7 @@
     ],
     [
      "2026-11-16",
-     1541
+     1560
     ]
    ]
   },
@@ -14915,7 +14922,7 @@
     ],
     [
      "2026-11-16",
-     460
+     463
     ]
    ]
   },
@@ -14941,7 +14948,7 @@
     ],
     [
      "2026-11-16",
-     90
+     91
     ]
    ]
   },
@@ -15076,7 +15083,7 @@
     ],
     [
      "2026-11-16",
-     3559
+     3602
     ]
    ],
    "reported": [
@@ -15141,7 +15148,7 @@
     ],
     [
      "2026-11-16",
-     6974
+     6991
     ]
    ],
    "reported": [
@@ -15167,7 +15174,7 @@
     ],
     [
      "2026-11-16",
-     9175
+     9324
     ]
    ],
    "reported": [
@@ -15195,7 +15202,7 @@
     ],
     [
      "2026-11-16",
-     5494
+     5558
     ]
    ]
   },
@@ -15215,7 +15222,7 @@
     ],
     [
      "2026-11-16",
-     4530
+     4553
     ]
    ]
   },
@@ -15235,7 +15242,7 @@
     ],
     [
      "2026-11-16",
-     3564
+     3592
     ]
    ]
   },
@@ -15257,7 +15264,7 @@
     ],
     [
      "2026-11-16",
-     1696
+     1701
     ]
    ]
   },
@@ -15278,7 +15285,7 @@
     ],
     [
      "2026-11-16",
-     3367
+     3380
     ]
    ]
   },
@@ -15298,7 +15305,7 @@
     ],
     [
      "2026-11-16",
-     2515
+     2523
     ]
    ]
   },
@@ -15417,7 +15424,7 @@
     ],
     [
      "2026-11-16",
-     430
+     432
     ]
    ]
   },
@@ -15438,7 +15445,7 @@
     ],
     [
      "2026-11-16",
-     511
+     529
     ]
    ]
   },
@@ -15511,7 +15518,7 @@
     ],
     [
      "2026-11-16",
-     38349
+     38374
     ]
    ]
   },
@@ -15531,7 +15538,7 @@
     ],
     [
      "2026-11-16",
-     10783
+     10784
     ]
    ]
   },
@@ -15552,7 +15559,7 @@
     ],
     [
      "2026-11-16",
-     6929
+     6935
     ]
    ]
   },
@@ -15595,7 +15602,7 @@
     ],
     [
      "2026-11-16",
-     2280
+     2283
     ]
    ]
   },
@@ -15616,7 +15623,7 @@
     ],
     [
      "2026-11-16",
-     33758
+     33786
     ]
    ]
   },
@@ -15638,7 +15645,7 @@
     ],
     [
      "2026-11-16",
-     807
+     809
     ]
    ]
   },
@@ -15735,7 +15742,7 @@
     ],
     [
      "2026-11-16",
-     80713
+     80774
     ]
    ],
    "reported": [
@@ -15761,7 +15768,7 @@
     ],
     [
      "2026-11-16",
-     245
+     246
     ]
    ]
   },
@@ -15814,7 +15821,7 @@
    "first_seen": "2026-11-09",
    "title": "AhsanAyaz/ossclip",
    "url": "https://github.com/AhsanAyaz/ossclip",
-   "last_seen": "2026-11-09",
+   "last_seen": "2026-11-16",
    "categories": [
     "영상"
    ],
@@ -15823,6 +15830,10 @@
     [
      "2026-11-09",
      57
+    ],
+    [
+     "2026-11-16",
+     58
     ]
    ]
   },
@@ -15881,7 +15892,7 @@
     ],
     [
      "2026-11-16",
-     1041
+     1043
     ]
    ]
   },
@@ -15919,7 +15930,7 @@
     ],
     [
      "2026-11-16",
-     55489
+     55626
     ]
    ]
   },
@@ -15937,7 +15948,7 @@
    "first_seen": "2026-11-09",
    "title": "[OpenAI 뉴스] Daybreak Red is now available in AWS GovCloud (US-East)",
    "url": "https://openai.com/index/daybreak-red-aws-govcloud",
-   "last_seen": "2026-11-09",
+   "last_seen": "2026-11-16",
    "categories": [
     "기타"
    ],
@@ -15952,11 +15963,11 @@
    "first_seen": "2026-11-09",
    "title": "[OpenAI 뉴스] Introducing Images 2.6",
    "url": "https://openai.com/index/introducing-images-2-6",
-   "last_seen": "2026-11-09",
+   "last_seen": "2026-11-16",
    "categories": [
     "디자인"
    ],
-   "kw_text": "[OpenAI 뉴스] Introducing Images 2.6 Images 2.6 brings faster image generation, GIF creation, more precise editing, and new API controls across ChatGPT, Codex, and the API. / 관련 보도: Images 2.6 (https://openai.com/index/introducing-images-2-6…",
+   "kw_text": "[OpenAI 뉴스] Introducing Images 2.6 Images 2.6 brings faster image generation, GIF creation, more precise editing, and new API controls across ChatGPT, Codex, and the API.",
    "reported": [
     "2026-11-09"
    ],
@@ -15967,7 +15978,7 @@
    "first_seen": "2026-11-09",
    "title": "[OpenAI 뉴스] Introducing the Grid Protectors Program",
    "url": "https://openai.com/index/grid-protectors-program",
-   "last_seen": "2026-11-09",
+   "last_seen": "2026-11-16",
    "categories": [
     "기타"
    ],
@@ -15997,7 +16008,7 @@
    "first_seen": "2026-11-09",
    "title": "[Google AI 블로그] The latest AI news we announced in October 2026",
    "url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-october-2026/",
-   "last_seen": "2026-11-09",
+   "last_seen": "2026-11-16",
    "categories": [
     "기타"
    ],
@@ -16402,7 +16413,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     4993
+     5008
     ]
    ]
   },
@@ -16420,7 +16431,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     1117
+     1138
     ]
    ],
    "reported": [
@@ -16441,7 +16452,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     8969
+     9140
     ]
    ]
   },
@@ -16457,7 +16468,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     1101
+     1102
     ]
    ]
   },
@@ -16473,7 +16484,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     915
+     921
     ]
    ]
   },
@@ -16491,7 +16502,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     1509
+     1551
     ]
    ]
   },
@@ -16509,7 +16520,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     1068
+     1719
     ]
    ]
   },
@@ -16526,7 +16537,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     765
+     768
     ]
    ]
   },
@@ -16543,7 +16554,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     713
+     727
     ]
    ]
   },
@@ -16580,7 +16591,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     517
+     532
     ]
    ]
   },
@@ -16614,7 +16625,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     425
+     427
     ]
    ]
   },
@@ -16632,7 +16643,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     393
+     398
     ]
    ]
   },
@@ -16649,7 +16660,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     61514
+     61800
     ]
    ]
   },
@@ -16667,7 +16678,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     57214
+     57277
     ]
    ]
   },
@@ -16684,7 +16695,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     52815
+     52852
     ]
    ]
   },
@@ -16702,7 +16713,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     2214
+     2238
     ]
    ]
   },
@@ -16753,7 +16764,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     675
+     678
     ]
    ]
   },
@@ -16842,7 +16853,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     207
+     208
     ]
    ]
   },
@@ -16859,7 +16870,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     52
+     53
     ]
    ]
   },
@@ -16876,7 +16887,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     47
+     48
     ]
    ]
   },
@@ -16926,7 +16937,7 @@
    "stars_hist": [
     [
      "2026-11-16",
-     1340
+     1357
     ]
    ]
   },
@@ -16947,6 +16958,412 @@
      349
     ]
    ]
+  },
+  "market:anthropics/claude-plugins-official/plugins/claude-for-manufacturing": {
+   "first_seen": "2026-11-16",
+   "title": "[공식 플러그인 마켓플레이스 (존재 확인 못 함)] 새 항목: claude-for-manufacturing",
+   "url": "https://github.com/anthropics/claude-plugins-official/tree/HEAD/plugins/claude-for-manufacturing",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[공식 플러그인 마켓플레이스 (존재 확인 못 함)] 새 항목: claude-for-manufacturing anthropics/claude-plugins-official의 plugins/ 폴더에 'claude-for-manufacturing'이(가) 새로 추가됨"
+  },
+  "market:anthropics/claude-plugins-official/plugins/theme-examples": {
+   "first_seen": "2026-11-16",
+   "title": "[공식 플러그인 마켓플레이스 (존재 확인 못 함)] 새 항목: theme-examples",
+   "url": "https://github.com/anthropics/claude-plugins-official/tree/HEAD/plugins/theme-examples",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[공식 플러그인 마켓플레이스 (존재 확인 못 함)] 새 항목: theme-examples anthropics/claude-plugins-official의 plugins/ 폴더에 'theme-examples'이(가) 새로 추가됨"
+  },
+  "feed:https://openai.com/index/introducing-chatgpt-wallet": {
+   "first_seen": "2026-11-16",
+   "title": "[OpenAI 뉴스] Introducing ChatGPT Wallet",
+   "url": "https://openai.com/index/introducing-chatgpt-wallet",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "[OpenAI 뉴스] Introducing ChatGPT Wallet Introducing ChatGPT Wallet, a secure way for agents in ChatGPT Work, Codex, and dots to complete purchases with user approval and existing card protections.",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://openai.com/index/introducing-businesses-chatgpt": {
+   "first_seen": "2026-11-16",
+   "title": "[OpenAI 뉴스] Introducing Businesses in ChatGPT",
+   "url": "https://openai.com/index/introducing-businesses-chatgpt",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[OpenAI 뉴스] Introducing Businesses in ChatGPT Manage your business information, get insights about how your business shows up, and turn interest into action in ChatGPT.",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://openai.com/index/chatgpt-enterprise-aws-marketplace": {
+   "first_seen": "2026-11-16",
+   "title": "[OpenAI 뉴스] ChatGPT Enterprise now available in AWS Marketplace",
+   "url": "https://openai.com/index/chatgpt-enterprise-aws-marketplace",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[OpenAI 뉴스] ChatGPT Enterprise now available in AWS Marketplace ChatGPT Enterprise is now available through AWS Marketplace, helping organizations simplify procurement through existing AWS purchasing and billing relationships.",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/gemini-for-healthcare/": {
+   "first_seen": "2026-11-16",
+   "title": "[Google AI 블로그] Google Cloud launches Gemini for healthcare.",
+   "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/gemini-for-healthcare/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "자동화"
+   ],
+   "kw_text": "[Google AI 블로그] Google Cloud launches Gemini for healthcare. Google Cloud launches Gemini for healthcare to unify clinical data and automate workflows. Reduce administrative burnout. See how it works.",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://deepmind.google/blog/introducing-gemini-4-hydrogen/": {
+   "first_seen": "2026-11-16",
+   "title": "[Google DeepMind 블로그] Introducing Gemini 4 Hydrogen",
+   "url": "https://deepmind.google/blog/introducing-gemini-4-hydrogen/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "[Google DeepMind 블로그] Introducing Gemini 4 Hydrogen / 관련 보도: Gemini 4 Hydrogen and Orchestrator (https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/) / 관련 보도: Gemini 4 Hydrogen (https://blog.google/innovation-and-ai/mo…",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 1594
+  },
+  "feed:https://deepmind.google/blog/gemini-4-carbon-is-now-available/": {
+   "first_seen": "2026-11-16",
+   "title": "[Google DeepMind 블로그] Gemini 4 Carbon is now available",
+   "url": "https://deepmind.google/blog/gemini-4-carbon-is-now-available/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "[Google DeepMind 블로그] Gemini 4 Carbon is now available",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "feed:https://deepmind.google/blog/introducing-alphaproof-code/": {
+   "first_seen": "2026-11-16",
+   "title": "[Google DeepMind 블로그] Introducing AlphaProof Code: a breakthrough in verifying complex software at depth",
+   "url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "[Google DeepMind 블로그] Introducing AlphaProof Code: a breakthrough in verifying complex software at depth AlphaProof Code agents wrote three million lines of proofs in Lean to verify Signal’s core encryption.",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 0
+  },
+  "gh:zovulrira1974/blender-ai-copilot-assets": {
+   "first_seen": "2026-11-16",
+   "title": "zovulrira1974/blender-ai-copilot-assets",
+   "url": "https://github.com/zovulrira1974/blender-ai-copilot-assets",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "자동화",
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "zovulrira1974/blender-ai-copilot-assets An asset-savvy AI copilot for Blender—search Poly Haven, Sketchfab and Poly Pizza mid-conversation, check what fits, import after your confirmation, with 27 scene tools and a built-in MCP server alon…",
+   "stars_hist": [
+    [
+     "2026-11-16",
+     508
+    ]
+   ]
+  },
+  "hn:50497132": {
+   "first_seen": "2026-11-16",
+   "title": "Show HN: A terminal-native idle factory game, written in Rust with ratatui",
+   "url": "https://gitlab.com/snipedbywifi/terminactory",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Show HN: A terminal-native idle factory game, written in Rust with ratatui HN 토론: https://news.ycombinator.com/item?id=50497132"
+  },
+  "hn:50492141": {
+   "first_seen": "2026-11-16",
+   "title": "Anthropic upgrades Claude Code Projects to run parallel AI workers",
+   "url": "https://claude.com/resources/articles/projects-redesigned",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic upgrades Claude Code Projects to run parallel AI workers HN 토론: https://news.ycombinator.com/item?id=50492141"
+  },
+  "hn:50481187": {
+   "first_seen": "2026-11-16",
+   "title": "Elevated errors on claude.ai, Claude Code, and platform.claude.com",
+   "url": "https://status.claude.com/incidents/nn11wk485zfn",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Elevated errors on claude.ai, Claude Code, and platform.claude.com HN 토론: https://news.ycombinator.com/item?id=50481187"
+  },
+  "gh:parcha-ai/agentrun": {
+   "first_seen": "2026-11-16",
+   "title": "parcha-ai/agentrun",
+   "url": "https://github.com/Parcha-ai/agentrun/blob/main/README.md",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "에이전트"
+   ],
+   "kw_text": "parcha-ai/agentrun Show HN: AgentRun – open-source, Self-improving Managed Agents"
+  },
+  "hn:50463399": {
+   "first_seen": "2026-11-16",
+   "title": "Claude Code and Codex reverse engineered my 1994 Jeep's ECU over a $3 Arduino [video]",
+   "url": "https://www.youtube.com/watch?v=WPj3aQ-xxpI",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "영상"
+   ],
+   "kw_text": "Claude Code and Codex reverse engineered my 1994 Jeep's ECU over a $3 Arduino [video] HN 토론: https://news.ycombinator.com/item?id=50463399",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 588
+  },
+  "gh:klad-app/klad": {
+   "first_seen": "2026-11-16",
+   "title": "klad-app/klad",
+   "url": "https://github.com/klad-app/klad",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "klad-app/klad Show HN: Klad, a paint app your coding agent can drive (source-available)"
+  },
+  "gh:adrbn/bo2-mac": {
+   "first_seen": "2026-11-16",
+   "title": "adrbn/bo2-mac",
+   "url": "https://github.com/adrbn/bo2-mac",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "adrbn/bo2-mac Show HN: Black Ops II statically recompiled to native ARM64 macOS"
+  },
+  "hn:50465829": {
+   "first_seen": "2026-11-16",
+   "title": "Anthropic IPO",
+   "url": "https://ipo.anthropic.com/us/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic IPO HN 토론: https://news.ycombinator.com/item?id=50465829",
+   "reported": [
+    "2026-11-16"
+   ],
+   "last_reported_stars": 0,
+   "last_reported_mentions": 1921
+  },
+  "gh:frigadehq/yogurt": {
+   "first_seen": "2026-11-16",
+   "title": "frigadehq/yogurt",
+   "url": "https://github.com/FrigadeHQ/yogurt",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "frigadehq/yogurt Show HN: Yogurt – Free, private, open-source alternative to Granola"
+  },
+  "hn:50447074": {
+   "first_seen": "2026-11-16",
+   "title": "Tracking Anthropic-discovered vulnerabilities",
+   "url": "https://www.vulncheck.com/blog/anthropic-glasswing-november-update",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Tracking Anthropic-discovered vulnerabilities HN 토론: https://news.ycombinator.com/item?id=50447074"
+  },
+  "hn:50439616": {
+   "first_seen": "2026-11-16",
+   "title": "Anthropic to Seek $1.3T Valuation in IPO",
+   "url": "https://www.wsj.com/finance/stocks/anthropic-to-seek-1-3-trillion-valuation-in-ipo-8337b669",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Anthropic to Seek $1.3T Valuation in IPO HN 토론: https://news.ycombinator.com/item?id=50439616"
+  },
+  "hn:50429906": {
+   "first_seen": "2026-11-16",
+   "title": "Claude Fable 5.2 and Mythos 5.2",
+   "url": "https://www.anthropic.com/claude-fable-and-mythos-5-2",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Claude Fable 5.2 and Mythos 5.2 HN 토론: https://news.ycombinator.com/item?id=50429906"
+  },
+  "gh:googlechrome/modern-web-guidance": {
+   "first_seen": "2026-11-16",
+   "title": "googlechrome/modern-web-guidance",
+   "url": "https://github.com/GoogleChrome/modern-web-guidance",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "에이전트",
+    "코딩"
+   ],
+   "kw_text": "googlechrome/modern-web-guidance Show HN: Get your coding agent off ~2019 JavaScript, onto modern web primitives"
+  },
+  "hn:50502988": {
+   "first_seen": "2026-11-16",
+   "title": "Court denies motion to dismiss DRAM price fixing case",
+   "url": "https://litnews.ai/articles/garciaguirre-samsung-sk-hynix-micron-dram-conspiracy-suit-survives-dismissal",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Court denies motion to dismiss DRAM price fixing case HN 토론: https://news.ycombinator.com/item?id=50502988"
+  },
+  "hn:50473190": {
+   "first_seen": "2026-11-16",
+   "title": "Former Nvidia CEO Huang had a relationship with a second employee, sources say",
+   "url": "https://www.reuters.com/technology/former-nvidia-ceo-huang-had-relationship-with-second-employee-sources-say-2026-11-12/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Former Nvidia CEO Huang had a relationship with a second employee, sources say HN 토론: https://news.ycombinator.com/item?id=50473190"
+  },
+  "hn:50471281": {
+   "first_seen": "2026-11-16",
+   "title": "Show HN: Kapso – Iterative learning from enterprise data",
+   "url": "https://news.ycombinator.com/item?id=50471281",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Show HN: Kapso – Iterative learning from enterprise data HN 토론: https://news.ycombinator.com/item?id=50471281"
+  },
+  "hn:50467191": {
+   "first_seen": "2026-11-16",
+   "title": "Nvidia CEO Jensen Huang resigns after reports of extramarital relationships",
+   "url": "https://www.nbcnews.com/tech/tech-news/nvidia-ceo-jensen-huang-resigns-reports-extramarital-relationships-rcna608402",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Nvidia CEO Jensen Huang resigns after reports of extramarital relationships HN 토론: https://news.ycombinator.com/item?id=50467191"
+  },
+  "hn:50459321": {
+   "first_seen": "2026-11-16",
+   "title": "Jensen Huang said to have had relationship with executive who reports to him",
+   "url": "https://www.nytimes.com/2026/11/11/technology/jensen-huang-nvidia-affair.html",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Jensen Huang said to have had relationship with executive who reports to him HN 토론: https://news.ycombinator.com/item?id=50459321"
+  },
+  "hn:50435898": {
+   "first_seen": "2026-11-16",
+   "title": "Ultorg: The User Interface for Relational Databases",
+   "url": "https://www.ultorg.com/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Ultorg: The User Interface for Relational Databases HN 토론: https://news.ycombinator.com/item?id=50435898"
+  },
+  "hn:50455811": {
+   "first_seen": "2026-11-16",
+   "title": "Launch HN: Pomerado (YC F26) – Turn any website into an MCP for agents",
+   "url": "https://news.ycombinator.com/item?id=50455811",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "에이전트",
+    "연동(MCP)"
+   ],
+   "kw_text": "Launch HN: Pomerado (YC F26) – Turn any website into an MCP for agents HN 토론: https://news.ycombinator.com/item?id=50455811"
+  },
+  "hn:50456791": {
+   "first_seen": "2026-11-16",
+   "title": "Gemini Decisions API",
+   "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Gemini Decisions API HN 토론: https://news.ycombinator.com/item?id=50456791"
+  },
+  "gh:thisisme6598/gemini_files": {
+   "first_seen": "2026-11-16",
+   "title": "thisisme6598/gemini_files",
+   "url": "https://github.com/thisisme6598/gemini_files/",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "thisisme6598/gemini_files Google Gemini routes personal Drive files and emails to human annotators"
+  },
+  "relline:anthropics/claude-code:479a5d0ab1d7": {
+   "first_seen": "2026-11-16",
+   "title": "Claude Code 업데이트(2.1.323): Changed workflows in the desktop app's Code tab to pause at a usage limit and c…",
+   "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.323",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "자동화"
+   ],
+   "kw_text": "Claude Code 업데이트(2.1.323): Changed workflows in the desktop app's Code tab to pause at a usage limit and c… Changed workflows in the desktop app's Code tab to pause at a usage limit and continue after it resets"
+  },
+  "relline:anthropics/claude-code:0fe5d7873795": {
+   "first_seen": "2026-11-16",
+   "title": "Claude Code 업데이트(2.1.323): Changed the spend limit and 1M context errors, and `/usage-credits`, in cloud s…",
+   "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.323",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Claude Code 업데이트(2.1.323): Changed the spend limit and 1M context errors, and `/usage-credits`, in cloud s… Changed the spend limit and 1M context errors, and `/usage-credits`, in cloud sessions and under Remote Control: they no longer giv…"
+  },
+  "relline:anthropics/claude-code:e38862806bb9": {
+   "first_seen": "2026-11-16",
+   "title": "Claude Code 업데이트(2.1.323): [Claude Tag] Added Claude Tag sessions started in Slack to the Compliance API o…",
+   "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.323",
+   "last_seen": "2026-11-16",
+   "categories": [
+    "기타"
+   ],
+   "kw_text": "Claude Code 업데이트(2.1.323): [Claude Tag] Added Claude Tag sessions started in Slack to the Compliance API o… [Claude Tag] Added Claude Tag sessions started in Slack to the Compliance API on Enterprise plans, in beta: list the sessions and r…"
   }
  },
  "keyword_counts": {
@@ -16954,46 +17371,56 @@
    121,
    121,
    134,
-   132
+   132,
+   138
   ],
   "hn::anthropic": [
    102,
    101,
    92,
-   119
+   119,
+   109
   ],
   "hn::claude skills": [
    16,
    16,
    16,
-   13
+   13,
+   11
   ],
   "hn::remotion": [
    22,
    16,
    17,
-   19
+   19,
+   28
   ],
   "hn::mcp server": [
    34,
    36,
    38,
-   34
+   34,
+   31
   ],
   "hn::claude": [
-   226
+   226,
+   277
   ],
   "hn::openai": [
-   137
+   137,
+   92
   ],
   "hn::chatgpt": [
-   47
+   47,
+   48
   ],
   "hn::gpt": [
-   483
+   483,
+   633
   ],
   "hn::gemini": [
-   32
+   32,
+   45
   ]
  },
  "releases_seen": [
@@ -17022,6 +17449,10 @@
   "anthropics/claude-code@v2.1.316",
   "anthropics/claude-code@v2.1.314",
   "anthropics/claude-code@v2.1.312",
-  "anthropics/claude-code@v2.1.311"
+  "anthropics/claude-code@v2.1.311",
+  "anthropics/claude-code@v2.1.325",
+  "anthropics/claude-code@v2.1.323",
+  "anthropics/claude-code@v2.1.322",
+  "anthropics/claude-code@v2.1.321"
  ]
 }
