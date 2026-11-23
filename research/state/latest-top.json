@@ -1,25 +1,60 @@
 {
-  "date": "2026-11-16",
+  "date": "2026-11-23",
   "baseline": false,
   "headline": [
-    "[에이전트] 🔥대형 발표 [Google DeepMind 블로그] Introducing Gemini 4 Hydrogen — / 관련 보도: Gemini 4 Hydrogen and Orchestrator (https://antigravity.google/blog/gemini-4-hyd…",
-    "[기타] 🔥대형 발표 Anthropic IPO — HN 토론: https://news.ycombinator.com/item?id=50465829",
-    "[자동화] 🔥대형 발표 [Google AI 블로그] Google Cloud launches Gemini for healthcare. — Google Cloud launches Gemini for healthcare to unify clinical data and automate workflows…"
+    "[기타] 🔥대형 발표 공식 [Anthropic 뉴스] Anthropic prices initial public offering — Announcements · 2026-11-18 발표",
+    "[기타] 🔥대형 발표 공식 [Anthropic 뉴스] Anthropic announces closing of initial public offering, including full exercise of underwriters’ option to purchase additional shares, and closing of concurrent private placement — Announcements · 2026-11-20 발표",
+    "[영상/에이전트] JuneYaooo/rea-video — Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remak…"
   ],
-  "release_summary": "이번 주 릴리스(v2.1.321~v2.1.325, 4개): 글감급 변경 7건(후보 3건 올림), 사소한 개선 545건",
+  "release_summary": "",
   "min_value": 10,
   "failures": [
+    {
+      "label": "Claude Code 릴리스",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/releases?per_page=15"
+    },
+    {
+      "label": "Claude Code CHANGELOG",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/CHANGELOG.md"
+    },
+    {
+      "label": "Anthropic 공식 스킬",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/skills/contents/skills"
+    },
+    {
+      "label": "Claude Code 내장 플러그인",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/plugins"
+    },
+    {
+      "label": "공식 플러그인 마켓플레이스 (존재 확인 못 함)",
+      "note": "HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-plugins-official/contents/plugins"
+    },
     {
       "label": "Claude 플랫폼 문서 목차",
       "note": "RuntimeError: 링크 0개 — 페이지 구조 변경 또는 차단 의심"
     },
     {
+      "label": "OpenAI 뉴스",
+      "note": "ProxyError: HTTPSConnectionPool(host='openai.com', port=443): Max retries exceeded with url: /news/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))"
+    },
+    {
+      "label": "Google AI 블로그",
+      "note": "ProxyError: HTTPSConnectionPool(host='blog.google', port=443): Max retries exceeded with url: /technology/ai/rss/ (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))"
+    },
+    {
+      "label": "Google DeepMind 블로그",
+      "note": "ProxyError: HTTPSConnectionPool(host='deepmind.google', port=443): Max retries exceeded with url: /blog/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))"
+    },
+    {
+      "label": "Hacker News",
+      "note": "ProxyError: HTTPSConnectionPool(host='hn.algolia.com', port=443): Max retries exceeded with url: /api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i%3E1794787620&hitsPerPage=100 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 For"
+    },
+    {
       "label": "Reddit",
-      "note": "HTTPError: 403 Client Error: Blocked for url: https://www.reddit.com/r/ClaudeAI/top.json?t=week&limit=50"
+      "note": "ProxyError: HTTPSConnectionPool(host='www.reddit.com', port=443): Max retries exceeded with url: /r/ClaudeAI/top.json?t=week&limit=50 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))"
     }
   ],
   "watchlist_warnings": [
-    "motion graphics",
     "slides",
     "pptx",
     "google workspace",
@@ -27,373 +62,106 @@
   ],
   "top": [
     {
-      "id": "feed:https://deepmind.google/blog/introducing-gemini-4-hydrogen/",
-      "title": "[Google DeepMind 블로그] Introducing Gemini 4 Hydrogen",
-      "url": "https://deepmind.google/blog/introducing-gemini-4-hydrogen/",
-      "summary": " / 관련 보도: Gemini 4 Hydrogen and Orchestrator (https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/) / 관련 보도: Gemini 4 Hydrogen (https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/)",
-      "kind": "industry",
-      "official": false,
-      "categories": [
-        "에이전트"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 1594,
-      "score": 94.0,
-      "importance": 51.0,
-      "reasons": [
-        "언급 1,594 +20",
-        "일반 사용자 영향(에이전트) +6",
-        "신규 +5",
-        "국내 기사 21건/7일 +20"
-      ],
-      "value": 43.0,
-      "value_reasons": [
-        "새 기능 표현(할 수 있게 됨) +5",
-        "대형 발표 +30",
-        "언급 많음 +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-12T18:00:50+00:00",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "deepmind_blog",
-        "hackernews_major"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": 21,
-      "detail": "Google introduces Gemini 4 Hydrogen, a fast, cost-efficient model built for reliable agentic workflows and everyday tasks. Get the details. / Introducing Gemini 4 Hydrogen for Agentic Workflows Introducing Gemini 4 Hydrogen Nov 12, 2026 | x.com Facebook LinkedIn Mail Copy link Hydrogen brings cutting-edge intelligence to everyone. Koray Kavukcuoglu SVP, Google DeepMind and Chief AI Architect, Google Share x.com Facebook LinkedIn Mail Copy link . Inlining them here makes them available in the DOM for the page. --> Your browser does not support the audio element. Listen to article [[duration]] minutes This content is generated by Google AI. Generative AI is experimental Voice Speed Voice Speed 0.75X 1X 1.5X 2X In this article Last updated November 13, 2026 Today, we’re introducing Gemini 4 Hydrogen, bringing cutting-edge intelligence to everyone — with speed and efficiency for everyday coding and agentic workflows. While our frontier models, Gemini 4 Carbon and Gemini 4 Argon , excel at deep, long-horizon reasoning on your hardest problems, Hydrogen is built for rapid execution across diverse agentic workflows. With Hydrogen, we’re also bringing Gemini 4 to everyone — for all tiers of Google AI Studio , the Gemini API, Gemini for business , the Gemini app , Google Search , and paid Google AI Pro and Ultra subscribers in Google Antigravity . Hydrogen surpasses Argon on the Artificial Analysis Intelligence Index at its default high thinking level (51 vs. 50, and reaching 54 at i…"
-    },
-    {
-      "id": "hn:50465829",
-      "title": "Anthropic IPO",
-      "url": "https://ipo.anthropic.com/us/",
-      "summary": "HN 토론: https://news.ycombinator.com/item?id=50465829",
-      "kind": "community",
-      "official": false,
-      "categories": [
-        "기타"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 1921,
-      "score": 83.0,
-      "importance": 45.0,
-      "reasons": [
-        "언급 1,921 +20",
-        "신규 +5",
-        "국내 기사 48건/7일 +20"
-      ],
-      "value": 38.0,
-      "value_reasons": [
-        "대형 발표 +30",
-        "언급 많음 +8"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-12T11:46:41Z",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "hackernews_major"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": 48,
-      "detail": "Anthropic has filed to become a public company. Read the Foundersâ letter and other relevant information. / Anthropicâs Initial Public Offering Anthropicâs Initial Public Offering AI will have a vast impact on the world. Anthropic is a public benefit corporation dedicated to securing its benefits and mitigating its risks. â We believe that AI is one of the most consequential technologies in human history. If managed well, it could rapidly accelerate scientific innovation, greatly increase economic growth rates, bring cures for major diseases within reach, and solve problems that have resisted generations of human effort.â Read the Foundersâ letter Read the Foundersâ letter Roadshow video 01 / 11 Introduction Our opportunity and core advantages Product and platform Frontier and safety research Bristol Myers Squibb Approach to compute Accenture Enterprise strategy AIG Financial model Conclusion Q3â26 Financial highlights $17.0B Revenue >12x YoY revenue >11,900 Customers â¥Â $100K TTM revenue 1 >12x YoY customers â¥Â $100K TTM revenue 1 >4x Compute efficiency gain since Q1â25 2 15% Adjusted Operating Margin 3 $23.3B Net Loss (due to an increase in our valuation, net loss includes a $21.9 billion non-cash charge related to a change in the fair value of convertible notes, derivative liabilities, and SAFEs) (3)% Operating Margin 1 As of September 30, 2026. 2 Measured as revenue divided by compute and infrastructure expenses in Q3â26 divided by the same ratio …"
-    },
-    {
-      "id": "feed:https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/gemini-for-healthcare/",
-      "title": "[Google AI 블로그] Google Cloud launches Gemini for healthcare.",
-      "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/gemini-for-healthcare/",
-      "summary": "Google Cloud launches Gemini for healthcare to unify clinical data and automate workflows. Reduce administrative burnout. See how it works.",
-      "kind": "industry",
-      "official": false,
-      "categories": [
-        "자동화"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 0,
-      "score": 58.0,
-      "importance": 15.0,
-      "reasons": [
-        "일반 사용자 영향(자동화) +10",
-        "신규 +5"
-      ],
-      "value": 43.0,
-      "value_reasons": [
-        "자동화·새 연동 +8",
-        "새 기능 표현(할 수 있게 됨) +5",
-        "대형 발표 +30"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-10T13:00:00+00:00",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "google_ai_blog"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": null,
-      "detail": "Google Cloud launches Gemini for healthcare to unify clinical data and automate workflows. Reduce administrative burnout. See how it works. / Google Cloud Gemini for healthcare: AI workflow automation Google Cloud launches Gemini for healthcare. Nov 10, 2026 Google Cloud has announced Gemini for healthcare , an AI solution engineered to unify fragmented clinical, operational, and administrative systems. Moving beyond simple information retrieval, it enables healthcare teams to turn siloed data into coordinated action. Clinicians lose nearly 28 hours each week to paperwork and administrative tasks, fueling burnout and straining budgets. By integrating specialized skills and data connectors with existing third-party systems, the platform brings together critical information from electronic health records, billing platforms, clinical guidelines, and Medicare datasets. Gemini for healthcare reasons across this context to orchestrate and execute complex, multi-step workflows — such as medical records synthesis and prior authorization review — within defined guardrails and with appropriate human oversight. Initially available in preview alongside launch partners including HCA Healthcare, Highmark Health, and Northwell Health, it resolves bottlenecks and reclaims valuable staff time for patient care. Learn more on the Cloud blog . Posted in: Related stories Search Google Search gets a major upgrade with Gemini 4 Hydrogen By Robby Stein Developer tools Gemini Decisions API: Fast, ca…"
-    },
-    {
-      "id": "feed:https://openai.com/index/chatgpt-enterprise-aws-marketplace",
-      "title": "[OpenAI 뉴스] ChatGPT Enterprise now available in AWS Marketplace",
-      "url": "https://openai.com/index/chatgpt-enterprise-aws-marketplace",
-      "summary": "ChatGPT Enterprise is now available through AWS Marketplace, helping organizations simplify procurement through existing AWS purchasing and billing relationships.",
-      "kind": "industry",
-      "official": false,
+      "id": "link:https://www.anthropic.com/news/anthropic-prices-initial-public-offering",
+      "title": "[Anthropic 뉴스] Anthropic prices initial public offering",
+      "url": "https://www.anthropic.com/news/anthropic-prices-initial-public-offering",
+      "summary": "Announcements · 2026-11-18 발표",
+      "kind": "official",
+      "official": true,
       "categories": [
         "기타"
       ],
       "stars": null,
       "star_delta_7d": 0,
       "mentions": 0,
-      "score": 48.0,
-      "importance": 5.0,
+      "score": 85.0,
+      "importance": 40.0,
       "reasons": [
+        "공식 +35",
         "신규 +5"
       ],
-      "value": 43.0,
+      "value": 45.0,
       "value_reasons": [
-        "새 기능 표현(할 수 있게 됨) +5",
-        "스킬·플러그인·도구 출시 +8",
-        "대형 발표 +30"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-09T19:00:00+00:00",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "openai_news"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "feed:https://openai.com/index/introducing-chatgpt-wallet",
-      "title": "[OpenAI 뉴스] Introducing ChatGPT Wallet",
-      "url": "https://openai.com/index/introducing-chatgpt-wallet",
-      "summary": "Introducing ChatGPT Wallet, a secure way for agents in ChatGPT Work, Codex, and dots to complete purchases with user approval and existing card protections.",
-      "kind": "industry",
-      "official": false,
-      "categories": [
-        "에이전트"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 0,
-      "score": 46.0,
-      "importance": 11.0,
-      "reasons": [
-        "일반 사용자 영향(에이전트) +6",
-        "신규 +5"
-      ],
-      "value": 35.0,
-      "value_reasons": [
-        "새 기능 표현(할 수 있게 됨) +5",
-        "대형 발표 +30"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-13T15:00:00+00:00",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "openai_news"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "feed:https://deepmind.google/blog/introducing-alphaproof-code/",
-      "title": "[Google DeepMind 블로그] Introducing AlphaProof Code: a breakthrough in verifying complex software at depth",
-      "url": "https://deepmind.google/blog/introducing-alphaproof-code/",
-      "summary": "AlphaProof Code agents wrote three million lines of proofs in Lean to verify Signal’s core encryption.",
-      "kind": "industry",
-      "official": false,
-      "categories": [
-        "에이전트"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 0,
-      "score": 46.0,
-      "importance": 11.0,
-      "reasons": [
-        "일반 사용자 영향(에이전트) +6",
-        "신규 +5"
-      ],
-      "value": 35.0,
-      "value_reasons": [
-        "새 기능 표현(할 수 있게 됨) +5",
-        "대형 발표 +30"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-10T12:02:28+00:00",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "deepmind_blog"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "feed:https://openai.com/index/introducing-businesses-chatgpt",
-      "title": "[OpenAI 뉴스] Introducing Businesses in ChatGPT",
-      "url": "https://openai.com/index/introducing-businesses-chatgpt",
-      "summary": "Manage your business information, get insights about how your business shows up, and turn interest into action in ChatGPT.",
-      "kind": "industry",
-      "official": false,
-      "categories": [
-        "기타"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 0,
-      "score": 40.0,
-      "importance": 5.0,
-      "reasons": [
-        "신규 +5"
-      ],
-      "value": 35.0,
-      "value_reasons": [
-        "새 기능 표현(할 수 있게 됨) +5",
-        "대형 발표 +30"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-10T10:00:00+00:00",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "openai_news"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "feed:https://deepmind.google/blog/gemini-4-carbon-is-now-available/",
-      "title": "[Google DeepMind 블로그] Gemini 4 Carbon is now available",
-      "url": "https://deepmind.google/blog/gemini-4-carbon-is-now-available/",
-      "summary": "",
-      "kind": "industry",
-      "official": false,
-      "categories": [
-        "기타"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 0,
-      "score": 40.0,
-      "importance": 5.0,
-      "reasons": [
-        "신규 +5"
-      ],
-      "value": 35.0,
-      "value_reasons": [
-        "새 기능 표현(할 수 있게 됨) +5",
-        "대형 발표 +30"
-      ],
-      "needs_check": false,
-      "watch_hits": [],
-      "published_at": "2026-11-10T16:03:47+00:00",
-      "versions": null,
-      "first_seen": "2026-11-16",
-      "sources": [
-        "deepmind_blog"
-      ],
-      "resurfaced": false,
-      "major": true,
-      "kr_news": null,
-      "detail": null
-    },
-    {
-      "id": "hn:50463399",
-      "title": "Claude Code and Codex reverse engineered my 1994 Jeep's ECU over a $3 Arduino [video]",
-      "url": "https://www.youtube.com/watch?v=WPj3aQ-xxpI",
-      "summary": "HN 토론: https://news.ycombinator.com/item?id=50463399",
-      "kind": "community",
-      "official": false,
-      "categories": [
-        "영상"
-      ],
-      "stars": null,
-      "star_delta_7d": 0,
-      "mentions": 588,
-      "score": 79.5,
-      "importance": 38.5,
-      "reasons": [
-        "언급 588 +18",
-        "일반 사용자 영향(영상) +15",
-        "신규 +5"
-      ],
-      "value": 41.0,
-      "value_reasons": [
-        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
         "요금·모델·정책(일반 사용자 영향 큼) +15",
-        "언급 많음 +8",
-        "감시 키워드(video) +8"
+        "대형 발표 +30"
       ],
       "needs_check": false,
-      "watch_hits": [
-        "video"
-      ],
-      "published_at": "2026-11-12T05:29:24Z",
+      "watch_hits": [],
+      "published_at": "2026-11-18",
       "versions": null,
-      "first_seen": "2026-11-16",
+      "first_seen": "2026-11-23",
       "sources": [
-        "hackernews_major"
+        "anthropic_news"
       ],
       "resurfaced": false,
-      "major": false,
+      "major": true,
       "kr_news": null,
-      "detail": null
+      "detail": "Today Anthropic, PBC priced its initial public offering of its Class A common stock. / Anthropic prices initial public offering \\ Anthropic Skip to main content Related articles Anthropic announces closing of initial public offering, including full exercise of underwriters’ option to purchase additional shares, and closing of concurrent private placement View more Today Anthropic, PBC priced its initial public offering of its Class A common stock at $83.00 per share. The offering consists of 980,000,000 shares of Class A common stock, 956,351,354 of which are being sold by Anthropic and 23,648,646 of which are being sold by certain selling stockholders. Anthropic will not receive any proceeds from the sale of shares by the selling stockholders. The shares are expected to begin trading on the Nasdaq Global Select Market on November 19, 2026 under the symbol “ANT.” The offering is expected to close on November 20, 2026, subject to the satisfaction of customary closing conditions. In addition, Anthropic has granted the underwriters a 30-day option to purchase up to an additional 147,000,000 shares of its Class A common stock. A registration statement relating to these securities was declared effective by the Securities and Exchange Commission on November 18, 2026. The offering is being made only by means of a prospectus. Copies of the final prospectus may be obtained, when available, from: Goldman Sachs & Co. LLC, Attention: Prospectus Department, 200 West Street, New York, NY …"
     },
     {
-      "id": "gh:zhuyansen/awesome-claude-video-skills",
-      "title": "zhuyansen/awesome-claude-video-skills",
-      "url": "https://github.com/zhuyansen/awesome-claude-video-skills",
-      "summary": "Open-source skills and toolkits that let Claude Code, Codex and other coding agents make video. 180 repos by type, each security-graded. English / 中文.",
+      "id": "link:https://www.anthropic.com/news/ipo-close",
+      "title": "[Anthropic 뉴스] Anthropic announces closing of initial public offering, including full exercise of underwriters’ option to purchase additional shares, and closing of concurrent private placement",
+      "url": "https://www.anthropic.com/news/ipo-close",
+      "summary": "Announcements · 2026-11-20 발표",
+      "kind": "official",
+      "official": true,
+      "categories": [
+        "기타"
+      ],
+      "stars": null,
+      "star_delta_7d": 0,
+      "mentions": 0,
+      "score": 60.0,
+      "importance": 40.0,
+      "reasons": [
+        "공식 +35",
+        "신규 +5"
+      ],
+      "value": 20.0,
+      "value_reasons": [
+        "설정·환경변수·옵션 추가 -10",
+        "대형 발표 +30"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": "2026-11-20",
+      "versions": null,
+      "first_seen": "2026-11-23",
+      "sources": [
+        "anthropic_news"
+      ],
+      "resurfaced": false,
+      "major": true,
+      "kr_news": null,
+      "detail": "Today Anthropic, PBC announced the closing of its initial public offering of an aggregate of 1,127,000,000 shares of its Class A common stock at a public offering price of $83.00 per share, including the full exercise by the underwriters of their option to purchase an additional 147,000,000 shares of Class A common stock from Anthropic at the initial public offering price. / Anthropic announces closing of initial public offering, including full exercise of underwriters’ option to purchase additional shares, and closing of concurrent private placement \\ Anthropic Skip to main content Related articles Anthropic raises $65B in Series H funding at $965B post-money valuation View more Today Anthropic, PBC announced the closing of its initial public offering of an aggregate of 1,127,000,000 shares of its Class A common stock at a public offering price of $83.00 per share, including the full exercise by the underwriters of their option to purchase an additional 147,000,000 shares of Class A common stock from Anthropic at the initial public offering price. The offering consisted of 1,103,351,354 shares sold by Anthropic and 23,648,646 shares sold by certain selling stockholders. The aggregate gross proceeds from the offering, before deducting underwriting discounts and commissions and other offering expenses, were approximately $93.5 billion, of which approximately $91.6 billion was received by Anthropic. Anthropic did not receive any proceeds from the sale of shares by the selling …"
+    },
+    {
+      "id": "gh:juneyaooo/rea-video",
+      "title": "JuneYaooo/rea-video",
+      "url": "https://github.com/JuneYaooo/rea-video",
+      "summary": "Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remake it. Breakdowns in the open VIDEO.md format. 逆向一切视频，逐个镜头看是拍的、AI 生成的还是代码做的，再告诉你怎么复刻；拆解结果按 VIDEO.md 格式输出。",
       "kind": "github",
       "official": false,
       "categories": [
         "영상",
-        "에이전트",
-        "코딩"
+        "에이전트"
       ],
-      "stars": 2172,
-      "star_delta_7d": 388,
+      "stars": 12237,
+      "star_delta_7d": 2913,
       "mentions": 0,
-      "score": 67.6,
-      "importance": 33.6,
+      "score": 90.9,
+      "importance": 44.9,
       "reasons": [
-        "스타 +388/7일 +19",
-        "일반 사용자 영향(영상/에이전트/코딩) +15"
+        "스타 +2,913/7일 +25",
+        "일반 사용자 영향(영상/에이전트) +15",
+        "재부상 +5"
       ],
-      "value": 34.0,
+      "value": 46.0,
       "value_reasons": [
         "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
         "스킬·플러그인·도구 출시 +8",
-        "스타 증가 +6",
+        "스타 급증 +12",
+        "유명(스타 12,237) +6",
         "감시 키워드(remotion, video) +10"
       ],
       "needs_check": false,
@@ -403,7 +171,308 @@
       ],
       "published_at": null,
       "versions": null,
+      "first_seen": "2026-11-09",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": true,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:latent-spaces/brag",
+      "title": "latent-spaces/brag",
+      "url": "https://github.com/latent-spaces/brag",
+      "summary": "You built it. Now brag. Turn the project you just created into a short, shareable launch video with one command.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "에이전트"
+      ],
+      "stars": 22250,
+      "star_delta_7d": 624,
+      "mentions": 0,
+      "score": 83.1,
+      "importance": 40.1,
+      "reasons": [
+        "스타 +624/7일 +20",
+        "일반 사용자 영향(영상/에이전트) +15",
+        "재부상 +5"
+      ],
+      "value": 43.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "새 기능 표현(할 수 있게 됨) +5",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 증가 +6",
+        "유명(스타 22,250) +6",
+        "감시 키워드(video) +8"
+      ],
+      "needs_check": false,
+      "watch_hits": [
+        "video"
+      ],
+      "published_at": null,
+      "versions": null,
       "first_seen": "2026-10-14",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": true,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:shinyobjectz/raea",
+      "title": "shinyobjectz/raea",
+      "url": "https://github.com/shinyobjectz/raea",
+      "summary": "Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS, Linux and Windows.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "디자인",
+        "에이전트"
+      ],
+      "stars": 4258,
+      "star_delta_7d": 845,
+      "mentions": 0,
+      "score": 81.0,
+      "importance": 41.0,
+      "reasons": [
+        "스타 +845/7일(추정) +21",
+        "일반 사용자 영향(영상/디자인/에이전트) +15",
+        "신규 +5"
+      ],
+      "value": 40.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 증가 +6",
+        "유명(스타 4,258) +6",
+        "감시 키워드(video, motion graphics, design) +10"
+      ],
+      "needs_check": false,
+      "watch_hits": [
+        "video",
+        "motion graphics",
+        "design"
+      ],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-11-23",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": false,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:emilkowalski/skills",
+      "title": "emilkowalski/skills",
+      "url": "https://github.com/emilkowalski/skills",
+      "summary": "Skills for Designers and Engineers.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "디자인",
+        "에이전트"
+      ],
+      "stars": 58866,
+      "star_delta_7d": 1589,
+      "mentions": 0,
+      "score": 78.0,
+      "importance": 38.0,
+      "reasons": [
+        "스타 +1,589/7일 +23",
+        "일반 사용자 영향(영상/디자인/에이전트) +15"
+      ],
+      "value": 40.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 급증 +12",
+        "유명(스타 58,866) +6",
+        "감시 키워드(design) +4"
+      ],
+      "needs_check": false,
+      "watch_hits": [
+        "design"
+      ],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-11-16",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": false,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:patch-gg/pixelfx",
+      "title": "patch-gg/pixelfx",
+      "url": "https://github.com/patch-gg/pixelfx",
+      "summary": "244 pixel art effects, every one a small piece of code. Plus a Claude Code skill to make your own.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "디자인",
+        "에이전트"
+      ],
+      "stars": 8752,
+      "star_delta_7d": 1121,
+      "mentions": 0,
+      "score": 77.9,
+      "importance": 41.9,
+      "reasons": [
+        "스타 +1,121/7일 +22",
+        "일반 사용자 영향(영상/디자인/에이전트) +15",
+        "재부상 +5"
+      ],
+      "value": 36.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 급증 +12",
+        "유명(스타 8,752) +6"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-11-02",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": true,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:mvanhorn/last30days-skill",
+      "title": "mvanhorn/last30days-skill",
+      "url": "https://github.com/mvanhorn/last30days-skill",
+      "summary": "AI agent skill that researches any topic across Reddit, X, YouTube, HN, Polymarket, and the web - then synthesizes a grounded summary",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "자동화",
+        "에이전트"
+      ],
+      "stars": 72697,
+      "star_delta_7d": 4893,
+      "mentions": 0,
+      "score": 74.0,
+      "importance": 40.0,
+      "reasons": [
+        "스타 +4,893/7일 +25",
+        "일반 사용자 영향(영상/자동화/에이전트) +15"
+      ],
+      "value": 34.0,
+      "value_reasons": [
+        "자동화·새 연동 +8",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 급증 +12",
+        "유명(스타 72,697) +6"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-14",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": false,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:el4cteo/blender-skills",
+      "title": "EL4CTEO/blender-skills",
+      "url": "https://github.com/EL4CTEO/blender-skills",
+      "summary": "Professional Blender 5.3 workflows as Agent Skills for Claude Code, Codex, Gemini CLI, Copilot and Cursor: modeling, UVs, PBR, baking, rigging, animation, export and QA.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "영상",
+        "자동화",
+        "에이전트",
+        "연동(MCP)"
+      ],
+      "stars": 2703,
+      "star_delta_7d": 1459,
+      "mentions": 0,
+      "score": 67.8,
+      "importance": 37.8,
+      "reasons": [
+        "스타 +1,459/7일 +23",
+        "일반 사용자 영향(영상/자동화/에이전트/연동(MCP)) +15"
+      ],
+      "value": 30.0,
+      "value_reasons": [
+        "업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 급증 +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-10-19",
+      "sources": [
+        "github_search"
+      ],
+      "resurfaced": false,
+      "major": false,
+      "kr_news": null,
+      "detail": null
+    },
+    {
+      "id": "gh:bookwjitchieni1986/blender-ai-mcp-addon",
+      "title": "bookwjitchieni1986/blender-ai-mcp-addon",
+      "url": "https://github.com/bookwjitchieni1986/blender-ai-mcp-addon",
+      "summary": "AI assistant and MCP server for Blender: visual chat, scene tools, multi-agent workflows. Works with ChatGPT/GPT, Claude, Gemini, Ollama, OpenCode. Blender AI addon, copilot for 3D, bpy Python scripting, MCP integration.",
+      "kind": "github",
+      "official": false,
+      "categories": [
+        "자동화",
+        "에이전트",
+        "연동(MCP)"
+      ],
+      "stars": 2746,
+      "star_delta_7d": 2746,
+      "mentions": 0,
+      "score": 67.7,
+      "importance": 39.7,
+      "reasons": [
+        "스타 +2,746/7일(추정) +25",
+        "일반 사용자 영향(자동화/에이전트/연동(MCP)) +10",
+        "신규 +5"
+      ],
+      "value": 28.0,
+      "value_reasons": [
+        "자동화·새 연동 +8",
+        "스킬·플러그인·도구 출시 +8",
+        "스타 급증 +12"
+      ],
+      "needs_check": false,
+      "watch_hits": [],
+      "published_at": null,
+      "versions": null,
+      "first_seen": "2026-11-23",
       "sources": [
         "github_search"
       ],
