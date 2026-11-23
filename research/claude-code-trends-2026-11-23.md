@@ -4,132 +4,128 @@
 
 ## 오늘의 핵심 3줄
 
-1. [기타] 🔥대형 발표 공식 [Anthropic 뉴스] Anthropic prices initial public offering — Announcements · 2026-11-18 발표
-2. [기타] 🔥대형 발표 공식 [Anthropic 뉴스] Anthropic announces closing of initial public offering, including full exercise of underwriters’ option to purchase additional shares, and closing of concurrent private placement — Announcements · 2026-11-20 발표
-3. [영상/에이전트] JuneYaooo/rea-video — Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remak…
+1. [코딩] 🔥대형 발표 [OpenAI 뉴스] Introducing GPT-6.2 Astra and Sol — Introducing GPT‑6.2 Astra and Sol, with better professional outputs, coding, computer use…
+2. [기타] 🔥대형 발표 Anthropic prices initial public offering — HN 토론: https://news.ycombinator.com/item?id=50553843
+3. [기타] 🔥대형 발표 [Google DeepMind 블로그] Introducing Gemini 4 Neon — / 관련 보도: Gemini 4 Neon is the new #1 on the Models Engineering Index (https://git-aarvin.…
+
+> 이번 주 릴리스(v2.1.326~v2.1.330, 5개): 글감급 변경 4건(후보 3건 올림), 사소한 개선 952건
 
 ## ⚠️ 수집 실패
 
 아래 소스는 이번에 수집하지 못했다. **이 소스에서 나온 소식은 이번 리포트에 빠져 있을 수 있다.**
 
-- **Claude Code 릴리스** — HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/releases?per_page=15
-- **Claude Code CHANGELOG** — HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/CHANGELOG.md
-- **Anthropic 공식 스킬** — HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/skills/contents/skills
-- **Claude Code 내장 플러그인** — HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/plugins
-- **공식 플러그인 마켓플레이스 (존재 확인 못 함)** — HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-plugins-official/contents/plugins
 - **Claude 플랫폼 문서 목차** — RuntimeError: 링크 0개 — 페이지 구조 변경 또는 차단 의심
-- **OpenAI 뉴스** — ProxyError: HTTPSConnectionPool(host='openai.com', port=443): Max retries exceeded with url: /news/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))
-- **Google AI 블로그** — ProxyError: HTTPSConnectionPool(host='blog.google', port=443): Max retries exceeded with url: /technology/ai/rss/ (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))
-- **Google DeepMind 블로그** — ProxyError: HTTPSConnectionPool(host='deepmind.google', port=443): Max retries exceeded with url: /blog/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))
-- **Hacker News** — ProxyError: HTTPSConnectionPool(host='hn.algolia.com', port=443): Max retries exceeded with url: /api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i%3E1794787620&hitsPerPage=100 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 For
-- **Reddit** — ProxyError: HTTPSConnectionPool(host='www.reddit.com', port=443): Max retries exceeded with url: /r/ClaudeAI/top.json?t=week&limit=50 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)')))
+- **Reddit** — HTTPError: 403 Client Error: Blocked for url: https://www.reddit.com/r/ClaudeAI/top.json?t=week&limit=50
+
+> 일부 실패: 대형 발표 원문·국내 기사: 국내 기사 실패(GPT-6.2 Astra and Sol): HTTPError; 국내 기사 실패(Gemini 4 Neon): HTTPError
 
 ## 상위 10개 (글감급만, 점수 = 중요도 + 글감 가치)
 
 | # | 점수 | 카테고리 | 소식 | 처음 등장 | 출처 |
 |---|---|---|---|---|---|
-| 1 | 85 | 기타 | [[Anthropic 뉴스] Anthropic prices initial public offering](https://www.anthropic.com/news/anthropic-prices-initial-public-offering) 🆕 | 2026-11-23 | anthropic_news |
-| 2 | 60 | 기타 | [[Anthropic 뉴스] Anthropic announces closing of initial public offering, including full exercise of underwriters’ option to purchase additional shares, and closing of concurrent private placement](https://www.anthropic.com/news/ipo-close) 🆕 | 2026-11-23 | anthropic_news |
-| 3 | 91 | 영상/에이전트 | [JuneYaooo/rea-video](https://github.com/JuneYaooo/rea-video) 🔁재부상 | 2026-11-09 | github_search |
-| 4 | 83 | 영상/에이전트 | [latent-spaces/brag](https://github.com/latent-spaces/brag) 🔁재부상 | 2026-10-14 | github_search |
-| 5 | 81 | 영상/디자인/에이전트 | [shinyobjectz/raea](https://github.com/shinyobjectz/raea) 🆕 | 2026-11-23 | github_search |
-| 6 | 78 | 영상/디자인/에이전트 | [emilkowalski/skills](https://github.com/emilkowalski/skills) | 2026-11-16 | github_search |
-| 7 | 78 | 영상/디자인/에이전트 | [patch-gg/pixelfx](https://github.com/patch-gg/pixelfx) 🔁재부상 | 2026-11-02 | github_search |
-| 8 | 74 | 영상/자동화/에이전트 | [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill) | 2026-10-14 | github_search |
-| 9 | 68 | 영상/자동화/에이전트/연동(MCP) | [EL4CTEO/blender-skills](https://github.com/EL4CTEO/blender-skills) | 2026-10-19 | github_search |
-| 10 | 68 | 자동화/에이전트/연동(MCP) | [bookwjitchieni1986/blender-ai-mcp-addon](https://github.com/bookwjitchieni1986/blender-ai-mcp-addon) 🆕 | 2026-11-23 | github_search |
+| 1 | 79 | 코딩 | [[OpenAI 뉴스] Introducing GPT-6.2 Astra and Sol](https://openai.com/index/introducing-gpt-6-2-astra-sol) 🆕 | 2026-11-23 | hackernews_major, openai_news |
+| 2 | 78 | 기타 | [Anthropic prices initial public offering](https://www.anthropic.com/news/anthropic-prices-initial-public-offering) 🆕 | 2026-11-23 | hackernews_major |
+| 3 | 68 | 기타 | [[Google DeepMind 블로그] Introducing Gemini 4 Neon](https://deepmind.google/blog/introducing-gemini-4-neon/) 🆕 | 2026-11-23 | deepmind_blog, hackernews_major |
+| 4 | 52 | 디자인 | [[Google AI 블로그] The Gemini app is now available on lower-memory Android devices.](https://blog.google/innovation-and-ai/products/gemini-app/gemini-lower-memory-devices/) 🆕 | 2026-11-23 | google_ai_blog |
+| 5 | 48 | 기타 | [[OpenAI 뉴스] Introducing ChatGPT for Sales](https://openai.com/index/introducing-chatgpt-for-sales) 🆕 | 2026-11-23 | openai_news |
+| 6 | 48 | 기타 | [[OpenAI 뉴스] Introducing OpenAI for Chile](https://openai.com/index/introducing-openai-for-chile) 🆕 | 2026-11-23 | openai_news |
+| 7 | 46 | 에이전트 | [[Google AI 블로그] Introducing Tool Retrieval in the Gemini API](https://blog.google/innovation-and-ai/technology/developers-tools/gemini-api-tool-retrieval/) 🆕 | 2026-11-23 | google_ai_blog |
+| 8 | 40 | 기타 | [[Google DeepMind 블로그] Genie 4 is now available](https://deepmind.google/blog/genie-4-is-now-available/) 🆕 | 2026-11-23 | deepmind_blog |
+| 9 | 72 | 문서·오피스/자동화/에이전트/연동(MCP) | [XinaTian/MROffice](https://github.com/XinaTian/MROffice) 🆕 | 2026-11-23 | github_search, watchlist |
+| 10 | 67 | 디자인/에이전트 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | 2026-10-14 | github_search, watchlist |
 
-### 1. [Anthropic 뉴스] Anthropic prices initial public offering
+### 1. [OpenAI 뉴스] Introducing GPT-6.2 Astra and Sol
+
+- 링크: https://openai.com/index/introducing-gpt-6-2-astra-sol
+- 내용: Introducing GPT‑6.2 Astra and Sol, with better professional outputs, coding, computer use, and efficiency at lower cost across ChatGPT Work, Codex, and the API. / 관련 보도: GPT‑6.2 Astra and Sol (https://openai.com/index/introducing-gpt-6-2-astra-sol/)
+- 발표일(소스 기준): 2026-11-17
+- 원문 발췌: Introducing GPT‑6.2 Astra and Sol, with better professional outputs, coding, computer use, and efficiency at lower cost across ChatGPT Work, Codex, and the API. / Introducing GPT-6.2 Astra and Sol | …
+- 점수 근거: 중요도 28 (언급 2,211 +20, 일반 사용자 영향(코딩) +3, 신규 +5)
+- 글감 판정: +51 (자동화·새 연동 +8, 새 기능 표현(할 수 있게 됨) +5, 대형 발표 +30, 언급 많음 +8)
+
+### 2. Anthropic prices initial public offering
 
 - 링크: https://www.anthropic.com/news/anthropic-prices-initial-public-offering
-- 내용: Announcements · 2026-11-18 발표
+- 내용: HN 토론: https://news.ycombinator.com/item?id=50553843
 - 발표일(소스 기준): 2026-11-18
 - 원문 발췌: Today Anthropic, PBC priced its initial public offering of its Class A common stock. / Anthropic prices initial public offering \ Anthropic Skip to main content Related articles Anthropic announces c…
-- 점수 근거: 중요도 40 (공식 +35, 신규 +5)
-- 글감 판정: +45 (요금·모델·정책(일반 사용자 영향 큼) +15, 대형 발표 +30)
+- 점수 근거: 중요도 25 (언급 1,222 +20, 신규 +5)
+- 글감 판정: +53 (요금·모델·정책(일반 사용자 영향 큼) +15, 대형 발표 +30, 언급 많음 +8)
 
-### 2. [Anthropic 뉴스] Anthropic announces closing of initial public offering, including full exercise of underwriters’ option to purchase additional shares, and closing of concurrent private placement
+### 3. [Google DeepMind 블로그] Introducing Gemini 4 Neon
 
-- 링크: https://www.anthropic.com/news/ipo-close
-- 내용: Announcements · 2026-11-20 발표
-- 발표일(소스 기준): 2026-11-20
-- 원문 발췌: Today Anthropic, PBC announced the closing of its initial public offering of an aggregate of 1,127,000,000 shares of its Class A common stock at a public offering price of $83.00 per share, including…
-- 점수 근거: 중요도 40 (공식 +35, 신규 +5)
-- 글감 판정: +20 (설정·환경변수·옵션 추가 -10, 대형 발표 +30)
+- 링크: https://deepmind.google/blog/introducing-gemini-4-neon/
+- 내용: / 관련 보도: Gemini 4 Neon is the new #1 on the Models Engineering Index (https://git-aarvin.github.io/mei/) / 관련 보도: Gemini 4 Neon (https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/)
+- 발표일(소스 기준): 2026-11-18
+- 원문 발췌: Google introduces Gemini 4 Neon, delivering frontier-level intelligence for complex coding and analysis at a lower cost. See what's new. / Introducing Gemini 4 Neon Introducing Gemini 4 Neon Nov 18, …
+- 점수 근거: 중요도 25 (언급 2,465 +20, 신규 +5)
+- 글감 판정: +43 (새 기능 표현(할 수 있게 됨) +5, 대형 발표 +30, 언급 많음 +8)
 
-### 3. JuneYaooo/rea-video
+### 4. [Google AI 블로그] The Gemini app is now available on lower-memory Android devices.
 
-- 링크: https://github.com/JuneYaooo/rea-video
-- 내용: Reverse-engineer any video, shot by shot: filmed, AI-generated or coded, and how to remake it. Breakdowns in the open VIDEO.md format. 逆向一切视频，逐个镜头看是拍的、AI 生成的还是代码做的，再告诉你怎么复刻；拆解结果按 VIDEO.md 格式输出。
-- 스타: 12,237
-- 점수 근거: 중요도 45 (스타 +2,913/7일 +25, 일반 사용자 영향(영상/에이전트) +15, 재부상 +5)
-- 글감 판정: +46 (업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10, 스킬·플러그인·도구 출시 +8, 스타 급증 +12, 유명(스타 12,237) +6, 감시 키워드(remotion, video) +10)
+- 링크: https://blog.google/innovation-and-ai/products/gemini-app/gemini-lower-memory-devices/
+- 내용: The Google Gemini app now supports lower-memory Android devices. Access Gemini Live and custom image creation on your phone. Download the app today.
+- 발표일(소스 기준): 2026-11-18
+- 점수 근거: 중요도 17 (일반 사용자 영향(디자인) +12, 신규 +5)
+- 글감 판정: +35 (새 기능 표현(할 수 있게 됨) +5, 대형 발표 +30)
 
-### 4. latent-spaces/brag
+### 5. [OpenAI 뉴스] Introducing ChatGPT for Sales
 
-- 링크: https://github.com/latent-spaces/brag
-- 내용: You built it. Now brag. Turn the project you just created into a short, shareable launch video with one command.
-- 스타: 22,250
-- 점수 근거: 중요도 40 (스타 +624/7일 +20, 일반 사용자 영향(영상/에이전트) +15, 재부상 +5)
-- 글감 판정: +43 (업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10, 새 기능 표현(할 수 있게 됨) +5, 스킬·플러그인·도구 출시 +8, 스타 증가 +6, 유명(스타 22,250) +6, 감시 키워드(video) +8)
+- 링크: https://openai.com/index/introducing-chatgpt-for-sales
+- 내용: Explore the new Sales plugin and 30+ new and expanded partner plugins in ChatGPT to research prospects, prepare pitches, update your CRM, and move deals forward.
+- 발표일(소스 기준): 2026-11-17
+- 점수 근거: 중요도 5 (신규 +5)
+- 글감 판정: +43 (새 기능 표현(할 수 있게 됨) +5, 스킬·플러그인·도구 출시 +8, 대형 발표 +30)
 
-### 5. shinyobjectz/raea
+### 6. [OpenAI 뉴스] Introducing OpenAI for Chile
 
-- 링크: https://github.com/shinyobjectz/raea
-- 내용: Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS, Linux and Windows.
-- 스타: 4,258
-- 점수 근거: 중요도 41 (스타 +845/7일(추정) +21, 일반 사용자 영향(영상/디자인/에이전트) +15, 신규 +5)
-- 글감 판정: +40 (업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10, 스킬·플러그인·도구 출시 +8, 스타 증가 +6, 유명(스타 4,258) +6, 감시 키워드(video, motion graphics, design) +10)
+- 링크: https://openai.com/index/introducing-openai-for-chile
+- 내용: OpenAI and the Government of Chile are partnering to support responsible AI adoption, build public-sector skills and help local startups develop AI applications.
+- 발표일(소스 기준): 2026-11-17
+- 점수 근거: 중요도 5 (신규 +5)
+- 글감 판정: +43 (새 기능 표현(할 수 있게 됨) +5, 스킬·플러그인·도구 출시 +8, 대형 발표 +30)
 
-### 6. emilkowalski/skills
+### 7. [Google AI 블로그] Introducing Tool Retrieval in the Gemini API
 
-- 링크: https://github.com/emilkowalski/skills
-- 내용: Skills for Designers and Engineers.
-- 스타: 58,866
-- 점수 근거: 중요도 38 (스타 +1,589/7일 +23, 일반 사용자 영향(영상/디자인/에이전트) +15)
-- 글감 판정: +40 (업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10, 스킬·플러그인·도구 출시 +8, 스타 급증 +12, 유명(스타 58,866) +6, 감시 키워드(design) +4)
+- 링크: https://blog.google/innovation-and-ai/technology/developers-tools/gemini-api-tool-retrieval/
+- 내용: Give your agents access to hundreds of tools while using fewer tokens with Tool Retrieval, now in preview in the Gemini API.
+- 발표일(소스 기준): 2026-11-19
+- 점수 근거: 중요도 11 (일반 사용자 영향(에이전트) +6, 신규 +5)
+- 글감 판정: +35 (새 기능 표현(할 수 있게 됨) +5, 대형 발표 +30)
 
-### 7. patch-gg/pixelfx
+### 8. [Google DeepMind 블로그] Genie 4 is now available
 
-- 링크: https://github.com/patch-gg/pixelfx
-- 내용: 244 pixel art effects, every one a small piece of code. Plus a Claude Code skill to make your own.
-- 스타: 8,752
-- 점수 근거: 중요도 42 (스타 +1,121/7일 +22, 일반 사용자 영향(영상/디자인/에이전트) +15, 재부상 +5)
-- 글감 판정: +36 (업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10, 스킬·플러그인·도구 출시 +8, 스타 급증 +12, 유명(스타 8,752) +6)
+- 링크: https://deepmind.google/blog/genie-4-is-now-available/
+- 내용: 설명 없음
+- 발표일(소스 기준): 2026-11-18
+- 점수 근거: 중요도 5 (신규 +5)
+- 글감 판정: +35 (새 기능 표현(할 수 있게 됨) +5, 대형 발표 +30)
 
-### 8. mvanhorn/last30days-skill
+### 9. XinaTian/MROffice
 
-- 링크: https://github.com/mvanhorn/last30days-skill
-- 내용: AI agent skill that researches any topic across Reddit, X, YouTube, HN, Polymarket, and the web - then synthesizes a grounded summary
-- 스타: 72,697
-- 점수 근거: 중요도 40 (스타 +4,893/7일 +25, 일반 사용자 영향(영상/자동화/에이전트) +15)
-- 글감 판정: +34 (자동화·새 연동 +8, 스킬·플러그인·도구 출시 +8, 스타 급증 +12, 유명(스타 72,697) +6)
+- 링크: https://github.com/XinaTian/MROffice
+- 내용: MR Office — the open-source editors of the AI office suite closest to Microsoft Office: documents, spreadsheets, presentations, PDF and code in the browser. Copilot in every editor edits real Word, Excel and PowerPoint files with you; an MCP server lets Claude, ChatGPT, Cursor and Codex create and …
+- 스타: 2,461
+- 점수 근거: 중요도 40 (스타 +1,372/7일(추정) +23, 일반 사용자 영향(문서·오피스/자동화/에이전트/연동(MCP)) +12, 신규 +5)
+- 글감 판정: +32 (업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10, 스타 급증 +12, 감시 키워드(pptx, excel) +10)
 
-### 9. EL4CTEO/blender-skills
+### 10. cathrynlavery/diagram-design
 
-- 링크: https://github.com/EL4CTEO/blender-skills
-- 내용: Professional Blender 5.3 workflows as Agent Skills for Claude Code, Codex, Gemini CLI, Copilot and Cursor: modeling, UVs, PBR, baking, rigging, animation, export and QA.
-- 스타: 2,703
-- 점수 근거: 중요도 38 (스타 +1,459/7일 +23, 일반 사용자 영향(영상/자동화/에이전트/연동(MCP)) +15)
-- 글감 판정: +30 (업무에 새로 쓸 수 있는 일(영상·문서·슬라이드·엑셀·디자인) +10, 스킬·플러그인·도구 출시 +8, 스타 급증 +12)
-
-### 10. bookwjitchieni1986/blender-ai-mcp-addon
-
-- 링크: https://github.com/bookwjitchieni1986/blender-ai-mcp-addon
-- 내용: AI assistant and MCP server for Blender: visual chat, scene tools, multi-agent workflows. Works with ChatGPT/GPT, Claude, Gemini, Ollama, OpenCode. Blender AI addon, copilot for 3D, bpy Python scripting, MCP integration.
-- 스타: 2,746
-- 점수 근거: 중요도 40 (스타 +2,746/7일(추정) +25, 일반 사용자 영향(자동화/에이전트/연동(MCP)) +10, 신규 +5)
-- 글감 판정: +28 (자동화·새 연동 +8, 스킬·플러그인·도구 출시 +8, 스타 급증 +12)
+- 링크: https://github.com/cathrynlavery/diagram-design
+- 내용: Editorial diagram design for Claude Code, Codex, GitHub Copilot, Cursor, Factory Droid, Qoder, and Pi. 52 diagram types. Self-contained HTML + SVG. No shadows. No Mermaid slop.
+- 스타: 70,494
+- 점수 근거: 중요도 37 (스타 +3,047/7일 +25, 일반 사용자 영향(디자인/에이전트) +12)
+- 글감 판정: +30 (스킬·플러그인·도구 출시 +8, 스타 급증 +12, 유명(스타 70,494) +6, 감시 키워드(design) +4)
 
 ## 글감 미달로 뺀 항목 (참고, 중요도순 상위 5)
 
 새 소식이지만 글감 가치가 최소 점수(10) 미만이라 후보에서 뺐다. 기준 조정은 config.json `value_rules`.
 
-- hridaya423/phonedriver — 글감 +8 (자동화·새 연동 +8)
-- DuskBotAI/duskbot — 글감 +0 (해당 규칙 없음)
-- lemonadesaltbagel/sill — 글감 +0 (해당 규칙 없음)
-- dansugc/reverse-engineer-marketing — 글감 +6 (스타 증가 +6)
-- morganlinton/BeautifulRust — 글감 +8 (스킬·플러그인·도구 출시 +8)
+- 87% of the Anthropic power will come from gas and 11% from coal in 2028 — 글감 +8 (언급 많음 +8)
+- Nasdaq erases all 2026 gains as AI sell-off dampens Anthropic’s second day — 글감 +8 (언급 많음 +8)
+- Claude solves two open problems in the physics of black holes — 글감 +8 (언급 많음 +8)
+- Anthropic’s Nasdaq debut — 글감 +8 (언급 많음 +8)
+- Perplexity and Intelligence — 글감 +8 (언급 많음 +8)
 
 ## 주간 키워드 감시 리스트 점검
 
@@ -137,36 +133,34 @@
 
 | 키워드 | GitHub(7일 활동, claude 포함) | HN(7일) | Reddit(주간 상위) | 최근 리포트 반영 | 상위 레포 |
 |---|---|---|---|---|---|
-| remotion | 775 | 실패 | 실패 | 예 | stablyai/orca, Vincentwei1021/video-shotcraft, NanmiCoder/cc-haha |
-| video | 1560 | 실패 | 실패 | 예 | ruvnet/RuView, Vincentwei1021/video-shotcraft, lemomo-ai/lemo-opuscar |
-| motion graphics | 108 | 실패 | 실패 | 예 | nexu-io/openmotion, Vincentwei1021/anything2explainer, ChatCut-Inc/agent-plugin |
-| slides | 200 | 실패 | 실패 | ⚠️ 아니오 | alchaincyf/huashu-design, genspark-ai/genoffice, OpenCoworkAI/open-codesign |
-| pptx | 72 | 실패 | 실패 | ⚠️ 아니오 | alchaincyf/huashu-design, genspark-ai/genoffice, carnot-tech/jinba-consulting-pptx-skill |
-| google workspace | 22 | 실패 | 실패 | ⚠️ 아니오 | sandbox-quantum/switch, taylorwilsdon/google_workspace_mcp, fivetaku/nopal |
-| design | 1280 | 실패 | 실패 | 예 | nextlevelbuilder/ui-ux-pro-max-skill, cathrynlavery/diagram-design, alchaincyf/huashu-design |
-| excel | 119 | 실패 | 실패 | ⚠️ 아니오 | genspark-ai/genoffice, haris-musa/excel-mcp-server, sv-grid/sv-grid |
-
-감시 리스트 일부 조회 실패: HN 'remotion' (ProxyError); HN 'video' (ProxyError); HN 'motion graphics' (ProxyError); HN 'slides' (ProxyError); HN 'pptx' (ProxyError); HN 'google workspace' (ProxyError); HN 'design' (ProxyError); HN 'excel' (ProxyError)
+| remotion | 792 | 2 | 실패 | 예 | stablyai/orca, Vincentwei1021/video-shotcraft, NanmiCoder/cc-haha |
+| video | 1634 | 13 | 실패 | 예 | ruvnet/RuView, heygen-com/hyperframes, Vincentwei1021/video-shotcraft |
+| motion graphics | 111 | 0 | 실패 | 예 | nexu-io/openmotion, Vincentwei1021/anything2explainer, ChatCut-Inc/agent-plugin |
+| slides | 204 | 1 | 실패 | ⚠️ 아니오 | alchaincyf/huashu-design, genspark-ai/genoffice, OpenCoworkAI/open-codesign |
+| pptx | 77 | 0 | 실패 | 예 | alchaincyf/huashu-design, genspark-ai/genoffice, XinaTian/MROffice |
+| google workspace | 23 | 0 | 실패 | ⚠️ 아니오 | sandbox-quantum/switch, taylorwilsdon/google_workspace_mcp, fivetaku/nopal |
+| design | 1312 | 9 | 실패 | 예 | nextlevelbuilder/ui-ux-pro-max-skill, cathrynlavery/diagram-design, alchaincyf/huashu-design |
+| excel | 123 | 0 | 실패 | 예 | genspark-ai/genoffice, haris-musa/excel-mcp-server, XinaTian/MROffice |
 
 ## 수집 상태
 
 | 소스 | 결과 | 건수 | 비고 |
 |---|---|---|---|
-| Claude Code 릴리스 | ❌ 실패 | 0 | HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/releases?per_page=15 |
-| Claude Code CHANGELOG | ❌ 실패 | 0 | HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/CHANGELOG.md |
-| Anthropic 공식 스킬 | ❌ 실패 | 0 | HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/skills/contents/skills |
-| Claude Code 내장 플러그인 | ❌ 실패 | 0 | HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-code/contents/plugins |
-| 공식 플러그인 마켓플레이스 (존재 확인 못 함) | ❌ 실패 | 0 | HTTPError: 403 Client Error: Forbidden for url: https://api.github.com/repos/anthropics/claude-plugins-official/contents/plugins |
+| Claude Code 릴리스 | 성공 | 5 |  |
+| Claude Code CHANGELOG | 성공 | 5 | 최신 2.1.330 |
+| Anthropic 공식 스킬 | 성공 | 0 | 전체 19개 |
+| Claude Code 내장 플러그인 | 성공 | 0 | 전체 0개 |
+| 공식 플러그인 마켓플레이스 (존재 확인 못 함) | 성공 | 0 | 전체 43개 |
 | Claude 제품 목록(새 제품) | 성공 | 0 | 전체 8개 |
 | Claude Code 공식 문서 목차 | 성공 | 0 | 전체 216개 |
 | Claude 플랫폼 문서 목차 | ❌ 실패 | 0 | RuntimeError: 링크 0개 — 페이지 구조 변경 또는 차단 의심 |
 | Anthropic 뉴스 | 성공 | 4 | 전체 110개 중 최근 14일·대상 분류 4개 |
-| OpenAI 뉴스 | ❌ 실패 | 0 | ProxyError: HTTPSConnectionPool(host='openai.com', port=443): Max retries exceeded with url: /news/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)'))) |
-| Google AI 블로그 | ❌ 실패 | 0 | ProxyError: HTTPSConnectionPool(host='blog.google', port=443): Max retries exceeded with url: /technology/ai/rss/ (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)'))) |
-| Google DeepMind 블로그 | ❌ 실패 | 0 | ProxyError: HTTPSConnectionPool(host='deepmind.google', port=443): Max retries exceeded with url: /blog/rss.xml (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)'))) |
+| OpenAI 뉴스 | 성공 | 6 | 글 1422개 중 대형 발표 패턴 6개 |
+| Google AI 블로그 | 성공 | 3 | 글 20개 중 대형 발표 패턴 3개 |
+| Google DeepMind 블로그 | 성공 | 5 | 글 100개 중 대형 발표 패턴 5개 |
 | GitHub 검색(신규·토픽) | 성공 | 450 | 쿼리 15개 |
-| Hacker News | ❌ 실패 | 0 | ProxyError: HTTPSConnectionPool(host='hn.algolia.com', port=443): Max retries exceeded with url: /api/v1/search_by_date?query=claude+code&tags=story&numericFilters=created_at_i%3E1794787620&hitsPerPage=100 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 For |
-| Reddit | ❌ 실패 | 0 | ProxyError: HTTPSConnectionPool(host='www.reddit.com', port=443): Max retries exceeded with url: /r/ClaudeAI/top.json?t=week&limit=50 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden (agent proxy: no rule or network setting allows this host)'))) |
-| 대형 발표 원문·국내 기사 | 성공 | 2 | 대형 발표 2개 |
+| Hacker News | 성공 | 20 | 키워드 10개 |
+| Reddit | ❌ 실패 | 0 | HTTPError: 403 Client Error: Blocked for url: https://www.reddit.com/r/ClaudeAI/top.json?t=week&limit=50 |
+| 대형 발표 원문·국내 기사 | 성공 | 3 | 국내 기사 실패(GPT-6.2 Astra and Sol): HTTPError; 국내 기사 실패(Gemini 4 Neon): HTTPError |
 
-*추적 중이지만 이번에 싣지 않은 항목 329개 (이미 다룸·변화 없음·점수 미달). 생성: 2026-11-23 | projects/claude-code-monitor/monitor.py*
+*추적 중이지만 이번에 싣지 않은 항목 357개 (이미 다룸·변화 없음·점수 미달). 생성: 2026-11-23 | projects/claude-code-monitor/monitor.py*
