@@ -270,18 +270,24 @@ def state_path(arg: str | None) -> Path:
 def record_upload(path: Path, site: str, post: dict, created: dict) -> None:
     """업로드 이력(기록용). 실패해도 업로드는 이미 끝났으므로 치명적으로 다루지 않는다."""
     try:
-        data = {"updated_at": today_kst().isoformat(timespec="seconds"), "site": site, "posts": {}}
+        now = today_kst().isoformat(timespec="seconds")
+        posts = {}
         if path.exists():
-            data.update(json.loads(path.read_text(encoding="utf-8")))
-        data.setdefault("posts", {})[post["slug"]] = {
+            try:
+                old = json.loads(path.read_text(encoding="utf-8"))
+                if isinstance(old, dict) and isinstance(old.get("posts"), dict):
+                    posts = old["posts"]
+            except (ValueError, OSError):
+                posts = {}
+        posts[post["slug"]] = {
             "id": created.get("ID"),
             "title": post["title"],
             "status": created.get("status"),
             "url": created.get("URL"),
-            "uploaded_at": data["updated_at"],
+            "uploaded_at": now,
             "source": str(post["path"]).replace(str(ROOT) + "/", ""),
         }
-        data["updated_at"] = today_kst().isoformat(timespec="seconds")
+        data = {"updated_at": now, "site": site, "posts": posts}
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     except OSError as e:
