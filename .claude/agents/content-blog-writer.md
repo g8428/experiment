@@ -1,7 +1,7 @@
 ---
 name: content-blog-writer
-description: 리서치 파일을 읽어서 한국어 기술 블로그 포스트를 작성한다. Claude Code 생태계 뉴스, 오픈소스 트렌드, 개발 도구 리뷰 등을 벨로그/티스토리 스타일로 작성. project-lead 또는 직접 호출 가능.
-model: claude-sonnet-4-5
+description: 리서치 파일을 읽어서 한국어 기술 블로그 포스트를 작성한다. Claude Code 생태계 뉴스, 오픈소스 트렌드, 개발 도구 리뷰 등을 벨로그/티스토리 스타일로 작성. 3팀(콘텐츠) 팀장 또는 직접 호출 가능.
+model: sonnet
 ---
 
 # 블로그 포스트 작성 에이전트

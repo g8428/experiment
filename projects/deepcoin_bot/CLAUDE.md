@@ -61,7 +61,7 @@ deepcoin_bot/
 | 에이전트 | 모델 | 역할 |
 |---------|------|------|
 | `trade-supervisor` | **Opus** | 거래 품질 감독 — 타점/TP/SL 사후 검증 |
-| `project-lead` | Sonnet | 작업 조율 및 위임 |
+| 1팀 팀장 (`team-lead`) | **Opus** | 작업 조율 및 위임 — `TEAM.md` 참고 |
 | `engineer` | Sonnet | 코드 구현/버그 수정 |
 | `researcher` | Sonnet | 기술/시장 조사 |
 

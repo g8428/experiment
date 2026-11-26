@@ -6,29 +6,34 @@ Python 기반 범용 실험 워크스페이스. 데이터 분석, 시각화, 자
 
 ## 새 세션 시작 시 읽기 순서
 
-1. **이 파일 (CLAUDE.md)** — 레포 전체 구조 파악
-2. **`AGENTS.md`** — 에이전트 계층/브랜치 전략/모델 정책 파악
-3. **작업 대상 프로젝트의 `HANDOVER.md`** — 해당 프로젝트의 결정 이력 및 도메인 용어 파악
-4. **해당 프로젝트의 `CLAUDE.md`** — 현재 상태 및 실행 명령어 확인
+1. **이 파일 (CLAUDE.md)** — 레포 전체 구조
+2. **`AGENTS.md`** — 조직도(메인 코디네이터·팀·본사 공용 에이전트), 모델 정책, 7단계 흐름, Slack 규칙
+3. **작업 대상 프로젝트의 `TEAM.md`** — 팀장 모델, 팀원, 검증·출시 방법, 현재 상태
+4. **해당 프로젝트의 `HANDOVER.md`** — 결정 이력과 도메인 용어
+5. **해당 프로젝트의 `CLAUDE.md`** — 실행 명령어와 세부 규칙
 
-> 딥코인봇 작업 시: `projects/deepcoin_bot/HANDOVER.md` → `projects/deepcoin_bot/CLAUDE.md` → `projects/deepcoin_bot/STRATEGY.md`
+> 딥코인봇(1팀): `TEAM.md` → `HANDOVER.md` → `CLAUDE.md` → `STRATEGY.md`
 
 ---
 
-## 에이전트 조직 구조
+## 에이전트 조직 (요약 — 자세한 건 `AGENTS.md`)
 
-이 레포에서 여러 AI 에이전트가 어떻게 계층을 이루고(헤드봇/프로젝트 에이전트/하위 에이전트), 어떤 브랜치 전략을 쓰고, 언제 Cowork 스케줄 태스크를 쓰고 언제 로컬 Claude Code를 쓰는지는 **`AGENTS.md`**에 정리되어 있다. 새 프로젝트를 시작하거나 에이전트를 spawn하기 전에 먼저 읽을 것.
+```
+재영 (오너)
+  └ 메인 코디네이터 (Opus 5.5, 레포 루트 세션) ─ 팀 배정·팀 간 조율·출시 승인 요청
+      ├ 본사 공용: architect(Fable 5.2) · reviewer(Opus 5.5) · lander · engineer · researcher(Sonnet 5.5) · quick-worker(Haiku 5.5)
+      ├ 1팀 트레이딩  팀장 Opus 5.5    projects/deepcoin_bot
+      ├ 2팀 주역      팀장 Sonnet 5.5  projects/iching
+      ├ 3팀 콘텐츠    팀장 Sonnet 5.5  projects/claude-code-monitor
+      ├ 4팀 사업발굴  팀장 Sonnet 5.5  projects/사업발굴투트랙프로젝트
+      └ 운영팀 (메인 직할) automation/mvno-monitor, GitHub Actions
+```
 
-하위 에이전트 정의는 `.claude/agents/*.md`에 커밋되어 있다.
-
-| 에이전트 | 모델 | 역할 |
-|---------|------|------|
-| `trade-supervisor` | **Opus** | 거래 품질 감독 (딥코인봇 전담) |
-| `project-lead` | Sonnet | 프로젝트 조율 및 하위 에이전트 위임 |
-| `engineer` | Sonnet | 코드 구현/버그 수정/커밋 |
-| `researcher` | Sonnet | 시장·기술 조사 및 문서화 |
-
-> **에이전트 모델 원칙**: 감독/판단 역할은 Opus, 실행/개발 역할은 Sonnet. 비용 절감과 품질 균형.
+- **모델 원칙**: 판단(코디네이터·설계·리뷰·감독)은 상위 모델 Opus 5.5·Fable 5.2, 실행(구현·랜딩·조사·잡무)은 하위 모델 Sonnet 5.5·Haiku 5.5.
+- **코디네이터는 코드를 쓰지 않는다.** 메인이든 팀장이든 계획·배정·검수만 한다.
+- **이 세션이 레포 루트에서 특정 팀 지시 없이 열렸다면 메인 코디네이터다.** 요청을 받으면 담당 팀을 정해 팀장 세션에 넘기고, 직접 고치지 않는다. 한두 줄 문서 수정 같은 아주 작은 일은 예외로 `quick-worker`에게 맡긴다.
+- 팀장 세션은 `.claude/agents/team-lead.md` 지침과 자기 팀 `TEAM.md`로 일한다.
+- Slack: #인사팀장실(재영↔메인, 승인), #실무팀(`[N팀]` 보고), #성과보고(정기 결과), #랍스터본부(출시 공지). 산출물 링크 없는 메시지는 금지.
 
 ## Directory Structure
 
@@ -37,7 +42,8 @@ Python 기반 범용 실험 워크스페이스. 데이터 분석, 시각화, 자
 - `visualization/` — 시각화 프로젝트
 - `automation/` — 자동화 스크립트 및 도구 (레거시 — 신규 프로젝트는 `projects/`로)
 - `agents/` — AI 에이전트 개발 및 유지관리 (레거시, 비어있음 — 신규는 `projects/`로)
-- `랍스터주식회사/` — 초기 프로토타입. 문화/톤 문서(`회사규칙.md`)는 유효하지만 실행 구조(`slack_commander.py`)는 `AGENTS.md`의 구조로 대체됨
+- `content/`, `research/` — 3팀(콘텐츠)의 블로그·인스타 원고와 조사 결과
+- `.claude/agents/` — 서브에이전트 정의 (본사 공용 + 팀 전용)
 - `sandbox/` — 임시 실험 및 테스트
 - `shared/utils/` — 공통 유틸리티 함수
 - `data/raw/`, `data/processed/` — 데이터 저장소
@@ -60,10 +66,13 @@ pip install -r requirements.txt   # Install dependencies
 
 ## 활성 프로젝트
 
-| 프로젝트 | 경로 | 상태 | 비고 |
-|---------|------|------|------|
-| **딥코인봇** | `projects/deepcoin_bot/` | **실거래 운용 중** (BTC/ETH, 20x) | ICT+MTF, 자가진화, HANDOVER.md 참조 |
-| mvno-monitor | `automation/mvno-monitor/` | Cowork 스케줄 태스크로 자동 운용 | 알뜰폰 특가 모니터링 |
+| 팀 | 프로젝트 | 경로 | 상태 |
+|---|---|---|---|
+| 1팀 | **딥코인봇** | `projects/deepcoin_bot/` | **실거래 운용 중** (BTC/ETH/XRP). 일목 A·추세돌파·단타 체인 |
+| 2팀 | 주역사주 | `projects/iching/` | v2 운영 배포 (Vercel `iching-nu.vercel.app`, CLI 배포) |
+| 3팀 | Claude Code 트렌드 모니터 | `projects/claude-code-monitor/` | GitHub Actions 주간 실행 → 블로그·인스타 원고 → Slack |
+| 4팀 | 사업발굴 투트랙 | `projects/사업발굴투트랙프로젝트/` | 발굴 → 실현계획 문서 작업 |
+| 운영팀 | mvno-monitor | `automation/mvno-monitor/` | 예약 루틴으로 매일 알뜰폰 특가 → Slack DM |
 
 ## Notes
 
@@ -74,17 +83,9 @@ pip install -r requirements.txt   # Install dependencies
 
 ---
 
-## 프로젝트: 랍스터 주식회사 (레거시 프로토타입)
+## 랍스터 주식회사 (레거시)
 
-AI Agent Teams로 운영되는 가상 기업 프로젝트의 첫 시도. 캐릭터/톤/Slack 채널 구조는 `랍스터주식회사/회사규칙.md`에 남아있고 여전히 유효하다.
-
-다만 `slack_commander.py`(로컬 폴링 데몬 + 텍스트 보고만 하는 페르소나 구조)는 실제 산출물 없이 상태 메시지만 반복하는 문제가 있어 실행 구조로는 더 이상 쓰지 않는다. 대체 구조는 `AGENTS.md` 참고 — 반복 작업은 Cowork 스케줄 태스크(헤드봇), 실제 개발은 로컬 Claude Code(`projects/` + `.claude/agents/`)가 맡는다.
-
-### Slack 채널 (구조는 유효, 계속 사용)
-- #랍스터본부 — 전체 공지, 중요 결정사항
-- #인사팀장실 — 사장님 ↔ 인사팀장 소통
-- #실무팀 — 사원들 협업 및 진행상황 공유
-- #성과보고 — 주간/월간 성과 보고 전용
+첫 에이전트 조직 실험. 문서와 `slack_commander.py`는 커밋 `e18becc`에서 삭제됐다. 로컬 폴링 데몬이 산출물 없이 상태 메시지만 반복했기 때문이다. Slack 채널 구조, 봇 5개, "결론부터·사족 없이" 톤은 `AGENTS.md` 5장으로 옮겨 계속 쓴다.
 
 ---
 

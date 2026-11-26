@@ -1,7 +1,7 @@
 ---
 name: content-instagram-writer
-description: 리서치 파일을 읽어서 인스타그램 포스팅(캡션 + 슬라이드 구성안)을 작성한다. 개발자/테크 커뮤니티 대상, 카드뉴스 형식. project-lead 또는 직접 호출 가능.
-model: claude-sonnet-4-5
+description: 리서치 파일을 읽어서 인스타그램 포스팅(캡션 + 슬라이드 구성안)을 작성한다. 개발자/테크 커뮤니티 대상, 카드뉴스 형식. 3팀(콘텐츠) 팀장 또는 직접 호출 가능.
+model: sonnet
 ---
 
 # 인스타그램 포스팅 작성 에이전트
