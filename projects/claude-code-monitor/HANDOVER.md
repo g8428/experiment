@@ -21,7 +21,8 @@
 ```
 monitor.py          수집(공식·GitHub·커뮤니티) → 분류 → 점수 → 중복 제거 → 리포트/상태 저장
 config.json         수집 범위·쿼리·카테고리·점수 가중치·감시 키워드 (코드 수정 없이 범위 조정)
-generate_content.py latest-top.json → 블로그/인스타 초안. 규칙은 .claude/agents/*.md 본문을 그대로 사용
+generate_content.py latest-top.json → 블로그/인스타 초안. 규칙은 .claude/agents/*.md 본문을 그대로 사용. 블로그 사본은 research/content/에도 저장
+publish_wordpress.py research/content/의 그 주 글 → 워드프레스 공개 발행(중복 방지). 기본이 publish(사용자 선택)
 slack_notify.py     #성과보고에 핵심 3줄·수집 실패·감시 경고 + 초안 스레드
 fixtures/           --dry-run 검증용 가짜 응답 (실제 소식 아님)
 blog/               새 블로그 형식 완성 예시
@@ -224,3 +225,30 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 - Actions(인증된 `GITHUB_TOKEN`)에서의 실행은 못 돌렸다. 로컬에서는 `gh auth token` 값이 GitHub API에 401로 거절되고 익명 호출만 통과해, GitHub 검색 15개 중 6개가 레이트리밋으로 실패했다(레이트리밋이지 코드 문제가 아니다 — Actions에서는 토큰이 붙어 정상).
 - 50포인트·10댓글이 적정한지는 몇 주 돌려 봐야 한다. 후보가 너무 적으면 `config.json` `community.hn_min_points`/`hn_min_comments`를 내리면 된다.
 - 남은 품질 이슈(이번에 고치지 않음): 같은 소식이 HN과 OpenAI RSS에 동시에 올라와 상위에 두 칸을 차지하는 경우가 있다(예: `GPT-6 models demonstrate intrinsic protein-design capabilities`). `fold_same_story`는 제목에서 제품·모델 이름(4단어 이내)을 뽑아 합치는데, 긴 문장형 제목은 이름이 안 뽑혀 합쳐지지 않는다. URL이 같은 경우까지 합치도록 넓히는 게 다음 후보.
+
+### 2026-11-27 — 워드프레스 자동 발행 (글이 실제 블로그에 올라감)
+
+**계기**
+- 사용자 요청: "이제 자동으로 수집해서 블로그 글 쓰는 거를 올려봐". 지금까지 블로그 초안은 `content/blog/`에만 생기고 Slack 스레드로 전달될 뿐, 블로그에는 사람이 직접 복사해 붙여야 했다.
+
+**사용자가 정한 것 / 내가 판단한 것**
+- **사용자 결정: "바로 공개하고"** — 자동 발행의 기본 상태는 `publish`(공개). 내가 제안한 기본값은 `draft`(초안)였고, 사용자가 공개를 택했다. `--status draft`는 수동용으로 남겨 뒀다. 공개로 돌리면 그 주 글이 사용자 확인 없이 블로그에 올라가고, 검색·구독자에게 노출된다는 점은 이 결정에 포함된 것으로 본다.
+- 내 판단 ① 업로드는 **Pickle 예약 액션**(`📮 주간 블로그 글 워드프레스 발행`)이 맡는다. 워크플로 안에서 올리는 쪽이 더 단순하지만, 이 환경의 GitHub App에 `workflows` 권한이 없어 ① 워크플로 파일 수정(스텝 추가)이 remote에서 거부되고 ② `actions/secrets` 등록도 403(`Resource not accessible by integration`)이다. 사용자가 github.com 웹에서 시크릿 등록 + YAML 붙여넣기를 해야 하는 방식은 "자동으로 되게 해"라는 요구와 맞지 않아, **사용자가 아무것도 하지 않아도 되는** 예약 액션 쪽으로 정했다.
+- 내 판단 ② 예약 실행은 **발행 전용 클론**(`/workspace/repos/experiment-publish`)만 `git fetch && git reset --hard`로 되돌린다. 작업 사본(`/workspace/repos/experiment`)을 되돌리면 그때 다른 작업 중인 변경이 날아가기 때문. `git clean`은 쓰지 않는다.
+- 내 판단 ③ 자동 발행은 **최근 8일 안의 글만** 대상으로 한다(`--max-age-days`, 기본 8). 이 제한이 없으면 Actions가 SKIP인 주에 10월 글 같은 옛 글이 뒤늦게 공개될 수 있다.
+
+**바꾼 것**
+- `publish_wordpress.py` 신규: 프론트매터(title·slug·meta_description·tags) 파싱 → 마크다운 HTML 변환(`markdown`) → WordPress REST `posts/new` 업로드. `--dry-run`, `--status draft|publish`(기본 publish), `--file`, `--max-age-days`. 토큰은 `WORDPRESS_ACCESS_TOKEN` 우선, 없으면 토큰 파일(기본 `/workspace/.pickle-secrets/wordpress-earninsu.json`). 토큰은 로그에 찍지 않는다.
+- 중복 방지: 업로드 전 `/sites/{site}/posts/?status=any`로 최근 글을 받아 **같은 슬러그 또는 같은 제목**이면 건너뛴다(휴지통은 제외). 월 19:00·화 08:00 두 번 돌아도 한 번만 올라간다.
+- `generate_content.py`: 블로그 글을 `content/blog/`에 쓰면서 같은 내용을 `research/content/{날짜}-blog.md`에도 저장. 워크플로가 `git add research/`만 하므로 이 사본이 커밋되어 발행 입력이 된다(동시에 주간 글의 커밋 기록).
+- `requirements.txt`에 `markdown` 추가. `scripts/publish_latest.sh`(워크스페이스, 레포 밖)는 발행 전용 클론을 최신 master로 맞추고 스크립트를 호출한다.
+
+**검증 (2026-11-27, 로컬)**
+- `py_compile` 통과. `monitor.py --dry-run`(fixture 전체)·`generate_content.py --dry-run` 회귀 확인.
+- 예시 글(2026-11-16 인스타 카드뉴스 원문, 제목에 `[테스트]`)으로 **실제 공개 발행**: ID 48 → `https://earninsu.wordpress.com/2026/11/27/test-wp-auto-publish-check/` (HTTP 200 확인). 같은 파일로 다시 실행 → "건너뜀: 이미 올린 글입니다 (ID 48…)" 확인. 확인 후 휴지통으로 옮겨(status `trash`, 페이지 404) 블로그에 테스트 글이 남지 않게 했다.
+- `--dry-run`은 업로드 없이 대상·중복 여부만 출력하고 exit 0.
+
+**확인 못 한 것 / 남은 것**
+- 워크플로 수동 실행(`actions/workflows/.../dispatches`)은 `actions:write` 권한이 없어 403일 가능성이 크다(이번에 시도해 본 결과는 PR 본문 참고).
+- Actions에서 생성→커밋→예약 액션이 발행하는 전체 흐름은 **월요일 첫 실행**에서 처음 돈다. 그 전까지는 위의 예시 글로 발행·중복 방지·휴지통만 확인했다.
+- 나중에 워크플로 권한이 생기면 "블로그 + 인스타 컨텐츠 생성" 스텝 뒤에 `pip install markdown && python projects/claude-code-monitor/publish_wordpress.py --status publish` 스텝과 `WORDPRESS_ACCESS_TOKEN` 시크릿을 넣어 Actions 안에서 바로 발행할 수 있다(스크립트는 그대로 쓴다).
