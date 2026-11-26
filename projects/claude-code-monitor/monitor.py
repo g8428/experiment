@@ -2,7 +2,9 @@
 Claude Code·AI 도구 소식 모니터 (v2)
 
 v1은 "GitHub 검색 5개 쿼리 → 스타순 TOP 20" 하나뿐이라 공식 발표·신규 스킬·커뮤니티 화제를 못 잡았다.
-v2는 공식 소스 + GitHub(신규·급상승) + 커뮤니티(HN/Reddit)를 모아 중요도 점수로 상위 N개만 리포트에 올린다.
+v2는 공식 소스 + GitHub(신규·급상승) + 커뮤니티(Hacker News)를 모아 중요도 점수로 상위 N개만 리포트에 올린다.
+v3(2026-11-27)에서 Reddit 수집을 걷어내고 Hacker News로 대신한다. Reddit은 로그인·개발자 토큰 없이 오는
+데이터센터 IP를 403으로 막아 Actions에서 한 번도 성공하지 못했다(자세한 경위는 HANDOVER.md).
 v2.1(2026-10-14)부터 '글감 가치 판정'(config.json value_rules)을 통과한 항목만 후보가 된다. 릴리스 노트는 버전별이 아니라
 이번 주기 릴리스를 하나로 묶어 bullet 한 줄씩 판정한다. 감시 키워드에 걸린 항목은 후보 풀에 올려 가산한다.
 왜 이렇게 바꿨는지는 HANDOVER.md 참고.
@@ -44,13 +46,7 @@ RESEARCH_DIR = ROOT / "research"
 STATE_PATH = RESEARCH_DIR / "state" / "claude-code-monitor.json"   # research/ 아래라 봇 커밋 범위 안에 있다
 TOP_PATH = RESEARCH_DIR / "state" / "latest-top.json"               # generate_content.py / slack_notify.py 입력
 UA = "g8428-experiment-claude-code-monitor/2.0"
-# Reddit은 UA에 앱 식별자를 요구한다(권장 형식 platform:app-id:version (by /u/user)).
-# OAuth를 켜면 REDDIT_USER_AGENT로 바꿀 수 있다.
-REDDIT_UA = os.getenv("REDDIT_USER_AGENT") or UA
-# Reddit은 로그인·개발자 토큰 없이 오는 데이터센터 IP(GitHub Actions 포함)를 403 "blocked by network security"로 막는다.
-# REDDIT_CLIENT_ID·REDDIT_CLIENT_SECRET이 있으면 application-only OAuth(client_credentials)로 수집한다.
-REDDIT_BLOCK_HINT = ("Reddit이 이 실행 환경의 IP를 막았습니다(로그인·개발자 토큰 필요). "
-                     "REDDIT_CLIENT_ID·REDDIT_CLIENT_SECRET 시크릿을 넣으면 OAuth(application-only)로 수집합니다.")
+HN_STORY_URL = "https://news.ycombinator.com/item?id={}"
 GH_REPO_RE = re.compile(r"https?://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)")
 
 
@@ -59,13 +55,9 @@ GH_REPO_RE = re.compile(r"https?://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]
 class Fetcher:
     """모든 외부 호출은 key를 달고 여기로 들어온다. fixtures 모드면 key로 가짜 응답을 돌려준다."""
 
-    def __init__(self, token: str | None, fixtures: dict | None = None,
-                 reddit_client_id: str | None = None, reddit_client_secret: str | None = None):
+    def __init__(self, token: str | None, fixtures: dict | None = None):
         self.token = token
         self.fixtures = fixtures
-        self.reddit_client_id = (reddit_client_id or "").strip()
-        self.reddit_client_secret = (reddit_client_secret or "").strip()
-        self._reddit_token: str | None = None
         self.session = requests  # 테스트에서 가짜 세션을 넣을 수 있다
 
     def get(self, key: str, url: str, params: dict | None = None, headers: dict | None = None, text: bool = False):
@@ -94,26 +86,6 @@ class Fetcher:
     def pause(self, seconds: float):
         if self.fixtures is None:
             time.sleep(seconds)
-
-    # ── Reddit (선택: OAuth) ────────────────────────────────────────────────
-    @property
-    def reddit_oauth(self) -> bool:
-        return bool(self.reddit_client_id and self.reddit_client_secret)
-
-    def reddit_token(self) -> str:
-        """application-only OAuth 토큰(client_credentials). 자격증명이 없으면 부르지 않는다."""
-        if self._reddit_token:
-            return self._reddit_token
-        resp = self.session.post("https://www.reddit.com/api/v1/access_token",
-                                 data={"grant_type": "client_credentials"},
-                                 headers={"User-Agent": REDDIT_UA},
-                                 auth=(self.reddit_client_id, self.reddit_client_secret), timeout=20)
-        resp.raise_for_status()
-        token = (resp.json() or {}).get("access_token")
-        if not token:
-            raise RuntimeError(f"Reddit OAuth 토큰 발급 실패: {resp.text[:200]}")
-        self._reddit_token = token
-        return token
 
 
 class Run:
@@ -161,6 +133,11 @@ def merge(items: dict[str, dict], new: dict):
         old["stars"] = max(old.get("stars") or 0, new["stars"])
     old["mentions"] += new.get("mentions", 0)
     old["text"] += " " + new["text"]
+    for k in ("points", "comments"):
+        if new.get(k) is not None:
+            old[k] = max(old.get(k) or 0, new[k])
+    if new.get("discussion_url") and not old.get("discussion_url"):
+        old["discussion_url"] = new["discussion_url"]
     for k in ("summary", "created_at", "published_at"):
         if not old.get(k) and new.get(k):
             old[k] = new[k]
@@ -516,72 +493,66 @@ def collect_github(f: Fetcher, cfg: dict, now: datetime):
 # ─── 수집기: 커뮤니티 ─────────────────────────────────────────────────────────
 
 def collect_hn(f: Fetcher, cfg: dict, now: datetime, counts: dict):
+    """Hacker News(Algolia) 최근 7일 인기 글·토론.
+
+    두 경로로 본다.
+      ① search_by_date — 이번 주 글을 최신순으로 넓게(100건) 받는다. 건수(nbHits)는 키워드 급증 판정에 쓴다.
+      ② search — 같은 7일 창을 관련도·인기순으로 받아, ①의 100건 밖으로 밀린 고득점 글을 보완한다.
+    두 경로 모두 Algolia numericFilters로 포인트·댓글 기준을 걸고, 코드에서 한 번 더 확인한다.
+    댓글 수를 기준에 넣는 이유: 댓글 0개짜리 링크는 '토론'이 아니다.
+    레딧(Reddit)은 걷어냈다. Reddit이 데이터센터 IP(Actions 포함)를 403으로 막아 한 번도 성공하지 못했고,
+    OAuth를 넣어도 시크릿 2개를 사용자가 계속 관리해야 했다(HANDOVER.md 2026-11-27).
+    """
     cm = cfg["community"]
     since = int((now - timedelta(days=7)).timestamp())
-    major_min = cm.get("hn_major_min_points", 10**9)
+    major_min = int(cm.get("hn_major_min_points", 10 ** 9))
+    min_comments = int(cm.get("hn_min_comments", 0))
     # 업계 키워드(openai, gemini 등)는 하루에도 글이 많아서 아주 화제가 된 글(major_min 이상)만 본다
-    queries = [(kw, cm["hn_min_points"]) for kw in cm["hn_keywords"]]
+    queries = [(kw, int(cm["hn_min_points"])) for kw in cm["hn_keywords"]]
     queries += [(kw, major_min) for kw in cm.get("hn_major_keywords", []) if kw not in cm["hn_keywords"]]
-    items = []
+    by_id: dict[str, dict] = {}
     for kw, min_points in queries:
-        data = f.get(f"hn::{kw}", "https://hn.algolia.com/api/v1/search_by_date",
-                     {"query": kw, "tags": "story", "numericFilters": f"created_at_i>{since}", "hitsPerPage": 100})
-        hits = data.get("hits", [])
-        counts[f"hn::{kw}"] = int(data.get("nbHits", len(hits)))
-        for h in hits:
-            points = int(h.get("points") or 0)
-            if points < min_points:
-                continue
-            disc = f"https://news.ycombinator.com/item?id={h.get('objectID')}"
-            url = h.get("url") or disc
-            mentions = points + int(h.get("num_comments") or 0)
-            source = "hackernews_major" if points >= major_min else "hackernews"
-            rid = gh_repo_id(url)
-            if rid:
-                items.append(make_item(rid, rid[3:], url, h.get("title", ""), source=source, mentions=mentions))
-            else:
-                items.append(make_item(f"hn:{h.get('objectID')}", h.get("title", ""), url, f"HN 토론: {disc}",
-                                       kind="community", source=source, mentions=mentions,
-                                       published_at=h.get("created_at")))
-    return items, len(items), f"키워드 {len(queries)}개"
-
-
-def collect_reddit(f: Fetcher, cfg: dict, counts: dict):
-    cm = cfg["community"]
-    kws = list(dict.fromkeys(cm["hn_keywords"] + cfg["watchlist"]["keywords"]))
-    items = []
-    for sub in cm["reddit_subs"]:
-        if f.reddit_oauth:  # 개발자 토큰(OAuth) — IP 차단을 우회하는 공식 경로
-            key, url, headers = f"reddit::{sub}", f"https://oauth.reddit.com/r/{sub}/top", {
-                "Authorization": f"Bearer {f.reddit_token()}", "User-Agent": REDDIT_UA}
-            data = f.get(key, url, {"t": "week", "limit": 50}, headers)
-        else:
-            try:
-                data = f.get(f"reddit::{sub}", f"https://www.reddit.com/r/{sub}/top.json", {"t": "week", "limit": 50})
-            except requests.HTTPError as e:
-                code = e.response.status_code if e.response is not None else "?"
-                if code in (401, 403, 429):
-                    raise RuntimeError(f"{REDDIT_BLOCK_HINT} (r/{sub} HTTP {code})") from e
-                raise
-        posts = [c["data"] for c in data.get("data", {}).get("children", [])]
-        for kw in kws:
-            n = sum(1 for p in posts if kw.lower() in (p.get("title", "") + " " + p.get("selftext", "")).lower())
-            counts[f"reddit::{kw}"] = counts.get(f"reddit::{kw}", 0) + n
-        for p in posts:
-            score = int(p.get("score") or 0)
-            if score < cm["reddit_min_score"]:
-                continue
-            permalink = "https://www.reddit.com" + p.get("permalink", "")
-            url = p.get("url_overridden_by_dest") or permalink
-            mentions = score + int(p.get("num_comments") or 0)
-            rid = gh_repo_id(url)
-            if rid:
-                items.append(make_item(rid, rid[3:], url, p.get("title", ""), source="reddit", mentions=mentions))
-            else:
-                items.append(make_item(f"reddit:{p.get('id')}", p.get("title", ""), permalink,
-                                       one_line(p.get("selftext", ""), 200), kind="community",
-                                       source=f"reddit/r/{sub}", mentions=mentions))
-    return items, len(items), f"서브레딧 {len(cm['reddit_subs'])}개"
+        flt = f"created_at_i>{since},points>={min_points},num_comments>={min_comments}"
+        # (fixture key, Algolia 경로, numericFilters, 건수 집계 여부) — 최신순 패스는 키워드 건수 집계도 겸한다
+        passes = ((f"hn::{kw}", "search_by_date", f"created_at_i>{since}", True),
+                  (f"hn_top::{kw}", "search", flt, False))
+        for key, path, numeric, count_it in passes:
+            data = f.get(key, f"https://hn.algolia.com/api/v1/{path}",
+                         {"query": kw, "tags": "story", "numericFilters": numeric, "hitsPerPage": 100})
+            hits = data.get("hits", [])
+            if count_it:
+                counts[f"hn::{kw}"] = int(data.get("nbHits", len(hits)))
+            for h in hits:
+                points = int(h.get("points") or 0)
+                comments = int(h.get("num_comments") or 0)
+                if points < min_points or comments < min_comments:
+                    continue
+                oid = str(h.get("objectID"))
+                disc = HN_STORY_URL.format(oid)
+                url = h.get("url") or disc
+                mentions = points + comments
+                source = "hackernews_major" if points >= major_min else "hackernews"
+                rid = gh_repo_id(url)
+                if rid:
+                    it = make_item(rid, rid[3:], url, h.get("title", ""), source=source, mentions=mentions,
+                                   published_at=h.get("created_at"))
+                else:
+                    it = make_item(f"hn:{oid}", h.get("title", ""), url,
+                                   f"HN {points}점 · 댓글 {comments}개",
+                                   kind="community", source=source, mentions=mentions,
+                                   published_at=h.get("created_at"))
+                it["points"], it["comments"], it["discussion_url"] = points, comments, disc
+                # 같은 글이 두 경로·여러 키워드에 걸린다. mentions를 두 번 더하지 않고 하나만 남긴다.
+                old = by_id.get(it["id"])
+                if old is None or mentions > (old.get("mentions") or 0):
+                    if old is not None:
+                        it["sources"] = sorted(set(it["sources"]) | set(old["sources"]))
+                    by_id[it["id"]] = it
+                else:
+                    old["sources"] = sorted(set(old["sources"]) | set(it["sources"]))
+    items = list(by_id.values())
+    note = f"키워드 {len(queries)}개 · 포인트 {cm['hn_min_points']}+ / 댓글 {min_comments}+"
+    return items, len(items), note
 
 
 # ─── 분류·점수·중복 제거 ─────────────────────────────────────────────────────
@@ -679,7 +650,9 @@ def judge_value(it: dict, cfg: dict) -> None:
         or delta >= mins.get("star_delta_7d", 0)
         or mentions >= mins.get("mentions", 0)
     )
-    weak_summary = len((it.get("summary") or "").strip()) < cfg["watchlist"].get("weak_evidence_min_summary", 0)
+    # HN 글은 제목이 곧 내용이고 토론 링크가 따로 붙는다. 요약이 짧다고 '설명 부족'으로 보지 않는다(2026-11-27).
+    weak_summary = (it["kind"] != "community"
+                    and len((it.get("summary") or "").strip()) < cfg["watchlist"].get("weak_evidence_min_summary", 0))
     grade = value >= vr["min_value"]
     needs_check = False
     if grade and not popular:
@@ -919,7 +892,7 @@ def watchlist_fetch(f: Fetcher, cfg: dict, now: datetime, counts: dict):
     owners = {o.lower() for o in cfg["official"].get("owners", ["anthropics"])}
     rows, failed, extra = [], [], []
     for kw in cfg["watchlist"]["keywords"]:
-        row = {"kw": kw, "gh": None, "gh_top": [], "hn": None, "reddit": counts.get(f"reddit::{kw}")}
+        row = {"kw": kw, "gh": None, "gh_top": [], "hn": None}
         try:
             d = f.gh(f"watch_gh::{kw}", "/search/repositories",
                      {"q": f'"{kw}" claude pushed:>{week}', "sort": "stars", "order": "desc", "per_page": 3})
@@ -958,7 +931,7 @@ def watchlist_finalize(rows: list[dict], state: dict, top: list[dict], now: date
             kw_match(kw, (v.get("kw_text") or "").lower()) and any(d >= week_ago for d in v.get("reported", []))
             for v in state.get("items", {}).values()
         )
-        signal = (row["gh"] or 0) >= 5 or (row["hn"] or 0) >= 3 or (row["reddit"] or 0) >= 3
+        signal = (row["gh"] or 0) >= 5 or (row["hn"] or 0) >= 3
         row["warn"] = signal and not row["in_top"] and not row["recent_reported"]
 
 
@@ -978,7 +951,7 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
                  bundle: dict | None = None, dropped: list[dict] | None = None) -> str:
     heads = top[:3] if heads is None else heads
     L = [f"# Claude Code·AI 도구 소식 모니터 ({today})", "",
-         f"> 공식 발표 · 업계(OpenAI·Google) 발표 · GitHub 신규/급상승 · 커뮤니티(HN/Reddit)를 모아 글감 가치 판정을 통과한 것만 상위 {cfg['top_n']}개 싣는다. "
+         f"> 공식 발표 · 업계(OpenAI·Google) 발표 · GitHub 신규/급상승 · 커뮤니티(Hacker News 인기 글·토론)를 모아 글감 가치 판정을 통과한 것만 상위 {cfg['top_n']}개 싣는다. "
          "🔥대형 발표(새 제품·새 모델 출시)는 점수와 무관하게 맨 위, 나머지는 점수순. "
          "릴리스 노트는 이번 주기분을 묶어 줄 단위로 판정한다. 이미 다룬 소식은 반응이 급증한 경우(재부상)만 다시 싣는다.", ""]
     if baseline:
@@ -1021,6 +994,9 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
             L.append(f"- 국내 기사(최근 7일): {t['kr_news']}건")
         if t.get("detail"):
             L.append(f"- 원문 발췌: {one_line(t['detail'], 200)}")
+        if t.get("points") is not None:
+            L.append(f"- HN 반응: 포인트 {t['points']:,} · 댓글 {t.get('comments') or 0:,}개"
+                     + (f" · 토론 {t['discussion_url']}" if t.get("discussion_url") else ""))
         L += [f"- 점수 근거: 중요도 {t['importance']:.0f} ({', '.join(t['reasons']) or '없음'})",
               f"- 글감 판정: {t['value']:+.0f} ({', '.join(t['value_reasons']) or '없음'})", ""]
 
@@ -1030,6 +1006,17 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
               "기준 조정은 config.json `value_rules`.", ""]
         L += [f"- {one_line(t['title'], 80)} — 글감 {t['value']:+.0f} ({', '.join(t['value_reasons']) or '해당 규칙 없음'})"
               for t in dropped[:5]]
+        L.append("")
+
+    # 레딧 자리를 대신한 커뮤니티 수집원(HN)이 이번에 뭘 봤는지 한 눈에. 상위 10개에 못 들어도 토론은 보인다.
+    hn = sorted((i for i in all_items if i.get("points") and ({"hackernews", "hackernews_major"} & set(i["sources"]))),
+                key=lambda i: (i["points"], i.get("comments") or 0), reverse=True)[:5]
+    if hn:
+        L += ["## 커뮤니티 반응 (Hacker News, 최근 7일)", "",
+              "이번 주 HN에서 포인트·댓글 기준을 넘은 글 중 포인트 순 상위 5개(상위 목록과 별개). 링크는 HN 토론.", "",
+              "| 포인트 | 댓글 | 글 |", "|---|---|---|"]
+        L += [f"| {i['points']:,} | {i.get('comments') or 0:,} | [{one_line(i['title'], 90)}]({i.get('discussion_url') or i['url']}) |"
+              for i in hn]
         L.append("")
 
     if surges:
@@ -1042,12 +1029,12 @@ def build_report(today: str, cfg: dict, run: Run, top: list[dict], all_items: li
         L += ["## 주간 키워드 감시 리스트 점검", "",
               "큰 소식이 점수 체계에서 빠지는 것을 막는 안전장치. 키워드에 걸린 항목은 후보 풀에 올려 가산점을 준다. "
               "그래도 바깥 반응이 있는데 최근 7일 리포트에 없으면 ⚠️.", "",
-              "| 키워드 | GitHub(7일 활동, claude 포함) | HN(7일) | Reddit(주간 상위) | 최근 리포트 반영 | 상위 레포 |",
-              "|---|---|---|---|---|---|"]
+              "| 키워드 | GitHub(7일 활동, claude 포함) | HN(7일) | 최근 리포트 반영 | 상위 레포 |",
+              "|---|---|---|---|---|"]
         for r in rows:
             fmt = lambda v: "실패" if v is None else str(v)  # noqa: E731
             done = "예" if (r["in_top"] or r["recent_reported"]) else ("⚠️ 아니오" if r["warn"] else "아니오")
-            L.append(f"| {r['kw']} | {fmt(r['gh'])} | {fmt(r['hn'])} | {fmt(r['reddit'])} | {done} | "
+            L.append(f"| {r['kw']} | {fmt(r['gh'])} | {fmt(r['hn'])} | {done} | "
                      f"{', '.join(r['gh_top']) or '-'} |")
         if failed:
             L += ["", "감시 리스트 일부 조회 실패: " + "; ".join(failed)]
@@ -1086,8 +1073,7 @@ def main(argv: list[str] | None = None) -> int:
 
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
     fixtures = load_fixtures(args.fixtures) if args.fixtures else None
-    f = Fetcher(os.getenv("GITHUB_TOKEN"), fixtures,
-                os.getenv("REDDIT_CLIENT_ID"), os.getenv("REDDIT_CLIENT_SECRET"))
+    f = Fetcher(os.getenv("GITHUB_TOKEN"), fixtures)
     now = datetime.now(KST)
     if fixtures is not None:
         # fixtures 모드: 실제 상태 파일은 읽지도 쓰지도 않는다. 고정 시각/초기 상태는 fixture가 정한다.
@@ -1115,7 +1101,6 @@ def main(argv: list[str] | None = None) -> int:
         batches.append(run.source(fd["name"], fd["label"], collect_feed, f, cfg, now, fd))
     batches.append(run.source("github_search", "GitHub 검색(신규·토픽)", collect_github, f, cfg, now))
     batches.append(run.source("hackernews", "Hacker News", collect_hn, f, cfg, now, counts))
-    batches.append(run.source("reddit", "Reddit", collect_reddit, f, cfg, counts))
     for batch in batches:
         for it in batch or []:
             merge(items, it)
@@ -1152,7 +1137,8 @@ def main(argv: list[str] | None = None) -> int:
         "top": [{k: t.get(k) for k in ("id", "title", "url", "summary", "kind", "official", "categories", "stars",
                                         "star_delta_7d", "mentions", "score", "importance", "reasons", "value",
                                         "value_reasons", "needs_check", "watch_hits", "published_at", "versions",
-                                        "first_seen", "sources", "resurfaced", "major", "kr_news", "detail")}
+                                        "first_seen", "sources", "resurfaced", "major", "kr_news", "detail",
+                                        "points", "comments", "discussion_url")}
                 for t in top],
     }
 

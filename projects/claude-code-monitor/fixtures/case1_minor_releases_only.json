@@ -9,10 +9,9 @@
    "nbHits": 0,
    "hits": []
   },
-  "reddit::": {
-   "data": {
-    "children": []
-   }
+  "hn_top::": {
+   "nbHits": 0,
+   "hits": []
   },
   "watch_gh::": {
    "total_count": 0,
