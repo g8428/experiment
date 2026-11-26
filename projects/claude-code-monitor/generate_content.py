@@ -12,6 +12,9 @@ Actions 결과물이 바뀌지 않았다 — HANDOVER.md 참고).
   python projects/claude-code-monitor/generate_content.py --dry-run --top <폴더>/latest-top.json --fake-blog <응답.md>
       # monitor.py --dump 결과로 프롬프트 확인 + 가짜 블로그 응답으로 SKIP/정상 경로 처리 확인 (파일 안 씀)
 
+블로그 글은 content/blog/에 저장하고, 같은 내용을 research/content/{날짜}-blog.md에도 남긴다
+(워크플로가 research/만 커밋하므로, 자동 발행은 이 사본을 받아 publish_wordpress.py가 처리한다).
+
 글감이 사소하면 블로그 에이전트가 첫 줄에 `SKIP: <사유>`만 출력한다(규칙은 content-blog-writer.md).
 그러면 블로그·인스타 파일을 만들지 않고(인스타 호출도 생략) content/YYYY-MM-DD-skip.txt에 사유를 남긴다.
 slack_notify.py가 이 파일을 보고 "이번 주는 글감 없음(사유)"를 보낸다. 판단은 기존 블로그 호출 안에서 한다(추가 호출 없음).
@@ -46,6 +49,10 @@ AGENTS_DIR = ROOT / ".claude" / "agents"
 CONTENT_DIR = ROOT / "content"
 BLOG_DIR = ROOT / "content" / "blog"
 INSTAGRAM_DIR = ROOT / "content" / "instagram"
+# 워크플로가 커밋하는 건 research/ 뿐이라(git add research/), 블로그 글은 research/ 아래에도 사본을 남긴다.
+# 용도: ① 주간 글의 커밋 기록 ② 워드프레스 자동 발행(publish_wordpress.py)의 입력.
+# 업로드는 Actions 밖(Pickle 예약 액션)에서 이 사본을 받아 하므로, Actions 러너의 content/blog는 여전히 커밋하지 않는다.
+RESEARCH_CONTENT_DIR = RESEARCH_DIR / "content"
 MODEL = "claude-opus-5"
 CANDIDATES = 5  # 에이전트가 이 중에서 1개를 고른다
 # claude-opus-5는 thinking(adaptive)이 기본으로 켜져 있고 끌 수 없다(thinking {"type":"disabled"}는 400).
@@ -234,6 +241,12 @@ def run(top: dict, research_path: Path, today: str) -> dict:
         blog_path.write_text(blog, encoding="utf-8")
         print(f"블로그 저장: {blog_path}")
         result["blog"] = str(blog_path.relative_to(ROOT))
+        # 커밋 대상(research/)에 발행용 사본을 남긴다 — 원문 그대로(프론트매터 포함)
+        RESEARCH_CONTENT_DIR.mkdir(parents=True, exist_ok=True)
+        publish_path = RESEARCH_CONTENT_DIR / f"{today}-blog.md"
+        publish_path.write_text(blog, encoding="utf-8")
+        print(f"발행용 사본: {publish_path.relative_to(ROOT)}")
+        result["blog_publish_copy"] = str(publish_path.relative_to(ROOT))
         blog_for_insta = blog
 
     print("인스타그램 카드뉴스 생성 중...")

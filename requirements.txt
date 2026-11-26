@@ -23,4 +23,5 @@ ipykernel
 # Utilities
 python-dotenv
 pyyaml
+markdown
 tqdm
