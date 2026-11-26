@@ -245,10 +245,12 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 
 **검증 (2026-11-27, 로컬)**
 - `py_compile` 통과. `monitor.py --dry-run`(fixture 전체)·`generate_content.py --dry-run` 회귀 확인.
-- 예시 글(2026-11-16 인스타 카드뉴스 원문, 제목에 `[테스트]`)으로 **실제 공개 발행**: ID 48 → `https://earninsu.wordpress.com/2026/11/27/test-wp-auto-publish-check/` (HTTP 200 확인). 같은 파일로 다시 실행 → "건너뜀: 이미 올린 글입니다 (ID 48…)" 확인. 확인 후 휴지통으로 옮겨(status `trash`, 페이지 404) 블로그에 테스트 글이 남지 않게 했다.
+- 예시 글(2026-11-16 인스타 카드뉴스 원문, 제목에 `[테스트]`)으로 **실제 공개 발행**: ID 48 → `https://earninsu.wordpress.com/2026/11/27/test-wp-auto-publish-check/`. 같은 파일로 다시 실행 → "건너뜀: 이미 올린 글입니다 (ID 48…)" 확인. 확인 후 휴지통으로 옮겼다(status `trash`, 그 URL은 바로 404) — 블로그에 테스트 글이 남지 않게 했다.
+- **Actions 엔드투엔드 확인 (2026-11-27 수동 실행)**: `gh api -X POST repos/g8428/experiment/actions/workflows/claude-code-monitor.yml/dispatches -f ref=master`가 **403이 아니라 성공**했다(run 45856468147, 머지 커밋 d92771d, 모든 스텝 success). 그 실행이 `research/content/2026-11-27-blog.md`를 커밋한 것을 확인(`generate_content.py` 사본 저장이 Actions에서도 동작). 이어서 예약 액션이 쓰는 경로(`bash /workspace/scripts/publish_latest.sh`)로 **실제 공개 발행**: ID 50, `https://earninsu.wordpress.com/2026/11/27/gpt-6-protein-design/` (제목 "GPT-6, 단백질까지 설계한다고요?", 태그 6개·발췌 반영). 다시 실행하면 "건너뜀(중복)", 올릴 글이 없을 때는 "올릴 새 글 없음" + exit 0 확인.
+- **알아 둘 것: 블로그 사이트가 아직 공개 전(coming soon) 상태다** — API 기준 `is_coming_soon: true`, `launch_status: "unlaunched"`, `blog_public: 0`. 그래서 글이 publish 상태여도 방문자에게는 "곧 공개됩니다" 화면이 보인다. 사이트 공개(Launch)는 사용자 결정이라 건드리지 않았다.
 - `--dry-run`은 업로드 없이 대상·중복 여부만 출력하고 exit 0.
 
 **확인 못 한 것 / 남은 것**
-- 워크플로 수동 실행(`actions/workflows/.../dispatches`)은 `actions:write` 권한이 없어 403일 가능성이 크다(이번에 시도해 본 결과는 PR 본문 참고).
-- Actions에서 생성→커밋→예약 액션이 발행하는 전체 흐름은 **월요일 첫 실행**에서 처음 돈다. 그 전까지는 위의 예시 글로 발행·중복 방지·휴지통만 확인했다.
+- 스케줄(월 19:00·화 08:00 KST)이 실제로 그 시각에 도는지는 이번 실행으로 확인할 수 없다(정의만 준비, 등록은 메인 에이전트가 한다).
+- Actions가 13~16시로 밀려 도는 주에 월요일 19:00 실행이 그 주 글을 못 잡으면 화요일 08:00이 잡는다. 둘 다 그 전에 끝나지 않은 주는 다음 주에 잡힌다(최근 8일 제한 때문에 옛 글이 뒤늦게 올라가지는 않는다).
 - 나중에 워크플로 권한이 생기면 "블로그 + 인스타 컨텐츠 생성" 스텝 뒤에 `pip install markdown && python projects/claude-code-monitor/publish_wordpress.py --status publish` 스텝과 `WORDPRESS_ACCESS_TOKEN` 시크릿을 넣어 Actions 안에서 바로 발행할 수 있다(스크립트는 그대로 쓴다).

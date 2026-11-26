@@ -152,6 +152,7 @@ content/  (Actions에서는 커밋 안 하고 Slack 스레드로만 전달)
 
 - 자동: Pickle 예약 액션 `📮 주간 블로그 글 워드프레스 발행` (월 19:00 / 화 08:00 KST).
   `scripts/publish_latest.sh` → 발행 전용 클론을 origin/master로 맞춘 뒤 이 스크립트를 `--status publish`로 부른다.
+  (스크립트는 레포 밖 워크스페이스 파일 `/workspace/scripts/publish_latest.sh`다 — 레포를 되돌리는 도구라서 레포 안에 두지 않았다.)
   워크플로가 13~16시로 밀려 도는 경우가 있어 월요일 저녁 1차, 화요일 아침 2차로 돌린다(중복 방지가 있어 두 번 돌아도 한 번만 올라간다).
 - 수동/확인:
   ```bash
@@ -163,6 +164,7 @@ content/  (Actions에서는 커밋 안 하고 Slack 스레드로만 전달)
 - 중복 방지: 업로드 전 WordPress REST로 최근 글을 받아 **같은 슬러그 또는 같은 제목**이 있으면 건너뛴다(휴지통은 없는 것으로 본다). 그래서 월·화 두 번 돌아도 한 번만 올라간다.
 - 토큰: `WORDPRESS_ACCESS_TOKEN` 환경변수 → 없으면 토큰 파일(`WORDPRESS_TOKEN_FILE`, 기본 `/workspace/.pickle-secrets/wordpress-earninsu.json`, 권한 600). **토큰은 로그·커밋·PR에 쓰지 않는다.**
 - 업로드 이력: `/workspace/state/wordpress-published.json` (`WORDPRESS_STATE_FILE`로 변경). 레포 밖에 두는 이유는 예약 액션이 매번 `git reset --hard`로 레포를 되돌리기 때문이고, 판단은 항상 WordPress 쪽 실제 글로 한다(이력은 기록용).
+- **블로그 사이트는 아직 공개 전(coming soon) 상태다**(2026-11-27 기준 `is_coming_soon: true`, `launch_status: unlaunched`). 글은 publish 상태로 올라가지만 방문자에게는 "곧 공개됩니다"가 보인다. 사이트 공개는 사용자 결정이라 손대지 않는다.
 - 블로그 본문은 `markdown` 패키지로 HTML 변환한다(확장: extra·sane_lists·nl2br·toc). `pip install markdown` 필요(requirements.txt에 추가).
 
 ## Secrets
