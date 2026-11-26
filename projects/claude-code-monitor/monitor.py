@@ -44,6 +44,13 @@ RESEARCH_DIR = ROOT / "research"
 STATE_PATH = RESEARCH_DIR / "state" / "claude-code-monitor.json"   # research/ 아래라 봇 커밋 범위 안에 있다
 TOP_PATH = RESEARCH_DIR / "state" / "latest-top.json"               # generate_content.py / slack_notify.py 입력
 UA = "g8428-experiment-claude-code-monitor/2.0"
+# Reddit은 UA에 앱 식별자를 요구한다(권장 형식 platform:app-id:version (by /u/user)).
+# OAuth를 켜면 REDDIT_USER_AGENT로 바꿀 수 있다.
+REDDIT_UA = os.getenv("REDDIT_USER_AGENT") or UA
+# Reddit은 로그인·개발자 토큰 없이 오는 데이터센터 IP(GitHub Actions 포함)를 403 "blocked by network security"로 막는다.
+# REDDIT_CLIENT_ID·REDDIT_CLIENT_SECRET이 있으면 application-only OAuth(client_credentials)로 수집한다.
+REDDIT_BLOCK_HINT = ("Reddit이 이 실행 환경의 IP를 막았습니다(로그인·개발자 토큰 필요). "
+                     "REDDIT_CLIENT_ID·REDDIT_CLIENT_SECRET 시크릿을 넣으면 OAuth(application-only)로 수집합니다.")
 GH_REPO_RE = re.compile(r"https?://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)")
 
 
@@ -52,9 +59,14 @@ GH_REPO_RE = re.compile(r"https?://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]
 class Fetcher:
     """모든 외부 호출은 key를 달고 여기로 들어온다. fixtures 모드면 key로 가짜 응답을 돌려준다."""
 
-    def __init__(self, token: str | None, fixtures: dict | None = None):
+    def __init__(self, token: str | None, fixtures: dict | None = None,
+                 reddit_client_id: str | None = None, reddit_client_secret: str | None = None):
         self.token = token
         self.fixtures = fixtures
+        self.reddit_client_id = (reddit_client_id or "").strip()
+        self.reddit_client_secret = (reddit_client_secret or "").strip()
+        self._reddit_token: str | None = None
+        self.session = requests  # 테스트에서 가짜 세션을 넣을 수 있다
 
     def get(self, key: str, url: str, params: dict | None = None, headers: dict | None = None, text: bool = False):
         if self.fixtures is not None:
@@ -66,7 +78,7 @@ class Fetcher:
                     return default
             raise RuntimeError(f"fixture 없음: {key}")
         h = {"User-Agent": UA, **(headers or {})}
-        resp = requests.get(url, params=params, headers=h, timeout=20)
+        resp = self.session.get(url, params=params, headers=h, timeout=20)
         resp.raise_for_status()
         return resp.text if text else resp.json()
 
@@ -82,6 +94,26 @@ class Fetcher:
     def pause(self, seconds: float):
         if self.fixtures is None:
             time.sleep(seconds)
+
+    # ── Reddit (선택: OAuth) ────────────────────────────────────────────────
+    @property
+    def reddit_oauth(self) -> bool:
+        return bool(self.reddit_client_id and self.reddit_client_secret)
+
+    def reddit_token(self) -> str:
+        """application-only OAuth 토큰(client_credentials). 자격증명이 없으면 부르지 않는다."""
+        if self._reddit_token:
+            return self._reddit_token
+        resp = self.session.post("https://www.reddit.com/api/v1/access_token",
+                                 data={"grant_type": "client_credentials"},
+                                 headers={"User-Agent": REDDIT_UA},
+                                 auth=(self.reddit_client_id, self.reddit_client_secret), timeout=20)
+        resp.raise_for_status()
+        token = (resp.json() or {}).get("access_token")
+        if not token:
+            raise RuntimeError(f"Reddit OAuth 토큰 발급 실패: {resp.text[:200]}")
+        self._reddit_token = token
+        return token
 
 
 class Run:
@@ -238,7 +270,7 @@ def collect_links(f: Fetcher, state: dict, w: dict):
     text = f.get(f"page::{w['name']}", w["url"], text=True)
     links = sorted({w.get("base", "") + m for m in re.findall(w["pattern"], text)})
     if not links:
-        raise RuntimeError("링크 0개 — 페이지 구조 변경 또는 차단 의심")
+        raise RuntimeError(f"링크 0개 — 페이지 구조 변경 또는 차단 의심 (url={w['url']})")
     seen = state.setdefault("links", {})
     prev = seen.get(w["name"])
     seen[w["name"]] = links
@@ -246,8 +278,17 @@ def collect_links(f: Fetcher, state: dict, w: dict):
         return [], 0, f"기준선 저장 ({len(links)}개)"
     fresh = [u for u in links if u not in set(prev)]
     def name(u: str) -> str:
-        slug = u.rstrip("/").rsplit("/", 1)[-1]
-        return slug.replace("-", " ").title() if w.get("pretty_slug") else slug  # claude-duet → Claude Duet
+        """긴 URL을 읽을 수 있는 이름으로. .md를 떼고, overview·quickstart 같은 흔한 이름은 상위 폴더를 붙인다
+        (platform.claude.com/docs/en/agents-and-tools/agent-skills/overview.md → Agent Skills / Overview)."""
+        path = re.sub(r"[?#].*$", "", u).rstrip("/")
+        path = re.sub(r"\.md$", "", path)
+        parts = [p for p in path.split("/") if p]
+        slug = (parts[-1] if parts else path).replace("-", " ")
+        if w.get("pretty_slug"):
+            return slug.title()  # claude-duet → Claude Duet
+        if slug.lower() in {"overview", "quickstart", "home", "intro", "index", "readme"} and len(parts) >= 2:
+            return f"{parts[-2].replace('-', ' ').title()} / {slug.title()}"
+        return slug
 
     new = [
         make_item(f"link:{u}", f"[{w['label']}] 새 페이지: {name(u)}", u,
@@ -510,7 +551,18 @@ def collect_reddit(f: Fetcher, cfg: dict, counts: dict):
     kws = list(dict.fromkeys(cm["hn_keywords"] + cfg["watchlist"]["keywords"]))
     items = []
     for sub in cm["reddit_subs"]:
-        data = f.get(f"reddit::{sub}", f"https://www.reddit.com/r/{sub}/top.json", {"t": "week", "limit": 50})
+        if f.reddit_oauth:  # 개발자 토큰(OAuth) — IP 차단을 우회하는 공식 경로
+            key, url, headers = f"reddit::{sub}", f"https://oauth.reddit.com/r/{sub}/top", {
+                "Authorization": f"Bearer {f.reddit_token()}", "User-Agent": REDDIT_UA}
+            data = f.get(key, url, {"t": "week", "limit": 50}, headers)
+        else:
+            try:
+                data = f.get(f"reddit::{sub}", f"https://www.reddit.com/r/{sub}/top.json", {"t": "week", "limit": 50})
+            except requests.HTTPError as e:
+                code = e.response.status_code if e.response is not None else "?"
+                if code in (401, 403, 429):
+                    raise RuntimeError(f"{REDDIT_BLOCK_HINT} (r/{sub} HTTP {code})") from e
+                raise
         posts = [c["data"] for c in data.get("data", {}).get("children", [])]
         for kw in kws:
             n = sum(1 for p in posts if kw.lower() in (p.get("title", "") + " " + p.get("selftext", "")).lower())
@@ -1034,7 +1086,8 @@ def main(argv: list[str] | None = None) -> int:
 
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
     fixtures = load_fixtures(args.fixtures) if args.fixtures else None
-    f = Fetcher(os.getenv("GITHUB_TOKEN"), fixtures)
+    f = Fetcher(os.getenv("GITHUB_TOKEN"), fixtures,
+                os.getenv("REDDIT_CLIENT_ID"), os.getenv("REDDIT_CLIENT_SECRET"))
     now = datetime.now(KST)
     if fixtures is not None:
         # fixtures 모드: 실제 상태 파일은 읽지도 쓰지도 않는다. 고정 시각/초기 상태는 fixture가 정한다.

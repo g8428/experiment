@@ -7,11 +7,14 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
 
 왜 지금 구조가 됐는지(2026-10-14 v2 개편 배경, v1이 Remotion 영상 소식을 놓친 원인, v2.1 글감 선별 기준)는 `HANDOVER.md` 참고.
 
-## 현재 상태 (2026-10-27)
+## 현재 상태 (2026-11-26)
 
-- v2.1은 master에서 매주 월요일 돌고 있다(10-19, 10-26 리포트).
-- **v2.2(대형 발표 우선·업계 소식·짧은 글)** 는 `claude/cc-monitor-big-news` 브랜치. 배경은 HANDOVER.md "2026-10-27". fixtures ①~⑤ + 이 브랜치 실제 Actions 실행(2026-10-30, run 40989617677)으로 검증했다.
-- 새 수집원 `claude_products`는 첫 실행이 기준선이라 그때는 '새 제품' 0개가 정상.
+- master에서 매주 월요일 돌고 있다(10-19 ~ 11-23 리포트).
+- **2026-11-26 손본 것** (자세한 원인은 HANDOVER.md "2026-11-26"):
+  - `Claude 플랫폼 문서 목차`가 6주 연속 "링크 0개"로 실패 → 문서가 `docs.claude.com` → `platform.claude.com`으로 이전해서. `config.json` `link_watch.claude_docs`의 URL·패턴을 새 주소로 고쳤다(965개 링크 수집 확인).
+  - `Reddit`이 6주 연속 403 → Reddit이 데이터센터 IP(Actions 포함)를 "blocked by network security"로 막는다. UA·엔드포인트로는 안 풀린다. **선택 기능**으로 OAuth(application-only)를 넣었다 — `oauth.reddit.com`으로 收集한다. **켜려면 사용자가 할 일 2가지**: ① 저장소 시크릿 `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET` 추가 ② `.github/workflows/claude-code-monitor.yml` monitor 스텝 `env`에 같은 이름 두 줄 추가(이때 연결된 GitHub App이 workflows 권한이 없어 워크플로 파일은 커밋하지 못했다). 시크릿이 없으면 지금처럼 공개 JSON을 시도하고 실패 사유를 "IP 차단 + 필요한 시크릿"으로 적는다.
+  - `generate_content.py`가 thinking 블록만 받아 죽던 문제(11-02 실행) → `claude-opus-5`는 thinking이 기본 켜짐이고 thinking 토큰이 `max_tokens`에 포함된다. thinking을 명시(`adaptive`/`omitted`)하고 한도를 16,000/12,000으로 올렸으며, 본문이 없거나 잘리면 한도를 두 배로 늘려 1회 재시도한다.
+- 주의: 아래 "확인 못 한 것"처럼 **Reddit OAuth 경로는 자격증명 없이 가짜 세션으로만 검증**했다.
 
 ## 파이프라인
 
@@ -131,11 +134,16 @@ content/  (Actions에서는 커밋 안 하고 Slack 스레드로만 전달)
 | `SLACK_CHANNEL_ID` | #성과보고 채널 ID (`C...`). 봇을 채널에 `/invite` 해야 함 |
 | `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_BASE_URL` | (선택) Langfuse 트레이싱 |
 
-v2 추가 수집원은 모두 공개 API라 **새 시크릿 없이** 동작하도록 만들었다. 아래는 범위를 더 넓히려면 필요한 것(지금 코드에는 없음):
+v2 추가 수집원은 모두 공개 API라 **새 시크릿 없이** 동작하도록 만들었다. 예외 하나:
+
+| 시크릿 | 쓰임 | 상태 |
+|---|---|---|
+| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Reddit OAuth API (application-only) | **코드에 있음(선택).** 값이 없으면 공개 JSON을 시도한다. Reddit이 데이터센터 IP를 403으로 막아서, 실제로 Reddit을 살리려면 Reddit 앱을 만들어 이 두 값을 넣어야 한다 |
+
+아래는 범위를 더 넓히려면 필요한 것(지금 코드에는 없음):
 
 | 필요한 시크릿 | 쓰임 | 언제 필요 |
 |---|---|---|
-| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Reddit OAuth API | Actions에서 Reddit 공개 JSON이 403으로 막힐 때 |
 | `X_BEARER_TOKEN` | X(트위터) 검색 | 해외 화제를 더 빨리 잡고 싶을 때 (유료 플랜 필요할 수 있음, 확인 못 함) |
 | `YOUTUBE_API_KEY` | 유튜브 영상 화제 | "클로드로 영상 만들기" 같은 시연 영상 추적 |
 
@@ -150,3 +158,4 @@ v2 추가 수집원은 모두 공개 API라 **새 시크릿 없이** 동작하�
 
 - GitHub API rate limit: 검색은 인증 시 분당 30회 → 쿼리 사이 2.5초 쉼. 일반 API는 인증 시 시간당 5,000회
 - 소스 하나가 실패해도 나머지는 계속하고, 실패는 리포트 "⚠️ 수집 실패"와 Slack에 표시된다
+- `claude-opus-5`는 thinking(adaptive)이 기본 켜짐이고 끌 수 없다(`thinking {"type":"disabled"}`는 400). thinking 토큰이 `max_tokens`에 포함되므로 한도가 작으면 본문 없이 끝난다 → `generate_content.py`는 thinking을 `omitted`로 명시하고 한도를 16,000(블로그)/12,000(인스타)로 주며, 본문이 없거나 잘리면 두 배(최대 32,000)로 1회 재시도한다

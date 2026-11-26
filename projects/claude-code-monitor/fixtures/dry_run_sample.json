@@ -20,7 +20,7 @@
     "https://code.claude.com/docs/en/overview"
    ],
    "claude_docs": [
-    "https://docs.claude.com/en/home"
+    "https://platform.claude.com/docs/en/home.md"
    ]
   },
   "items": {
@@ -110,7 +110,7 @@
  ],
  "page::anthropic_news": "[{\\\"_type\\\":\\\"article\\\",\\\"title\\\":\\\"(예시) Old announcement\\\",\\\"slug\\\":{\\\"current\\\":\\\"example-old-post\\\"},\\\"articleType\\\":\\\"news\\\",\\\"publishedOn\\\":\\\"2026-08-01\\\",\\\"category\\\":\\\"Announcements\\\"},{\\\"_type\\\":\\\"article\\\",\\\"title\\\":\\\"(예시) Partnering with Example Corp\\\",\\\"slug\\\":{\\\"current\\\":\\\"example-new-announcement\\\"},\\\"articleType\\\":\\\"news\\\",\\\"publishedOn\\\":\\\"2026-10-08\\\",\\\"category\\\":\\\"Partnerships\\\"}]",
  "page::claude_code_docs": "- [Overview](https://code.claude.com/docs/en/overview)\n- [Example new page](https://code.claude.com/docs/en/example-new-page)\n",
- "page::claude_docs": "- [Home](https://docs.claude.com/en/home)\n",
+ "page::claude_docs": "- [Home](https://platform.claude.com/docs/en/home.md)\n",
  "search::claude-code created:>{since}": {
   "items": [
    {
