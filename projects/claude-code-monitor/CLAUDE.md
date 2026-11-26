@@ -7,14 +7,17 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
 
 왜 지금 구조가 됐는지(2026-10-14 v2 개편 배경, v1이 Remotion 영상 소식을 놓친 원인, v2.1 글감 선별 기준)는 `HANDOVER.md` 참고.
 
-## 현재 상태 (2026-11-26)
+## 현재 상태 (2026-11-27)
 
 - master에서 매주 월요일 돌고 있다(10-19 ~ 11-23 리포트).
+- **2026-11-27 손본 것** (사용자 요청 "Reddit 대신 Hacker News로 채워봐", 자세한 원인은 HANDOVER.md "2026-11-27"):
+  - Reddit 수집을 **걷어냈다**(`collect_reddit`, `Fetcher`의 OAuth 경로, `REDDIT_*` 상수·환경변수, 감시 표의 Reddit 열, `config.json`의 `reddit_subs`·`reddit_min_score`). 6주 연속 403이었고, OAuth를 켜려면 시크릿 2개와 워크플로 env를 사용자가 계속 관리해야 했다.
+  - 대신 `collect_hn`을 늘렸다. 최근 7일 창을 ① 최신순(`search_by_date`) ② 인기순(`search`) 두 경로로 보고, **포인트 `hn_min_points`(50)와 댓글 `hn_min_comments`(10)을 둘 다 넘긴 글만** 후보로 올린다. 같은 글이 두 경로·여러 키워드에 걸려도 한 번만 세도록 수집기 안에서 `objectID` 기준으로 합친다.
+  - 리포트에 **"커뮤니티 반응 (Hacker News, 최근 7일)"** 섹션(포인트 순 상위 5개, 링크는 HN 토론)을 넣았다. Reddit 열이 빠진 감시 표 자리를 대신한다. 항목 상세에는 `HN 반응: 포인트 N · 댓글 M`, `latest-top.json`에는 `points`·`comments`·`discussion_url`이 들어간다.
+  - **사용자가 따로 할 일은 없다.** Reddit OAuth를 위해 HANDOVER가 안내했던 시크릿 2개·워크플로 env 2줄은 이제 필요 없다(넣었으면 지워도 된다).
 - **2026-11-26 손본 것** (자세한 원인은 HANDOVER.md "2026-11-26"):
   - `Claude 플랫폼 문서 목차`가 6주 연속 "링크 0개"로 실패 → 문서가 `docs.claude.com` → `platform.claude.com`으로 이전해서. `config.json` `link_watch.claude_docs`의 URL·패턴을 새 주소로 고쳤다(965개 링크 수집 확인).
-  - `Reddit`이 6주 연속 403 → Reddit이 데이터센터 IP(Actions 포함)를 "blocked by network security"로 막는다. UA·엔드포인트로는 안 풀린다. **선택 기능**으로 OAuth(application-only)를 넣었다 — `oauth.reddit.com`으로 收集한다. **켜려면 사용자가 할 일 2가지**: ① 저장소 시크릿 `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET` 추가 ② `.github/workflows/claude-code-monitor.yml` monitor 스텝 `env`에 같은 이름 두 줄 추가(이때 연결된 GitHub App이 workflows 권한이 없어 워크플로 파일은 커밋하지 못했다). 시크릿이 없으면 지금처럼 공개 JSON을 시도하고 실패 사유를 "IP 차단 + 필요한 시크릿"으로 적는다.
   - `generate_content.py`가 thinking 블록만 받아 죽던 문제(11-02 실행) → `claude-opus-5`는 thinking이 기본 켜짐이고 thinking 토큰이 `max_tokens`에 포함된다. thinking을 명시(`adaptive`/`omitted`)하고 한도를 16,000/12,000으로 올렸으며, 본문이 없거나 잘리면 한도를 두 배로 늘려 1회 재시도한다.
-- 주의: 아래 "확인 못 한 것"처럼 **Reddit OAuth 경로는 자격증명 없이 가짜 세션으로만 검증**했다.
 
 ## 파이프라인
 
@@ -22,7 +25,7 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
 매주 월요일 09:00 KST (GitHub Actions). 주 1회는 사용자가 의도한 설정이므로 임의로 바꾸지 않는다.
   monitor.py
     수집: Claude Code 릴리스·CHANGELOG / 공식 스킬·플러그인 폴더 / Anthropic 뉴스(JSON 기사 목록)·Claude 제품 목록·공식 문서 목차
-          / 업계 RSS(OpenAI·Google AI·DeepMind) / GitHub 신규·토픽 검색 / Hacker News(업계 키워드는 300점 이상) / Reddit
+          / 업계 RSS(OpenAI·Google AI·DeepMind) / GitHub 신규·토픽 검색 / Hacker News(최근 7일 · 포인트 50+·댓글 10+ / 업계 키워드는 300점 이상)
     → 같은 신제품·신모델을 다룬 글(공식·업계 블로그·HN·벤치마크 기사)은 한 항목으로 합침, 고객 사례 글 제외
     → (월요일) 감시 키워드 검색 → 걸린 레포도 후보 풀에 추가
     → 릴리스 묶음: 이번 주기 릴리스·CHANGELOG를 줄 단위로 판정, 글감급 줄만 남김
@@ -80,6 +83,7 @@ ANTHROPIC_API_KEY=... python projects/claude-code-monitor/generate_content.py
 | GitHub 검색 쿼리·토픽 | `github_search.queries` |
 | 공식 소스(레포·폴더·페이지) | `official.*` (`article_pages` = JSON 기사 목록, `link_watch` = 새 링크 감지) |
 | 업계(경쟁사) 블로그 RSS | `industry_feeds.feeds` |
+| HN 키워드·최소 포인트·최소 댓글 | `community.hn_keywords`, `hn_min_points` (50), `hn_min_comments` (10) |
 | HN 업계 키워드·최소 점수 | `community.hn_major_keywords`, `hn_major_min_points` (300) |
 | **대형 발표 판정**(출처·패턴·가산점·원문 발췌·국내 기사) | `value_rules.major` (`detail_max`, `detail_chars`, `kr_news_bonus_max`) |
 | 카테고리 키워드 | `categories` |
@@ -134,11 +138,8 @@ content/  (Actions에서는 커밋 안 하고 Slack 스레드로만 전달)
 | `SLACK_CHANNEL_ID` | #성과보고 채널 ID (`C...`). 봇을 채널에 `/invite` 해야 함 |
 | `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_BASE_URL` | (선택) Langfuse 트레이싱 |
 
-v2 추가 수집원은 모두 공개 API라 **새 시크릿 없이** 동작하도록 만들었다. 예외 하나:
-
-| 시크릿 | 쓰임 | 상태 |
-|---|---|---|
-| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Reddit OAuth API (application-only) | **코드에 있음(선택).** 값이 없으면 공개 JSON을 시도한다. Reddit이 데이터센터 IP를 403으로 막아서, 실제로 Reddit을 살리려면 Reddit 앱을 만들어 이 두 값을 넣어야 한다 |
+v2 추가 수집원은 모두 공개 API라 **새 시크릿 없이** 동작한다(Hacker News는 Algolia 공개 API, 키 불필요).
+Reddit을 걷어내면서 `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET` 시크릿과 워크플로 env 2줄은 더 이상 쓰지 않는다(2026-11-27).
 
 아래는 범위를 더 넓히려면 필요한 것(지금 코드에는 없음):
 

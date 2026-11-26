@@ -197,3 +197,30 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 ### 2026-11-26 — 확인만 하고 고치지 않은 것
 - **월요일 리포트가 두 번 생성된다.** 같은 날짜 리포트를 ①클라우드 세션(커밋 작성자 `Claude <noreply@anthropic.com>`, 09:09~09:12 KST)과 ②GitHub Actions(예정 09:00 KST, 실제 13:19~16:10 KST)가 각각 만든다. Actions 스케줄 실행이 cron(00:00 UTC)보다 4~7시간 늦게 시작해서(00:00 UTC는 GitHub 스케줄이 가장 몰리는 시각) ②가 ①의 결과·상태 파일을 덮어쓴다. Anthropic API 호출도 두 번이다. ①이 무엇으로 도는지(파이 스케줄 태스크·Cowork 등)는 이 레포 밖이라 확인하지 못했다. 스케줄 변경은 사용자 승인 사항이라 손대지 않았다.
 - **원격 브랜치 3개**: `claude/charming-tesla-cypq91`은 master에 완전히 포함, `claude/agent-dev-references`(PR #2)·`claude/cc-monitor-big-news`(PR #1)는 내용이 master에 squash 머지됨. 셋 다 지워도 되는 상태지만 삭제는 사용자 결정.
+
+### 2026-11-27 — Reddit 제거, Hacker News로 교체
+
+**계기**
+- 사용자 요청: "Reddit 대신 Hacker News로 채워봐". 2026-11-26에 Reddit OAuth(선택)를 넣어 두었지만, 쓰려면 사용자가 직접 ① Reddit 앱 생성 ② 저장소 시크릿 2개 추가 ③ 워크플로 env 2줄 추가(workflows 권한 필요)를 해야 했다. 도구 하나 때문에 사용자에게 계속 관리 부담이 남고, 시크릿을 넣지 않으면 리포트에 실패 한 줄이 영원히 남는다.
+- Hacker News는 Algolia 공개 API(`hn.algolia.com/api/v1/search`, `search_by_date`)라 키가 필요 없고, 2026-10-27 이후 `hackernews_major`(업계 300점 이상)로 이미 잘 동작하고 있었다.
+
+**바꾼 것**
+- Reddit 수집을 전부 걷어냈다: `collect_reddit()`, `Fetcher`의 `reddit_client_id/secret`·`reddit_token()`·`reddit_oauth`, `REDDIT_UA`/`REDDIT_BLOCK_HINT`, `main()`의 `REDDIT_*` env 전달, 감시 표의 `Reddit(주간 상위)` 열과 `row["reddit"]`(경고 신호에서도 뺐다), `config.json` `reddit_subs`/`reddit_min_score`, fixture의 `reddit::*` 키.
+- `collect_hn` 확장 — Reddit이 하던 '서브레딧별 인기 글' 자리를 HN이 대신하도록:
+  - 최근 7일 창을 ① 최신순(`search_by_date`, 100건) ② 인기순(`search`, 100건) 두 번 본다. ①의 `nbHits`는 예전처럼 '이번 주 그 키워드 글 수'(키워드 급증·감시 판정용)로 쓰고, ②는 인기순 목록에 밀린 고득점 글을 보탠다.
+  - **포인트 `hn_min_points`(50)와 댓글 `hn_min_comments`(10)을 둘 다 넘은 글만** 후보. 댓글 기준을 둔 이유: 댓글 0개짜리 링크는 '토론'이 아니다. Algolia `numericFilters`로 한 번, 코드에서 한 번 더 건다.
+  - 같은 글이 두 경로·여러 키워드에 걸려도 **한 번만** 센다(수집기 안에서 `objectID` 기준 합치, mentions를 두 번 더하지 않는다).
+  - 항목에 `points`·`comments`·`discussion_url`을 넣고, 커뮤니티 글 요약을 `HN N점 · 댓글 M개`로 바꿨다(예전 `HN 토론: <url>`).
+- `judge_value`의 '설명 부족(확인 필요)' 판정에서 HN 글(`kind=community`)은 뺐다. 예전 요약이 `HN 토론: <url>`로 30자를 넘겼는데 `HN 400점 · 댓글 120개`로 줄자 HN 글이 전부 '확인 필요'로 찍혔다. HN 글은 제목이 곧 내용이라 요약 길이는 근거가 아니다.
+- 리포트: Reddit 열이 빠진 감시 표 자리에 **"커뮤니티 반응 (Hacker News, 최근 7일)"** 섹션(포인트 순 상위 5개, 링크는 HN 토론)을 넣었다. 항목 상세에는 `HN 반응: 포인트 N · 댓글 M개`. `latest-top.json`의 top 항목에 `points`·`comments`·`discussion_url` 추가(기존 키는 그대로라 `generate_content.py`·`slack_notify.py`는 손대지 않았다).
+- 워크플로 파일은 **바꾸지 않았다**. Reddit env 2줄은 master에 들어가지 않았고(workflows 권한), 이제 필요도 없다. 로컬에 미커밋으로 남아 있던 그 2줄도 되돌렸다.
+
+**검증 (2026-11-27, 로컬)**
+- `py_compile` 통과. fixture 6종(dry_run_sample ①~⑤) 전부 exit 0. 2026-11-26 버전과 출력 diff는 의도한 것만: Reddit 3건이 빠지고 HN 인기순 글 2건이 들어오면서 상위 6 → 5개, HN 요약 문구, 새 HN 섹션, 문구(HN/Reddit → Hacker News).
+- 실제 네트워크 `--dry-run`(GITHUB_TOKEN 없이): **실패 소스 0개, 수집 297건, Hacker News 36건 수집**(키워드 10개 · 포인트 50+/댓글 10+, 건수는 실행 시점에 따라 달라진다). HN이 상위 10개 중 4건(Anthropic IPO·GPT-6/6.2 관련)과 새 '커뮤니티 반응' 섹션 상위 5개를 채웠다.
+- `--dry-run --watchlist`로 감시 표 5열(Reddit 열 빠짐) 렌더링 확인.
+
+**확인 못 한 것**
+- Actions(인증된 `GITHUB_TOKEN`)에서의 실행은 못 돌렸다. 로컬에서는 `gh auth token` 값이 GitHub API에 401로 거절되고 익명 호출만 통과해, GitHub 검색 15개 중 6개가 레이트리밋으로 실패했다(레이트리밋이지 코드 문제가 아니다 — Actions에서는 토큰이 붙어 정상).
+- 50포인트·10댓글이 적정한지는 몇 주 돌려 봐야 한다. 후보가 너무 적으면 `config.json` `community.hn_min_points`/`hn_min_comments`를 내리면 된다.
+- 남은 품질 이슈(이번에 고치지 않음): 같은 소식이 HN과 OpenAI RSS에 동시에 올라와 상위에 두 칸을 차지하는 경우가 있다(예: `GPT-6 models demonstrate intrinsic protein-design capabilities`). `fold_same_story`는 제목에서 제품·모델 이름(4단어 이내)을 뽑아 합치는데, 긴 문장형 제목은 이름이 안 뽑혀 합쳐지지 않는다. URL이 같은 경우까지 합치도록 넓히는 게 다음 후보.

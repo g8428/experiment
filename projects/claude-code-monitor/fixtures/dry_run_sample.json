@@ -234,53 +234,51 @@
   "nbHits": 0,
   "hits": []
  },
- "reddit::ClaudeAI": {
-  "data": {
-   "children": [
-    {
-     "data": {
-      "id": "abcClaudeAI",
-      "title": "(예시) I made slides with Claude",
-      "selftext": "pptx",
-      "score": 150,
-      "num_comments": 20,
-      "permalink": "/r/ClaudeAI/comments/abc/x/"
-     }
-    }
-   ]
-  }
+ "hn_top::claude code": {
+  "nbHits": 0,
+  "hits": []
  },
- "reddit::ClaudeCode": {
-  "data": {
-   "children": [
-    {
-     "data": {
-      "id": "abcClaudeCode",
-      "title": "(예시) I made slides with Claude",
-      "selftext": "pptx",
-      "score": 150,
-      "num_comments": 20,
-      "permalink": "/r/ClaudeCode/comments/abc/x/"
-     }
-    }
-   ]
-  }
+ "hn_top::anthropic": {
+  "nbHits": 2,
+  "hits": [
+   {
+    "objectID": "11",
+    "title": "(예시) Anthropic changes pricing for Claude Code",
+    "url": null,
+    "points": 400,
+    "num_comments": 120,
+    "created_at": "2026-10-12T00:00:00Z"
+   }
+  ]
  },
- "reddit::Anthropic": {
-  "data": {
-   "children": [
-    {
-     "data": {
-      "id": "abcAnthropic",
-      "title": "(예시) I made slides with Claude",
-      "selftext": "pptx",
-      "score": 150,
-      "num_comments": 20,
-      "permalink": "/r/Anthropic/comments/abc/x/"
-     }
-    }
-   ]
-  }
+ "hn_top::claude skills": {
+  "nbHits": 0,
+  "hits": []
+ },
+ "hn_top::remotion": {
+  "nbHits": 8,
+  "hits": [
+   {
+    "objectID": "1",
+    "title": "(예시) Show HN: video with an agent",
+    "url": "https://github.com/example-org/video-agent-skill",
+    "points": 320,
+    "num_comments": 90,
+    "created_at": "2026-10-11T00:00:00Z"
+   },
+   {
+    "objectID": "3",
+    "title": "(예시) Motion graphics pipeline on Hacker News",
+    "url": "https://example.com/motion-pipeline",
+    "points": 90,
+    "num_comments": 12,
+    "created_at": "2026-10-12T00:00:00Z"
+   }
+  ]
+ },
+ "hn_top::mcp server": {
+  "nbHits": 0,
+  "hits": []
  },
  "watch_gh::remotion": {
   "total_count": 7,
@@ -350,6 +348,10 @@
  "__defaults__": {
   "feed::": "<rss><channel><item><title>How a retailer uses AI (예시)</title><link>https://example.com/old-case</link><pubDate>Mon, 01 Sep 2026 00:00:00 GMT</pubDate></item></channel></rss>",
   "hn::": {
+   "nbHits": 0,
+   "hits": []
+  },
+  "hn_top::": {
    "nbHits": 0,
    "hits": []
   },

@@ -59,13 +59,14 @@
   },
 
   "community": {
+    "_설명": "Hacker News(Algolia 공개 API, 키 불필요). 최근 7일 글 중 포인트·댓글 기준을 모두 넘긴 글만 커뮤니티 후보로 올린다. 2026-11-27부터 Reddit은 수집하지 않는다(데이터센터 IP 403 — HANDOVER 참고).",
     "hn_keywords": ["claude code", "anthropic", "claude skills", "remotion", "mcp server"],
     "hn_min_points": 50,
+    "hn_min_comments": 10,
+    "_hn_min": "한국어 커뮤니티 감각으로는 낯설지만 HN은 50포인트면 이미 앞페이지 근처다. 댓글 기준을 두는 이유: 댓글 0개짜리 링크는 '토론'이 아니다. 둘 다 넘어야 후보가 된다(Algolia numericFilters + 코드 재확인). 내리면 후보가 늘고, 올리면 줄어든다.",
     "hn_major_keywords": ["claude", "openai", "chatgpt", "gpt", "gemini"],
     "hn_major_min_points": 300,
     "_hn_major": "업계 키워드는 글이 너무 많아서 hn_major_min_points 이상만 본다. 이 점수를 넘은 글은 출처가 hackernews_major가 되고, 제목이 대형 발표 패턴에 맞으면 대형 발표로 친다",
-    "reddit_subs": ["ClaudeAI", "ClaudeCode", "Anthropic"],
-    "reddit_min_score": 100,
     "surge_ratio": 2.0,
     "surge_min_count": 5
   },
