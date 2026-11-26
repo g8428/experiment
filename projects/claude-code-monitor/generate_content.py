@@ -48,6 +48,13 @@ BLOG_DIR = ROOT / "content" / "blog"
 INSTAGRAM_DIR = ROOT / "content" / "instagram"
 MODEL = "claude-opus-5"
 CANDIDATES = 5  # 에이전트가 이 중에서 1개를 고른다
+# claude-opus-5는 thinking(adaptive)이 기본으로 켜져 있고 끌 수 없다(thinking {"type":"disabled"}는 400).
+# thinking 토큰은 max_tokens 한도에 포함되므로, 한도가 작으면 thinking만 하고 본문 없이 끝난다
+# (2026-11-02 실행: content types ['thinking'], 본문 없음 → RuntimeError로 워크플로 실패).
+# 그래서 ① thinking을 명시하고(본문만 받는다) ② 한도를 넉넉히 두고 ③ 잘리면 한도를 늘려 1회 재시도한다.
+THINKING = {"type": "adaptive", "display": "omitted"}
+MAX_TOKENS = {"blog": 16000, "instagram": 12000}  # thinking + 본문 합계 한도
+MAX_TOKENS_CAP = 32000
 
 FACT_RULE = """# 이번 작업의 사실 범위
 - 아래 '후보 소식'과 '모니터 리포트'에 적힌 내용만 사실로 쓴다. 그 밖의 수치·날짜·가격·기능은 쓰지 않는다.
@@ -128,28 +135,62 @@ def build_user_prompt(kind: str, top: dict, research: str, today: str, research_
 {research}"""
 
 
+class ResponseError(RuntimeError):
+    """응답에서 쓸 수 있는 본문(text)을 얻지 못했다. retryable이면 한도를 늘려 다시 부르면 될 수 있다."""
+
+    def __init__(self, message: str, *, retryable: bool = False):
+        super().__init__(message)
+        self.retryable = retryable
+
+
 def extract_text(msg) -> str:
     """msg.content[0]이 항상 TextBlock이라고 가정하면 안 된다.
-    claude-opus-5는 응답 앞에 ThinkingBlock(.text 속성 없음)을 먼저 반환할 수 있어서,
-    content 배열에서 type == 'text'인 블록만 골라 이어붙인다."""
-    parts = [block.text for block in msg.content if getattr(block, "type", None) == "text"]
+    claude-opus-5는 thinking이 기본 켜짐이라 응답 앞에 ThinkingBlock(.text 속성 없음)이 오고,
+    thinking이 max_tokens를 다 쓰면 text 블록 없이 끝난다. content 배열에서 type == 'text'인 블록만 이어붙이고,
+    본문이 비었거나 잘렸으면 ResponseError로 알린다(호출부가 한도를 늘려 1회 재시도한다)."""
+    blocks = list(getattr(msg, "content", None) or [])
+    types = [getattr(b, "type", None) for b in blocks]
+    stop = getattr(msg, "stop_reason", None)
+    parts = [b.text for b in blocks if getattr(b, "type", None) == "text" and getattr(b, "text", "")]
     if not parts:
-        raise RuntimeError(f"응답에 text 블록이 없습니다. content types: {[getattr(b, 'type', None) for b in msg.content]}")
-    return "\n".join(parts)
+        raise ResponseError(f"응답에 text 블록이 없습니다 (content types: {types}, stop_reason: {stop})",
+                            retryable=stop == "max_tokens")
+    text = "\n".join(parts)
+    if stop == "max_tokens":
+        raise ResponseError(f"응답이 max_tokens에서 잘렸습니다 (본문 {len(text):,}자, content types: {types})",
+                            retryable=True)
+    return text
+
+
+def complete(client, kind: str, system: str, user: str) -> str:
+    """모델 호출 + 본문 추출. thinking이 한도를 다 쓰면 max_tokens를 두 배로 늘려 한 번 더 부른다."""
+    budget = MAX_TOKENS[kind]
+    for attempt in (1, 2):
+        msg = client.messages.create(model=MODEL, max_tokens=budget, system=system, thinking=THINKING,
+                                     messages=[{"role": "user", "content": user}])
+        try:
+            text = extract_text(msg)
+        except ResponseError as e:
+            if not e.retryable or attempt == 2:
+                raise
+            nxt = min(budget * 2, MAX_TOKENS_CAP)
+            print(f"{kind}: {e} → max_tokens {budget:,}에서 {nxt:,}로 올려 재시도")
+            budget = nxt
+            continue
+        out_tokens = getattr(getattr(msg, "usage", None), "output_tokens", None)
+        print(f"{kind}: 응답 {len(text):,}자" + (f" (출력 토큰 {out_tokens:,})" if out_tokens else ""))
+        return text
+    raise RuntimeError("도달하지 않는 경로")  # 위 루프가 항상 return 또는 raise
 
 
 @observe(name="generate-blog-post", capture_input=False)  # 입력(리서치 전문)은 하위 generation에 이미 기록됨
 def generate_blog_post(client, system: str, user: str) -> str:
-    msg = client.messages.create(model=MODEL, max_tokens=3000, system=system,
-                                 messages=[{"role": "user", "content": user}])
-    return extract_text(msg)
+    return complete(client, "blog", system, user)
 
 
 @observe(name="generate-instagram-post", capture_input=False)
 def generate_instagram_post(client, system: str, user: str) -> str:
-    msg = client.messages.create(model=MODEL, max_tokens=2000, system=system,
-                                 messages=[{"role": "user", "content": user}])
-    return extract_text(msg)
+    return complete(client, "instagram", system, user)
 
 
 def slugify(text: str) -> str:

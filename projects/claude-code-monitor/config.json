@@ -18,7 +18,7 @@
     "link_watch": [
       {"name": "claude_products", "label": "Claude 제품 목록(새 제품)", "url": "https://www.anthropic.com/news", "pattern": "https://claude\\.com/product/[a-z0-9-]+", "base": "", "pretty_slug": true, "_설명": "사이트 메뉴의 제품 페이지 링크. 새 제품(예: claude-duet)이 생기면 여기 새 링크가 붙는다. 신제품 출시 기사는 claude.com 쪽에 올라와 anthropic.com/news 기사 목록에는 없을 수 있어서 따로 본다"},
       {"name": "claude_code_docs", "label": "Claude Code 공식 문서 목차", "url": "https://code.claude.com/docs/llms.txt", "pattern": "\\((https://code\\.claude\\.com/docs/[^)\\s]+)\\)", "base": ""},
-      {"name": "claude_docs", "label": "Claude 플랫폼 문서 목차", "url": "https://docs.claude.com/llms.txt", "pattern": "\\((https://docs\\.claude\\.com/[^)\\s]+)\\)", "base": ""}
+      {"name": "claude_docs", "label": "Claude 플랫폼 문서 목차", "url": "https://platform.claude.com/llms.txt", "pattern": "\\((https://(?:platform|docs)\\.claude\\.com/docs/en/[^)\\s]+)\\)", "base": "", "_설명": "2026-11-26 수정. 개발자 문서가 docs.claude.com → platform.claude.com 으로 이전해, 옛 패턴(docs.claude.com/docs/...)은 링크 0개로 6주 연속 실패했다. llms.txt는 두 주소 모두 200이고 링크는 platform.claude.com/docs/en/*.md 형식(966개). /docs/en/로 제한해 다른 언어 사본은 뺀다"}
     ],
     "_article_pages": "기사 목록이 페이지 안 JSON에 있는 곳. 최근 lookback_days 안에 발표된 기사만 올린다. keep_types=[\"news\"]는 연구 논문(research)을 뺀다 — 일반인 글감이 아니라서",
     "article_pages": [

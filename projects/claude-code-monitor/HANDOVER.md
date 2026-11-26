@@ -157,3 +157,43 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 - 블로그 초안 전체 길이는 Slack에 앞부분만 올라가서 확인하지 못했다. 다음 실행에서 content/blog 파일 길이를 확인할 것.
 - anthropic.com/news JSON 구조는 2026-10-27 실제 페이지로 확인했다. 구조가 바뀌면 "기사 0개" 실패로 찍힌다.
 - 원문 발췌는 HTML 글자를 그대로 잘라 쓴다. JS로만 그려지는 페이지면 발췌가 메뉴 글자 위주일 수 있다.
+
+### 2026-11-26 — 6주 연속 실패한 수집원 2개 + thinking 실패 수정
+
+**계기**
+- 사용자 요청: "트렌드모니터 관련 에러와 막힌 소스를 미리 손봐 달라". 10-14부터 11-23까지 일곱 번의 리포트에 매번 같은 두 소스가 실패로 찍혀 있었고, 11-02 실행은 컨텐츠 생성 단계에서 워크플로가 죽었다.
+
+**원인 (근거)**
+
+| # | 증상 | 원인 | 근거 |
+|---|---|---|---|
+| 1 | `Claude 플랫폼 문서 목차` — `RuntimeError: 링크 0개` (10-14, 10-19, 10-26, 11-02, 11-09, 11-16, 11-23) | 개발자 문서가 `docs.claude.com` → `platform.claude.com`으로 이전. `docs.claude.com/llms.txt`는 여전히 200으로 응답하지만 안의 링크가 전부 `platform.claude.com/docs/en/*.md`라서 옛 패턴(`\((https://docs\.claude\.com/[^)\s]+)\)`)이 한 개도 못 잡았다 | 2026-11-26 실제 응답 확인: 109KB, 링크 966개(영어 965 + `llms-full.txt` 1), `docs.claude.com` 링크 0개 |
+| 2 | `Reddit` — `HTTPError: 403 Client Error: Blocked for url: https://www.reddit.com/r/ClaudeAI/top.json` | Reddit이 데이터센터 IP를 네트워크 단위로 막는다. UA·엔드포인트 문제가 아니다 | 403 본문이 "You've been blocked by network security. To continue, log in to your Reddit account or use your developer token". 프로젝트 UA와 브라우저 UA, `www`/`old`/`api.reddit.com`, `.json`/`.rss` 모두 403 또는 429 |
+| 3 | 11-02 실행: `RuntimeError: 응답에 text 블록이 없습니다. content types: ['thinking']` → 워크플로 실패 | `claude-opus-5`는 adaptive thinking이 기본 켜짐이고 끌 수 없다. thinking 토큰도 `max_tokens`에 포함되므로, 한도(3,000)를 thinking이 다 쓰면 text 블록 없이 `stop_reason: max_tokens`로 끝난다 | 응답 47초 만에 종료된 traceback, `stop_reason` 미기록. Anthropic 문서 "Thinking"·"Troubleshooting thinking"의 `stop_reason: max_tokens` 항목 |
+
+**바꾼 것**
+- `config.json` `link_watch.claude_docs`: URL `https://platform.claude.com/llms.txt`, 패턴 `\((https://(?:platform|docs)\.claude\.com/docs/en/[^)\s]+)\)`(영어 문서만). 2026-11-26 실제 수집 965개 확인. **첫 실행은 기준선 저장이라 그 주에는 '새 페이지' 0개가 정상**이다.
+- `collect_links` 이름 규칙: `.md`를 떼고, `overview`·`quickstart`·`home`·`intro` 같은 흔한 이름은 상위 폴더를 붙인다(`…/agent-skills/overview.md` → `Agent Skills / Overview`). claude_code_docs도 같은 규칙이라 제목이 `example-new-page` → `example new page`로 보인다(항목 id는 URL이라 중복 제거에 영향 없음).
+- Reddit OAuth(선택): `REDDIT_CLIENT_ID`·`REDDIT_CLIENT_SECRET`이 있으면 `www.reddit.com/api/v1/access_token`(client_credentials)로 토큰을 받아 `oauth.reddit.com/r/{sub}/top`을 쓴다. 없으면 지금처럼 공개 JSON을 시도하고, 401/403/429면 "Reddit이 이 실행 환경의 IP를 막았습니다 … 시크릿을 넣으면 OAuth로 수집합니다 (r/… HTTP 403)"로 적는다. **아직 할 일:** Actions에서 쓰려면 ① 저장소 시크릿에 두 값 추가 ② `.github/workflows/claude-code-monitor.yml` monitor 스텝 `env`에 `REDDIT_CLIENT_ID`·`REDDIT_CLIENT_SECRET` 두 줄 추가. ②는 이때 연결된 GitHub App에 `workflows` 권한이 없어 커밋하지 못했다(권한을 주면 다음에 같이 커밋할 수 있다).
+- `generate_content.py`: `thinking={"type":"adaptive","display":"omitted"}` 명시(본문만 받는다), `max_tokens` 블로그 16,000·인스타 12,000, `stop_reason: max_tokens`이거나 text 블록이 없으면 한도를 두 배(최대 32,000)로 1회 재시도. 두 번째도 잘리면 `ResponseError`로 명확히 실패해 반쪽 글을 저장하지 않는다. `extract_text`는 text 블록만 이어붙이고(기존 유지) 진단에 `stop_reason`을 넣는다.
+- `Fetcher.get`이 `self.session`을 쓰도록 바꿨다(기본값 `requests` 모듈 → 동작 동일). OAuth 경로를 가짜 세션으로 테스트하기 위해서다.
+- fixtures `dry_run_sample`·`case1`의 `page::claude_docs`·상태 링크를 새 URL 형식으로 갱신(패턴이 되돌아가면 fixture에서 바로 드러난다).
+
+**버린 대안**
+- *Reddit을 RSS(`top/.rss`)로 전환*: 429(레이트리밋)였고 RSS에는 점수·selftext가 없어 `reddit_min_score`(100) 필터와 키워드 집계가 약해진다. 게다가 같은 IP 차단 계열이라 Actions에서 될 보장이 없다.
+- *UA 위장·공개 미러(pullpush 등)*: 브라우저 UA로도 403이었고 pullpush.io도 403(Cloudflare). Reddit이 공식적으로 안내하는 경로는 로그인/개발자 토큰뿐이다.
+- *`max_tokens`만 낮추기/올리기*: 낮추면 더 자주 잘리고, 올리기만 하면 재시도 없이 같은 실패가 남는다. 잘림 감지 + 재시도를 같이 넣었다. `effort`를 낮춰 thinking을 줄이는 방법은 글 품질·비용 기준을 바꾸는 일이라 사용자 판단으로 남겼다.
+
+**검증 (2026-11-26, 로컬)**
+- `py_compile` 통과. fixtures ①~⑤ + dry_run_sample 6개 모두 exit 0, 수정 전 출력과 diff는 문서 제목 한 줄(`example new page`)뿐.
+- 실제 네트워크로 `claude_docs` 수집: 965개, 전부 `platform.claude.com/docs/en/…md`. 새 링크 1개만 남긴 상태로 '새 페이지' 감지·제목 규칙 확인.
+- Reddit: 자격증명 없이 실제 403 → 안내 메시지 확인. OAuth 경로는 가짜 세션으로 토큰 발급→`oauth.reddit.com`→Bearer 헤더→항목·키워드 집계까지 확인.
+- `generate_content.py`: thinking만 온 응답→재시도→정상, 두 번 다 잘림→에러, text 여러 블록→thinking 제외, tool_use만→재시도 불가 에러. (`--dry-run` 프롬프트·SKIP 경로도 확인)
+
+**확인 못 한 것**
+- 실제 Reddit OAuth 호출(자격증명 없음), 실제 Anthropic 호출(API 키 없음). 16,000이 적정한지는 다음 실행 로그의 "응답 N자 (출력 토큰 N)"으로 확인할 것.
+- Reddit을 계속 쓸지 여부는 사용자 결정(앱 생성 + 시크릿 2개). 넣지 않으면 리포트에 실패 한 줄이 계속 남는다(의도된 표시).
+
+### 2026-11-26 — 확인만 하고 고치지 않은 것
+- **월요일 리포트가 두 번 생성된다.** 같은 날짜 리포트를 ①클라우드 세션(커밋 작성자 `Claude <noreply@anthropic.com>`, 09:09~09:12 KST)과 ②GitHub Actions(예정 09:00 KST, 실제 13:19~16:10 KST)가 각각 만든다. Actions 스케줄 실행이 cron(00:00 UTC)보다 4~7시간 늦게 시작해서(00:00 UTC는 GitHub 스케줄이 가장 몰리는 시각) ②가 ①의 결과·상태 파일을 덮어쓴다. Anthropic API 호출도 두 번이다. ①이 무엇으로 도는지(파이 스케줄 태스크·Cowork 등)는 이 레포 밖이라 확인하지 못했다. 스케줄 변경은 사용자 승인 사항이라 손대지 않았다.
+- **원격 브랜치 3개**: `claude/charming-tesla-cypq91`은 master에 완전히 포함, `claude/agent-dev-references`(PR #2)·`claude/cc-monitor-big-news`(PR #1)는 내용이 master에 squash 머지됨. 셋 다 지워도 되는 상태지만 삭제는 사용자 결정.

@@ -49,7 +49,7 @@
     "https://code.claude.com/docs/en/overview"
    ],
    "claude_docs": [
-    "https://docs.claude.com/en/home"
+    "https://platform.claude.com/docs/en/home.md"
    ],
    "claude_products": [
     "https://claude.com/product/claude-code",
@@ -140,7 +140,7 @@
  ],
  "page::anthropic_news": "[{\\\"_type\\\":\\\"article\\\",\\\"title\\\":\\\"(예시) Old announcement\\\",\\\"slug\\\":{\\\"current\\\":\\\"example-old-post\\\"},\\\"articleType\\\":\\\"news\\\",\\\"publishedOn\\\":\\\"2026-08-01\\\",\\\"category\\\":\\\"Announcements\\\"}]",
  "page::claude_code_docs": "- [Overview](https://code.claude.com/docs/en/overview)\n",
- "page::claude_docs": "- [Home](https://docs.claude.com/en/home)\n",
+ "page::claude_docs": "- [Home](https://platform.claude.com/docs/en/home.md)\n",
  "search::claude-code": {
   "items": [
    {
