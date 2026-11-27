@@ -622,8 +622,10 @@ def main(argv: list[str] | None = None) -> int:
                                   updated, action="fill-image")
                 return 0
             print(f"건너뜀: 이미 올린 글입니다 (ID {dup_id}, {dup.get('status')}, {dup.get('date')}) — 중복 업로드 안 함")
-            if specs and not args.fill_missing_image and not dup.get("featured_image"):
-                print(f"  (참고) 그 글에 대표 이미지가 없습니다 — --fill-missing-image --update-post-id {dup_id} 로 채울 수 있습니다")
+            if not dup.get("featured_image"):
+                print(f"  (참고) 그 글에는 대표 이미지가 없습니다 — --fill-missing-image --image <파일> 로 채울 수 있습니다")
+            elif specs and not args.fill_missing_image:
+                print(f"  (참고) 그 글에는 이미 대표 이미지가 있습니다")
             return 0
         print(f"중복 검사: 같은 슬러그/제목 글 없음 (사이트 글 {len(existing)}개 확인)")
 
