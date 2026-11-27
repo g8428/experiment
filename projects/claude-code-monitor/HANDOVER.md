@@ -287,3 +287,27 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 - Actions 실행은 이번에 안 돌렸다(다음 월요일 09:00 KST 정기 실행 또는 수동 dispatch로 확인). `GITHUB_TOKEN`이 붙어도 합치기 로직은 네트워크와 무관해 결과는 같아야 한다.
 - 문장은 다르고 뜻만 같은 재보도(예: 제목을 완전히 바꿔 쓴 국내 기사)는 여전히 합치지 않는다. 억지로 합치면 다른 소식을 지울 위험이 커서, 이름이 겹치는 경우(`fold_same_major`)까지만 본다.
 
+### 2026-11-27 — 블로그 글에 이미지·썸네일 자동 첨부
+
+**계기**
+- 사용자 요청: "블로그글이 텍스트밖에 없는데 gpt이미지든 무료소스 이미지든 관련글을 올리거나 인스타 카드뉴스 썸네일을 같이 쓰거나 하도록 해줘". 첫 발행 글(ID 50)에는 이미지가 0개였고, 본문에 `[이미지 제안: …]`·`[내부 링크 제안: …]` 메모가 그대로 남아 공개됐다.
+
+**바꾼 것 (`publish_wordpress.py`)**
+- `--image <파일>`(별칭 `--featured-image`): WordPress REST `POST /sites/{site}/media/new`로 미디어에 올려 `ID`·`URL`을 받고, 첫 이미지를 대표 이미지(`featured_image`)로 건다. 여러 번 주면 순서대로 `[이미지 제안: …]` 자리를 치환한다.
+- `--image-prompt "<영어 프롬프트>"`: 셸의 `images` 명령으로 먼저 이미지를 만들어(기본 `downloads/blog-{날짜}-{슬러그}.png`) `--image`와 같게 쓴다. 프롬프트 번역·작성은 부르는 쪽(예약 액션)이 맡는다.
+- `--image-alt` / `--image-caption`: 이미지 순서대로. 대체텍스트 기본값은 `[이미지 제안: …]` 문구 → 글 제목.
+- `[이미지 제안: …]`, `[내부 링크 제안: …]` 작성자 메모는 발행 시 지운다(마크다운 단계 + HTML 단계 두 번).
+- `[이미지 제안: …]`가 없으면 첫 문단 뒤(=첫 소제목 앞)에 넣는다. 남는 이미지는 같은 자리에 이어 붙인다.
+- `--update-post-id <ID>`: 이미 올라간 글의 본문을 **읽어서** 메모만 지우고 이미지 자리에 그림을 넣는다(글자는 건드리지 않음). `--image` 없이 쓰면 메모 정리만.
+- `--fill-missing-image`: 중복이라 건너뛸 글이 대표 이미지 없이 올라가 있으면, 그 글에만 이미지를 채운다(새 글은 만들지 않음).
+- 미디어 `attrs[]`(media/new)는 WP.com에서 무시돼(alt·title이 빈 채로 올라감) → 업로드 직후 `POST /sites/{site}/media/{ID}`로 title·alt를 한 번 더 맞춘다. 실패해도 본문·대표 이미지는 정상이므로 경고만 찍는다.
+- 상태 파일(`/workspace/state/wordpress-published.json`)에 `featured_image`와 업로드한 이미지(id·url·file)를 남긴다. `action`(publish/update/fill-image)도 기록.
+- 테스트: `python3 -m unittest projects/claude-code-monitor/test_publish_wordpress.py` (11개, 네트워크 없음).
+
+**검증 (2026-11-27, 실제 블로그)**
+- 글 ID 50(`https://earninsu.wordpress.com/2026/11/27/gpt-6-protein-design/`) 수정: `images`로 만든 16:9 일러스트를 media 52로 올리고, 본문 `[이미지 제안: …]` 자리에 `<figure>` 삽입 + 대표 이미지 설정 + `[내부 링크 제안: …]` 제거. 공개 페이지에서 `og:image`, `wp-post-image`(썸네일), 본문 이미지 모두 확인.
+- 새 글 경로 엔드투엔드: 테스트 초안(ID 55, `--status draft`)으로 발행 → 대표 이미지·본문 이미지·메모 제거 확인 후 글은 휴지통, 테스트 이미지는 삭제.
+- 중복 글에 이미지 옵션을 주면 여전히 "건너뜀"만 하고, 대표 이미지가 없을 때만 `--fill-missing-image` 안내를 찍는다.
+
+**남은 것**
+- 워크플로(Actions) 안에서는 이미지 생성(`images`)을 못 쓴다. 이미지가 붙는 것은 Pickle 예약 액션이 이미지를 만들어 `--image`로 넘길 때다.
