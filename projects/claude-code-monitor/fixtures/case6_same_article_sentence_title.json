@@ -1,0 +1,61 @@
+{
+ "_설명": "케이스 ⑥ 2026-11-27 실제 실행 재현. 상위 2위(HN)·4위(OpenAI 뉴스)가 같은 'GPT-6 단백질 설계' 글이었다. 두 제목은 문장형(7단어)이라 제목에서 제품 이름을 뽑는 fold_same_major()가 합치지 못했고, URL은 끝 슬래시만 달랐다. 같은 주의 다른 GPT-6.2 소식 2건(코드골프 벤치마크·사용량 제한)은 서로 다른 이야기라 합쳐지면 안 된다. Shirudo는 HN 링크에 utm 파라미터만 붙어 같은 글로 합쳐져야 한다. 기대: 상위 3개 = ①단백질 설계(공식 링크 1개, HN 반응 표시) ②코드골프 ③사용량 제한, Shirudo는 1건으로 합쳐짐.",
+ "__extends__": "case1_minor_releases_only.json",
+ "__now__": "2026-11-27T09:00:00+09:00",
+ "feed::openai_news": "<rss><channel><item><title>GPT-6 models demonstrate intrinsic protein-design capabilities</title><link>https://openai.com/index/gpt-6-models-demonstrate-intrinsic-protein-design-capabilities</link><description>GPT-6 models design protein structures and sequences using reasoning and code. Lab tests found evidence of binding across five targets.</description><pubDate>Tue, 24 Nov 2026 17:00:00 GMT</pubDate></item><item><title>OpenAI and Cisco introduce Shirudo</title><link>https://openai.com/index/introducing-shirudo</link><description>OpenAI and Cisco introduce Shirudo, an open-source runtime for Linux. It helps teams protect running systems while they roll out patches.</description><pubDate>Mon, 23 Nov 2026 17:00:00 GMT</pubDate></item></channel></rss>",
+ "hn::gpt": {
+  "nbHits": 42,
+  "hits": [
+   {
+    "objectID": "50634658",
+    "title": "GPT-6 models demonstrate intrinsic protein-design capabilities",
+    "url": "https://openai.com/index/gpt-6-models-demonstrate-intrinsic-protein-design-capabilities/",
+    "points": 355,
+    "num_comments": 97,
+    "created_at": "2026-11-24T18:00:00Z"
+   },
+   {
+    "objectID": "50601280",
+    "title": "GPT-6.2 Astra is the first model to beat Googlers' code golf records",
+    "url": "https://bjin.github.io/go-codegolf-benchmark/#leaderboard",
+    "points": 428,
+    "num_comments": 122,
+    "created_at": "2026-11-22T10:00:00Z"
+   },
+   {
+    "objectID": "50651117",
+    "title": "OpenAI cuts GPT-6.2 usage: Astra hits limits 40% faster, Sol 25% faster",
+    "url": "https://twitter.com/thsottiaux/status/2125784147889393806",
+    "points": 405,
+    "num_comments": 224,
+    "created_at": "2026-11-26T09:00:00Z"
+   }
+  ]
+ },
+ "hn_top::gpt": {
+  "nbHits": 42,
+  "hits": [
+   {
+    "objectID": "50634658",
+    "title": "GPT-6 models demonstrate intrinsic protein-design capabilities",
+    "url": "https://openai.com/index/gpt-6-models-demonstrate-intrinsic-protein-design-capabilities/",
+    "points": 355,
+    "num_comments": 97,
+    "created_at": "2026-11-24T18:00:00Z"
+   }
+  ]
+ },
+ "hn::openai": {
+  "nbHits": 30,
+  "hits": [
+   {
+    "objectID": "50629999",
+    "title": "OpenAI and Cisco introduce Shirudo",
+    "url": "https://openai.com/index/introducing-shirudo?utm_source=hn&utm_medium=social",
+    "points": 318,
+    "num_comments": 44,
+    "created_at": "2026-11-23T20:00:00Z"
+   }
+  ]
+ }
+}

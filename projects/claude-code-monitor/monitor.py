@@ -32,6 +32,7 @@ import os
 import re
 import sys
 import time
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -353,14 +354,112 @@ def is_major_title(title: str, mj: dict) -> bool:
             and not any(_rx(p).search(title) for p in mj.get("exclude_patterns", [])))
 
 
+TITLE_LABEL_RE = re.compile(r"^\[[^\]]{1,30}\]\s*")
+URL_TRACKING_RE = re.compile(r"^(utm_[a-z_]+|ref|ref_src|source|fbclid|gclid|igshid|mc_cid|mc_eid|at_medium|at_campaign|s|share)$", re.I)
+NEWS_KINDS = ("community", "industry", "official")  # 같은 기사로 합칠 수 있는 종류(레포·릴리스 줄은 해당 없음)
+
+
 def norm_url(u: str) -> str:
-    return re.sub(r"^https?://(www\.)?", "", u or "").rstrip("/").lower()
+    """같은 기사인지 비교하는 URL 열쇠. http/https·www./m.·#조각·추적 파라미터·끝 슬래시를 지운다.
+    HN 링크는 `https://openai.com/index/.../`, OpenAI RSS는 `https://openai.com/index/...` 처럼 끝 슬래시만 다른
+    같은 글이 있다(2026-11-27 리포트 2·4위)."""
+    u = (u or "").strip()
+    u = re.sub(r"^https?://", "", u, flags=re.I)
+    u = re.sub(r"^(?:www\.|m\.)", "", u, flags=re.I)
+    base = u.split("#", 1)[0]
+    base, _, query = base.partition("?")
+    if query:
+        keep = [p for p in query.split("&") if p and not URL_TRACKING_RE.match(p.split("=", 1)[0])]
+        if keep:
+            base += "?" + "&".join(keep)
+    return base.rstrip("/").lower()
 
 
-def fold_same_story(items: dict[str, dict], cfg: dict) -> None:
+def story_key(title: str) -> str:
+    """제목 비교 열쇠. 출처 라벨([OpenAI 뉴스] 등)·문장부호·대소문자를 지운다."""
+    return re.sub(r"[^a-z0-9가-힣]+", " ", TITLE_LABEL_RE.sub("", title or "").lower()).strip()
+
+
+def _fold_into(keeper: dict, other: dict, note: bool) -> None:
+    """other를 keeper에 합친다. 점수 계산 전에 부르므로 점수는 keeper 것만 남는다.
+    note=True면 요약 끝에 '관련 보도' 링크를 붙인다 — 같은 모델을 다룬 다른 기사일 때만."""
+    keeper["mentions"] += other.get("mentions", 0)
+    keeper["sources"] = sorted(set(keeper["sources"]) | set(other["sources"]))
+    keeper["text"] += " " + other["text"]
+    if note:
+        keeper["summary"] += f" / 관련 보도: {other['title']} ({other['url']})"
+    keeper["official"] = keeper["official"] or bool(other.get("official"))
+    keeper["published_at"] = keeper.get("published_at") or other.get("published_at")
+    for k in ("points", "comments"):  # 합쳐도 HN 반응은 리포트에 남게
+        if other.get(k) is not None:
+            keeper[k] = max(keeper.get(k) or 0, other[k])
+    if other.get("discussion_url") and not keeper.get("discussion_url"):
+        keeper["discussion_url"] = other["discussion_url"]
+
+
+def _keeper_key(it: dict, order: dict):
+    """합칠 때 남길 항목: fold_anchor_order 순(공식이 먼저) → 언급 많은 쪽 → 공식 표시."""
+    return (min((order.get(s, 99) for s in it["sources"]), default=99),
+            -(it.get("mentions") or 0), 0 if it["official"] else 1)
+
+
+def fold_same_article(items: dict[str, dict], cfg: dict) -> None:
+    """같은 기사를 한 항목으로 합친다 — ① 정규화 URL이 같음 ② 제목이 사실상 같음(출처 라벨만 다름)
+    ③ 한 제목이 다른 제목을 통째로 품음(사이트 이름·설명이 붙은 재보도).
+
+    2026-11-27 리포트 2위(HN)·4위(OpenAI 뉴스)가 같은 'GPT-6 단백질 설계' 글이었다. 둘은 URL이 끝 슬래시만
+    달랐지만 제목이 문장형(7단어)이라, 제목에서 제품·모델 이름을 뽑아 합치는 fold_same_major()가 이름을 못 뽑아
+    그대로 두 칸을 먹었다. 여기서는 이름 추출 없이 맞춘다. 남길 항목은 _keeper_key 순(공식 링크가 남는다)."""
+    order = {s: i for i, s in enumerate(cfg["value_rules"]["major"].get("fold_anchor_order", []))}
+    cand = [k for k, it in items.items() if it["kind"] in NEWS_KINDS]
+    parent = {k: k for k in cand}
+
+    def find(x: str) -> str:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a: str, b: str) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[rb] = ra
+
+    seen_url, seen_title = {}, {}
+    for k in cand:
+        it = items[k]
+        url = norm_url(it["url"])
+        if url:
+            union(seen_url.setdefault(url, k), k)
+        key = story_key(it["title"])
+        if len(key) >= 12 and len(key.split()) >= 2:  # 짧은 이름('Claude')은 엉뚱한 글에 걸린다
+            union(seen_title.setdefault(key, k), k)
+    long_titles = [k for k in cand if len(story_key(items[k]["title"]).split()) >= 4]
+    toks = {k: Counter(story_key(items[k]["title"]).split()) for k in long_titles}
+    for i, a in enumerate(long_titles):
+        for b in long_titles[i + 1:]:
+            if find(a) == find(b):
+                continue
+            small, big = sorted((toks[a], toks[b]), key=lambda c: sum(c.values()))
+            if sum(small.values()) >= 4 and not (small - big):
+                union(a, b)
+    groups: dict[str, list[str]] = {}
+    for k in cand:
+        groups.setdefault(find(k), []).append(k)
+    for group in groups.values():
+        if len(group) < 2:
+            continue
+        ranked = sorted(group, key=lambda k: _keeper_key(items[k], order))
+        keeper = items[ranked[0]]
+        for oid in ranked[1:]:
+            _fold_into(keeper, items.pop(oid), note=False)
+
+
+def fold_same_major(items: dict[str, dict], cfg: dict) -> None:
     """같은 신제품·신모델을 다룬 글(제품 페이지·공식 블로그·HN·벤치마크 기사)은 한 항목으로 합친다.
     2026-10-30 실행에서 GPT-6.1 Terra(HN·OpenAI RSS), Gemini 4 Carbon(HN·DeepMind·벤치마크 기사)이 상위 10칸 중 5칸을 먹었다.
-    기준 항목은 fold_anchor_order 순(공식 → 업계 블로그 → HN)으로 골라 공식 링크가 남게 한다."""
+    기준 항목은 fold_anchor_order 순(공식 → 업계 블로그 → HN)으로 골라 공식 링크가 남게 한다.
+    제목이 문장형이라 이름이 안 뽑히는 경우는 fold_same_article()이 URL·제목으로 먼저 합친다."""
     mj = cfg["value_rules"]["major"]
     order = {s: i for i, s in enumerate(mj.get("fold_anchor_order", []))}
 
@@ -384,14 +483,18 @@ def fold_same_story(items: dict[str, dict], cfg: dict) -> None:
             continue
         prod = items[pid]
         for oid in [k for k, o in items.items()
-                    if k != pid and o["kind"] in ("community", "industry", "official")
+                    if k != pid and o["kind"] in NEWS_KINDS
                     and (name in o["title"].lower() or norm_url(o["url"]) == norm_url(prod["url"]))]:
-            o = items.pop(oid)
-            prod["mentions"] += o.get("mentions", 0)
-            prod["sources"] = sorted(set(prod["sources"]) | set(o["sources"]))
-            prod["text"] += " " + o["text"]
-            prod["summary"] += f" / 관련 보도: {o['title']} ({o['url']})"
-            prod["published_at"] = prod.get("published_at") or o.get("published_at")
+            _fold_into(prod, items.pop(oid), note=True)
+
+
+def fold_same_story(items: dict[str, dict], cfg: dict) -> None:
+    """같은 소식이 상위 목록에서 두 칸을 먹지 않게 한 항목으로 합친다.
+    ① fold_same_article — 같은 기사(URL·제목이 같거나 한 제목이 다른 제목을 품음)
+    ② fold_same_major   — 같은 신제품·신모델을 다룬 다른 기사(모델 이름이 겹침)
+    기사 단위로 먼저 합쳐야 ②에서 모델 이름이 겹치는 후보가 하나로 줄어든다."""
+    fold_same_article(items, cfg)
+    fold_same_major(items, cfg)
 
 
 def page_text(raw: str, limit: int) -> str:
