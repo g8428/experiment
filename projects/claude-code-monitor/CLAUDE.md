@@ -161,7 +161,10 @@ content/  (Actions에서는 커밋 안 하고 Slack 스레드로만 전달)
   python3 projects/claude-code-monitor/publish_wordpress.py --dry-run        # 올릴 글·중복 여부만 확인
   python3 projects/claude-code-monitor/publish_wordpress.py                  # 공개 발행
   python3 projects/claude-code-monitor/publish_wordpress.py --file <경로> --status draft   # 특정 파일을 초안으로
+  python3 projects/claude-code-monitor/publish_wordpress.py --image downloads/blog.png --image-alt "설명"   # 대표·본문 이미지
+  python3 projects/claude-code-monitor/publish_wordpress.py --update-post-id 50 --image downloads/blog.png  # 이미 올라간 글에 이미지
   ```
+- 이미지(2026-11-27 추가): `--image`는 `/sites/{site}/media/new`로 올려 첫 장을 대표 이미지(`featured_image`)로 걸고 `[이미지 제안: …]` 자리를 치환한다. 여러 번 주면 순서대로. `--image-prompt "<영어 프롬프트>"`는 셸의 `images` 명령으로 먼저 만든다(프롬프트 작성은 부르는 쪽이 한다). `[이미지 제안: …]`·`[내부 링크 제안: …]` 메모는 발행 시 지워진다. 이미 올라간 글은 `--update-post-id`, 대표 이미지만 비어 있는 글은 `--fill-missing-image`. 테스트: `python3 -m unittest projects/claude-code-monitor/test_publish_wordpress.py`.
 - 대상: `research/content/` 우선, 없으면 `content/blog/`에서 날짜가 가장 최근인 글. **최근 8일(`--max-age-days`) 안의 글만** 자동 발행한다(오래된 글이 뒤늦게 올라가지 않게). 날짜가 있는 파일명(`YYYY-MM-DD-*.md`)만 대상.
 - 중복 방지: 업로드 전 WordPress REST로 최근 글을 받아 **같은 슬러그 또는 같은 제목**이 있으면 건너뛴다(휴지통은 없는 것으로 본다). 그래서 월·화 두 번 돌아도 한 번만 올라간다.
 - 토큰: `WORDPRESS_ACCESS_TOKEN` 환경변수 → 없으면 토큰 파일(`WORDPRESS_TOKEN_FILE`, 기본 `/workspace/.pickle-secrets/wordpress-earninsu.json`, 권한 600). **토큰은 로그·커밋·PR에 쓰지 않는다.**
