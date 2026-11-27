@@ -31,7 +31,8 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
   monitor.py
     수집: Claude Code 릴리스·CHANGELOG / 공식 스킬·플러그인 폴더 / Anthropic 뉴스(JSON 기사 목록)·Claude 제품 목록·공식 문서 목차
           / 업계 RSS(OpenAI·Google AI·DeepMind) / GitHub 신규·토픽 검색 / Hacker News(최근 7일 · 포인트 50+·댓글 10+ / 업계 키워드는 300점 이상)
-    → 같은 신제품·신모델을 다룬 글(공식·업계 블로그·HN·벤치마크 기사)은 한 항목으로 합침, 고객 사례 글 제외
+    → 같은 기사(URL·제목이 같거나 한 제목이 다른 제목을 품음)를 먼저 합치고,
+    → 같은 신제품·신모델을 다룬 글(공식·업계 블로그·HN·벤치마크 기사)도 한 항목으로 합침. 고객 사례 글 제외
     → (월요일) 감시 키워드 검색 → 걸린 레포도 후보 풀에 추가
     → 릴리스 묶음: 이번 주기 릴리스·CHANGELOG를 줄 단위로 판정, 글감급 줄만 남김
     → 카테고리 태깅(영상·디자인·문서·오피스·자동화·에이전트·연동·코딩)
@@ -71,6 +72,7 @@ python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/cla
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case3_mixed_release.json        # 글감급 줄만
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case4_big_launch_vs_repos.json   # 🔥대형 발표 2개가 레포보다 위, Duet은 한 칸
 python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case5_competitor_models_dedup.json  # GPT·Gemini 한 칸씩, 고객 사례 글 없음
+python projects/claude-code-monitor/monitor.py --dry-run --fixtures projects/claude-code-monitor/fixtures/case6_same_article_sentence_title.json  # 문장형 제목·URL만 다른 같은 기사가 한 칸(2026-11-27 실제 상황)
 #   --dump <폴더> 를 붙이면 리포트·latest-top.json을 그 폴더에 저장 → generate_content.py --top 으로 이어서 확인
 
 # 실제 수집 (GITHUB_TOKEN 없어도 동작하지만 검색 rate limit이 낮다)
