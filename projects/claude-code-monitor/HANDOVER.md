@@ -311,3 +311,43 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 
 **남은 것**
 - 워크플로(Actions) 안에서는 이미지 생성(`images`)을 못 쓴다. 이미지가 붙는 것은 Pickle 예약 액션이 이미지를 만들어 `--image`로 넘길 때다.
+
+### 2026-11-28 — 인스타 카드뉴스: 어그로(후킹) 보강 + 렌더러용 JSON 출력
+
+**계기**
+- 사용자 지적: "전반적으로 좀 어그로가 부족한데". 2026-11-27 카드뉴스 시안을 보면 표지가 `단백질까지 설계` + `GPT-6, 전용 AI 없이 해냈다고?`로, 소식을 요약할 뿐 넘길 이유(빈칸·손실·숫자)가 없었고 6장이 전부 같은 크기의 정보 카드였다.
+- 동시에, 카드 이미지는 렌더러(`render_hybrid_cards.py`)가 그리는데 파이프라인 출력이 사람이 읽는 산문 md라 매번 손으로 옮겨 적어야 했다.
+
+**바꾼 것 (`.claude/agents/content-instagram-writer.md`)**
+- 표지 규칙을 5장에서 앞으로 당기고 못 박았다: 답은 2장으로 미룸, title 12자 이내, subtitle 18자 이내, 작은 숫자 하나(리포트에 있는 것만), 표지 약속은 4장 안에서 반드시 지킴. 표지 문구 5공식(오해 지적·통념 반박·작은 숫자·빈칸 질문·손실 회피)과 예문을 붙였다.
+- 2장을 "두 번째 표지"로 규정: 인스타가 1장을 안 넘긴 사람에게 2장부터 다시 보여주므로 2장만 봐도 소식을 알 수 있어야 한다.
+- 출력을 산문에서 **고정 JSON**(`handle`·`title`·`subtitle`·`hook_type`·`cover_visual`·`slides` 4장(`mode`/`kicker`/`headline`/`body`/`visual_hint`)·`cta`·`caption`·`hashtags`)으로 바꿨다.
+- 금지어 목록(혁신적인·놀라운·주목할 만한·획기적인·압도적인·게임 체인저·패러다임·무조건·역대급 등)과 장별 글자 수 상한을 명시.
+
+**바꾼 것 (`generate_content.py`)**
+- 인스타 응답을 JSON으로 파싱·검증(`parse_instagram_json`, `validate_instagram`)하고, 규격 위반이면 **1회 교정 요청**을 보낸다. 두 번 다 어긋나면 커밋하지 않고 `instagram_error`를 결과에 남긴다(깨진 JSON을 렌더러에 넘기지 않는다).
+- `handle`은 모델 출력을 믿지 않고 `청년 재테크 · AI 뉴스 카드`로 고정.
+- 저장 위치: `research/content/{날짜}-instagram.json`(렌더러 입력, `git add research/`로 자동 커밋) + `content/instagram/{날짜}-instagram.md`(JSON을 6장 대본으로 푼 사본, Slack 스레드용).
+- 테스트: `python3 -m unittest projects/claude-code-monitor/test_generate_content.py` (10개, 네트워크 없음). 교정 경로·실패 경로·파일 쓰기 경로는 가짜 응답으로 확인(`--dry-run` + 스텁 실행).
+
+**확인 못 한 것**
+- 실제 Anthropic 호출로 새 JSON이 나오는 것은 이번에 안 돌렸다(다음 월요일 정기 실행 또는 수동 dispatch). 프롬프트·검증·저장 경로는 스텁으로 확인했고, `--dry-run`으로 시스템 프롬프트 로드는 확인.
+
+### 2026-11-28 — 인스타 카드뉴스: A형 표지 + 대화체 본문
+
+**계기**
+- 사용자 지적: "근데 뭐뭐 했다 이런 말투 너무 클로드같아". 인스타는 보고서가 아니라 사람이 소식 전하는 자리인데, 표지·본문이 `~했다/~습니다` 보고서체로 끝나 읽는 사람이 멈추지 않았다.
+- 동시에 표지 시안 4종(A~D) 중 **A형(매거진 빅타이포)**을 사용자가 선택("근데 a안이 제일 낫다"). 4지선다는 배지 + 3줄 큰 제목 + 주황 박스 하나 + 부제 + 메타라는 고정 틀이 필요하다.
+
+**바꾼 것 (`.claude/agents/content-instagram-writer.md`)**
+- 0장 "말투"를 맨 앞에 넣었다: 금지 어미(`~했다/~였다/~됐다/~한다/~된다/~이다/~습니다/~ㅂ니다`)와 쓰는 어미(`~해요/~예요/~거든요/~고요/~죠/~대요`), 바꿔 쓰기 예시표. 표지·본문·CTA·캡션 전부 적용.
+- 표지를 A형 스키마로 바꿨다: `badge`(16자) + `title_lines`(정확히 3줄, 각 12자) + `highlight_word`(3줄 중 한 곳, 2~7자) + `subtitle`(24자) + `meta`(40자). `title`·`title_highlight`는 삭제.
+- 본문(body) 규칙을 "2줄·40자"에서 **"3~5줄·80~170자, 첫 문장은 무엇이 달라졌는지 / 가운데는 숫자·근거 / 끝은 그래서 뭐가 중요한지"**로 바꿨다. 한 줄 조각으로 끝내지 않는다.
+- `headline`은 11자 이내(띄어쓰기 제외)로 명시.
+
+**바꾼 것 (`generate_content.py`·테스트)**
+- `validate_instagram`: 표지 5칸 검증(3줄·글자 수·`highlight_word`가 `title_lines` 안에 있는지), 본문 길이 경계(`BODY_MIN_CHARS=80`, `BODY_MAX_CHARS=190`), `headline` 11자(띄어쓰기 제외).
+- `report_style_hits()`: 문장 끝 `~다`(공백·문장부호·끝 앞)만 잡는 정규식. `였다면` 같은 조건형은 통과하고 `설계했다.`는 걸린다. 표지 제목·부제·본문·CTA에 적용(캡션은 사람이 다듬는 자리라 제외).
+- `instagram_markdown()`: 표지를 배지·3줄·강조어·부제·메타로 풀어 쓴다.
+- 테스트: `python3 -m unittest projects/claude-code-monitor/test_generate_content.py` → **24개 통과**. A형 스키마(3줄·강조어 위치·배지/meta), 본문 길이 경계, 보고서체 검출, 조건형 통과, md 3줄 표지를 새로 넣었다.
+- `--dry-run`으로 시스템 프롬프트(7,309자) 로드 확인. 2026-11-27 최종 세트 JSON(`instagram-cardnews-preview/sample-2026-11-27-final.json`)을 이 검증기에 넣어 문제 0건임도 확인했다.

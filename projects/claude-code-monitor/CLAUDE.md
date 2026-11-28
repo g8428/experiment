@@ -7,9 +7,20 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
 
 왜 지금 구조가 됐는지(2026-10-14 v2 개편 배경, v1이 Remotion 영상 소식을 놓친 원인, v2.1 글감 선별 기준)는 `HANDOVER.md` 참고.
 
-## 현재 상태 (2026-11-27)
+## 현재 상태 (2026-11-28)
 
 - master에서 매주 월요일 돌고 있다(10-19 ~ 11-23 리포트).
+- **2026-11-28 인스타 A형 표지 + 대화체 본문** (사용자 지적 "뭐뭐 했다 이런 말투 너무 클로드같아"):
+  - 표지 스키마를 A형(매거진 빅타이포)으로 바꿨다: `badge` + `title_lines` 3줄 + `highlight_word`(주황 박스 하나) + `subtitle` + `meta`. `title`/`title_highlight`는 없어졌다.
+  - 본문(body)을 한 줄 조각에서 **3~5줄·80~170자 설명**으로 늘렸다(검증 경계 80~190자).
+  - `~했다 / ~였다 / ~된다 / ~이다 / ~습니다` 보고서체 어미를 검증에서 막고(`report_style_hits`), `~해요 / ~예요 / ~거든요` 대화체를 요구한다. 표지·본문·CTA 전부.
+  - `headline`은 11자 이내(띄어쓰기 제외)로 검증한다.
+- **2026-11-28 인스타 카드뉴스 어그로 + JSON 출력** (사용자 지적 "전반적으로 좀 어그로가 부족한데"):
+  - `content-instagram-writer.md`에 표지 후킹 규칙(답은 2장으로, title 12자, 작은 숫자 하나, 표지 약속은 본문에서 지킴)과 금지어 목록을 넣었다. 2장은 "두 번째 표지"로 규정.
+  - 인스타 출력이 산문 md → **고정 JSON**으로 바뀌었다(`slides` 4장 + `cta` + `caption`/`hashtags`). 렌더러가 그대로 읽는다.
+  - `generate_content.py`가 JSON을 파싱·검증하고(글자 수·장수·금지어·해시태그), 어긋나면 1회 교정 요청. `handle`은 코드에서 고정.
+  - 저장: `research/content/{날짜}-instagram.json`(커밋됨, 렌더러 입력) + `content/instagram/{날짜}-instagram.md`(Slack·수동 검수용 사본).
+  - 테스트: `python3 -m unittest projects/claude-code-monitor/test_generate_content.py`.
 - **2026-11-27 워드프레스 자동 발행 추가** (사용자 요청 "이제 자동으로 수집해서 블로그 글 쓰는 거를 올려봐"):
   - 블로그 초안을 워드프레스(`earninsu.wordpress.com`, '청년 권씨의 재테크')에 **공개(publish)** 로 올린다. 사용자가 2026-11-27에 "바로 공개하고"라고 정했다(내 제안 기본값은 초안이었는데 사용자가 공개를 택함. `--status draft`는 수동용으로 남아 있다).
   - 업로드는 워크플로가 아니라 **Pickle 예약 액션**(`📮 주간 블로그 글 워드프레스 발행`, 월 19:00 / 화 08:00 KST)이 한다. GitHub App에 `workflows` 권한이 없어 워크플로 파일(스텝 추가)도, 저장소 시크릿(`WORDPRESS_ACCESS_TOKEN`) 등록도 이 환경에서 할 수 없어서다 → 사용자가 아무것도 하지 않아도 되는 쪽으로 정했다.
@@ -45,6 +56,7 @@ Claude Code·AI 도구 관련 큰 소식(공식 발표, 새 스킬, 급상승 �
   generate_content.py   (글감급 후보가 없으면 건너뜀)
     → 규칙: .claude/agents/content-blog-writer.md / content-instagram-writer.md 본문을 그대로 사용
     → content/blog/YYYY-MM-DD-{slug}.md, content/instagram/YYYY-MM-DD-instagram.md  (커밋 안 함)
+    → 인스타는 JSON 스키마로 받아 검증 후 research/content/YYYY-MM-DD-instagram.json 로도 남김(렌더러 입력·커밋됨)
     → 블로그 응답이 `SKIP: 사유`면 파일 없이 content/YYYY-MM-DD-skip.txt만 남기고 인스타 호출 생략
     → 인스타 호출에는 블로그 초안을 같이 넣어 같은 예시·수치를 쓰게 함
   research/ 커밋 (github-actions[bot], master 직접 — 봇 예외 규칙)
