@@ -15,9 +15,10 @@ Actions 결과물이 바뀌지 않았다 — HANDOVER.md 참고).
 블로그 글은 content/blog/에 저장하고, 같은 내용을 research/content/{날짜}-blog.md에도 남긴다
 (워크플로가 research/만 커밋하므로, 자동 발행은 이 사본을 받아 publish_wordpress.py가 처리한다).
 
-인스타 카드뉴스는 **JSON**으로 받는다(2026-11-28). 렌더러(render_hybrid_cards.py)가 그대로 읽어
-1080x1350 이미지를 뽑는 구조라, 산문 md 대신 고정 스키마(handle/title/subtitle/slides 4장/cta/caption/hashtags)를
-검증하고 research/content/{날짜}-instagram.json에 남긴다(git add research/로 자동 커밋 대상).
+인스타 카드뉴스는 **JSON**으로 받는다(2026-11-28). 렌더러(render_final.py)가 그대로 읽어
+1080x1350 이미지를 뽑는 구조라, 산문 md 대신 고정 스키마(handle/badge/title_lines 3줄/highlight_word/subtitle/meta/
+slides 4장/cta/caption/hashtags)를 검증하고 research/content/{날짜}-instagram.json에 남긴다(git add research/로 자동 커밋 대상).
+표지 유형은 A형(매거진 빅타이포), 본문은 3~5줄 설명이고 '~했다/…습니다' 보고서체는 검증에서 막는다(2026-11-28).
 Slack 보고와 사람이 읽을 사본은 지금처럼 content/instagram/{날짜}-instagram.md에 JSON을 풀어 쓴다.
 
 글감이 사소하면 블로그 에이전트가 첫 줄에 `SKIP: <사유>`만 출력한다(규칙은 content-blog-writer.md).
@@ -61,6 +62,18 @@ BANNED_PHRASES = ("혁신적인", "놀라운", "주목할 만한", "획기적인
                   "새로운 시대", "패러다임", "가능성을 열", "무조건", "역대급")
 SLIDE_COUNT = 4  # 표지 + 본문 4장 + CTA = 6장
 HANDLE = "청년 재테크 · AI 뉴스 카드"
+# 표지 = A형(매거진 빅타이포): 배지 + 3줄 제목 + 주황 박스 강조어 + 부제 + 메타
+TITLE_LINE_COUNT = 3
+MAX_TITLE_LINE = 12
+MAX_HEADLINE = 11  # 띄어쓰기 제외. 78px 큰 글씨로 한 줄에 들어가는 양(약 928px)
+MAX_BADGE = 16
+MAX_SUBTITLE = 24
+MAX_META = 40
+# 본문은 한 줄 조각이 아니라 4~5줄 설명(프롬프트 80~170자). 검증은 여유를 둔 경계로 막는다.
+BODY_MIN_CHARS = 80
+BODY_MAX_CHARS = 190
+# '~했다/…습니다' 보고서체 어미는 문장 끝(공백·문장부호·끝)에서만 잡는다. '였다면' 같은 조건형은 통과.
+REPORT_ENDING_RE = re.compile(r"[가-힣]{1,8}다(?=[\s.,!?~…)\]\"']|$)")
 # 워크플로가 커밋하는 건 research/ 뿐이라(git add research/), 블로그 글은 research/ 아래에도 사본을 남긴다.
 # 용도: ① 주간 글의 커밋 기록 ② 워드프레스 자동 발행(publish_wordpress.py)의 입력.
 # 업로드는 Actions 밖(Pickle 예약 액션)에서 이 사본을 받아 하므로, Actions 러너의 content/blog는 여전히 커밋하지 않는다.
@@ -229,25 +242,47 @@ def parse_instagram_json(text: str) -> dict:
     return json.loads(body[start:end + 1])
 
 
+def report_style_hits(text: str) -> list[str]:
+    """'~했다/…습니다' 보고서체로 끝나는 구간. 대화체 '~해요/~거든요' 규칙(에이전트 0장)을 강제한다."""
+    return [m.group(0) for m in REPORT_ENDING_RE.finditer(text)]
+
+
 def validate_instagram(data: dict) -> list[str]:
     """렌더러가 그대로 쓸 수 있는지 검사한다. 문제가 있으면 사람이 읽을 수 있는 목록으로 돌려준다."""
     if not isinstance(data, dict):
         return ["최상위가 JSON 객체가 아닙니다"]
     problems: list[str] = []
-    for key in ("title", "subtitle", "cover_visual", "caption"):
+    for key in ("badge", "subtitle", "meta", "cover_visual", "caption"):
         value = data.get(key)
         if not isinstance(value, str) or not value.strip():
             problems.append(f"{key}가 비었습니다")
-    if len(str(data.get("title") or "").replace("\n", "")) > 14:
-        problems.append(f"title이 {len(str(data.get('title')).replace(chr(10), ''))}자입니다 (12자 이내)")
-    if len(str(data.get("subtitle") or "")) > 20:
-        problems.append(f"subtitle가 {len(str(data.get('subtitle')))}자입니다 (18자 이내)")
+    if len(str(data.get("badge") or "")) > MAX_BADGE:
+        problems.append(f"badge가 {len(str(data.get('badge')))}자입니다 ({MAX_BADGE}자 이내)")
+    if len(str(data.get("subtitle") or "")) > MAX_SUBTITLE:
+        problems.append(f"subtitle가 {len(str(data.get('subtitle')))}자입니다 ({MAX_SUBTITLE}자 이내)")
+    if len(str(data.get("meta") or "")) > MAX_META:
+        problems.append(f"meta가 {len(str(data.get('meta')))}자입니다 ({MAX_META}자 이내)")
     if len(str(data.get("caption") or "")) > 400:
         problems.append(f"caption이 {len(str(data.get('caption')))}자입니다 (300자 이내)")
-    # 선택 키: 있으면 반드시 본문 안에 있는 글자여야 한다(렌더러가 못 찾으면 강조를 그냥 건너뛴다).
-    title_hl = data.get("title_highlight")
-    if title_hl is not None and (not isinstance(title_hl, str) or title_hl not in str(data.get("title") or "")):
-        problems.append("title_highlight는 title 안에 있는 글자여야 합니다")
+
+    # 표지 A형: 3줄 제목 + 그 안의 강조어 하나
+    title_lines = data.get("title_lines")
+    if not isinstance(title_lines, list) or len(title_lines) != TITLE_LINE_COUNT:
+        problems.append(f"title_lines는 정확히 {TITLE_LINE_COUNT}줄이어야 합니다")
+        title_lines = []
+    for i, line in enumerate(title_lines, start=1):
+        if not isinstance(line, str) or not line.strip():
+            problems.append(f"title_lines {i}번째 줄이 비었습니다")
+        elif len(line.replace("\n", "")) > MAX_TITLE_LINE:
+            problems.append(f"title_lines {i}번째 줄이 {len(line)}자입니다 ({MAX_TITLE_LINE}자 이내)")
+    highlight_word = data.get("highlight_word")
+    title_text = " ".join(str(x) for x in title_lines)
+    if not isinstance(highlight_word, str) or not highlight_word.strip():
+        problems.append("highlight_word가 비었습니다")
+    elif highlight_word not in title_text:
+        problems.append("highlight_word는 title_lines 안에 있는 글자여야 합니다")
+    elif not 2 <= len(highlight_word) <= 7:
+        problems.append(f"highlight_word가 {len(highlight_word)}자입니다 (2~7자)")
 
     slides = data.get("slides")
     if not isinstance(slides, list) or len(slides) != SLIDE_COUNT:
@@ -262,29 +297,44 @@ def validate_instagram(data: dict) -> list[str]:
         for key in ("kicker", "headline", "body", "visual_hint"):
             if not isinstance(slide.get(key), str) or not slide[key].strip():
                 problems.append(f"{i}장 {key}가 비었습니다")
-        if len(str(slide.get("headline") or "").replace("\n", "")) > 12:
-            problems.append(f"{i}장 headline이 {len(str(slide.get('headline')).replace(chr(10), ''))}자입니다 (10자 이내)")
-        if len(str(slide.get("body") or "")) > 60:
-            problems.append(f"{i}장 body가 {len(str(slide.get('body')))}자입니다 (2줄·40자 안쪽)")
+        headline_len = len(str(slide.get("headline") or "").replace("\n", "").replace(" ", ""))
+        if headline_len > MAX_HEADLINE:
+            problems.append(f"{i}장 headline이 {headline_len}자입니다 ({MAX_HEADLINE}자 이내, 띄어쓰기 제외)")
+        body_len = len(str(slide.get("body") or ""))
+        if body_len < BODY_MIN_CHARS:
+            problems.append(f"{i}장 body가 {body_len}자입니다 (3~5줄·{BODY_MIN_CHARS}자 이상)")
+        if body_len > BODY_MAX_CHARS:
+            problems.append(f"{i}장 body가 {body_len}자입니다 (3~5줄·{BODY_MAX_CHARS}자 이내)")
         hl = slide.get("headline_highlight")
         if hl is not None and (not isinstance(hl, str) or hl not in str(slide.get("headline") or "")):
             problems.append(f"{i}장 headline_highlight는 headline 안에 있는 글자여야 합니다")
 
     cta = data.get("cta")
-    if not isinstance(cta, dict) or not str(cta.get("headline") or "").strip():
+    cta_headline = str(cta.get("headline") or "") if isinstance(cta, dict) else ""
+    if not isinstance(cta, dict) or not cta_headline.strip():
         problems.append("cta.headline이 비었습니다")
     hashtags = data.get("hashtags")
     if not isinstance(hashtags, list) or not 4 <= len(hashtags) <= 10 or not all(
             isinstance(t, str) and t.startswith("#") for t in hashtags):
         problems.append("hashtags는 '#'로 시작하는 4~10개 목록이어야 합니다")
 
-    text = " ".join([str(data.get("title") or ""), str(data.get("subtitle") or ""),
-                    str(data.get("caption") or "")] + [
+    text = " ".join([title_text, str(data.get("subtitle") or ""), str(data.get("caption") or "")] + [
         f"{s.get('kicker', '')} {s.get('headline', '')} {s.get('body', '')}"
         for s in slides if isinstance(s, dict)])
     banned = [w for w in BANNED_PHRASES if w in text]
     if banned:
         problems.append("금지어: " + ", ".join(banned))
+
+    # 말투: 표지·본문·CTA는 '~해요'체. 캡션은 사람이 다듬는 자리라 검사에서 뺀다.
+    tone_texts = [("표지 제목", title_text), ("표지 부제", str(data.get("subtitle") or "")),
+                  ("CTA", f"{cta_headline} {cta.get('body', '') if isinstance(cta, dict) else ''}")]
+    for i, slide in enumerate(slides, start=2):
+        if isinstance(slide, dict):
+            tone_texts.append((f"{i}장", f"{slide.get('kicker', '')} {slide.get('headline', '')} {slide.get('body', '')}"))
+    for label, value in tone_texts:
+        hits = report_style_hits(value)
+        if hits:
+            problems.append(f"{label} 말투: '{hits[0]}' 같은 보고서체 — '~해요/~거든요'로 바꿔 주세요")
     return problems
 
 
@@ -300,8 +350,12 @@ def _instagram_or_problems(text: str) -> tuple[dict, list[str]]:
 def instagram_markdown(data: dict, today: str) -> str:
     """JSON을 사람이 읽는 카드뉴스 대본으로 풀어 쓴다(Slack 스레드·수동 검수용)."""
     slides = data["slides"]
+    title_lines = data.get("title_lines") or []
     lines = [f"# 인스타 카드뉴스 {today}", "",
-             f"- 표지: **{data['title']}** / {data['subtitle']}  ({data.get('hook_type', '-')})",
+             f"- 표지 배지: {data.get('badge', '-')}",
+             f"- 표지 제목: **{' / '.join(title_lines)}** (강조: {data.get('highlight_word', '-')})",
+             f"- 부제: {data.get('subtitle', '-')}  ({data.get('hook_type', '-')})",
+             f"- 메타: {data.get('meta', '-')}",
              f"- 표지 그림: {data.get('cover_visual', '-')}"]
     for i, slide in enumerate(slides, start=2):
         lines += ["", f"## {i}. {slide.get('kicker', '')}", f"**{slide.get('headline', '')}**",
