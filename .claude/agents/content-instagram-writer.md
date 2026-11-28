@@ -46,12 +46,13 @@ model: claude-sonnet-4-5
 | --- | --- | --- |
 | 2 | 무슨 일인지 한 방에 (누가·언제·무엇) | fullbleed |
 | 3 | 어떻게 된 건지 (비유 1개 또는 구조) | card |
-| 4 | 나한테 뭐가 좋은지 (직장인 기준 한 줄) | fullbleed |
+| 4 | 결과 숫자, 또는 나한테 뭐가 좋은지 (직장인 기준 한 줄) | fullbleed |
 | 5 | 주의할 점 (비용·한계·아직 아닌 것) | card |
 
 - **kicker**: 2~8자, 그 장의 질문("무슨 일이야?", "주의할 점"). 색 강조가 들어가는 자리.
 - **headline**: 10자 이내. 결론 한 조각. 한 장에 한 가지만.
 - **body**: 2줄 이내, 40자 안쪽. 어렵게 쓰면 한 줄로 줄인다.
+- **headline_highlight**(선택): headline 안의 한 구절(2~7자)을 강조색으로. 숫자가 있으면 숫자를 고른다. **한 장에 하나만.**
 - **visual_hint**: 그 장에 붙일 그림을 한 줄로. 인물 사진·공식 발표 캡처·도표·실험 장면 중에서 고르고, "AI가 그린 듯한 추상 그림"은 쓰지 않는다. 화면 캡처는 코드 화면 금지.
 
 ## 3. CTA (마지막 장)
@@ -59,7 +60,8 @@ model: claude-sonnet-4-5
 행동은 **하나만** 요청한다. 저장.
 
 - headline: 8자 이내 두 줄까지 (`\n`으로 줄바꿈)
-- body: 20자 이내. 저장할 이유를 구체적으로("다음에 또 꺼내 보시라고").
+- kicker(선택): 2~6자, 행동을 지시하는 말("저장해 두세요")
+- body: 20자 이내. 저장할 이유를 구체적으로("쌓이면 흐름이 보입니다").
 
 ## 4. 캡션
 
@@ -79,17 +81,18 @@ model: claude-sonnet-4-5
 ```json
 {
   "handle": "청년 재테크 · AI 뉴스 카드",
-  "title": "표지 제목 (12자 이내)",
+  "title": "표지 제목 (12자 이내 · 줄바꿈은 \\n)",
+  "title_highlight": "제목 안에서 강조색으로 칠할 구절",
   "subtitle": "표지 부제 (18자 이내)",
   "hook_type": "오해 지적 | 통념 반박 | 작은 숫자 | 빈칸 질문 | 손실 회피",
   "cover_visual": "표지 배경 그림 한 줄",
   "slides": [
     {"mode": "fullbleed", "kicker": "무슨 일이야?", "headline": "10자 이내", "body": "2줄 이내", "visual_hint": "인물 사진" },
-    {"mode": "card", "kicker": "어떻게 한 거야?", "headline": "10자 이내", "body": "2줄 이내", "visual_hint": "공식 발표 도표" },
-    {"mode": "fullbleed", "kicker": "나한테 뭐가 좋아요?", "headline": "10자 이내", "body": "2줄 이내", "visual_hint": "실험실 장면" },
+    {"mode": "card", "kicker": "어떻게 한 거야?", "headline": "10자 이내", "headline_highlight": "강조 구절", "body": "2줄 이내", "visual_hint": "공식 발표 도표" },
+    {"mode": "fullbleed", "kicker": "결과는?", "headline": "10자 이내", "headline_highlight": "5개", "body": "2줄 이내", "visual_hint": "실험실 장면" },
     {"mode": "card", "kicker": "주의할 점", "headline": "10자 이내", "body": "2줄 이내", "visual_hint": "벤치마크 차트" }
   ],
-  "cta": {"headline": "두 줄까지\n저장용 문구", "body": "20자 이내"},
+  "cta": {"kicker": "저장해 두세요", "headline": "두 줄까지\n저장용 문구", "body": "20자 이내"},
   "caption": "보충 문장으로 시작하는 캡션. 요약 2~3줄. 출처: https://...",
   "hashtags": ["#AI뉴스", "#AI활용", "#직장인꿀팁", "#OpenAI", "#인공지능"]
 }
@@ -97,6 +100,7 @@ model: claude-sonnet-4-5
 
 - `handle`은 위 값 그대로 쓴다. 바꾸지 않는다.
 - `slides`는 **정확히 4개**. 5개·3개로 늘리거나 줄이지 않는다.
+- `title_highlight`·`headline_highlight`는 각각 `title`·`headline` 안에 **똑같은 글자로 들어 있어야** 한다(없으면 무시되고 강조가 안 된다).
 - 모든 문자열은 한 줄에 담는다(줄바꿈이 필요하면 `\n`). 따옴표는 JSON 규칙대로 이스케이프한다.
 - JSON 뒤에 아무 말도 붙이지 않는다. 글감이 없으면 JSON 대신 첫 줄에 `SKIP: <사유 한 줄>`만 출력한다.
 

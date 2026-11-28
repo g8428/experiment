@@ -238,12 +238,16 @@ def validate_instagram(data: dict) -> list[str]:
         value = data.get(key)
         if not isinstance(value, str) or not value.strip():
             problems.append(f"{key}가 비었습니다")
-    if len(str(data.get("title") or "")) > 14:
-        problems.append(f"title이 {len(str(data.get('title')))}자입니다 (12자 이내)")
+    if len(str(data.get("title") or "").replace("\n", "")) > 14:
+        problems.append(f"title이 {len(str(data.get('title')).replace(chr(10), ''))}자입니다 (12자 이내)")
     if len(str(data.get("subtitle") or "")) > 20:
         problems.append(f"subtitle가 {len(str(data.get('subtitle')))}자입니다 (18자 이내)")
     if len(str(data.get("caption") or "")) > 400:
         problems.append(f"caption이 {len(str(data.get('caption')))}자입니다 (300자 이내)")
+    # 선택 키: 있으면 반드시 본문 안에 있는 글자여야 한다(렌더러가 못 찾으면 강조를 그냥 건너뛴다).
+    title_hl = data.get("title_highlight")
+    if title_hl is not None and (not isinstance(title_hl, str) or title_hl not in str(data.get("title") or "")):
+        problems.append("title_highlight는 title 안에 있는 글자여야 합니다")
 
     slides = data.get("slides")
     if not isinstance(slides, list) or len(slides) != SLIDE_COUNT:
@@ -258,10 +262,13 @@ def validate_instagram(data: dict) -> list[str]:
         for key in ("kicker", "headline", "body", "visual_hint"):
             if not isinstance(slide.get(key), str) or not slide[key].strip():
                 problems.append(f"{i}장 {key}가 비었습니다")
-        if len(str(slide.get("headline") or "")) > 12:
-            problems.append(f"{i}장 headline이 {len(str(slide.get('headline')))}자입니다 (10자 이내)")
+        if len(str(slide.get("headline") or "").replace("\n", "")) > 12:
+            problems.append(f"{i}장 headline이 {len(str(slide.get('headline')).replace(chr(10), ''))}자입니다 (10자 이내)")
         if len(str(slide.get("body") or "")) > 60:
             problems.append(f"{i}장 body가 {len(str(slide.get('body')))}자입니다 (2줄·40자 안쪽)")
+        hl = slide.get("headline_highlight")
+        if hl is not None and (not isinstance(hl, str) or hl not in str(slide.get("headline") or "")):
+            problems.append(f"{i}장 headline_highlight는 headline 안에 있는 글자여야 합니다")
 
     cta = data.get("cta")
     if not isinstance(cta, dict) or not str(cta.get("headline") or "").strip():

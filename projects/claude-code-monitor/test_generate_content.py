@@ -80,6 +80,16 @@ class ValidateTest(unittest.TestCase):
     def test_not_a_dict(self):
         self.assertEqual(gc.validate_instagram([]), ["최상위가 JSON 객체가 아닙니다"])
 
+    def test_newline_not_counted_in_title(self):
+        self.assertEqual(gc.validate_instagram({**GOOD, "title": "전용 AI,\n필요 없었습니다"}), [])
+
+    def test_highlight_must_be_in_headline(self):
+        slides = [{**GOOD["slides"][0], "headline_highlight": "없는구절"}] + GOOD["slides"][1:]
+        self.assertTrue(any("highlight" in p for p in gc.validate_instagram({**GOOD, "slides": slides})))
+
+    def test_title_highlight_must_be_in_title(self):
+        self.assertTrue(any("title_highlight" in p for p in gc.validate_instagram({**GOOD, "title_highlight": "없는구절"})))
+
 
 class MarkdownTest(unittest.TestCase):
     def test_renders_all_slides(self):
