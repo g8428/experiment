@@ -311,3 +311,24 @@ GPT Terra: 확인해 보니 실제 공개된 건 GPT-5.6 Terra(2026-07)다. 파�
 
 **남은 것**
 - 워크플로(Actions) 안에서는 이미지 생성(`images`)을 못 쓴다. 이미지가 붙는 것은 Pickle 예약 액션이 이미지를 만들어 `--image`로 넘길 때다.
+
+### 2026-11-28 — 인스타 카드뉴스: 어그로(후킹) 보강 + 렌더러용 JSON 출력
+
+**계기**
+- 사용자 지적: "전반적으로 좀 어그로가 부족한데". 2026-11-27 카드뉴스 시안을 보면 표지가 `단백질까지 설계` + `GPT-6, 전용 AI 없이 해냈다고?`로, 소식을 요약할 뿐 넘길 이유(빈칸·손실·숫자)가 없었고 6장이 전부 같은 크기의 정보 카드였다.
+- 동시에, 카드 이미지는 렌더러(`render_hybrid_cards.py`)가 그리는데 파이프라인 출력이 사람이 읽는 산문 md라 매번 손으로 옮겨 적어야 했다.
+
+**바꾼 것 (`.claude/agents/content-instagram-writer.md`)**
+- 표지 규칙을 5장에서 앞으로 당기고 못 박았다: 답은 2장으로 미룸, title 12자 이내, subtitle 18자 이내, 작은 숫자 하나(리포트에 있는 것만), 표지 약속은 4장 안에서 반드시 지킴. 표지 문구 5공식(오해 지적·통념 반박·작은 숫자·빈칸 질문·손실 회피)과 예문을 붙였다.
+- 2장을 "두 번째 표지"로 규정: 인스타가 1장을 안 넘긴 사람에게 2장부터 다시 보여주므로 2장만 봐도 소식을 알 수 있어야 한다.
+- 출력을 산문에서 **고정 JSON**(`handle`·`title`·`subtitle`·`hook_type`·`cover_visual`·`slides` 4장(`mode`/`kicker`/`headline`/`body`/`visual_hint`)·`cta`·`caption`·`hashtags`)으로 바꿨다.
+- 금지어 목록(혁신적인·놀라운·주목할 만한·획기적인·압도적인·게임 체인저·패러다임·무조건·역대급 등)과 장별 글자 수 상한을 명시.
+
+**바꾼 것 (`generate_content.py`)**
+- 인스타 응답을 JSON으로 파싱·검증(`parse_instagram_json`, `validate_instagram`)하고, 규격 위반이면 **1회 교정 요청**을 보낸다. 두 번 다 어긋나면 커밋하지 않고 `instagram_error`를 결과에 남긴다(깨진 JSON을 렌더러에 넘기지 않는다).
+- `handle`은 모델 출력을 믿지 않고 `청년 재테크 · AI 뉴스 카드`로 고정.
+- 저장 위치: `research/content/{날짜}-instagram.json`(렌더러 입력, `git add research/`로 자동 커밋) + `content/instagram/{날짜}-instagram.md`(JSON을 6장 대본으로 푼 사본, Slack 스레드용).
+- 테스트: `python3 -m unittest projects/claude-code-monitor/test_generate_content.py` (10개, 네트워크 없음). 교정 경로·실패 경로·파일 쓰기 경로는 가짜 응답으로 확인(`--dry-run` + 스텁 실행).
+
+**확인 못 한 것**
+- 실제 Anthropic 호출로 새 JSON이 나오는 것은 이번에 안 돌렸다(다음 월요일 정기 실행 또는 수동 dispatch). 프롬프트·검증·저장 경로는 스텁으로 확인했고, `--dry-run`으로 시스템 프롬프트 로드는 확인.
