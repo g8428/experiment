@@ -1,0 +1,75 @@
+{
+  "cards": [
+    {
+      "type": "photo",
+      "kicker": "클로드 코드 쓰는 사람 필독",
+      "title": "AI한테 원시인\n말투 시켰더니",
+      "title_highlight": "원시인",
+      "body": "무슨 일이 생겼는지 넘겨 보세요",
+      "image": {
+        "kind": "ai",
+        "prompt": "돌도끼를 든 원시인이 동굴 안에서 노트북 앞에 앉아 진지하게 코딩하는 과장된 장면, 놀란 표정, 밝고 유머러스한 일러스트 느낌, 글자·로고·실존 인물 얼굴 없음"
+      }
+    },
+    {
+      "type": "photo",
+      "kicker": "무슨 일이야?",
+      "title": "원시인처럼 말하는 스킬",
+      "body": "caveman이라는 오픈소스가 화제예요. 별이 약 11만 개(109,923) 모였대요.",
+      "source_url": "https://github.com/JuliusBrussee/caveman",
+      "image": {
+        "kind": "repo_og",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    {
+      "type": "figure",
+      "kicker": "어떻게 한 거야?",
+      "title": "말을 짧게 줄여요",
+      "body": "스킬과 프록시로 응답을 짧게 만들어서 토큰을 덜 쓰는 방식입니다.",
+      "source_url": "https://github.com/JuliusBrussee/caveman",
+      "image": {
+        "kind": "readme_image",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    {
+      "type": "photo",
+      "kicker": "비슷한 방법도 있어요",
+      "title": "명령어 출력도 압축",
+      "body": "rtk는 개발 명령어 출력을 줄여서 토큰 사용을 60~90% 아낀다고 소개해요.",
+      "source_url": "https://github.com/rtk-ai/rtk",
+      "image": {
+        "kind": "owner_avatar",
+        "repo": "rtk-ai/rtk"
+      }
+    },
+    {
+      "type": "figure",
+      "kicker": "주의할 점",
+      "title": "수치는 소개 기준",
+      "body": "절감률은 각 저장소가 밝힌 값이에요. 내 작업에서는 다를 수 있으니 직접 확인해 보세요.",
+      "source_url": "https://github.com/rtk-ai/rtk",
+      "image": {
+        "kind": "repo_og",
+        "repo": "rtk-ai/rtk"
+      }
+    },
+    {
+      "type": "end",
+      "kicker": "한 줄 정리",
+      "title": "매주 AI 소식\n카드로 정리",
+      "body": "필요할 때 꺼내 보시라고 저장해 두세요 🔖"
+    }
+  ],
+  "caption": "AI한테 원시인 말투를 시켰더니 토큰 요금이 줄었다는 이야기, 들어보셨나요?\n\ncaveman과 rtk, 두 오픈소스가 주목받고 있어요. 수치는 각 저장소 소개 기준이니 직접 확인해 보세요.\n\n자료: github.com/JuliusBrussee/caveman, github.com/rtk-ai/rtk (2026.10.05 기준)",
+  "hashtags": [
+    "#ClaudeCode",
+    "#클로드코드",
+    "#AI뉴스",
+    "#오픈소스",
+    "#개발자",
+    "#토큰절약",
+    "#AI에이전트"
+  ]
+}

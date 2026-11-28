@@ -64,3 +64,6 @@ projects/deepcoin_bot/backtest/cache/*_1m/
 
 # 슬랙 웹훅·토큰 보관 폴더 (비밀값, 커밋 금지)
 channel/
+
+# 3팀 인스타 카드 렌더 산출물 (승인 전 이미지는 커밋하지 않는다)
+projects/claude-code-monitor/cards/out/

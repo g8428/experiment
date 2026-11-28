@@ -1,0 +1,58 @@
+name: 인스타 카드 게시 (Slack 오너 ✅ 승인 후)
+
+on:
+  schedule:
+    # 월·화 매시 정각: Slack에서 오너가 ✅를 달았는지 확인
+    - cron: '0 * * * 1,2'
+  workflow_dispatch:
+
+concurrency:
+  group: claude-code-ig-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write  # ig-media 브랜치 푸시 (승인 후에만)
+      actions: read    # 월요일 실행의 ig-cards 아티팩트 다운로드
+
+    env:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_STAFF1_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+      SLACK_OWNER_USER_ID: ${{ secrets.SLACK_OWNER_USER_ID }}
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v5
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: 패키지 설치
+        run: pip install requests pillow
+
+      - name: 승인 확인 (Slack만 조회, 게시 없음)
+        id: check
+        run: python projects/claude-code-monitor/ig_publish.py --check
+
+      - name: 카드 아티팩트 다운로드
+        if: steps.check.outputs.approved == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ig-cards
+          path: ig-cards
+          run-id: ${{ steps.check.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 인스타 게시
+        if: steps.check.outputs.approved == 'true'
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python projects/claude-code-monitor/ig_publish.py --cards-dir ig-cards

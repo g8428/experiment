@@ -17,8 +17,9 @@
 ## 담당 범위
 
 - 폴더: `projects/claude-code-monitor/`, `content/`, `research/`
-- 워크플로: `.github/workflows/claude-code-monitor.yml`
-  - 이 파일은 공용 폴더에 있다. 수정할 때는 메인 코디네이터에게 알린다.
+- 수집: `monitor.py`(Claude Code 트렌드), `news_collect.py`(AI 뉴스 RSS), 카드 렌더 `cards/`, 게시 `ig_publish.py`
+- 워크플로: `.github/workflows/claude-code-monitor.yml`, `.github/workflows/claude-code-ig-publish.yml`
+  - 이 파일들은 공용 폴더에 있다. 수정할 때는 메인 코디네이터에게 알린다.
 
 ## 검증
 
@@ -31,11 +32,15 @@ python projects/claude-code-monitor/monitor.py           # research/claude-code-
 ## 출시
 
 - 매주 월요일 09:00 KST에 GitHub Actions가 자동 실행한다. 실행되면 #성과보고에 요약이 올라가고, 원고는 그 스레드에 달린다.
-- 블로그·인스타에 실제로 올리는 건 재영이 직접 한다. 자동 게시는 하지 않는다.
+- 블로그는 재영이 직접 올린다 (자동 게시 없음).
+- 인스타: Slack 미리보기에 오너가 ✅를 달면 자동 게시. ✅ 없으면 게시하지 않는다. (`claude-code-ig-publish.yml`이 월·화 매시 확인)
+- 인스타 카드는 AI 뉴스 전반(`research/ai-news-*.md`)이 주제, 블로그는 Claude Code 트렌드 리서치가 입력이다.
 
 ## 팀 고유 금지 사항
 
 - 원고 본문을 GitHub에 공개 커밋하는 것. 본문은 Slack 스레드로만 보낸다.
+- 승인 전 이미지 커밋 금지 (`ig-media` 브랜치는 승인 후에만).
+- 언론사 기사 사진 사용 금지 (공식 발표 og:image, CC/퍼블릭 도메인 위키미디어, AI 생성만).
 - 출처 없는 수치나 단정적 표현
 
 ## 현재 상태

@@ -24,12 +24,19 @@ jobs:
           cache: 'pip'
 
       - name: 패키지 설치
-        run: pip install requests anthropic "langfuse>=4,<5" opentelemetry-instrumentation-anthropic
+        run: pip install requests anthropic "langfuse>=4,<5" opentelemetry-instrumentation-anthropic pillow playwright jinja2 feedparser
+
+      - name: Playwright 브라우저 설치 (카드 렌더용)
+        run: playwright install --with-deps chromium
 
       - name: GitHub 트렌드 수집
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Actions 기본 제공
         run: python projects/claude-code-monitor/monitor.py
+
+      - name: AI 뉴스 수집 (인스타 카드 입력, RSS)
+        continue-on-error: true  # 실패해도 블로그 흐름은 계속 (인스타는 Claude Code 리서치로 대체)
+        run: python projects/claude-code-monitor/news_collect.py
 
       - name: 블로그 + 인스타 컨텐츠 생성
         env:
@@ -42,12 +49,30 @@ jobs:
           LANGFUSE_RELEASE: ${{ github.sha }}
         run: python projects/claude-code-monitor/generate_content.py
 
+      - name: 카드뉴스 이미지 수집 + 렌더 (cards/out, 커밋하지 않음)
+        continue-on-error: true  # 렌더 실패가 research 커밋·Slack 보고를 막지 않게
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_IMAGE_MODEL: ${{ secrets.OPENAI_IMAGE_MODEL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python projects/claude-code-monitor/cards/render.py
+
+      - name: 카드 아티팩트 업로드 (승인 후 게시용, 7일 보관)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ig-cards
+          path: |
+            projects/claude-code-monitor/cards/out/*.png
+            projects/claude-code-monitor/cards/out/card.json
+          retention-days: 7
+          if-no-files-found: warn
+
       - name: 결과 파일 커밋 & 푸시
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add research/
-          git diff --staged --quiet || git commit -m "chore: Claude Code 트렌드 리포트 자동 생성 $(date +%Y-%m-%d)"
+          git diff --staged --quiet || git commit -m "chore: Claude Code 트렌드·AI 뉴스 리포트 자동 생성 $(date +%Y-%m-%d)"
           git push
 
       - name: Slack 보고 (#성과보고, Bot Token)
@@ -56,5 +81,6 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_STAFF1_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
           JOB_STATUS: ${{ job.status }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: python projects/claude-code-monitor/slack_notify.py
